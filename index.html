@@ -98,6 +98,7 @@
         .video-tabs button .num { display: inline-flex; align-items: center; justify-content: center; width: 30px; height: 30px; background: rgba(255,255,255,0.1); color: #b0c4de; border-radius: 50%; font-size: 14px; font-weight: 900; flex-shrink: 0; }
         .video-tabs button:hover .num { background: white; color: #302b63; }
 
+        /* ===== РАСПИСАНИЕ ===== */
         .schedule-section { margin-top: 30px; }
         .schedule-section h3 { font-size: 22px; margin-bottom: 16px; color: #ffffff; }
         .schedule-table-wrap { overflow-x: auto; }
@@ -790,6 +791,7 @@
                 });
         }
 
+        // ===== РАСПИСАНИЕ =====
         function loadStudentSchedule(studentId) {
             var container = document.getElementById('studentSchedule');
             container.innerHTML = '⏳ Загрузка...';
@@ -1144,7 +1146,7 @@
                 });
         }
 
-        // ===== ГЛАВНАЯ ФУНКЦИЯ: ДОБАВЛЕНИЕ ВИДЕО (С ВЫБОРОМ ТИПА) =====
+        // ===== ДОБАВЛЕНИЕ ВИДЕО С ВЫБОРОМ ТИПА =====
         function addVideo() {
             supabase
                 .from('video_sections')
