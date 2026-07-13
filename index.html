@@ -32,6 +32,7 @@
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
+        // ===== ОДНО ПОДКЛЮЧЕНИЕ =====
         const SUPABASE_URL = 'https://liqqdixrtvnrrvgkfvbn.supabase.co';
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxpcXFkaXhydHZucnJ2Z2tmdmJuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODM4NTMzMzksImV4cCI6MjA5OTQyOTMzOX0.Jqrnt5DOKNURe5HERWIhMvc6KChurAg5iHkfMBw4P2A';
         const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
@@ -44,7 +45,6 @@
             output.innerHTML = '⏳ Проверяю...';
 
             try {
-                // Пробуем получить данные из video_sections
                 const { data, error, status } = await supabase
                     .from('video_sections')
                     .select('*');
@@ -53,7 +53,7 @@
                     output.innerHTML = `
                         <div class="error">❌ Ошибка: ${error.message}</div>
                         <div style="margin-top:10px; background:#f8d7da; padding:10px; border-radius:8px;">
-                            <strong>Код ошибки:</strong> ${error.code}<br>
+                            <strong>Код ошибки:</strong> ${error.code || 'нет'}<br>
                             <strong>Статус:</strong> ${status}<br>
                             <strong>Подробности:</strong> ${JSON.stringify(error, null, 2)}
                         </div>
@@ -82,7 +82,6 @@
             tablesOutput.innerHTML = '⏳ Загружаю список таблиц...';
 
             try {
-                // Запрос к системной таблице для получения списка всех таблиц
                 const { data, error } = await supabase
                     .from('information_schema.tables')
                     .select('table_name, table_schema')
