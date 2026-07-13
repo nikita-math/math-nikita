@@ -15,7 +15,6 @@
 
         .container { max-width: 1100px; margin: 0 auto; padding: 40px 20px; }
 
-        /* ===== ДИАГНОСТИКА ===== */
         .debug-box {
             background: #fff3cd;
             border: 2px solid #856404;
@@ -267,7 +266,6 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <script>
-        // ===== НАСТРОЙКИ SUPABASE =====
         var SUPABASE_URL = 'https://liqqdixrtvnrrvgkfvbn.supabase.co';
         var SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxpcXFkaXhydHZucnJ2Z2tmdmJuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODM4NTMzMzksImV4cCI6MjA5OTQyOTMzOX0.Jqrnt5DOKNURe5HERWIhMvc6KChurAg5iHkfMBw4P2A';
         var supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
@@ -276,7 +274,6 @@
         var sections = [];
         var allVideos = [];
 
-        // ===== ЭЛЕМЕНТЫ =====
         var loginSection = document.getElementById('loginSection');
         var dashboard = document.getElementById('dashboard');
         var adminPanel = document.getElementById('adminPanel');
@@ -284,28 +281,27 @@
         var homeworkList = document.getElementById('homeworkList');
         var welcomeMessage = document.getElementById('welcomeMessage');
 
-        // ===== ДИАГНОСТИКА =====
         async function runDiagnostics() {
             var output = document.getElementById('debugOutput');
-            output.innerHTML = '⏳ Проверка подключения к Supabase...';
+            output.innerHTML = '⏳ Проверка подключения...';
 
             try {
-                var { data, error, status } = await supabase
+                var { data, error } = await supabase
                     .from('video_sections')
                     .select('*')
                     .limit(5);
 
                 if (error) {
-                    output.innerHTML = '<span class="error">❌ Ошибка: ' + error.message + ' (Статус: ' + status + ')</span>';
+                    output.innerHTML = '<span class="error">❌ Ошибка: ' + error.message + '</span>';
                     return;
                 }
 
                 if (!data || data.length === 0) {
-                    output.innerHTML = '<span class="warning">⚠️ Таблица video_sections есть, но данных нет (0 записей)</span>';
+                    output.innerHTML = '<span class="warning">⚠️ Таблица есть, но данных нет (0 записей)</span>';
                     return;
                 }
 
-                var html = '<span class="success">✅ Подключение работает! Найдено записей в таблице: ' + data.length + '</span><br>';
+                var html = '<span class="success">✅ Подключение работает! Найдено записей: ' + data.length + '</span><br>';
                 html += '<span style="font-size:14px; color:#555;">Первые 5 записей: ';
                 data.forEach(function(row, i) {
                     html += 'ID: ' + row.id + ' → ' + row.name;
@@ -315,25 +311,21 @@
                 output.innerHTML = html;
 
             } catch (err) {
-                output.innerHTML = '<span class="error">❌ Критическая ошибка: ' + err.message + '</span>';
+                output.innerHTML = '<span class="error">❌ Ошибка: ' + err.message + '</span>';
             }
         }
 
-        // ===== КАТАЛОГ ЗАДАЧ (ПРОСТАЯ ВЕРСИЯ) =====
         function loadTaskCatalog() {
             var container = document.getElementById('taskList');
             container.innerHTML = '📭 Каталог задач пока пуст. Скоро добавлю!';
         }
 
-        // ===== ЗАГРУЗКА РАЗДЕЛОВ И ВИДЕО =====
         function loadSectionsAndVideos() {
             var tabsContainer = document.getElementById('videoTabs');
             var contentContainer = document.getElementById('videoContent');
 
             tabsContainer.innerHTML = '⏳ Загрузка разделов...';
             contentContainer.innerHTML = '';
-
-            console.log('▶️ Загружаем разделы...');
 
             supabase
                 .from('video_sections')
@@ -342,42 +334,28 @@
                 .then(function(response) {
                     if (response.error) {
                         tabsContainer.innerHTML = '❌ Ошибка: ' + response.error.message;
-                        console.error('Ошибка:', response.error);
                         return;
                     }
 
                     sections = response.data || [];
-                    console.log('✅ Загружено разделов:', sections.length);
+                    console.log('Загружено разделов:', sections.length);
 
                     if (sections.length === 0) {
                         tabsContainer.innerHTML = '📭 Нет разделов. Добавьте их в базе.';
                         return;
                     }
 
-                    // Загружаем видео
                     supabase
                         .from('videos')
                         .select('*')
                         .order('created_at', { ascending: false })
                         .then(function(resp) {
-                            if (resp.error) {
-                                console.error('Ошибка загрузки видео:', resp.error);
-                                allVideos = [];
-                            } else {
-                                allVideos = resp.data || [];
-                                console.log('✅ Загружено видео:', allVideos.length);
-                            }
-                            renderVideoTabs();
-                        })
-                        .catch(function(err) {
-                            console.error('Ошибка:', err);
-                            allVideos = [];
+                            allVideos = resp.data || [];
                             renderVideoTabs();
                         });
                 })
                 .catch(function(err) {
                     tabsContainer.innerHTML = '❌ Ошибка: ' + err.message;
-                    console.error(err);
                 });
         }
 
@@ -389,8 +367,6 @@
                 tabsContainer.innerHTML = '📭 Нет разделов';
                 return;
             }
-
-            console.log('▶️ Рендерим', sections.length, 'разделов');
 
             var tabsHtml = '';
             var contentHtml = '';
@@ -423,7 +399,6 @@
 
             tabsContainer.innerHTML = tabsHtml;
             contentContainer.innerHTML = contentHtml;
-            console.log('✅ Разделы отрендерены!');
         }
 
         function switchVideoTab(sectionId) {
@@ -437,7 +412,6 @@
             document.getElementById('videoList-' + sectionId).classList.add('active');
         }
 
-        // ===== ВХОД =====
         document.getElementById('loginBtn').addEventListener('click', function() {
             var email = document.getElementById('email').value;
             var password = document.getElementById('password').value;
@@ -492,7 +466,6 @@
                 });
         });
 
-        // ===== ЗАГРУЗКА ДЗ =====
         function loadHomework(studentId) {
             homeworkList.innerHTML = '⏳ Загрузка...';
 
@@ -566,7 +539,6 @@
                 });
         }
 
-        // ===== ВЫХОД =====
         document.getElementById('logoutBtn').addEventListener('click', function() {
             document.querySelector('.profile').style.display = 'flex';
             document.querySelector('.contacts').style.display = 'block';
@@ -579,7 +551,6 @@
             currentUser = null;
         });
 
-        // ===== АДМИН-ПАНЕЛЬ =====
         document.querySelectorAll('.admin-tabs button').forEach(function(btn) {
             btn.addEventListener('click', function() {
                 document.querySelectorAll('.admin-tabs button').forEach(function(b) { b.classList.remove('active'); });
@@ -598,7 +569,6 @@
             loadStats();
         }
 
-        // ===== УЧЕНИКИ =====
         function loadStudents() {
             var container = document.getElementById('studentsList');
             container.innerHTML = '⏳ Загрузка...';
@@ -682,7 +652,6 @@
                 });
         }
 
-        // ===== ВСЕ ДЗ =====
         function loadAllHomeworks() {
             var container = document.getElementById('homeworksList');
             container.innerHTML = '⏳ Загрузка...';
@@ -820,7 +789,6 @@
                 });
         }
 
-        // ===== ВИДЕО (АДМИН) =====
         function loadVideosAdmin() {
             var container = document.getElementById('videosList');
             container.innerHTML = '⏳ Загрузка...';
@@ -941,7 +909,6 @@
                 });
         }
 
-        // ===== ЗАДАЧИ (АДМИН) =====
         function loadTasks() {
             var container = document.getElementById('tasksList');
             container.innerHTML = '⏳ Загрузка...';
@@ -1027,7 +994,6 @@
                 });
         }
 
-        // ===== СТАТИСТИКА =====
         function loadStats() {
             var container = document.getElementById('statsContent');
             container.innerHTML = '⏳ Загрузка...';
@@ -1120,19 +1086,14 @@
                 });
         }
 
-        // ===== ЗАГРУЗКА ТЕМ ДЛЯ ФИЛЬТРА =====
         function loadTopics() {
             // Заглушка
         }
 
-        // ===== ЗАПУСК =====
         loadTaskCatalog();
         loadTopics();
-
-        // Запускаем диагностику после загрузки
         setTimeout(runDiagnostics, 1000);
-
-        console.log('Сайт загружен. Ожидаем входа.');
+        console.log('Сайт загружен.');
     </script>
 
 </body>
