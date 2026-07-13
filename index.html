@@ -445,7 +445,8 @@
                 star.style.width = size + 'px';
                 star.style.height = size + 'px';
                 star.style.left = Math.random() * 100 + '%';
-                star.style.top = Math.random() * 100 + '%';
+                var top = Math.random() * 100;
+                star.style.top = top + '%';
                 star.style.setProperty('--duration', (Math.random() * 3 + 2) + 's');
                 star.style.animationDelay = (Math.random() * 3) + 's';
                 container.appendChild(star);
@@ -1146,7 +1147,7 @@
                 });
         }
 
-        // ===== ИСПРАВЛЕННАЯ ФУНКЦИЯ ЗАГРУЗКИ ВИДЕО =====
+        // ===== ФУНКЦИЯ ЗАГРУЗКИ ВИДЕО (ПОЛНОСТЬЮ ИЗ upload.html) =====
         function addVideo() {
             supabase
                 .from('video_sections')
