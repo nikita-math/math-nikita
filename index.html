@@ -65,6 +65,47 @@
         .hw-card .btn-start { background: #27ae60; color: white; border: none; padding: 6px 16px; border-radius: 20px; cursor: pointer; margin-top: 8px; }
         .hw-card .btn-start:hover { background: #1e8449; }
 
+        .video-section { margin-top: 30px; }
+        .video-section h3 { font-size: 22px; margin-bottom: 16px; color: #1a1a2e; }
+        .video-tabs { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px; }
+        .video-tabs button {
+            background: #f0f4ff;
+            border: none;
+            padding: 10px 18px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .video-tabs button:hover { background: #302b63; color: white; }
+        .video-tabs button.active { background: #302b63; color: white; }
+        .video-tabs button .num {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 24px;
+            height: 24px;
+            background: #302b63;
+            color: white;
+            border-radius: 50%;
+            font-size: 12px;
+            font-weight: 700;
+        }
+        .video-tabs button.active .num { background: white; color: #302b63; }
+        .video-tabs button:hover .num { background: white; color: #302b63; }
+
+        .video-list { display: none; }
+        .video-list.active { display: block; }
+        .video-item { padding: 12px 16px; border-bottom: 1px solid #eee; display: flex; align-items: center; gap: 16px; }
+        .video-item:last-child { border-bottom: none; }
+        .video-item .play-icon { font-size: 24px; color: #302b63; }
+        .video-item a { color: #1a1a2e; text-decoration: none; font-weight: 500; flex: 1; }
+        .video-item a:hover { color: #302b63; }
+        .video-item .empty { color: #888; font-style: italic; }
+
         #adminPanel { background: white; border-radius: 24px; padding: 30px 40px; box-shadow: 0 10px 40px rgba(0,0,0,0.08); display: none; margin-top: 40px; }
         .admin-tabs { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 20px; border-bottom: 2px solid #eee; padding-bottom: 15px; }
         .admin-tabs button { background: #f0f4ff; border: none; padding: 10px 20px; border-radius: 30px; cursor: pointer; font-weight: 600; transition: 0.3s; }
@@ -96,6 +137,7 @@
             .contacts a { display: block; margin: 8px 0; text-align: center; }
             .admin-tabs { flex-direction: column; }
             .admin-table { font-size: 14px; }
+            .video-tabs button { font-size: 14px; padding: 6px 12px; }
         }
     </style>
 </head>
@@ -108,7 +150,6 @@
 
     <div class="container">
 
-        <!-- ===== АНКЕТА ===== -->
         <div class="profile">
             <div class="profile-avatar">👨‍🏫</div>
             <div class="profile-info">
@@ -123,7 +164,6 @@
             </div>
         </div>
 
-        <!-- ===== КОНТАКТЫ (ОБНОВЛЕНЫ) ===== -->
         <div class="contacts">
             <h3>📬 Связаться со мной</h3>
             <a href="tel:+79916834922">📞 +7 991 683-49-22</a>
@@ -131,7 +171,6 @@
             <a href="mailto:nlysi6233@gmail.com">📧 nlysi6233@gmail.com</a>
         </div>
 
-        <!-- ===== КАТАЛОГ ЗАДАЧ ===== -->
         <div class="task-catalog">
             <h3>📚 Каталог задач</h3>
             <div class="task-filter" id="taskFilter">
@@ -140,7 +179,6 @@
             <div id="taskList">Загрузка...</div>
         </div>
 
-        <!-- ===== ВХОД ===== -->
         <div class="login-section" id="loginSection">
             <h3>🔐 Войти в личный кабинет</h3>
             <input type="email" id="email" placeholder="Email" value="test@mail.ru">
@@ -152,7 +190,6 @@
             </p>
         </div>
 
-        <!-- ===== ЛИЧНЫЙ КАБИНЕТ ===== -->
         <div id="dashboard">
             <div class="header">
                 <h3 id="welcomeMessage">📚 Мои домашние задания</h3>
@@ -163,9 +200,14 @@
                 <div class="bar"><div class="fill" id="progressBar" style="width:0%;"></div></div>
             </div>
             <div id="homeworkList"><p>Загрузка...</p></div>
+
+            <div class="video-section">
+                <h3>🎥 Видеоуроки по темам</h3>
+                <div class="video-tabs" id="videoTabs"></div>
+                <div id="videoContent"></div>
+            </div>
         </div>
 
-        <!-- ===== АДМИН-ПАНЕЛЬ ===== -->
         <div id="adminPanel">
             <h3>🔧 Панель управления</h3>
             <div class="admin-tabs">
@@ -203,7 +245,6 @@
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
     <script>
         // ===== НАСТРОЙКИ SUPABASE =====
         var SUPABASE_URL = 'https://liqqdixrtvnrrvgkfvbn.supabase.co';
@@ -212,6 +253,8 @@
 
         var currentUser = null;
         var allTasks = [];
+        var sections = [];
+        var allVideos = [];
 
         // ===== ЭЛЕМЕНТЫ =====
         var loginSection = document.getElementById('loginSection');
@@ -280,7 +323,6 @@
             }
         }
 
-        // ===== ФИЛЬТР ЗАДАЧ =====
         document.getElementById('taskFilter').addEventListener('click', function(e) {
             if (e.target.tagName === 'BUTTON') {
                 document.querySelectorAll('#taskFilter button').forEach(function(b) { b.classList.remove('active'); });
@@ -288,6 +330,108 @@
                 renderTasks(e.target.dataset.topic);
             }
         });
+
+        // ===== ЗАГРУЗКА РАЗДЕЛОВ И ВИДЕО =====
+        function loadSectionsAndVideos() {
+            var tabsContainer = document.getElementById('videoTabs');
+            var contentContainer = document.getElementById('videoContent');
+
+            tabsContainer.innerHTML = '⏳ Загрузка разделов...';
+            contentContainer.innerHTML = '';
+
+            supabase
+                .from('video_sections')
+                .select('*')
+                .order('order_num', { ascending: true })
+                .then(function(response) {
+                    if (response.error) {
+                        tabsContainer.innerHTML = '❌ Ошибка загрузки разделов';
+                        console.error(response.error);
+                        return;
+                    }
+                    sections = response.data || [];
+                    if (sections.length === 0) {
+                        tabsContainer.innerHTML = '📭 Нет разделов. Добавьте их в базе.';
+                        return;
+                    }
+
+                    supabase
+                        .from('videos')
+                        .select('*')
+                        .order('created_at', { ascending: false })
+                        .then(function(resp) {
+                            if (resp.error) {
+                                console.error('Ошибка загрузки видео:', resp.error);
+                                allVideos = [];
+                            } else {
+                                allVideos = resp.data || [];
+                            }
+                            renderVideoTabs();
+                        })
+                        .catch(function(err) {
+                            console.error('Ошибка:', err);
+                            allVideos = [];
+                            renderVideoTabs();
+                        });
+                })
+                .catch(function(err) {
+                    tabsContainer.innerHTML = '❌ Ошибка: ' + err.message;
+                    console.error(err);
+                });
+        }
+
+        function renderVideoTabs() {
+            var tabsContainer = document.getElementById('videoTabs');
+            var contentContainer = document.getElementById('videoContent');
+
+            if (!sections || sections.length === 0) {
+                tabsContainer.innerHTML = '📭 Нет разделов';
+                return;
+            }
+
+            var tabsHtml = '';
+            var contentHtml = '';
+
+            sections.forEach(function(section, index) {
+                var isActive = index === 0 ? 'active' : '';
+                var videos = allVideos.filter(function(v) { return v.section_id === section.id; });
+                var num = index + 1;
+
+                tabsHtml += `
+                    <button class="${isActive}" data-section="${section.id}" onclick="switchVideoTab('${section.id}')">
+                        <span class="num">${num}</span> ${section.name}
+                    </button>
+                `;
+
+                contentHtml += `
+                    <div class="video-list ${isActive}" id="videoList-${section.id}">
+                        ${videos.length === 0 ? '<p class="empty">📭 Нет видео в этом разделе</p>' : ''}
+                        ${videos.map(function(v) {
+                            return `
+                                <div class="video-item">
+                                    <span class="play-icon">▶️</span>
+                                    <a href="${v.youtube_url || '#'}" target="_blank">${v.title}</a>
+                                </div>
+                            `;
+                        }).join('')}
+                    </div>
+                `;
+            });
+
+            tabsContainer.innerHTML = tabsHtml;
+            contentContainer.innerHTML = contentHtml;
+        }
+
+        function switchVideoTab(sectionId) {
+            document.querySelectorAll('.video-tabs button').forEach(function(b) {
+                b.classList.remove('active');
+            });
+            document.querySelectorAll('.video-list').forEach(function(el) {
+                el.classList.remove('active');
+            });
+            document.querySelector('.video-tabs button[data-section="' + sectionId + '"]').classList.add('active');
+            document.getElementById('videoList-' + sectionId).classList.add('active');
+        }
 
         // ===== ВХОД =====
         document.getElementById('loginBtn').addEventListener('click', function() {
@@ -318,7 +462,11 @@
                         resultDiv.className = 'result-success';
                         resultDiv.innerHTML = '✅ Привет, ' + user.name + '!';
 
+                        document.querySelector('.profile').style.display = 'none';
+                        document.querySelector('.contacts').style.display = 'none';
+                        document.querySelector('.task-catalog').style.display = 'none';
                         loginSection.style.display = 'none';
+
                         dashboard.style.display = 'block';
                         welcomeMessage.textContent = '👋 Привет, ' + user.name + '!';
 
@@ -328,6 +476,7 @@
                         }
 
                         loadHomework(user.id);
+                        loadSectionsAndVideos();
                     } else {
                         resultDiv.className = 'result-error';
                         resultDiv.innerHTML = '❌ Неверный логин или пароль.';
@@ -415,6 +564,9 @@
 
         // ===== ВЫХОД =====
         document.getElementById('logoutBtn').addEventListener('click', function() {
+            document.querySelector('.profile').style.display = 'flex';
+            document.querySelector('.contacts').style.display = 'block';
+            document.querySelector('.task-catalog').style.display = 'block';
             loginSection.style.display = 'block';
             dashboard.style.display = 'none';
             adminPanel.style.display = 'none';
@@ -437,7 +589,7 @@
         function loadAdminData() {
             loadStudents();
             loadAllHomeworks();
-            loadVideos();
+            loadVideosAdmin();
             loadTasks();
             loadStats();
         }
@@ -664,14 +816,14 @@
                 });
         }
 
-        // ===== ВИДЕО =====
-        function loadVideos() {
+        // ===== ВИДЕО (АДМИН) =====
+        function loadVideosAdmin() {
             var container = document.getElementById('videosList');
             container.innerHTML = '⏳ Загрузка...';
 
             supabase
                 .from('videos')
-                .select('*')
+                .select('*, video_sections(name)')
                 .order('created_at', { ascending: false })
                 .then(function(response) {
                     if (response.error) {
@@ -683,13 +835,14 @@
                         container.innerHTML = '📭 Нет видео';
                         return;
                     }
-                    var html = '<table class="admin-table"><tr><th>Название</th><th>Тема</th><th>Ссылка</th><th>Действия</th></tr>';
+                    var html = '<table class="admin-table"><tr><th>Название</th><th>Раздел</th><th>Ссылка</th><th>Действия</th></tr>';
                     for (var i = 0; i < data.length; i++) {
                         var v = data[i];
+                        var sectionName = v.video_sections ? v.video_sections.name : '—';
                         html += `
                             <tr>
                                 <td>${v.title}</td>
-                                <td>${v.topic || '—'}</td>
+                                <td>${sectionName}</td>
                                 <td>${v.youtube_url ? `<a href="${v.youtube_url}" target="_blank">Смотреть</a>` : '—'}</td>
                                 <td>
                                     <button class="admin-btn danger" onclick="deleteVideo('${v.id}')">🗑</button>
@@ -706,26 +859,61 @@
         }
 
         function addVideo() {
-            var title = prompt('Введите название видео:');
-            if (!title) return;
-            var topic = prompt('Введите тему:');
-            if (!topic) return;
-            var url = prompt('Введите ссылку на YouTube:');
-            if (!url) return;
-
             supabase
-                .from('videos')
-                .insert([{ title: title, topic: topic, youtube_url: url }])
+                .from('video_sections')
+                .select('*')
+                .order('order_num', { ascending: true })
                 .then(function(response) {
                     if (response.error) {
-                        alert('❌ Ошибка: ' + response.error.message);
-                    } else {
-                        alert('✅ Видео добавлено!');
-                        loadVideos();
+                        alert('Ошибка загрузки разделов');
+                        return;
                     }
+                    var sections = response.data || [];
+                    if (sections.length === 0) {
+                        alert('Нет разделов! Сначала создайте разделы в базе.');
+                        return;
+                    }
+
+                    var list = 'Выберите раздел:\n';
+                    for (var i = 0; i < sections.length; i++) {
+                        list += (i + 1) + '. ' + sections[i].name + '\n';
+                    }
+                    var choice = prompt(list);
+                    if (!choice) return;
+                    var idx = parseInt(choice) - 1;
+                    if (idx < 0 || idx >= sections.length) {
+                        alert('Неверный выбор!');
+                        return;
+                    }
+                    var section = sections[idx];
+
+                    var title = prompt('Введите название видео:');
+                    if (!title) return;
+                    var url = prompt('Введите ссылку на YouTube:');
+                    if (!url) return;
+
+                    supabase
+                        .from('videos')
+                        .insert([{
+                            title: title,
+                            youtube_url: url,
+                            section_id: section.id
+                        }])
+                        .then(function(r) {
+                            if (r.error) {
+                                alert('❌ Ошибка: ' + r.error.message);
+                            } else {
+                                alert('✅ Видео добавлено!');
+                                loadVideosAdmin();
+                                loadSectionsAndVideos();
+                            }
+                        })
+                        .catch(function(err) {
+                            alert('❌ Ошибка: ' + err.message);
+                        });
                 })
                 .catch(function(err) {
-                    alert('❌ Ошибка: ' + err.message);
+                    alert('Ошибка: ' + err.message);
                 });
         }
 
@@ -740,7 +928,8 @@
                         alert('❌ Ошибка: ' + response.error.message);
                     } else {
                         alert('✅ Видео удалено');
-                        loadVideos();
+                        loadVideosAdmin();
+                        loadSectionsAndVideos();
                     }
                 })
                 .catch(function(err) {
