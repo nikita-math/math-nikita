@@ -182,7 +182,7 @@
 
         <!-- ===== ОСНОВНОЙ КОНТЕНТ ===== -->
         <div id="mainContent">
-            <div class="profile" id="profileBlock">
+            <div class="profile">
                 <div class="profile-avatar">👨‍🏫</div>
                 <div class="profile-info">
                     <h2>Никита</h2>
@@ -196,14 +196,14 @@
                 </div>
             </div>
 
-            <div class="contacts" id="contactsBlock">
+            <div class="contacts">
                 <h3>📬 Связаться со мной</h3>
                 <a href="tel:+79916834922">📞 +7 991 683-49-22</a>
                 <a href="https://t.me/Nikita_Lysikov" target="_blank">💬 Telegram</a>
                 <a href="mailto:nlysi6233@gmail.com">📧 nlysi6233@gmail.com</a>
             </div>
 
-            <div class="task-catalog" id="taskCatalogBlock">
+            <div class="task-catalog">
                 <h3>📚 Каталог задач</h3>
                 <div class="task-filter" id="taskFilter">
                     <button class="active" data-topic="all">Все</button>
@@ -246,7 +246,7 @@
             </div>
         </div>
 
-        <!-- ===== СТРАНИЦА РАЗДЕЛА (СКРЫТА) ===== -->
+        <!-- ===== СТРАНИЦА РАЗДЕЛА ===== -->
         <div id="sectionPage">
             <button class="back-btn" id="backToDashboard">← Назад к списку разделов</button>
             <div id="sectionContent">
@@ -340,15 +340,10 @@
 
         // ===== ОТКРЫТЬ РАЗДЕЛ =====
         function openSection(sectionId) {
-            // Скрываем всё
             mainContent.style.display = 'none';
             dashboard.style.display = 'none';
             adminPanel.style.display = 'none';
-
-            // Показываем страницу раздела
             sectionPage.classList.add('active');
-
-            // Загружаем данные раздела
             loadSectionContent(sectionId);
         }
 
