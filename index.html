@@ -69,6 +69,10 @@
         .hw-card .status.pending { color: #f39c12; }
         .hw-card .btn-start { background: #27ae60; color: white; border: none; padding: 6px 16px; border-radius: 20px; cursor: pointer; margin-top: 8px; }
         .hw-card .btn-start:hover { background: #1e8449; }
+        .hw-card .video-fallback { margin-top: 10px; padding: 10px 14px; background: rgba(245, 166, 35, 0.1); border-radius: 8px; border-left: 4px solid #f5a623; }
+        .hw-card .video-fallback .label { color: #f5a623; font-weight: 600; }
+        .hw-card .video-fallback a { color: #88ccff; word-break: break-all; text-decoration: none; }
+        .hw-card .video-fallback a:hover { text-decoration: underline; }
 
         .video-section { margin-top: 30px; }
         .video-section h3 { font-size: 22px; margin-bottom: 16px; color: #ffffff; }
@@ -89,8 +93,7 @@
             align-items: center;
             gap: 10px;
             flex: 1 1 200px;
-            color: #b0c4de;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+            color: #b0c4de; box-shadow: 0 2px 8px rgba(0,0,0,0.2);
             width: 100%;
             text-align: left;
         }
@@ -209,8 +212,7 @@
             border: none;
             color: #f5a623;
             font-size: 18px;
-            cursor: pointer;
-            font-weight: 600;
+            cursor: pointer; font-weight: 600;
             padding: 10px 0;
             transition: 0.3s;
             display: block;
@@ -268,6 +270,25 @@
             font-size: 16px;
         }
         .video-item .video-homework strong { color: #ffffff; }
+        .video-item .video-fallback-link {
+            margin-top: 12px;
+            padding: 10px 14px;
+            background: rgba(245, 166, 35, 0.08);
+            border-radius: 8px;
+            border-left: 4px solid #f5a623;
+        }
+        .video-item .video-fallback-link .label {
+            color: #f5a623;
+            font-weight: 600;
+        }
+        .video-item .video-fallback-link a {
+            color: #88ccff;
+            word-break: break-all;
+            text-decoration: none;
+        }
+        .video-item .video-fallback-link a:hover {
+            text-decoration: underline;
+        }
 
         #adminPanel { background: rgba(255,255,255,0.05); backdrop-filter: blur(10px); border-radius: 24px; padding: 30px 40px; border: 1px solid rgba(255,255,255,0.1); display: none; margin-top: 40px; }
         .admin-tabs { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 15px; }
@@ -293,8 +314,7 @@
             .profile { flex-direction: column; text-align: center; }
             .profile-avatar { width: 120px; height: 120px; font-size: 50px; }
             .contacts a { display: block; margin: 8px 0; text-align: center; }
-            .admin-tabs { flex-direction: column; }
-            .admin-table { font-size: 14px; }
+            .admin-tabs { flex-direction: column; } .admin-table { font-size: 14px; }
             .video-tabs button { font-size: 14px; padding: 10px 14px; flex: 1 1 100%; }
             .schedule-table { font-size: 12px; }
             .schedule-table th, .schedule-table td { padding: 6px 4px; min-width: 60px; }
@@ -497,6 +517,7 @@
             loadSectionContent(sectionId);
         }
 
+        // ===== ОСНОВНАЯ ФУНКЦИЯ ЗАГРУЗКИ ВИДЕО (С ДОБАВЛЕННОЙ ССЫЛКОЙ-ДУБЛИКАТОРОМ) =====
         async function loadSectionContent(sectionId) {
             var content = document.getElementById('sectionContent');
             content.innerHTML = '<div class="loading">⏳ Загрузка...</div>';
@@ -587,6 +608,17 @@
 
                         html += `<span class="video-title">🎬 ${title}</span>`;
 
+                        // ===== ⭐ НОВЫЙ БЛОК — ССЫЛКА-ДУБЛИКАТОР (ЕСЛИ ВИДЕО НЕ РАБОТАЕТ) =====
+                        if (videoUrl && videoUrl !== '#') {
+                            html += `
+                                <div class="video-fallback-link">
+                                    <span class="label">⚠️ Если видео не работает, вот ссылка:</span><br>
+                                    <a href="${videoUrl}" target="_blank">${videoUrl}</a>
+                                </div>
+                            `;
+                        }
+
+                        // ===== БЛОК С ДЗ =====
                         if (homework) {
                             html += `
                                 <div class="video-homework">
@@ -771,6 +803,17 @@
                         var statusClass = hw.status === 'done' ? 'done' : 'pending';
                         var statusText = hw.status === 'done' ? '✅ Выполнено' : '⏳ Ожидает проверки';
                         var btnHtml = hw.status !== 'done' ? `<button class="btn-start" onclick="markDone('${hw.id}')">✅ Отметить выполненным</button>` : '';
+                        
+                        var videoBlock = '';
+                        if (hw.video_link) {
+                            videoBlock = `
+                                <div class="video-fallback">
+                                    <div class="label">⚠️ Если видео не работает, вот ссылка:</div>
+                                    <a href="${hw.video_link}" target="_blank">${hw.video_link}</a>
+                                </div>
+                            `;
+                        }
+
                         html += `
                             <div class="hw-card">
                                 <div class="title">${hw.title}</div>
@@ -778,6 +821,7 @@
                                 <div class="status ${statusClass}">${statusText}</div>
                                 ${btnHtml}
                                 ${hw.file_url ? `<div class="meta">📎 <a href="${hw.file_url}" target="_blank">Скачать файл</a></div>` : ''}
+                                ${videoBlock}
                             </div>
                         `;
                     }
@@ -1208,8 +1252,7 @@
 
                     if (typeChoice === '1') {
                         // ===== YOUTUBE =====
-                        var url = prompt('Введите ссылку на YouTube:');
-                        if (!url) return;
+                        var url = prompt('Введите ссылку на YouTube:'); if (!url) return;
                         var homework = prompt('Введите ДЗ к уроку (или Enter):');
 
                         supabase
@@ -1542,7 +1585,7 @@
                         container.innerHTML = '📭 Нет домашних заданий';
                         return;
                     }
-                    var html = '<table class="admin-table"><tr><th>Название</th><th>Ученик</th><th>Статус</th><th>Срок</th><th>Действия</th></tr>';
+                    var html = '<table class="admin-table"><tr><th>Название</th><th>Ученик</th><th>Статус</th><th>Срок</th><th>Ссылка на видео</th><th>Действия</th></tr>';
                     for (var i = 0; i < data.length; i++) {
                         var h = data[i];
                         var studentName = h.students ? h.students.name : '—';
@@ -1553,6 +1596,7 @@
                                 <td>${studentName}</td>
                                 <td>${statusText}</td>
                                 <td>${h.deadline || '—'}</td>
+                                <td>${h.video_link ? `<a href="${h.video_link}" target="_blank" style="color:#88ccff;">Смотреть</a>` : '—'}</td>
                                 <td>
                                     <button class="admin-btn" onclick="toggleHomeworkStatus('${h.id}', '${h.status}')">${h.status === 'done' ? '↩ Вернуть' : '✅ Отметить'}</button>
                                     <button class="admin-btn danger" onclick="deleteHomework('${h.id}')">🗑</button>
@@ -1598,6 +1642,7 @@
                     var title = prompt('Введите название ДЗ:');
                     if (!title) return;
                     var deadline = prompt('Введите срок (ГГГГ-ММ-ДД) или Enter:');
+                    var videoLink = prompt('Введите ссылку на видео (если видео не работает, Enter):');
 
                     var studentId = student.id || student.student_id || student.user_id;
 
@@ -1607,7 +1652,8 @@
                             title: title,
                             student_id: studentId,
                             status: 'pending',
-                            deadline: deadline || null
+                            deadline: deadline || null,
+                            video_link: videoLink || null
                         }])
                         .then(function(r) {
                             if (r.error) {
@@ -1615,6 +1661,7 @@
                             } else {
                                 alert('✅ ДЗ добавлено!');
                                 loadAllHomeworks();
+                                if (currentUser) loadHomework(currentUser.id);
                             }
                         })
                         .catch(function(err) {
@@ -1637,6 +1684,7 @@
                         alert('❌ Ошибка: ' + response.error.message);
                     } else {
                         loadAllHomeworks();
+                        if (currentUser) loadHomework(currentUser.id);
                     }
                 })
                 .catch(function(err) {
@@ -1656,6 +1704,7 @@
                     } else {
                         alert('✅ Задание удалено');
                         loadAllHomeworks();
+                        if (currentUser) loadHomework(currentUser.id);
                     }
                 })
                 .catch(function(err) {
@@ -1759,8 +1808,7 @@
             var totalTasks = 0;
 
             supabase
-                .from('students')
-                .select('*')
+                .from('students').select('*')
                 .then(function(r1) {
                     if (r1.error) { container.innerHTML = '❌ Ошибка'; return; }
                     totalStudents = r1.data ? r1.data.length : 0;
