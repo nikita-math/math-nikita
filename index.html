@@ -1144,7 +1144,7 @@
                 });
         }
 
-        // ===== ИСПРАВЛЕННАЯ ФУНКЦИЯ ЗАГРУЗКИ ВИДЕО =====
+        // ===== ФУНКЦИЯ ДОБАВЛЕНИЯ ВИДЕО (ИСПРАВЛЕННАЯ) =====
         function addVideo() {
             supabase
                 .from('video_sections')
@@ -1179,116 +1179,78 @@
                     var title = prompt('Введите название видео:');
                     if (!title) return;
 
-                    var typeChoice = prompt('Выберите тип видео:\n1 — Ссылка на YouTube\n2 — Загрузить свой MP4 файл');
-                    if (!typeChoice) return;
+                    var homework = prompt('Введите ДЗ к уроку (или Enter):');
 
-                    if (typeChoice === '1') {
-                        var url = prompt('Введите ссылку на YouTube:');
-                        if (!url) return;
-                        var homework = prompt('Введите ДЗ к уроку (или Enter):');
+                    // Создаём скрытый input для выбора файла
+                    var fileInput = document.createElement('input');
+                    fileInput.type = 'file';
+                    fileInput.accept = 'video/mp4,video/webm,video/ogg';
+                    fileInput.style.display = 'none';
+                    document.body.appendChild(fileInput);
 
-                        supabase
-                            .from('videos')
-                            .insert([{
-                                title: title,
-                                youtube_url: url,
-                                section_id: section.id,
-                                homework: homework || null,
-                                is_file: false
-                            }])
-                            .then(function(r) {
-                                if (r.error) {
-                                    alert('❌ Ошибка: ' + r.error.message);
+                    fileInput.onchange = function(e) {
+                        var file = e.target.files[0];
+                        if (!file) {
+                            document.body.removeChild(fileInput);
+                            return;
+                        }
+
+                        alert('⏳ Загрузка файла... Пожалуйста, подождите.');
+
+                        var path = 'videos/' + Date.now() + '_' + file.name;
+                        var storageRef = supabase.storage.from('videos');
+
+                        storageRef.upload(path, file)
+                            .then(function(uploadRes) {
+                                if (uploadRes.error) {
+                                    alert('❌ Ошибка загрузки файла: ' + uploadRes.error.message);
+                                    document.body.removeChild(fileInput);
+                                    return;
+                                }
+                                return storageRef.getPublicUrl(path);
+                            })
+                            .then(function(urlRes) {
+                                if (urlRes && urlRes.error) {
+                                    alert('❌ Ошибка получения ссылки: ' + urlRes.error.message);
+                                    document.body.removeChild(fileInput);
+                                    return;
+                                }
+                                var videoUrl = urlRes ? urlRes.data.publicUrl : null;
+                                if (!videoUrl) {
+                                    alert('❌ Не удалось получить ссылку на видео');
+                                    document.body.removeChild(fileInput);
+                                    return;
+                                }
+                                return supabase
+                                    .from('videos')
+                                    .insert([{
+                                        title: title,
+                                        video_url: videoUrl,
+                                        section_id: section.id,
+                                        homework: homework || null,
+                                        is_file: true
+                                    }]);
+                            })
+                            .then(function(insertRes) {
+                                document.body.removeChild(fileInput);
+                                if (insertRes && insertRes.error) {
+                                    alert('❌ Ошибка сохранения: ' + insertRes.error.message);
                                 } else {
-                                    alert('✅ Видео добавлено!');
+                                    alert('✅ Видео загружено и добавлено!');
                                     loadVideosAdmin();
                                     loadSectionsAndVideos();
                                 }
                             })
                             .catch(function(err) {
+                                document.body.removeChild(fileInput);
                                 alert('❌ Ошибка: ' + err.message);
+                                console.error(err);
                             });
+                    };
 
-                    } else if (typeChoice === '2') {
-                        // ===== ЗАГРУЗКА ФАЙЛА =====
-                        var fileInput = document.createElement('input');
-                        fileInput.type = 'file';
-                        fileInput.accept = 'video/mp4,video/webm,video/ogg';
-                        fileInput.style.display = 'none';
-                        document.body.appendChild(fileInput);
+                    // Открываем диалог выбора файла
+                    fileInput.click();
 
-                        fileInput.onchange = function(e) {
-                            var file = e.target.files[0];
-                            if (!file) {
-                                document.body.removeChild(fileInput);
-                                return;
-                            }
-
-                            var homework = prompt('Введите ДЗ к уроку (или Enter):');
-                            if (homework === null) {
-                                document.body.removeChild(fileInput);
-                                return;
-                            }
-
-                            alert('⏳ Загрузка файла... Пожалуйста, подождите.');
-
-                            var path = 'videos/' + Date.now() + '_' + file.name;
-                            var storageRef = supabase.storage.from('videos');
-
-                            storageRef.upload(path, file)
-                                .then(function(uploadRes) {
-                                    if (uploadRes.error) {
-                                        alert('❌ Ошибка загрузки файла: ' + uploadRes.error.message);
-                                        document.body.removeChild(fileInput);
-                                        return;
-                                    }
-                                    return storageRef.getPublicUrl(path);
-                                })
-                                .then(function(urlRes) {
-                                    if (urlRes && urlRes.error) {
-                                        alert('❌ Ошибка получения ссылки: ' + urlRes.error.message);
-                                        document.body.removeChild(fileInput);
-                                        return;
-                                    }
-                                    var videoUrl = urlRes ? urlRes.data.publicUrl : null;
-                                    if (!videoUrl) {
-                                        alert('❌ Не удалось получить ссылку на видео');
-                                        document.body.removeChild(fileInput);
-                                        return;
-                                    }
-                                    return supabase
-                                        .from('videos')
-                                        .insert([{
-                                            title: title,
-                                            video_url: videoUrl,
-                                            section_id: section.id,
-                                            homework: homework || null,
-                                            is_file: true
-                                        }]);
-                                })
-                                .then(function(insertRes) {
-                                    document.body.removeChild(fileInput);
-                                    if (insertRes && insertRes.error) {
-                                        alert('❌ Ошибка сохранения: ' + insertRes.error.message);
-                                    } else {
-                                        alert('✅ Видео загружено и добавлено!');
-                                        loadVideosAdmin();
-                                        loadSectionsAndVideos();
-                                    }
-                                })
-                                .catch(function(err) {
-                                    document.body.removeChild(fileInput);
-                                    alert('❌ Ошибка: ' + err.message);
-                                    console.error(err);
-                                });
-                        };
-
-                        // ОТКРЫВАЕМ ОКНО ВЫБОРА ФАЙЛА
-                        fileInput.click();
-
-                    } else {
-                        alert('Неверный выбор!');
-                    }
                 })
                 .catch(function(err) {
                     alert('Ошибка: ' + err.message);
