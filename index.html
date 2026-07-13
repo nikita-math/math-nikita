@@ -98,6 +98,13 @@
         .video-tabs button .num { display: inline-flex; align-items: center; justify-content: center; width: 30px; height: 30px; background: rgba(255,255,255,0.1); color: #b0c4de; border-radius: 50%; font-size: 14px; font-weight: 900; flex-shrink: 0; }
         .video-tabs button:hover .num { background: white; color: #302b63; }
 
+        /* ===== РАСПИСАНИЕ ===== */
+        .schedule-section { margin-top: 30px; }
+        .schedule-section h3 { font-size: 22px; margin-bottom: 16px; color: #ffffff; }
+        .schedule-item { padding: 12px; border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; margin-bottom: 12px; background: rgba(255,255,255,0.03); }
+        .schedule-item strong { color: #f5a623; }
+        .schedule-item .meta { color: #b0c4de; font-size: 14px; }
+
         #sectionPage {
             display: none;
             background: rgba(255,255,255,0.05);
@@ -225,6 +232,12 @@
             </div>
             <div id="homeworkList"><p>Загрузка...</p></div>
 
+            <!-- ===== РАСПИСАНИЕ ДЛЯ УЧЕНИКА ===== -->
+            <div class="schedule-section">
+                <h3>📅 Моё расписание</h3>
+                <div id="studentSchedule"><p>Загрузка...</p></div>
+            </div>
+
             <div class="video-section">
                 <h3>🎥 Видеоуроки по темам</h3>
 
@@ -250,6 +263,7 @@
                 <button data-tab="homeworks">📝 ДЗ</button>
                 <button data-tab="videos">🎥 Видео</button>
                 <button data-tab="tasks">📚 Задачи</button>
+                <button data-tab="schedule">📅 Расписание</button>
                 <button data-tab="stats">📊 Статистика</button>
             </div>
             <div class="admin-content active" id="tab-students">
@@ -267,6 +281,10 @@
             <div class="admin-content" id="tab-tasks">
                 <button class="admin-btn success" onclick="addTask()">➕ Добавить задачу</button>
                 <div id="tasksList" style="margin-top:15px;">Загрузка...</div>
+            </div>
+            <div class="admin-content" id="tab-schedule">
+                <button class="admin-btn success" onclick="addSchedule()">➕ Добавить занятие</button>
+                <div id="scheduleList" style="margin-top:15px;">Загрузка...</div>
             </div>
             <div class="admin-content" id="tab-stats">
                 <div id="statsContent" style="margin-top:15px;">Загрузка...</div>
@@ -328,17 +346,13 @@
 
         // ===== ОТКРЫТЬ РАЗДЕЛ =====
         function openSection(sectionId) {
-            console.log('Открываем раздел:', sectionId);
-
             mainContent.style.display = 'none';
             dashboard.style.display = 'none';
             adminPanel.style.display = 'none';
             sectionPage.classList.add('active');
-
             loadSectionContent(sectionId);
         }
 
-        // ===== ЗАГРУЗКА СОДЕРЖИМОГО РАЗДЕЛА =====
         async function loadSectionContent(sectionId) {
             var content = document.getElementById('sectionContent');
             content.innerHTML = '<div class="loading">⏳ Загрузка...</div>';
@@ -395,7 +409,6 @@
             }
         }
 
-        // ===== ВЕРНУТЬСЯ НАЗАД =====
         document.getElementById('backToDashboard').addEventListener('click', function() {
             sectionPage.classList.remove('active');
             mainContent.style.display = 'block';
@@ -405,7 +418,7 @@
             }
         });
 
-        // ===== ЗАГРУЗКА РАЗДЕЛОВ И ВИДЕО =====
+        // ===== ЗАГРУЗКА РАЗДЕЛОВ =====
         function loadSectionsAndVideos() {
             var tabsContainer1 = document.getElementById('videoTabsPart1');
             var tabsContainer2 = document.getElementById('videoTabsPart2');
@@ -518,6 +531,7 @@
                         }
 
                         loadHomework(user.id);
+                        loadStudentSchedule(user.id);
                         loadSectionsAndVideos();
                     } else {
                         resultDiv.className = 'result-error';
@@ -604,6 +618,216 @@
                 });
         }
 
+        // ===== РАСПИСАНИЕ ДЛЯ УЧЕНИКА =====
+        function loadStudentSchedule(studentId) {
+            var container = document.getElementById('studentSchedule');
+            container.innerHTML = '⏳ Загрузка...';
+
+            supabase
+                .from('schedule')
+                .select('*')
+                .eq('student_id', studentId)
+                .order('date', { ascending: true })
+                .order('time', { ascending: true })
+                .then(function(response) {
+                    if (response.error) {
+                        container.innerHTML = '❌ Ошибка загрузки расписания.';
+                        return;
+                    }
+
+                    var data = response.data || [];
+                    if (data.length === 0) {
+                        container.innerHTML = '📭 Нет занятий.';
+                        return;
+                    }
+
+                    var html = '';
+                    data.forEach(function(item) {
+                        var statusMap = {
+                            'pending': '⏳ Запланировано',
+                            'done': '✅ Проведено',
+                            'cancelled': '❌ Отменено'
+                        };
+                        var statusText = statusMap[item.status] || '⏳ Запланировано';
+                        html += `
+                            <div class="schedule-item">
+                                <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap;">
+                                    <div>
+                                        <strong>${item.topic}</strong>
+                                        <div class="meta">📅 ${item.date} в ${item.time}</div>
+                                    </div>
+                                    <span style="font-size:14px; color:#888;">${statusText}</span>
+                                </div>
+                            </div>
+                        `;
+                    });
+                    container.innerHTML = html;
+                })
+                .catch(function(err) {
+                    container.innerHTML = '❌ Ошибка: ' + err.message;
+                });
+        }
+
+        // ===== РАСПИСАНИЕ ДЛЯ АДМИНА =====
+        function loadScheduleAdmin() {
+            var container = document.getElementById('scheduleList');
+            container.innerHTML = '⏳ Загрузка...';
+
+            supabase
+                .from('schedule')
+                .select('*, students(name)')
+                .order('date', { ascending: true })
+                .order('time', { ascending: true })
+                .then(function(response) {
+                    if (response.error) {
+                        container.innerHTML = '❌ Ошибка: ' + response.error.message;
+                        return;
+                    }
+
+                    var data = response.data || [];
+                    if (data.length === 0) {
+                        container.innerHTML = '📭 Нет занятий';
+                        return;
+                    }
+
+                    var html = '<table class="admin-table"><tr><th>Ученик</th><th>Дата</th><th>Время</th><th>Тема</th><th>Статус</th><th>Действия</th></tr>';
+                    data.forEach(function(item) {
+                        var studentName = item.students ? item.students.name : '—';
+                        var statusMap = {
+                            'pending': '⏳ Запланировано',
+                            'done': '✅ Проведено',
+                            'cancelled': '❌ Отменено'
+                        };
+                        var statusText = statusMap[item.status] || '⏳ Запланировано';
+                        html += `
+                            <tr>
+                                <td>${studentName}</td>
+                                <td>${item.date}</td>
+                                <td>${item.time}</td>
+                                <td>${item.topic}</td>
+                                <td>${statusText}</td>
+                                <td>
+                                    <button class="admin-btn" onclick="updateScheduleStatus('${item.id}', 'done')">✅ Провести</button>
+                                    <button class="admin-btn danger" onclick="deleteSchedule('${item.id}')">🗑</button>
+                                </td>
+                            </tr>
+                        `;
+                    });
+                    html += '</table>';
+                    container.innerHTML = html;
+                })
+                .catch(function(err) {
+                    container.innerHTML = '❌ Ошибка: ' + err.message;
+                });
+        }
+
+        function addSchedule() {
+            supabase
+                .from('students')
+                .select('*')
+                .eq('role', 'student')
+                .then(function(response) {
+                    if (response.error) {
+                        alert('Ошибка загрузки учеников');
+                        return;
+                    }
+
+                    var students = response.data || [];
+                    if (students.length === 0) {
+                        alert('Нет учеников!');
+                        return;
+                    }
+
+                    var list = 'Выберите ученика:\n';
+                    students.forEach(function(s, i) {
+                        list += (i + 1) + '. ' + s.name + ' (' + s.email + ')\n';
+                    });
+
+                    var choice = prompt(list);
+                    if (!choice) return;
+
+                    var idx = parseInt(choice) - 1;
+                    if (idx < 0 || idx >= students.length) {
+                        alert('Неверный выбор!');
+                        return;
+                    }
+
+                    var student = students[idx];
+                    var date = prompt('Введите дату (ГГГГ-ММ-ДД):');
+                    if (!date) return;
+                    var time = prompt('Введите время (ЧЧ:ММ):');
+                    if (!time) return;
+                    var topic = prompt('Введите тему занятия:');
+                    if (!topic) return;
+
+                    var studentId = student.id || student.student_id || student.user_id;
+
+                    supabase
+                        .from('schedule')
+                        .insert([{
+                            student_id: studentId,
+                            date: date,
+                            time: time,
+                            topic: topic,
+                            status: 'pending'
+                        }])
+                        .then(function(r) {
+                            if (r.error) {
+                                alert('❌ Ошибка: ' + r.error.message);
+                            } else {
+                                alert('✅ Занятие добавлено!');
+                                loadScheduleAdmin();
+                                if (currentUser) loadStudentSchedule(currentUser.id);
+                            }
+                        })
+                        .catch(function(err) {
+                            alert('❌ Ошибка: ' + err.message);
+                        });
+                })
+                .catch(function(err) {
+                    alert('Ошибка: ' + err.message);
+                });
+        }
+
+        function updateScheduleStatus(id, status) {
+            supabase
+                .from('schedule')
+                .update({ status: status })
+                .eq('id', id)
+                .then(function(response) {
+                    if (response.error) {
+                        alert('❌ Ошибка: ' + response.error.message);
+                    } else {
+                        alert('✅ Статус обновлён');
+                        loadScheduleAdmin();
+                        if (currentUser) loadStudentSchedule(currentUser.id);
+                    }
+                })
+                .catch(function(err) {
+                    alert('❌ Ошибка: ' + err.message);
+                });
+        }
+
+        function deleteSchedule(id) {
+            if (!confirm('Удалить занятие?')) return;
+            supabase
+                .from('schedule')
+                .delete()
+                .eq('id', id)
+                .then(function(response) {
+                    if (response.error) {
+                        alert('❌ Ошибка: ' + response.error.message);
+                    } else {
+                        alert('✅ Занятие удалено');
+                        loadScheduleAdmin();
+                        if (currentUser) loadStudentSchedule(currentUser.id);
+                    }
+                })
+                .catch(function(err) {
+                    alert('❌ Ошибка: ' + err.message);
+                });
+        }
+
         // ===== ВЫХОД =====
         document.getElementById('logoutBtn').addEventListener('click', function() {
             document.getElementById('profileBlock').style.display = 'flex';
@@ -633,6 +857,7 @@
             loadAllHomeworks();
             loadVideosAdmin();
             loadTasks();
+            loadScheduleAdmin();
             loadStats();
         }
 
@@ -796,11 +1021,13 @@
                     if (!title) return;
                     var deadline = prompt('Введите срок (ГГГГ-ММ-ДД) или Enter:');
 
+                    var studentId = student.id || student.student_id || student.user_id;
+
                     supabase
                         .from('homeworks')
                         .insert([{
                             title: title,
-                            student_id: student.id,
+                            student_id: studentId,
                             status: 'pending',
                             deadline: deadline || null
                         }])
