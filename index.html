@@ -180,47 +180,48 @@
             <p>Подготовка к ЕГЭ по профильной математике на 90+ баллов</p>
         </header>
 
-        <!-- ===== ОСНОВНОЙ КОНТЕНТ ===== -->
-        <div id="mainContent">
-            <div class="profile">
-                <div class="profile-avatar">👨‍🏫</div>
-                <div class="profile-info">
-                    <h2>Никита</h2>
-                    <span class="badge">⭐ Репетитор со стажем 1.5 года</span>
-                    <p>Учусь в Московском энергетическом институте (МЭИ) на направлении «Ядерная физика». Готовлю учеников к ЕГЭ по профильной математике с 2025 года.</p>
-                    <ul>
-                        <li>10+ выпущенных учеников</li>
-                        <li>3 ученика набрали 100 баллов</li>
-                        <li>Автор собственной методики подготовки</li>
-                    </ul>
-                </div>
+        <!-- ===== АНКЕТА ===== -->
+        <div class="profile" id="profileBlock">
+            <div class="profile-avatar">👨‍🏫</div>
+            <div class="profile-info">
+                <h2>Никита</h2>
+                <span class="badge">⭐ Репетитор со стажем 1.5 года</span>
+                <p>Учусь в Московском энергетическом институте (МЭИ) на направлении «Ядерная физика». Готовлю учеников к ЕГЭ по профильной математике с 2025 года.</p>
+                <ul>
+                    <li>10+ выпущенных учеников</li>
+                    <li>3 ученика набрали 100 баллов</li>
+                    <li>Автор собственной методики подготовки</li>
+                </ul>
             </div>
+        </div>
 
-            <div class="contacts">
-                <h3>📬 Связаться со мной</h3>
-                <a href="tel:+79916834922">📞 +7 991 683-49-22</a>
-                <a href="https://t.me/Nikita_Lysikov" target="_blank">💬 Telegram</a>
-                <a href="mailto:nlysi6233@gmail.com">📧 nlysi6233@gmail.com</a>
-            </div>
+        <!-- ===== КОНТАКТЫ ===== -->
+        <div class="contacts" id="contactsBlock">
+            <h3>📬 Связаться со мной</h3>
+            <a href="tel:+79916834922">📞 +7 991 683-49-22</a>
+            <a href="https://t.me/Nikita_Lysikov" target="_blank">💬 Telegram</a>
+            <a href="mailto:nlysi6233@gmail.com">📧 nlysi6233@gmail.com</a>
+        </div>
 
-            <div class="task-catalog">
-                <h3>📚 Каталог задач</h3>
-                <div class="task-filter" id="taskFilter">
-                    <button class="active" data-topic="all">Все</button>
-                </div>
-                <div id="taskList">Загрузка...</div>
+        <!-- ===== КАТАЛОГ ЗАДАЧ ===== -->
+        <div class="task-catalog" id="taskCatalogBlock">
+            <h3>📚 Каталог задач</h3>
+            <div class="task-filter" id="taskFilter">
+                <button class="active" data-topic="all">Все</button>
             </div>
+            <div id="taskList">Загрузка...</div>
+        </div>
 
-            <div class="login-section" id="loginSection">
-                <h3>🔐 Войти в личный кабинет</h3>
-                <input type="email" id="email" placeholder="Email" value="test@mail.ru">
-                <input type="password" id="password" placeholder="Пароль" value="123456">
-                <button id="loginBtn">Войти</button>
-                <div id="result"></div>
-                <p style="margin-top: 14px; font-size: 14px; color: #888;">
-                    *Нет аккаунта? Напиши мне в Telegram — я добавлю тебя!
-                </p>
-            </div>
+        <!-- ===== ВХОД ===== -->
+        <div class="login-section" id="loginSection">
+            <h3>🔐 Войти в личный кабинет</h3>
+            <input type="email" id="email" placeholder="Email" value="test@mail.ru">
+            <input type="password" id="password" placeholder="Пароль" value="123456">
+            <button id="loginBtn">Войти</button>
+            <div id="result"></div>
+            <p style="margin-top: 14px; font-size: 14px; color: #888;">
+                *Нет аккаунта? Напиши мне в Telegram — я добавлю тебя!
+            </p>
         </div>
 
         <!-- ===== ЛИЧНЫЙ КАБИНЕТ ===== -->
@@ -246,7 +247,7 @@
             </div>
         </div>
 
-        <!-- ===== СТРАНИЦА РАЗДЕЛА ===== -->
+        <!-- ===== СТРАНИЦА РАЗДЕЛА (СКРЫТА) ===== -->
         <div id="sectionPage">
             <button class="back-btn" id="backToDashboard">← Назад к списку разделов</button>
             <div id="sectionContent">
@@ -329,7 +330,6 @@
         var resultDiv = document.getElementById('result');
         var homeworkList = document.getElementById('homeworkList');
         var welcomeMessage = document.getElementById('welcomeMessage');
-        var mainContent = document.getElementById('mainContent');
         var sectionPage = document.getElementById('sectionPage');
 
         // ===== КАТАЛОГ ЗАДАЧ =====
@@ -340,10 +340,21 @@
 
         // ===== ОТКРЫТЬ РАЗДЕЛ =====
         function openSection(sectionId) {
-            mainContent.style.display = 'none';
-            dashboard.style.display = 'none';
-            adminPanel.style.display = 'none';
+            console.log('Открываем раздел:', sectionId);
+
+            // Скрываем всё, что не нужно
+            document.getElementById('profileBlock').style.display = 'none';
+            document.getElementById('contactsBlock').style.display = 'none';
+            document.getElementById('taskCatalogBlock').style.display = 'none';
+            document.getElementById('loginSection').style.display = 'none';
+            document.getElementById('dashboard').style.display = 'none';
+            document.getElementById('adminPanel').style.display = 'none';
+
+            // Показываем страницу раздела
             sectionPage.classList.add('active');
+            sectionPage.style.display = 'block';
+
+            // Загружаем данные раздела
             loadSectionContent(sectionId);
         }
 
@@ -407,10 +418,15 @@
         // ===== ВЕРНУТЬСЯ НАЗАД =====
         document.getElementById('backToDashboard').addEventListener('click', function() {
             sectionPage.classList.remove('active');
-            mainContent.style.display = 'block';
-            dashboard.style.display = 'block';
+            sectionPage.style.display = 'none';
+
+            document.getElementById('profileBlock').style.display = 'flex';
+            document.getElementById('contactsBlock').style.display = 'block';
+            document.getElementById('taskCatalogBlock').style.display = 'block';
+            document.getElementById('loginSection').style.display = 'block';
+            document.getElementById('dashboard').style.display = 'block';
             if (currentUser && currentUser.role === 'admin') {
-                adminPanel.style.display = 'block';
+                document.getElementById('adminPanel').style.display = 'block';
             }
         });
 
@@ -520,16 +536,16 @@
                         resultDiv.className = 'result-success';
                         resultDiv.innerHTML = '✅ Привет, ' + user.name + '!';
 
-                        document.querySelector('.profile').style.display = 'none';
-                        document.querySelector('.contacts').style.display = 'none';
-                        document.querySelector('.task-catalog').style.display = 'none';
-                        loginSection.style.display = 'none';
+                        document.getElementById('profileBlock').style.display = 'none';
+                        document.getElementById('contactsBlock').style.display = 'none';
+                        document.getElementById('taskCatalogBlock').style.display = 'none';
+                        document.getElementById('loginSection').style.display = 'none';
 
-                        dashboard.style.display = 'block';
+                        document.getElementById('dashboard').style.display = 'block';
                         welcomeMessage.textContent = '👋 Привет, ' + user.name + '!';
 
                         if (user.role === 'admin') {
-                            adminPanel.style.display = 'block';
+                            document.getElementById('adminPanel').style.display = 'block';
                             loadAdminData();
                         }
 
@@ -622,12 +638,12 @@
 
         // ===== ВЫХОД =====
         document.getElementById('logoutBtn').addEventListener('click', function() {
-            document.querySelector('.profile').style.display = 'flex';
-            document.querySelector('.contacts').style.display = 'block';
-            document.querySelector('.task-catalog').style.display = 'block';
-            loginSection.style.display = 'block';
-            dashboard.style.display = 'none';
-            adminPanel.style.display = 'none';
+            document.getElementById('profileBlock').style.display = 'flex';
+            document.getElementById('contactsBlock').style.display = 'block';
+            document.getElementById('taskCatalogBlock').style.display = 'block';
+            document.getElementById('loginSection').style.display = 'block';
+            document.getElementById('dashboard').style.display = 'none';
+            document.getElementById('adminPanel').style.display = 'none';
             resultDiv.innerHTML = '';
             resultDiv.className = '';
             currentUser = null;
