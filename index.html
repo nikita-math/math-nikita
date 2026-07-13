@@ -247,7 +247,7 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <script>
-        // ===== ПРАВИЛЬНЫЕ НАСТРОЙКИ SUPABASE =====
+        // ===== НАСТРОЙКИ SUPABASE =====
         var SUPABASE_URL = 'https://liqqdixrtvnrrvgkfvbn.supabase.co';
         var SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxpcXFkaXhydHZucnJ2Z2tmdmJuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODM4NTMzMzksImV4cCI6MjA5OTQyOTMzOX0.Jqrnt5DOKNURe5HERWIhMvc6KChurAg5iHkfMBw4P2A';
         var supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
@@ -264,15 +264,11 @@
         var homeworkList = document.getElementById('homeworkList');
         var welcomeMessage = document.getElementById('welcomeMessage');
 
-        // ===== КАТАЛОГ ЗАДАЧ (ПРОСТАЯ ВЕРСИЯ, БЕЗ tasks) =====
+        // ===== КАТАЛОГ ЗАДАЧ (ПРОСТАЯ ВЕРСИЯ) =====
         function loadTaskCatalog() {
             var container = document.getElementById('taskList');
             container.innerHTML = '📭 Каталог задач пока пуст. Скоро добавлю!';
         }
-
-        document.getElementById('taskFilter').addEventListener('click', function(e) {
-            // Заглушка
-        });
 
         // ===== ЗАГРУЗКА РАЗДЕЛОВ И ВИДЕО =====
         function loadSectionsAndVideos() {
@@ -287,7 +283,7 @@
             supabase
                 .from('video_sections')
                 .select('*')
-                .order('order_num', { ascending: true })
+                .order('id', { ascending: true })
                 .then(function(response) {
                     if (response.error) {
                         tabsContainer.innerHTML = '❌ Ошибка: ' + response.error.message;
@@ -429,7 +425,6 @@
                         }
 
                         loadHomework(user.id);
-                        // Загружаем разделы и видео!
                         loadSectionsAndVideos();
                     } else {
                         resultDiv.className = 'result-error';
@@ -816,7 +811,7 @@
             supabase
                 .from('video_sections')
                 .select('*')
-                .order('order_num', { ascending: true })
+                .order('id', { ascending: true })
                 .then(function(response) {
                     if (response.error) {
                         alert('Ошибка загрузки разделов');
@@ -1070,34 +1065,16 @@
                 });
         }
 
-        // ===== ЗАГРУЗКА ПРИ СТАРТЕ =====
+        // ===== ЗАГРУЗКА ТЕМ ДЛЯ ФИЛЬТРА =====
         function loadTopics() {
-            supabase
-                .from('tasks')
-                .select('topic')
-                .then(function(response) {
-                    if (response.error) return;
-                    var topics = response.data || [];
-                    var unique = {};
-                    for (var i = 0; i < topics.length; i++) {
-                        unique[topics[i].topic] = true;
-                    }
-                    var filter = document.getElementById('taskFilter');
-                    for (var key in unique) {
-                        var btn = document.createElement('button');
-                        btn.dataset.topic = key;
-                        btn.textContent = key;
-                        filter.appendChild(btn);
-                    }
-                })
-                .catch(function(err) {
-                    console.error(err);
-                });
+            // Заглушка
         }
 
         // ===== ЗАПУСК =====
         loadTaskCatalog();
         loadTopics();
+
+        console.log('Сайт загружен. Ожидаем входа.');
     </script>
 
 </body>
