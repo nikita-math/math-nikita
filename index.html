@@ -2,113 +2,151 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>Диагностика Supabase</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Проверка таблицы</title>
     <style>
-        body { font-family: Arial; max-width: 600px; margin: 50px auto; padding: 20px; background: #f5f5f5; }
+        body { font-family: Arial; max-width: 700px; margin: 40px auto; padding: 20px; background: #f0f4ff; }
         .box { background: white; padding: 20px; border-radius: 12px; margin-bottom: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
         .success { color: green; font-weight: bold; }
         .error { color: red; font-weight: bold; }
         .warning { color: orange; font-weight: bold; }
         pre { background: #f0f0f0; padding: 10px; border-radius: 8px; overflow-x: auto; font-size: 13px; }
-        button { background: #302b63; color: white; border: none; padding: 12px 24px; border-radius: 8px; font-size: 16px; cursor: pointer; }
+        button { background: #302b63; color: white; border: none; padding: 12px 24px; border-radius: 8px; font-size: 16px; cursor: pointer; margin: 5px; }
         button:hover { background: #1a1a2e; }
     </style>
 </head>
 <body>
 
-    <h1>🔍 Диагностика Supabase</h1>
+    <h1>🔍 Проверка таблицы video_sections</h1>
 
     <div class="box">
-        <h3>📋 Проверка таблицы <code>video_sections</code></h3>
+        <h3>📋 Таблица <code>video_sections</code></h3>
         <button id="checkBtn">Проверить</button>
         <div id="output" style="margin-top: 15px;"></div>
     </div>
 
     <div class="box">
-        <h3>📋 Список всех таблиц</h3>
+        <h3>📋 Список ВСЕХ таблиц в базе</h3>
         <button id="listBtn">Показать все таблицы</button>
         <div id="tablesOutput" style="margin-top: 15px;"></div>
     </div>
 
+    <div class="box">
+        <h3>📋 Проверка подключения к Supabase</h3>
+        <button id="pingBtn">Пинг</button>
+        <div id="pingOutput" style="margin-top: 15px;"></div>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
-        // ===== ОДНО ПОДКЛЮЧЕНИЕ =====
-        const SUPABASE_URL = 'https://liqqdixrtvnrrvgkfvbn.supabase.co';
-        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxpcXFkaXhydHZucnJ2Z2tmdmJuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODM4NTMzMzksImV4cCI6MjA5OTQyOTMzOX0.Jqrnt5DOKNURe5HERWIhMvc6KChurAg5iHkfMBw4P2A';
-        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        // ===== ПОДКЛЮЧЕНИЕ =====
+        var SUPABASE_URL = 'https://liqqdixrtvnrrvgkfvbn.supabase.co';
+        var SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxpcXFkaXhydHZucnJ2Z2tmdmJuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODM4NTMzMzksImV4cCI6MjA5OTQyOTMzOX0.Jqrnt5DOKNURe5HERWIhMvc6KChurAg5iHkfMBw4P2A';
+        var supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        const output = document.getElementById('output');
-        const tablesOutput = document.getElementById('tablesOutput');
+        // ===== ЭЛЕМЕНТЫ =====
+        var output = document.getElementById('output');
+        var tablesOutput = document.getElementById('tablesOutput');
+        var pingOutput = document.getElementById('pingOutput');
 
-        // ===== ПРОВЕРКА ТАБЛИЦЫ video_sections =====
+        // ===== 1. ПРОВЕРКА ТАБЛИЦЫ video_sections =====
         document.getElementById('checkBtn').addEventListener('click', async function() {
             output.innerHTML = '⏳ Проверяю...';
 
             try {
-                const { data, error, status } = await supabase
+                var result = await supabase
                     .from('video_sections')
                     .select('*');
 
-                if (error) {
+                if (result.error) {
                     output.innerHTML = `
-                        <div class="error">❌ Ошибка: ${error.message}</div>
+                        <div class="error">❌ Ошибка: ${result.error.message}</div>
                         <div style="margin-top:10px; background:#f8d7da; padding:10px; border-radius:8px;">
-                            <strong>Код ошибки:</strong> ${error.code || 'нет'}<br>
-                            <strong>Статус:</strong> ${status}<br>
-                            <strong>Подробности:</strong> ${JSON.stringify(error, null, 2)}
+                            <strong>Код:</strong> ${result.error.code || 'нет'}<br>
+                            <strong>Подробности:</strong> ${JSON.stringify(result.error, null, 2)}
                         </div>
                     `;
                     return;
                 }
 
-                if (!data || data.length === 0) {
+                var data = result.data || [];
+                if (data.length === 0) {
                     output.innerHTML = `
-                        <div class="warning">⚠️ Таблица video_sections существует, но в ней нет данных (0 записей)</div>
+                        <div class="warning">⚠️ Таблица video_sections существует, но в ней НЕТ ДАННЫХ (0 записей)</div>
                     `;
                     return;
                 }
 
-                let html = `<div class="success">✅ Таблица video_sections найдена! Записей: ${data.length}</div>`;
-                html += `<pre>${JSON.stringify(data, null, 2)}</pre>`;
+                var html = '<div class="success">✅ Таблица video_sections найдена! Записей: ' + data.length + '</div>';
+                html += '<pre>' + JSON.stringify(data, null, 2) + '</pre>';
                 output.innerHTML = html;
 
             } catch (err) {
-                output.innerHTML = `<div class="error">❌ Критическая ошибка: ${err.message}</div>`;
+                output.innerHTML = '<div class="error">❌ Ошибка: ' + err.message + '</div>';
             }
         });
 
-        // ===== ПОКАЗАТЬ ВСЕ ТАБЛИЦЫ =====
+        // ===== 2. СПИСОК ВСЕХ ТАБЛИЦ =====
         document.getElementById('listBtn').addEventListener('click', async function() {
-            tablesOutput.innerHTML = '⏳ Загружаю список таблиц...';
+            tablesOutput.innerHTML = '⏳ Загружаю...';
 
             try {
-                const { data, error } = await supabase
+                var result = await supabase
                     .from('information_schema.tables')
                     .select('table_name, table_schema')
                     .eq('table_schema', 'public');
 
-                if (error) {
-                    tablesOutput.innerHTML = `<div class="error">❌ Ошибка: ${error.message}</div>`;
+                if (result.error) {
+                    tablesOutput.innerHTML = '<div class="error">❌ Ошибка: ' + result.error.message + '</div>';
                     return;
                 }
 
-                if (!data || data.length === 0) {
-                    tablesOutput.innerHTML = `<div class="warning">⚠️ Нет таблиц в схеме public</div>`;
+                var data = result.data || [];
+                if (data.length === 0) {
+                    tablesOutput.innerHTML = '<div class="warning">⚠️ Нет таблиц в схеме public</div>';
                     return;
                 }
 
-                let html = `<div class="success">✅ Найдено таблиц: ${data.length}</div>`;
-                html += `<ul>`;
-                data.forEach(table => {
-                    html += `<li><strong>${table.table_name}</strong> (схема: ${table.table_schema})</li>`;
+                var html = '<div class="success">✅ Найдено таблиц: ' + data.length + '</div><ul>';
+                data.forEach(function(table) {
+                    html += '<li><strong>' + table.table_name + '</strong> (схема: ' + table.table_schema + ')</li>';
                 });
-                html += `</ul>`;
+                html += '</ul>';
                 tablesOutput.innerHTML = html;
 
             } catch (err) {
-                tablesOutput.innerHTML = `<div class="error">❌ Ошибка: ${err.message}</div>`;
+                tablesOutput.innerHTML = '<div class="error">❌ Ошибка: ' + err.message + '</div>';
             }
         });
+
+        // ===== 3. ПИНГ (проверка подключения) =====
+        document.getElementById('pingBtn').addEventListener('click', async function() {
+            pingOutput.innerHTML = '⏳ Проверяю подключение...';
+
+            try {
+                var start = Date.now();
+                var result = await supabase
+                    .from('students')
+                    .select('count', { count: 'exact', head: true });
+
+                var time = Date.now() - start;
+
+                if (result.error) {
+                    pingOutput.innerHTML = '<div class="error">❌ Ошибка подключения: ' + result.error.message + '</div>';
+                    return;
+                }
+
+                pingOutput.innerHTML = '<div class="success">✅ Подключение работает! (время: ' + time + ' мс)</div>';
+
+            } catch (err) {
+                pingOutput.innerHTML = '<div class="error">❌ Ошибка: ' + err.message + '</div>';
+            }
+        });
+
+        // ===== АВТОМАТИЧЕСКАЯ ПРОВЕРКА ПРИ ЗАГРУЗКЕ =====
+        setTimeout(function() {
+            document.getElementById('checkBtn').click();
+        }, 500);
     </script>
 
 </body>
