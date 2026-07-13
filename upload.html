@@ -46,7 +46,6 @@
         const videoTitle = document.getElementById('videoTitle');
         const homeworkInput = document.getElementById('homeworkInput');
 
-        // ===== ЗАГРУЗКА РАЗДЕЛОВ =====
         async function loadSections() {
             const { data, error } = await supabase
                 .from('video_sections')
@@ -68,7 +67,6 @@
             });
         }
 
-        // ===== ЗАГРУЗКА ВИДЕО =====
         document.getElementById('uploadBtn').addEventListener('click', async function() {
             const sectionId = sectionSelect.value;
             const title = videoTitle.value.trim();
@@ -83,7 +81,6 @@
             status.className = 'info';
 
             try {
-                // 1. Загружаем файл в Storage
                 const path = 'videos/' + Date.now() + '_' + file.name;
                 const { error: uploadError } = await supabase.storage
                     .from('videos')
@@ -95,14 +92,12 @@
                     return;
                 }
 
-                // 2. Получаем публичную ссылку
                 const { data: urlData } = supabase.storage
                     .from('videos')
                     .getPublicUrl(path);
 
                 const videoUrl = urlData.publicUrl;
 
-                // 3. Сохраняем в базу
                 const { error: insertError } = await supabase
                     .from('videos')
                     .insert([{
@@ -122,7 +117,6 @@
                 status.innerHTML = '✅ Видео успешно загружено!';
                 status.className = 'success';
 
-                // Очищаем поля
                 videoTitle.value = '';
                 fileInput.value = '';
                 homeworkInput.value = '';
