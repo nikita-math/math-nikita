@@ -1,1 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Тест</title>
+</head>
+<body>
+    <h1>Тест</h1>
+    <div id="output"></div>
 
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        const SUPABASE_URL = 'https://liqqdixrtvnrrvgkfvbn.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxpcXFkaXhydHZucnJ2Z2tmdmJuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODM4NTMzMzksImV4cCI6MjA5OTQyOTMzOX0.Jqrnt5DOKNURe5HERWIhMvc6KChurAg5iHkfMBw4P2A';
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        async function test() {
+            const out = document.getElementById('output');
+            const { data, error } = await supabase.from('video_sections').select('*').order('order_num');
+            if (error) { out.innerHTML = '❌ Ошибка: ' + error.message; return; }
+            if (!data || data.length === 0) { out.innerHTML = '⚠️ Нет разделов'; return; }
+            let html = '<h2>Разделы</h2><ul>';
+            data.forEach(s => {
+                html += `<li><strong>${s.id}</strong> - ${s.name}</li>`;
+            });
+            html += '</ul>';
+            out.innerHTML = html;
+        }
+        test();
+    </script>
+</body>
+</html>
