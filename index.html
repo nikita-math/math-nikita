@@ -98,7 +98,6 @@
         .video-tabs button .num { display: inline-flex; align-items: center; justify-content: center; width: 30px; height: 30px; background: rgba(255,255,255,0.1); color: #b0c4de; border-radius: 50%; font-size: 14px; font-weight: 900; flex-shrink: 0; }
         .video-tabs button:hover .num { background: white; color: #302b63; }
 
-        /* ===== РАСПИСАНИЕ ===== */
         .schedule-section { margin-top: 30px; }
         .schedule-section h3 { font-size: 22px; margin-bottom: 16px; color: #ffffff; }
         .schedule-table-wrap { overflow-x: auto; }
@@ -445,8 +444,7 @@
                 star.style.width = size + 'px';
                 star.style.height = size + 'px';
                 star.style.left = Math.random() * 100 + '%';
-                var top = Math.random() * 100;
-                star.style.top = top + '%';
+                star.style.top = Math.random() * 100 + '%';
                 star.style.setProperty('--duration', (Math.random() * 3 + 2) + 's');
                 star.style.animationDelay = (Math.random() * 3) + 's';
                 container.appendChild(star);
@@ -534,6 +532,7 @@
                         var isFile = v.is_file || false;
                         var videoUrl = v.video_url || v.youtube_url || '#';
                         var title = v.title || 'Видео';
+                        var homework = v.homework || '';
 
                         html += '<div class="video-item">';
 
@@ -566,10 +565,10 @@
 
                         html += `<span class="video-title">🎬 ${title}</span>`;
 
-                        if (v.homework) {
+                        if (homework) {
                             html += `
                                 <div class="video-homework">
-                                    <strong>📝 ДЗ к уроку:</strong> ${v.homework}
+                                    <strong>📝 ДЗ к уроку:</strong> ${homework}
                                 </div>
                             `;
                         }
@@ -1147,7 +1146,7 @@
                 });
         }
 
-        // ===== ФУНКЦИЯ ЗАГРУЗКИ ВИДЕО (ПОЛНОСТЬЮ ИЗ upload.html) =====
+        // ===== ФУНКЦИЯ ДОБАВЛЕНИЯ ВИДЕО (YouTube + MP4 + ДЗ) =====
         function addVideo() {
             supabase
                 .from('video_sections')
