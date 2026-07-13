@@ -95,11 +95,13 @@
         var SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxpcXFkaXhydHZucnJ2Z2tmdmJuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODM4NTMzMzksImV4cCI6MjA5OTQyOTMzOX0.Jqrnt5DOKNURe5HERWIhMvc6KChurAg5iHkfMBw4P2A';
         var supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
+        // ===== ПОЛУЧАЕМ ID РАЗДЕЛА ИЗ URL =====
         var urlParams = new URLSearchParams(window.location.search);
         var sectionId = urlParams.get('id');
 
         var content = document.getElementById('sectionContent');
 
+        // ===== ЗАГРУЗКА ДАННЫХ =====
         async function loadSection() {
             if (!sectionId) {
                 content.innerHTML = '<div class="empty">❌ Раздел не найден</div>';
@@ -109,6 +111,7 @@
             content.innerHTML = '<div class="loading">⏳ Загрузка...</div>';
 
             try {
+                // Получаем информацию о разделе
                 var sectionResult = await supabase
                     .from('video_sections')
                     .select('*')
@@ -122,6 +125,7 @@
 
                 var section = sectionResult.data;
 
+                // Получаем видео для этого раздела
                 var videosResult = await supabase
                     .from('videos')
                     .select('*')
@@ -130,6 +134,7 @@
 
                 var videos = videosResult.data || [];
 
+                // Рендерим
                 var html = '<h1 class="section-title">' + section.name + '</h1>';
 
                 if (videos.length === 0) {
