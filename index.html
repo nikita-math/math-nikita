@@ -15,6 +15,20 @@
 
         .container { max-width: 1100px; margin: 0 auto; padding: 40px 20px; }
 
+        /* ===== ДИАГНОСТИКА ===== */
+        .debug-box {
+            background: #fff3cd;
+            border: 2px solid #856404;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 12px;
+            font-size: 16px;
+        }
+        .debug-box strong { color: #856404; }
+        .debug-box .success { color: #155724; }
+        .debug-box .error { color: #721c24; }
+        .debug-box .warning { color: #856404; }
+
         .profile { background: white; border-radius: 24px; padding: 40px; box-shadow: 0 10px 40px rgba(0,0,0,0.08); display: flex; flex-wrap: wrap; gap: 40px; align-items: center; margin-bottom: 40px; }
         .profile-avatar { width: 150px; height: 150px; border-radius: 50%; background: linear-gradient(135deg, #667eea, #764ba2); display: flex; align-items: center; justify-content: center; font-size: 70px; color: white; flex-shrink: 0; }
         .profile-info h2 { font-size: 32px; color: #1a1a2e; }
@@ -150,6 +164,12 @@
 
     <div class="container">
 
+        <!-- ===== ДИАГНОСТИЧЕСКИЙ БЛОК ===== -->
+        <div class="debug-box">
+            <strong>🛠️ ДИАГНОСТИКА ПОДКЛЮЧЕНИЯ К БАЗЕ ДАННЫХ</strong>
+            <div id="debugOutput">⏳ Проверка...</div>
+        </div>
+
         <div class="profile">
             <div class="profile-avatar">👨‍🏫</div>
             <div class="profile-info">
@@ -263,6 +283,41 @@
         var resultDiv = document.getElementById('result');
         var homeworkList = document.getElementById('homeworkList');
         var welcomeMessage = document.getElementById('welcomeMessage');
+
+        // ===== ДИАГНОСТИКА =====
+        async function runDiagnostics() {
+            var output = document.getElementById('debugOutput');
+            output.innerHTML = '⏳ Проверка подключения к Supabase...';
+
+            try {
+                var { data, error, status } = await supabase
+                    .from('video_sections')
+                    .select('*')
+                    .limit(5);
+
+                if (error) {
+                    output.innerHTML = '<span class="error">❌ Ошибка: ' + error.message + ' (Статус: ' + status + ')</span>';
+                    return;
+                }
+
+                if (!data || data.length === 0) {
+                    output.innerHTML = '<span class="warning">⚠️ Таблица video_sections есть, но данных нет (0 записей)</span>';
+                    return;
+                }
+
+                var html = '<span class="success">✅ Подключение работает! Найдено записей в таблице: ' + data.length + '</span><br>';
+                html += '<span style="font-size:14px; color:#555;">Первые 5 записей: ';
+                data.forEach(function(row, i) {
+                    html += 'ID: ' + row.id + ' → ' + row.name;
+                    if (i < data.length - 1) html += ' | ';
+                });
+                html += '</span>';
+                output.innerHTML = html;
+
+            } catch (err) {
+                output.innerHTML = '<span class="error">❌ Критическая ошибка: ' + err.message + '</span>';
+            }
+        }
 
         // ===== КАТАЛОГ ЗАДАЧ (ПРОСТАЯ ВЕРСИЯ) =====
         function loadTaskCatalog() {
@@ -1073,6 +1128,9 @@
         // ===== ЗАПУСК =====
         loadTaskCatalog();
         loadTopics();
+
+        // Запускаем диагностику после загрузки
+        setTimeout(runDiagnostics, 1000);
 
         console.log('Сайт загружен. Ожидаем входа.');
     </script>
