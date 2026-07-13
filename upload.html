@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Загрузка видео</title>
+    <style>
+        body { font-family: Arial; background: #0b0e1a; color: #fff; max-width: 600px; margin: 50px auto; padding: 20px; }
+        input, select, button { display: block; width: 100%; padding: 12px; margin: 10px 0; border-radius: 8px; border: 1px solid #444; background: #1a1a2e; color: #fff; font-size: 16px; }
+        button { background: #302b63; cursor: pointer; }
+        button:hover { background: #667eea; }
+        #status { margin-top: 20px; padding: 15px; border-radius: 8px; }
+        .success { background: #1e8449; color: #fff; }
+        .error { background: #922b21; color: #fff; }
+        .info { background: #1a5276; color: #fff; }
+    </style>
+</head>
+<body>
+
+    <h1>🎥 Загрузка видео</h1>
+
+    <select id="sectionSelect">
+        <option value="">Выберите раздел...</option>
+    </select>
+
+    <input type="text" id="videoTitle" placeholder="Название видео">
+
+    <input type="file" id="fileInput" accept="video/mp4,video/webm">
+
+    <input type="text" id="homeworkInput" placeholder="ДЗ к уроку (необязательно)">
+
+    <button id="uploadBtn">⬆ Загрузить видео</button>
+
+    <div id="status">Готов к загрузке</div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        // ===== ПОДКЛЮЧЕНИЕ =====
+        const SUPABASE_URL = 'https://liqqdixrtvnrrvgkfvbn.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxpcXFkaXhydHZucnJ2Z2tmdmJuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODM4NTMzMzksImV4cCI6MjA5OTQyOTMzOX0.Jqrnt5DOKNURe5HERWIhMvc6KChurAg5iHkfMBw4P2A';
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        const status = document.getElementById('status');
+        const sectionSelect = document.getElementById('sectionSelect');
+        const fileInput = document.getElementById('fileInput');
+        const videoTitle = document.getElementById('videoTitle');
+        const homeworkInput = document.getElementById('homeworkInput');
+
+        // ===== ЗАГРУЗКА РАЗДЕЛОВ =====
+        async function loadSections() {
+            const { data, error } = await supabase
+                .from('video_sections')
+                .select('*')
+                .order('order_num');
+
+            if (error) {
+                status.innerHTML = '❌ Ошибка загрузки разделов: ' + error.message;
+                status.className = 'error';
+                return;
+            }
+
+            sectionSelect.innerHTML = '<option value="">Выберите раздел...</option>';
+            data.forEach(s => {
+                const opt = document.createElement('option');
+                opt.value = s.id;
+                opt.textContent = s.name;
+                sectionSelect.appendChild(opt);
+            });
+        }
+
+        // ===== ЗАГРУЗКА ВИДЕО =====
+        document.getElementById('uploadBtn').addEventListener('click', async function() {
+            const sectionId = sectionSelect.value;
+            const title = videoTitle.value.trim();
+            const file = fileInput.files[0];
+            const homework = homeworkInput.value.trim();
+
+            if (!sectionId) { status.innerHTML = '❌ Выберите раздел'; status.className = 'error'; return; }
+            if (!title) { status.innerHTML = '❌ Введите название видео'; status.className = 'error'; return; }
+            if (!file) { status.innerHTML = '❌ Выберите файл'; status.className = 'error'; return; }
+
+            status.innerHTML = '⏳ Загрузка...';
+            status.className = 'info';
+
+            try {
+                // 1. Загружаем файл в Storage
+                const path = 'videos/' + Date.now() + '_' + file.name;
+                const { error: uploadError } = await supabase.storage
+                    .from('videos')
+                    .upload(path, file);
+
+                if (uploadError) {
+                    status.innerHTML = '❌ Ошибка загрузки файла: ' + uploadError.message;
+                    status.className = 'error';
+                    return;
+                }
+
+                // 2. Получаем публичную ссылку
+                const { data: urlData } = supabase.storage
+                    .from('videos')
+                    .getPublicUrl(path);
+
+                const videoUrl = urlData.publicUrl;
+
+                // 3. Сохраняем в базу
+                const { error: insertError } = await supabase
+                    .from('videos')
+                    .insert([{
+                        title: title,
+                        video_url: videoUrl,
+                        section_id: parseInt(sectionId),
+                        homework: homework || null,
+                        is_file: true
+                    }]);
+
+                if (insertError) {
+                    status.innerHTML = '❌ Ошибка сохранения: ' + insertError.message;
+                    status.className = 'error';
+                    return;
+                }
+
+                status.innerHTML = '✅ Видео успешно загружено!';
+                status.className = 'success';
+
+                // Очищаем поля
+                videoTitle.value = '';
+                fileInput.value = '';
+                homeworkInput.value = '';
+
+            } catch (err) {
+                status.innerHTML = '❌ Ошибка: ' + err.message;
+                status.className = 'error';
+                console.error(err);
+            }
+        });
+
+        loadSections();
+    </script>
+
+</body>
+</html>
