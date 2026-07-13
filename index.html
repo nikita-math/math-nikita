@@ -1146,7 +1146,7 @@
                 });
         }
 
-        // ===== ИСПРАВЛЕННАЯ ФУНКЦИЯ ЗАГРУЗКИ ВИДЕО (ИЗ UPLOAD.HTML) =====
+        // ===== ИСПРАВЛЕННАЯ ФУНКЦИЯ ЗАГРУЗКИ ВИДЕО =====
         function addVideo() {
             supabase
                 .from('video_sections')
@@ -1164,7 +1164,6 @@
                         return;
                     }
 
-                    // 1. ВЫБОР РАЗДЕЛА
                     var list = 'Выберите раздел:\n';
                     for (var i = 0; i < sections.length; i++) {
                         list += (i + 1) + '. ' + sections[i].name + '\n';
@@ -1179,16 +1178,13 @@
                     }
                     var section = sections[idx];
 
-                    // 2. НАЗВАНИЕ ВИДЕО
                     var title = prompt('Введите название видео:');
                     if (!title) return;
 
-                    // 3. ВЫБОР ТИПА
                     var typeChoice = prompt('Выберите тип видео:\n1 — Ссылка на YouTube\n2 — Загрузить свой MP4 файл');
                     if (!typeChoice) return;
 
                     if (typeChoice === '1') {
-                        // === YOUTUBE ССЫЛКА ===
                         var url = prompt('Введите ссылку на YouTube:');
                         if (!url) return;
                         var homework = prompt('Введите ДЗ к уроку (или Enter):');
@@ -1216,7 +1212,6 @@
                             });
 
                     } else if (typeChoice === '2') {
-                        // === ЗАГРУЗКА СВОЕГО ФАЙЛА ===
                         var homework = prompt('Введите ДЗ к уроку (или Enter):');
 
                         var fileInput = document.createElement('input');
