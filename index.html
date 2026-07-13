@@ -219,7 +219,6 @@
         #sectionPage .back-btn:hover { color: #ffffff; }
         #sectionPage .section-title { font-size: 32px; color: #f5a623; margin-bottom: 30px; text-align: center; text-shadow: 0 0 30px rgba(245, 166, 35, 0.2); }
 
-        /* ===== ВИДЕО ПЛЕЕР ===== */
         .video-player-wrapper {
             position: relative;
             padding-bottom: 56.25%;
@@ -269,7 +268,6 @@
             font-size: 16px;
         }
         .video-item .video-homework strong { color: #ffffff; }
-        .video-item .empty { color: #666; font-style: italic; font-size: 18px; text-align: center; padding: 40px; }
 
         #adminPanel { background: rgba(255,255,255,0.05); backdrop-filter: blur(10px); border-radius: 24px; padding: 30px 40px; border: 1px solid rgba(255,255,255,0.1); display: none; margin-top: 40px; }
         .admin-tabs { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 15px; }
@@ -537,7 +535,6 @@
 
                         html += '<div class="video-item">';
 
-                        // Если это загруженный файл
                         if (isFile && videoUrl && videoUrl !== '#') {
                             html += `
                                 <div class="video-player-wrapper">
@@ -547,18 +544,14 @@
                                     </video>
                                 </div>
                             `;
-                        }
-                        // Если это YouTube ссылка
-                        else if (videoUrl && videoUrl !== '#' && videoUrl.includes('youtube.com')) {
+                        } else if (videoUrl && videoUrl !== '#' && videoUrl.includes('youtube.com')) {
                             var embedUrl = videoUrl.replace('watch?v=', 'embed/');
                             html += `
                                 <div class="video-player-wrapper">
                                     <iframe src="${embedUrl}" allowfullscreen></iframe>
                                 </div>
                             `;
-                        }
-                        // Если ссылка, но не YouTube
-                        else if (videoUrl && videoUrl !== '#') {
+                        } else if (videoUrl && videoUrl !== '#') {
                             html += `
                                 <div class="video-player-wrapper">
                                     <video controls>
@@ -600,7 +593,6 @@
             }
         });
 
-        // ===== ЗАГРУЗКА РАЗДЕЛОВ =====
         function loadSectionsAndVideos() {
             var tabsContainer1 = document.getElementById('videoTabsPart1');
             var tabsContainer2 = document.getElementById('videoTabsPart2');
@@ -670,7 +662,6 @@
             tabsContainer2.innerHTML = tabsHtml2;
         }
 
-        // ===== ВХОД =====
         document.getElementById('loginBtn').addEventListener('click', function() {
             var email = document.getElementById('email').value;
             var password = document.getElementById('password').value;
@@ -726,7 +717,6 @@
                 });
         });
 
-        // ===== ЗАГРУЗКА ДЗ =====
         function loadHomework(studentId) {
             homeworkList.innerHTML = '⏳ Загрузка...';
 
@@ -800,7 +790,6 @@
                 });
         }
 
-        // ===== РАСПИСАНИЕ =====
         function loadStudentSchedule(studentId) {
             var container = document.getElementById('studentSchedule');
             container.innerHTML = '⏳ Загрузка...';
@@ -1155,7 +1144,7 @@
                 });
         }
 
-        // ===== ДОБАВЛЕНИЕ ВИДЕО (С ЗАГРУЗКОЙ ФАЙЛА) =====
+        // ===== ДОБАВЛЕНИЕ ВИДЕО (С ВЫБОРОМ ТИПА) =====
         function addVideo() {
             supabase
                 .from('video_sections')
@@ -1190,11 +1179,10 @@
                     var title = prompt('Введите название видео:');
                     if (!title) return;
 
-                    var type = prompt('Введите 1 — ссылка на YouTube, 2 — загрузить свой MP4 файл:');
-                    if (!type) return;
+                    var typeChoice = prompt('Выберите тип видео:\n1 — Ссылка на YouTube\n2 — Загрузить свой MP4 файл');
+                    if (!typeChoice) return;
 
-                    if (type === '1') {
-                        // YouTube ссылка
+                    if (typeChoice === '1') {
                         var url = prompt('Введите ссылку на YouTube:');
                         if (!url) return;
                         var homework = prompt('Введите ДЗ к уроку (или Enter):');
@@ -1220,18 +1208,25 @@
                             .catch(function(err) {
                                 alert('❌ Ошибка: ' + err.message);
                             });
-                    } else if (type === '2') {
-                        // Загрузка своего файла
+
+                    } else if (typeChoice === '2') {
+                        var homework = prompt('Введите ДЗ к уроку (или Enter):');
+
                         var fileInput = document.createElement('input');
                         fileInput.type = 'file';
                         fileInput.accept = 'video/mp4,video/webm,video/ogg';
+                        fileInput.style.display = 'none';
+                        document.body.appendChild(fileInput);
+
                         fileInput.onchange = function(e) {
                             var file = e.target.files[0];
-                            if (!file) return;
+                            if (!file) {
+                                document.body.removeChild(fileInput);
+                                return;
+                            }
 
-                            var homework = prompt('Введите ДЗ к уроку (или Enter):');
+                            alert('⏳ Загрузка файла... Пожалуйста, подождите.');
 
-                            // Загружаем файл в Storage
                             var path = 'videos/' + Date.now() + '_' + file.name;
                             var storageRef = supabase.storage.from('videos');
 
@@ -1239,21 +1234,23 @@
                                 .then(function(uploadRes) {
                                     if (uploadRes.error) {
                                         alert('❌ Ошибка загрузки файла: ' + uploadRes.error.message);
+                                        document.body.removeChild(fileInput);
                                         return;
                                     }
-
-                                    // Получаем публичную ссылку
                                     return storageRef.getPublicUrl(path);
                                 })
                                 .then(function(urlRes) {
                                     if (urlRes && urlRes.error) {
                                         alert('❌ Ошибка получения ссылки: ' + urlRes.error.message);
+                                        document.body.removeChild(fileInput);
                                         return;
                                     }
-
                                     var videoUrl = urlRes ? urlRes.data.publicUrl : null;
-
-                                    // Сохраняем в базу
+                                    if (!videoUrl) {
+                                        alert('❌ Не удалось получить ссылку на видео');
+                                        document.body.removeChild(fileInput);
+                                        return;
+                                    }
                                     return supabase
                                         .from('videos')
                                         .insert([{
@@ -1265,6 +1262,7 @@
                                         }]);
                                 })
                                 .then(function(insertRes) {
+                                    document.body.removeChild(fileInput);
                                     if (insertRes && insertRes.error) {
                                         alert('❌ Ошибка сохранения: ' + insertRes.error.message);
                                     } else {
@@ -1274,11 +1272,14 @@
                                     }
                                 })
                                 .catch(function(err) {
+                                    document.body.removeChild(fileInput);
                                     alert('❌ Ошибка: ' + err.message);
                                     console.error(err);
                                 });
                         };
+
                         fileInput.click();
+
                     } else {
                         alert('Неверный выбор!');
                     }
@@ -1288,7 +1289,6 @@
                 });
         }
 
-        // ===== АДМИН-ПАНЕЛЬ =====
         function loadVideosAdmin() {
             var container = document.getElementById('videosList');
             container.innerHTML = '⏳ Загрузка...';
@@ -1354,7 +1354,6 @@
                 });
         }
 
-        // ===== ВЫХОД =====
         document.getElementById('logoutBtn').addEventListener('click', function() {
             document.getElementById('profileBlock').style.display = 'flex';
             document.getElementById('contactsBlock').style.display = 'block';
@@ -1367,7 +1366,6 @@
             currentUser = null;
         });
 
-        // ===== АДМИН-ПАНЕЛЬ =====
         document.querySelectorAll('.admin-tabs button').forEach(function(btn) {
             btn.addEventListener('click', function() {
                 document.querySelectorAll('.admin-tabs button').forEach(function(b) { b.classList.remove('active'); });
@@ -1387,7 +1385,6 @@
             loadStats();
         }
 
-        // ===== ОСТАЛЬНЫЕ ФУНКЦИИ =====
         function loadStudents() {
             var container = document.getElementById('studentsList');
             container.innerHTML = '⏳ Загрузка...';
