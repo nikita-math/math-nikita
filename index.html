@@ -98,12 +98,103 @@
         .video-tabs button .num { display: inline-flex; align-items: center; justify-content: center; width: 30px; height: 30px; background: rgba(255,255,255,0.1); color: #b0c4de; border-radius: 50%; font-size: 14px; font-weight: 900; flex-shrink: 0; }
         .video-tabs button:hover .num { background: white; color: #302b63; }
 
-        /* ===== РАСПИСАНИЕ ===== */
+        /* ===== ТАБЛИЦА РАСПИСАНИЯ ===== */
         .schedule-section { margin-top: 30px; }
         .schedule-section h3 { font-size: 22px; margin-bottom: 16px; color: #ffffff; }
-        .schedule-item { padding: 12px; border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; margin-bottom: 12px; background: rgba(255,255,255,0.03); }
-        .schedule-item strong { color: #f5a623; }
-        .schedule-item .meta { color: #b0c4de; font-size: 14px; }
+
+        .schedule-table-wrap { overflow-x: auto; }
+        .schedule-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: rgba(255,255,255,0.03);
+            border-radius: 12px;
+            overflow: hidden;
+            font-size: 14px;
+        }
+        .schedule-table th,
+        .schedule-table td {
+            border: 1px solid rgba(255,255,255,0.08);
+            padding: 10px 8px;
+            text-align: center;
+            min-width: 80px;
+        }
+        .schedule-table th {
+            background: rgba(255,255,255,0.06);
+            color: #f5a623;
+            font-weight: 700;
+            font-size: 15px;
+        }
+        .schedule-table td {
+            color: #b0c4de;
+            vertical-align: middle;
+        }
+        .schedule-table .row-num {
+            color: #666;
+            font-weight: 700;
+            min-width: 40px;
+        }
+        .schedule-table .cell-empty {
+            color: #444;
+        }
+        .schedule-table .cell-occupied {
+            color: #7ddfa0;
+            background: rgba(39, 174, 96, 0.1);
+            border-color: rgba(39, 174, 96, 0.15);
+        }
+        .schedule-table .cell-occupied .student-name {
+            color: #ffffff;
+        }
+        .schedule-table .cell-occupied .topic {
+            color: #7ddfa0;
+            font-size: 12px;
+        }
+        .schedule-table td .cell-content {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            cursor: pointer;
+            padding: 4px;
+            border-radius: 6px;
+            transition: 0.2s;
+        }
+        .schedule-table td .cell-content:hover {
+            background: rgba(255,255,255,0.05);
+        }
+        .schedule-table td .cell-content .student-name {
+            font-weight: 600;
+            color: #ffffff;
+            font-size: 14px;
+        }
+        .schedule-table td .cell-content .topic {
+            font-size: 12px;
+            color: #888;
+        }
+        .schedule-table td .cell-content .empty-text {
+            color: #444;
+            font-size: 12px;
+        }
+
+        .schedule-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-top: 20px;
+            align-items: center;
+        }
+        .schedule-actions button {
+            background: #302b63;
+            color: white;
+            border: none;
+            padding: 10px 24px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: 0.3s;
+        }
+        .schedule-actions button:hover {
+            background: #667eea;
+            transform: scale(1.02);
+        }
 
         #sectionPage {
             display: none;
@@ -165,6 +256,8 @@
             .admin-tabs { flex-direction: column; }
             .admin-table { font-size: 14px; }
             .video-tabs button { font-size: 14px; padding: 10px 14px; flex: 1 1 100%; }
+            .schedule-table { font-size: 12px; }
+            .schedule-table th, .schedule-table td { padding: 6px 4px; min-width: 60px; }
         }
     </style>
 </head>
@@ -232,7 +325,7 @@
             </div>
             <div id="homeworkList"><p>Загрузка...</p></div>
 
-            <!-- ===== РАСПИСАНИЕ ДЛЯ УЧЕНИКА ===== -->
+            <!-- ===== РАСПИСАНИЕ (УЧЕНИК) ===== -->
             <div class="schedule-section">
                 <h3>📅 Моё расписание</h3>
                 <div id="studentSchedule"><p>Загрузка...</p></div>
@@ -283,7 +376,10 @@
                 <div id="tasksList" style="margin-top:15px;">Загрузка...</div>
             </div>
             <div class="admin-content" id="tab-schedule">
-                <button class="admin-btn success" onclick="addSchedule()">➕ Добавить занятие</button>
+                <div class="schedule-actions">
+                    <button class="admin-btn success" onclick="addScheduleRow()">➕ Добавить строку</button>
+                    <button class="admin-btn" onclick="loadScheduleAdmin()">🔄 Обновить</button>
+                </div>
                 <div id="scheduleList" style="margin-top:15px;">Загрузка...</div>
             </div>
             <div class="admin-content" id="tab-stats">
@@ -337,6 +433,17 @@
         var welcomeMessage = document.getElementById('welcomeMessage');
         var mainContent = document.getElementById('mainContent');
         var sectionPage = document.getElementById('sectionPage');
+
+        var daysMap = {
+            'mon': 'ПН',
+            'tue': 'ВТ',
+            'wed': 'СР',
+            'thu': 'ЧТ',
+            'fri': 'ПТ',
+            'sat': 'СБ',
+            'sun': 'ВС'
+        };
+        var daysArray = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'];
 
         // ===== КАТАЛОГ ЗАДАЧ =====
         function loadTaskCatalog() {
@@ -627,8 +734,7 @@
                 .from('schedule')
                 .select('*')
                 .eq('student_id', studentId)
-                .order('date', { ascending: true })
-                .order('time', { ascending: true })
+                .order('row_num', { ascending: true })
                 .then(function(response) {
                     if (response.error) {
                         container.innerHTML = '❌ Ошибка загрузки расписания.';
@@ -641,26 +747,36 @@
                         return;
                     }
 
-                    var html = '';
+                    // Группируем по row_num
+                    var rows = {};
                     data.forEach(function(item) {
-                        var statusMap = {
-                            'pending': '⏳ Запланировано',
-                            'done': '✅ Проведено',
-                            'cancelled': '❌ Отменено'
-                        };
-                        var statusText = statusMap[item.status] || '⏳ Запланировано';
-                        html += `
-                            <div class="schedule-item">
-                                <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap;">
-                                    <div>
-                                        <strong>${item.topic}</strong>
-                                        <div class="meta">📅 ${item.date} в ${item.time}</div>
-                                    </div>
-                                    <span style="font-size:14px; color:#888;">${statusText}</span>
-                                </div>
-                            </div>
-                        `;
+                        if (!rows[item.row_num]) rows[item.row_num] = {};
+                        rows[item.row_num][item.day_of_week] = item.topic || '';
                     });
+
+                    var html = '<div class="schedule-table-wrap"><table class="schedule-table">';
+                    html += '<tr><th>№</th>';
+                    daysArray.forEach(function(day) {
+                        html += '<th>' + daysMap[day] + '</th>';
+                    });
+                    html += '</tr>';
+
+                    var sortedRows = Object.keys(rows).sort(function(a, b) { return parseInt(a) - parseInt(b); });
+                    sortedRows.forEach(function(rowNum) {
+                        html += '<tr>';
+                        html += '<td class="row-num">' + rowNum + '</td>';
+                        daysArray.forEach(function(day) {
+                            var cell = rows[rowNum][day] || '';
+                            if (cell) {
+                                html += '<td class="cell-occupied">' + cell + '</td>';
+                            } else {
+                                html += '<td class="cell-empty">—</td>';
+                            }
+                        });
+                        html += '</tr>';
+                    });
+
+                    html += '</table></div>';
                     container.innerHTML = html;
                 })
                 .catch(function(err) {
@@ -673,65 +789,142 @@
             var container = document.getElementById('scheduleList');
             container.innerHTML = '⏳ Загрузка...';
 
+            // Загружаем учеников
             supabase
-                .from('schedule')
-                .select('*, students(name)')
-                .order('date', { ascending: true })
-                .order('time', { ascending: true })
-                .then(function(response) {
-                    if (response.error) {
-                        container.innerHTML = '❌ Ошибка: ' + response.error.message;
-                        return;
-                    }
-
-                    var data = response.data || [];
-                    if (data.length === 0) {
-                        container.innerHTML = '📭 Нет занятий';
-                        return;
-                    }
-
-                    var html = '<table class="admin-table"><tr><th>Ученик</th><th>Дата</th><th>Время</th><th>Тема</th><th>Статус</th><th>Действия</th></tr>';
-                    data.forEach(function(item) {
-                        var studentName = item.students ? item.students.name : '—';
-                        var statusMap = {
-                            'pending': '⏳ Запланировано',
-                            'done': '✅ Проведено',
-                            'cancelled': '❌ Отменено'
-                        };
-                        var statusText = statusMap[item.status] || '⏳ Запланировано';
-                        html += `
-                            <tr>
-                                <td>${studentName}</td>
-                                <td>${item.date}</td>
-                                <td>${item.time}</td>
-                                <td>${item.topic}</td>
-                                <td>${statusText}</td>
-                                <td>
-                                    <button class="admin-btn" onclick="updateScheduleStatus('${item.id}', 'done')">✅ Провести</button>
-                                    <button class="admin-btn danger" onclick="deleteSchedule('${item.id}')">🗑</button>
-                                </td>
-                            </tr>
-                        `;
+                .from('students')
+                .select('id, name')
+                .eq('role', 'student')
+                .then(function(studentsRes) {
+                    var students = studentsRes.data || [];
+                    var studentsMap = {};
+                    students.forEach(function(s) {
+                        studentsMap[s.id] = s.name;
                     });
-                    html += '</table>';
-                    container.innerHTML = html;
+
+                    // Загружаем расписание
+                    supabase
+                        .from('schedule')
+                        .select('*')
+                        .order('row_num', { ascending: true })
+                        .then(function(response) {
+                            if (response.error) {
+                                container.innerHTML = '❌ Ошибка: ' + response.error.message;
+                                return;
+                            }
+
+                            var data = response.data || [];
+                            if (data.length === 0) {
+                                container.innerHTML = '📭 Нет занятий. Нажмите "➕ Добавить строку".';
+                                return;
+                            }
+
+                            // Группируем по row_num
+                            var rows = {};
+                            data.forEach(function(item) {
+                                if (!rows[item.row_num]) rows[item.row_num] = {};
+                                rows[item.row_num][item.day_of_week] = {
+                                    student_id: item.student_id,
+                                    topic: item.topic || '',
+                                    id: item.id
+                                };
+                            });
+
+                            var html = '<div class="schedule-table-wrap"><table class="schedule-table">';
+                            html += '<tr><th>№</th>';
+                            daysArray.forEach(function(day) {
+                                html += '<th>' + daysMap[day] + '</th>';
+                            });
+                            html += '</tr>';
+
+                            var sortedRows = Object.keys(rows).sort(function(a, b) { return parseInt(a) - parseInt(b); });
+                            sortedRows.forEach(function(rowNum) {
+                                html += '<tr>';
+                                html += '<td class="row-num">' + rowNum + '</td>';
+                                daysArray.forEach(function(day) {
+                                    var cell = rows[rowNum][day];
+                                    if (cell && cell.student_id) {
+                                        var studentName = studentsMap[cell.student_id] || 'Ученик';
+                                        var displayText = studentName + (cell.topic ? ' — ' + cell.topic : '');
+                                        html += '<td class="cell-occupied" onclick="editScheduleCell(' + cell.id + ', \'' + day + '\', ' + rowNum + ')">';
+                                        html += '<div class="cell-content">';
+                                        html += '<span class="student-name">' + studentName + '</span>';
+                                        if (cell.topic) html += '<span class="topic">' + cell.topic + '</span>';
+                                        html += '</div>';
+                                        html += '</td>';
+                                    } else {
+                                        html += '<td class="cell-empty" onclick="addScheduleCell(' + rowNum + ', \'' + day + '\')">';
+                                        html += '<div class="cell-content"><span class="empty-text">➕</span></div>';
+                                        html += '</td>';
+                                    }
+                                });
+                                html += '</tr>';
+                            });
+
+                            html += '</table></div>';
+                            container.innerHTML = html;
+                        })
+                        .catch(function(err) {
+                            container.innerHTML = '❌ Ошибка: ' + err.message;
+                        });
                 })
                 .catch(function(err) {
                     container.innerHTML = '❌ Ошибка: ' + err.message;
                 });
         }
 
-        function addSchedule() {
+        // ===== ДОБАВИТЬ СТРОКУ =====
+        function addScheduleRow() {
+            // Находим максимальный row_num
+            supabase
+                .from('schedule')
+                .select('row_num')
+                .order('row_num', { ascending: false })
+                .limit(1)
+                .then(function(response) {
+                    var maxRow = 0;
+                    if (response.data && response.data.length > 0) {
+                        maxRow = response.data[0].row_num || 0;
+                    }
+                    var newRow = maxRow + 1;
+
+                    // Добавляем пустые ячейки для всех дней
+                    var inserts = daysArray.map(function(day) {
+                        return {
+                            row_num: newRow,
+                            day_of_week: day,
+                            student_id: null,
+                            topic: null
+                        };
+                    });
+
+                    supabase
+                        .from('schedule')
+                        .insert(inserts)
+                        .then(function(r) {
+                            if (r.error) {
+                                alert('❌ Ошибка: ' + r.error.message);
+                            } else {
+                                alert('✅ Строка ' + newRow + ' добавлена!');
+                                loadScheduleAdmin();
+                            }
+                        })
+                        .catch(function(err) {
+                            alert('❌ Ошибка: ' + err.message);
+                        });
+                })
+                .catch(function(err) {
+                    alert('❌ Ошибка: ' + err.message);
+                });
+        }
+
+        // ===== ДОБАВИТЬ ЗАНЯТИЕ В ЯЧЕЙКУ =====
+        function addScheduleCell(rowNum, day) {
+            // Загружаем учеников
             supabase
                 .from('students')
-                .select('*')
+                .select('id, name')
                 .eq('role', 'student')
                 .then(function(response) {
-                    if (response.error) {
-                        alert('Ошибка загрузки учеников');
-                        return;
-                    }
-
                     var students = response.data || [];
                     if (students.length === 0) {
                         alert('Нет учеников!');
@@ -740,7 +933,7 @@
 
                     var list = 'Выберите ученика:\n';
                     students.forEach(function(s, i) {
-                        list += (i + 1) + '. ' + s.name + ' (' + s.email + ')\n';
+                        list += (i + 1) + '. ' + s.name + '\n';
                     });
 
                     var choice = prompt(list);
@@ -753,31 +946,52 @@
                     }
 
                     var student = students[idx];
-                    var date = prompt('Введите дату (ГГГГ-ММ-ДД):');
-                    if (!date) return;
-                    var time = prompt('Введите время (ЧЧ:ММ):');
-                    if (!time) return;
                     var topic = prompt('Введите тему занятия:');
-                    if (!topic) return;
+                    if (topic === null) return;
 
-                    var studentId = student.id || student.student_id || student.user_id;
-
+                    // Проверяем, есть ли уже ячейка
                     supabase
                         .from('schedule')
-                        .insert([{
-                            student_id: studentId,
-                            date: date,
-                            time: time,
-                            topic: topic,
-                            status: 'pending'
-                        }])
-                        .then(function(r) {
-                            if (r.error) {
-                                alert('❌ Ошибка: ' + r.error.message);
+                        .select('id')
+                        .eq('row_num', rowNum)
+                        .eq('day_of_week', day)
+                        .then(function(checkRes) {
+                            var existing = checkRes.data || [];
+                            if (existing.length > 0) {
+                                // Обновляем существующую
+                                supabase
+                                    .from('schedule')
+                                    .update({
+                                        student_id: student.id,
+                                        topic: topic || null
+                                    })
+                                    .eq('id', existing[0].id)
+                                    .then(function() {
+                                        alert('✅ Ячейка обновлена!');
+                                        loadScheduleAdmin();
+                                        if (currentUser) loadStudentSchedule(currentUser.id);
+                                    })
+                                    .catch(function(err) {
+                                        alert('❌ Ошибка: ' + err.message);
+                                    });
                             } else {
-                                alert('✅ Занятие добавлено!');
-                                loadScheduleAdmin();
-                                if (currentUser) loadStudentSchedule(currentUser.id);
+                                // Создаём новую
+                                supabase
+                                    .from('schedule')
+                                    .insert([{
+                                        row_num: rowNum,
+                                        day_of_week: day,
+                                        student_id: student.id,
+                                        topic: topic || null
+                                    }])
+                                    .then(function() {
+                                        alert('✅ Ячейка добавлена!');
+                                        loadScheduleAdmin();
+                                        if (currentUser) loadStudentSchedule(currentUser.id);
+                                    })
+                                    .catch(function(err) {
+                                        alert('❌ Ошибка: ' + err.message);
+                                    });
                             }
                         })
                         .catch(function(err) {
@@ -785,43 +999,99 @@
                         });
                 })
                 .catch(function(err) {
-                    alert('Ошибка: ' + err.message);
-                });
-        }
-
-        function updateScheduleStatus(id, status) {
-            supabase
-                .from('schedule')
-                .update({ status: status })
-                .eq('id', id)
-                .then(function(response) {
-                    if (response.error) {
-                        alert('❌ Ошибка: ' + response.error.message);
-                    } else {
-                        alert('✅ Статус обновлён');
-                        loadScheduleAdmin();
-                        if (currentUser) loadStudentSchedule(currentUser.id);
-                    }
-                })
-                .catch(function(err) {
                     alert('❌ Ошибка: ' + err.message);
                 });
         }
 
-        function deleteSchedule(id) {
-            if (!confirm('Удалить занятие?')) return;
+        // ===== РЕДАКТИРОВАТЬ ЯЧЕЙКУ =====
+        function editScheduleCell(cellId, day, rowNum) {
+            // Загружаем учеников
             supabase
-                .from('schedule')
-                .delete()
-                .eq('id', id)
+                .from('students')
+                .select('id, name')
+                .eq('role', 'student')
                 .then(function(response) {
-                    if (response.error) {
-                        alert('❌ Ошибка: ' + response.error.message);
-                    } else {
-                        alert('✅ Занятие удалено');
-                        loadScheduleAdmin();
-                        if (currentUser) loadStudentSchedule(currentUser.id);
+                    var students = response.data || [];
+                    if (students.length === 0) {
+                        alert('Нет учеников!');
+                        return;
                     }
+
+                    var list = 'Выберите ученика (или 0 для удаления):\n';
+                    students.forEach(function(s, i) {
+                        list += (i + 1) + '. ' + s.name + '\n';
+                    });
+                    list += '\n0. Удалить занятие';
+
+                    var choice = prompt(list);
+                    if (choice === null) return;
+
+                    var idx = parseInt(choice) - 1;
+
+                    if (choice === '0') {
+                        // Удаляем ячейку
+                        supabase
+                            .from('schedule')
+                            .update({
+                                student_id: null,
+                                topic: null
+                            })
+                            .eq('id', cellId)
+                            .then(function() {
+                                alert('✅ Занятие удалено');
+                                loadScheduleAdmin();
+                                if (currentUser) loadStudentSchedule(currentUser.id);
+                            })
+                            .catch(function(err) {
+                                alert('❌ Ошибка: ' + err.message);
+                            });
+                        return;
+                    }
+
+                    if (idx < 0 || idx >= students.length) {
+                        alert('Неверный выбор!');
+                        return;
+                    }
+
+                    var student = students[idx];
+                    var topic = prompt('Введите тему занятия (или Enter для удаления):');
+                    if (topic === null) return;
+
+                    if (topic === '') {
+                        // Удаляем ячейку
+                        supabase
+                            .from('schedule')
+                            .update({
+                                student_id: null,
+                                topic: null
+                            })
+                            .eq('id', cellId)
+                            .then(function() {
+                                alert('✅ Занятие удалено');
+                                loadScheduleAdmin();
+                                if (currentUser) loadStudentSchedule(currentUser.id);
+                            })
+                            .catch(function(err) {
+                                alert('❌ Ошибка: ' + err.message);
+                            });
+                        return;
+                    }
+
+                    supabase
+                        .from('schedule')
+                        .update({
+                            student_id: student.id,
+                            topic: topic
+                        })
+                        .eq('id', cellId)
+                        .then(function() {
+                            alert('✅ Ячейка обновлена!');
+                            loadScheduleAdmin();
+                            if (currentUser) loadStudentSchedule(currentUser.id);
+                        })
+                        .catch(function(err) {
+                            alert('❌ Ошибка: ' + err.message);
+                        });
                 })
                 .catch(function(err) {
                     alert('❌ Ошибка: ' + err.message);
