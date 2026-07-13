@@ -1144,7 +1144,7 @@
                 });
         }
 
-        // ===== ДОБАВЛЕНИЕ ВИДЕО (С ВЫБОРОМ ТИПА) =====
+        // ===== ДОБАВЛЕНИЕ ВИДЕО (ИСПРАВЛЕННАЯ ВЕРСИЯ) =====
         function addVideo() {
             supabase
                 .from('video_sections')
@@ -1212,12 +1212,14 @@
                     } else if (typeChoice === '2') {
                         var homework = prompt('Введите ДЗ к уроку (или Enter):');
 
+                        // Используем скрытый input для выбора файла
                         var fileInput = document.createElement('input');
                         fileInput.type = 'file';
                         fileInput.accept = 'video/mp4,video/webm,video/ogg';
                         fileInput.style.display = 'none';
                         document.body.appendChild(fileInput);
 
+                        // Обработчик выбора файла
                         fileInput.onchange = function(e) {
                             var file = e.target.files[0];
                             if (!file) {
@@ -1278,6 +1280,7 @@
                                 });
                         };
 
+                        // Открываем диалог выбора файла
                         fileInput.click();
 
                     } else {
