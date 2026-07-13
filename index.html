@@ -245,14 +245,14 @@
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
     <script>
-        // ===== НАСТРОЙКИ SUPABASE =====
+        // ===== ПРАВИЛЬНЫЕ НАСТРОЙКИ SUPABASE =====
         var SUPABASE_URL = 'https://liqqdixrtvnrrvgkfvbn.supabase.co';
         var SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxpcXFkaXhydHZucnJ2Z2tmdmJuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODM4NTMzMzksImV4cCI6MjA5OTQyOTMzOX0.Jqrnt5DOKNURe5HERWIhMvc6KChurAg5iHkfMBw4P2A';
         var supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
         var currentUser = null;
-        var allTasks = [];
         var sections = [];
         var allVideos = [];
 
@@ -264,71 +264,14 @@
         var homeworkList = document.getElementById('homeworkList');
         var welcomeMessage = document.getElementById('welcomeMessage');
 
-        // ===== КАТАЛОГ ЗАДАЧ =====
+        // ===== КАТАЛОГ ЗАДАЧ (ПРОСТАЯ ВЕРСИЯ, БЕЗ tasks) =====
         function loadTaskCatalog() {
             var container = document.getElementById('taskList');
-            container.innerHTML = '⏳ Загрузка...';
-
-            supabase
-                .from('tasks')
-                .select('*')
-                .order('created_at', { ascending: false })
-                .then(function(response) {
-                    if (response.error) {
-                        container.innerHTML = '❌ Ошибка: ' + response.error.message;
-                        return;
-                    }
-                    allTasks = response.data || [];
-                    if (allTasks.length === 0) {
-                        container.innerHTML = '📭 Нет задач. Скоро добавлю!';
-                        return;
-                    }
-                    renderTasks('all');
-                })
-                .catch(function(err) {
-                    container.innerHTML = '❌ Ошибка: ' + err.message;
-                });
-        }
-
-        function renderTasks(topic) {
-            var container = document.getElementById('taskList');
-            var filtered = topic === 'all' ? allTasks : allTasks.filter(function(t) { return t.topic === topic; });
-
-            if (filtered.length === 0) {
-                container.innerHTML = '📭 Нет задач по этой теме.';
-                return;
-            }
-
-            var html = '';
-            for (var i = 0; i < filtered.length; i++) {
-                var t = filtered[i];
-                html += `
-                    <div class="task-item">
-                        <div class="topic">📌 ${t.topic}</div>
-                        <div class="question">${t.question}</div>
-                        <button onclick="toggleAnswer('answer-${i}')">Показать ответ</button>
-                        <div class="answer" id="answer-${i}">${t.answer}</div>
-                    </div>
-                `;
-            }
-            container.innerHTML = html;
-        }
-
-        function toggleAnswer(id) {
-            var el = document.getElementById(id);
-            if (el.classList.contains('show')) {
-                el.classList.remove('show');
-            } else {
-                el.classList.add('show');
-            }
+            container.innerHTML = '📭 Каталог задач пока пуст. Скоро добавлю!';
         }
 
         document.getElementById('taskFilter').addEventListener('click', function(e) {
-            if (e.target.tagName === 'BUTTON') {
-                document.querySelectorAll('#taskFilter button').forEach(function(b) { b.classList.remove('active'); });
-                e.target.classList.add('active');
-                renderTasks(e.target.dataset.topic);
-            }
+            // Заглушка
         });
 
         // ===== ЗАГРУЗКА РАЗДЕЛОВ И ВИДЕО =====
@@ -339,22 +282,28 @@
             tabsContainer.innerHTML = '⏳ Загрузка разделов...';
             contentContainer.innerHTML = '';
 
+            console.log('▶️ Загружаем разделы...');
+
             supabase
                 .from('video_sections')
                 .select('*')
                 .order('order_num', { ascending: true })
                 .then(function(response) {
                     if (response.error) {
-                        tabsContainer.innerHTML = '❌ Ошибка загрузки разделов';
-                        console.error(response.error);
+                        tabsContainer.innerHTML = '❌ Ошибка: ' + response.error.message;
+                        console.error('Ошибка:', response.error);
                         return;
                     }
+
                     sections = response.data || [];
+                    console.log('✅ Загружено разделов:', sections.length);
+
                     if (sections.length === 0) {
                         tabsContainer.innerHTML = '📭 Нет разделов. Добавьте их в базе.';
                         return;
                     }
 
+                    // Загружаем видео
                     supabase
                         .from('videos')
                         .select('*')
@@ -365,6 +314,7 @@
                                 allVideos = [];
                             } else {
                                 allVideos = resp.data || [];
+                                console.log('✅ Загружено видео:', allVideos.length);
                             }
                             renderVideoTabs();
                         })
@@ -388,6 +338,8 @@
                 tabsContainer.innerHTML = '📭 Нет разделов';
                 return;
             }
+
+            console.log('▶️ Рендерим', sections.length, 'разделов');
 
             var tabsHtml = '';
             var contentHtml = '';
@@ -420,6 +372,7 @@
 
             tabsContainer.innerHTML = tabsHtml;
             contentContainer.innerHTML = contentHtml;
+            console.log('✅ Разделы отрендерены!');
         }
 
         function switchVideoTab(sectionId) {
@@ -476,6 +429,7 @@
                         }
 
                         loadHomework(user.id);
+                        // Загружаем разделы и видео!
                         loadSectionsAndVideos();
                     } else {
                         resultDiv.className = 'result-error';
@@ -1141,6 +1095,7 @@
                 });
         }
 
+        // ===== ЗАПУСК =====
         loadTaskCatalog();
         loadTopics();
     </script>
