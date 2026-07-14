@@ -538,7 +538,6 @@
         © 2026 Математика с Никитой. Все права защищены.
     </footer>
 
-    <!-- ===== МОДАЛЬНОЕ ОКНО ДЛЯ ВЫДАЧИ ДЗ ===== -->
     <div class="modal" id="homeworkModal">
         <div class="modal-content">
             <h2 id="modalTitle">📝 Выдать ДЗ (1-я часть)</h2>
@@ -558,7 +557,6 @@
             <label>📎 Ссылка на PDF-файл</label>
             <input type="text" id="hwFileUrl" placeholder="https://...pdf">
 
-            <!-- Блок для 1-й части (с ответами) -->
             <div id="firstPartBlock">
                 <label>📋 Задания (1-я часть)</label>
                 <table class="task-table" id="hwTaskTable">
@@ -584,7 +582,6 @@
                 </div>
             </div>
 
-            <!-- Блок для 2-й части (без ответов, только комментарий) -->
             <div id="secondPartBlock" style="display: none;">
                 <label>📝 Комментарий к ДЗ</label>
                 <input type="text" id="hwComment" placeholder="Например: Решить номера 2, 3, 5 из файла">
@@ -596,6 +593,8 @@
             </div>
         </div>
     </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <script>
         // ===== ЗВЁЗДЫ =====
@@ -615,11 +614,7 @@
                 container.appendChild(star);
             }
         })();
-    </script>
 
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-    <script>
         // ===== НАСТРОЙКИ =====
         var SUPABASE_URL = 'https://liqqdixrtvnrrvgkfvbn.supabase.co';
         var SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxpcXFkaXhydHZucnJ2Z2tmdmJuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODM4NTMzMzksImV4cCI6MjA5OTQyOTMzOX0.Jqrnt5DOKNURe5HERWIhMvc6KChurAg5iHkfMBw4P2A';
@@ -651,7 +646,6 @@
 
         var currentHomeworkType = 'first';
 
-        // ===== ФУНКЦИИ ДЛЯ МОДАЛЬНОГО ОКНА =====
         function openHomeworkModal(type) {
             var modal = document.getElementById('homeworkModal');
             modal.classList.add('active');
