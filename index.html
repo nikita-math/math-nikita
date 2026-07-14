@@ -506,7 +506,10 @@
                 <div id="myStudentsList" style="margin-top:15px;">Загрузка...</div>
             </div>
             <div class="admin-content" id="tab-homeworks">
-                <button class="admin-btn success" onclick="openHomeworkModal()">➕ Выдать ДЗ</button>
+                <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 15px;">
+                    <button class="admin-btn success" onclick="openHomeworkModal('first')">➕ Выдать ДЗ (1-я часть)</button>
+                    <button class="admin-btn success" onclick="openHomeworkModal('second')" style="background: #8e44ad;">➕ Выдать ДЗ (2-я часть)</button>
+                </div>
                 <div id="homeworksList" style="margin-top:15px;">Загрузка...</div>
             </div>
             <div class="admin-content" id="tab-videos">
@@ -538,12 +541,16 @@
     <!-- ===== МОДАЛЬНОЕ ОКНО ДЛЯ ВЫДАЧИ ДЗ ===== -->
     <div class="modal" id="homeworkModal">
         <div class="modal-content">
-            <h2>📝 Выдать ДЗ</h2>
+            <h2 id="modalTitle">📝 Выдать ДЗ (1-я часть)</h2>
             
             <label>👤 Ученик</label>
             <select id="hwStudentSelect">
                 <option value="all">👥 ВСЕМ ученикам</option>
             </select>
+
+            <label>🎥 Номер раздела (order_num)</label>
+            <input type="text" id="hwSectionId" placeholder="Например: 1 (Планиметрия), 2 (Векторы)" style="margin-bottom: 8px;">
+            <small style="color: #888; display: block; margin-bottom: 12px;">Введи номер из колонки "order_num". Если оставить пустым — ДЗ не привяжется к видео</small>
 
             <label>📝 Название ДЗ</label>
             <input type="text" id="hwTitle" placeholder="Например: ДЗ по векторам">
@@ -551,27 +558,36 @@
             <label>📎 Ссылка на PDF-файл</label>
             <input type="text" id="hwFileUrl" placeholder="https://...pdf">
 
-            <label>📋 Задания (1-я часть)</label>
-            <table class="task-table" id="hwTaskTable">
-                <thead>
-                    <tr>
-                        <th style="width:40%;">№ задачи</th>
-                        <th style="width:40%;">Правильный ответ</th>
-                        <th style="width:20%;">Действие</th>
-                    </tr>
-                </thead>
-                <tbody id="hwTaskBody">
-                    <tr>
-                        <td><input type="text" class="task-num-input" placeholder="5"></td>
-                        <td><input type="text" class="task-answer-input" placeholder="4"></td>
-                        <td><button class="admin-btn danger small" onclick="removeTaskRow(this)">🗑</button></td>
-                    </tr>
-                </tbody>
-            </table>
+            <!-- Блок для 1-й части (с ответами) -->
+            <div id="firstPartBlock">
+                <label>📋 Задания (1-я часть)</label>
+                <table class="task-table" id="hwTaskTable">
+                    <thead>
+                        <tr>
+                            <th style="width:40%;">№ задачи</th>
+                            <th style="width:40%;">Правильный ответ</th>
+                            <th style="width:20%;">Действие</th>
+                        </tr>
+                    </thead>
+                    <tbody id="hwTaskBody">
+                        <tr>
+                            <td><input type="text" class="task-num-input" placeholder="5"></td>
+                            <td><input type="text" class="task-answer-input" placeholder="4"></td>
+                            <td><button class="admin-btn danger small" onclick="removeTaskRow(this)">🗑</button></td>
+                        </tr>
+                    </tbody>
+                </table>
 
-            <div class="modal-actions">
-                <button class="btn-add" onclick="addTaskRow()">➕ Добавить строку</button>
-                <button class="btn-remove" onclick="removeLastTaskRow()">🗑 Удалить последнюю</button>
+                <div class="modal-actions">
+                    <button class="btn-add" onclick="addTaskRow()">➕ Добавить строку</button>
+                    <button class="btn-remove" onclick="removeLastTaskRow()">🗑 Удалить последнюю</button>
+                </div>
+            </div>
+
+            <!-- Блок для 2-й части (без ответов, только комментарий) -->
+            <div id="secondPartBlock" style="display: none;">
+                <label>📝 Комментарий к ДЗ</label>
+                <input type="text" id="hwComment" placeholder="Например: Решить номера 2, 3, 5 из файла">
             </div>
 
             <div class="modal-actions" style="margin-top: 20px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 20px;">
@@ -633,10 +649,27 @@
         };
         var daysArray = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'];
 
+        var currentHomeworkType = 'first'; // 'first' или 'second'
+
         // ===== ФУНКЦИИ ДЛЯ МОДАЛЬНОГО ОКНА =====
-        function openHomeworkModal(videoId) {
+        function openHomeworkModal(type) {
             var modal = document.getElementById('homeworkModal');
             modal.classList.add('active');
+            currentHomeworkType = type;
+
+            var title = document.getElementById('modalTitle');
+            var firstBlock = document.getElementById('firstPartBlock');
+            var secondBlock = document.getElementById('secondPartBlock');
+
+            if (type === 'first') {
+                title.textContent = '📝 Выдать ДЗ (1-я часть)';
+                firstBlock.style.display = 'block';
+                secondBlock.style.display = 'none';
+            } else {
+                title.textContent = '📝 Выдать ДЗ (2-я часть)';
+                firstBlock.style.display = 'none';
+                secondBlock.style.display = 'block';
+            }
 
             // Заполняем список учеников
             var select = document.getElementById('hwStudentSelect');
@@ -657,16 +690,12 @@
                     }
                 });
 
-            // Если передан videoId — сохраняем его в атрибуте
-            if (videoId) {
-                modal.dataset.videoId = videoId;
-            } else {
-                delete modal.dataset.videoId;
-            }
-
             // Очищаем поля
             document.getElementById('hwTitle').value = '';
             document.getElementById('hwFileUrl').value = '';
+            document.getElementById('hwSectionId').value = '';
+            document.getElementById('hwComment').value = '';
+            
             // Очищаем таблицу задач, оставляем одну строку
             var tbody = document.getElementById('hwTaskBody');
             tbody.innerHTML = `
@@ -712,45 +741,88 @@
             }
         }
 
+        // ===== ОСНОВНАЯ ФУНКЦИЯ СОХРАНЕНИЯ =====
         function saveHomeworkFromModal() {
-            // Собираем данные
             var studentId = document.getElementById('hwStudentSelect').value;
             var title = document.getElementById('hwTitle').value.trim();
             var fileUrl = document.getElementById('hwFileUrl').value.trim();
-            var modal = document.getElementById('homeworkModal');
-            var videoId = modal.dataset.videoId || null;
+            var sectionOrderInput = document.getElementById('hwSectionId').value.trim();
+            var comment = document.getElementById('hwComment').value.trim();
 
             if (!title) {
                 alert('Введите название ДЗ');
                 return;
             }
 
-            // Собираем задачи
-            var rows = document.querySelectorAll('#hwTaskBody tr');
-            var tasks = [];
-            for (var i = 0; i < rows.length; i++) {
-                var numInput = rows[i].querySelector('.task-num-input');
-                var answerInput = rows[i].querySelector('.task-answer-input');
-                var num = numInput.value.trim();
-                var answer = answerInput.value.trim();
-                if (num && answer) {
-                    tasks.push({
-                        num: parseInt(num),
-                        type: 'first',
-                        correct_answer: answer,
-                        is_homework: true,
-                        done: false
-                    });
-                }
-            }
-
-            if (tasks.length === 0) {
-                alert('Добавьте хотя бы одно задание');
+            // Если 2-я часть — проверяем, что есть комментарий или файл
+            if (currentHomeworkType === 'second' && !fileUrl && !comment) {
+                alert('Для 2-й части добавьте хотя бы файл или комментарий');
                 return;
             }
 
-            // Если выбран "Всем" и есть videoId — выдаём ДЗ каждому ученику
-            if (studentId === 'all' && videoId) {
+            // Собираем задачи (только для 1-й части)
+            var tasks = [];
+            if (currentHomeworkType === 'first') {
+                var rows = document.querySelectorAll('#hwTaskBody tr');
+                for (var i = 0; i < rows.length; i++) {
+                    var numInput = rows[i].querySelector('.task-num-input');
+                    var answerInput = rows[i].querySelector('.task-answer-input');
+                    var num = numInput.value.trim();
+                    var answer = answerInput.value.trim();
+                    if (num && answer) {
+                        tasks.push({
+                            num: parseInt(num),
+                            type: 'first',
+                            correct_answer: answer,
+                            is_homework: true,
+                            done: false
+                        });
+                    }
+                }
+                if (tasks.length === 0) {
+                    alert('Добавьте хотя бы одно задание');
+                    return;
+                }
+            }
+
+            // Если введён order_num — ищем раздел
+            if (sectionOrderInput) {
+                var orderNum = parseInt(sectionOrderInput);
+                if (isNaN(orderNum) || orderNum < 1) {
+                    alert('Введите корректный номер раздела (например, 1 для Планиметрии)');
+                    return;
+                }
+
+                supabase
+                    .from('video_sections')
+                    .select('id')
+                    .eq('order_num', orderNum)
+                    .maybeSingle()
+                    .then(function(sectionRes) {
+                        if (sectionRes.error) {
+                            alert('❌ Ошибка поиска раздела: ' + sectionRes.error.message);
+                            return;
+                        }
+                        if (!sectionRes.data) {
+                            alert('❌ Раздел с номером ' + orderNum + ' не найден. Проверь order_num в таблице video_sections.');
+                            return;
+                        }
+                        var sectionId = sectionRes.data.id;
+                        proceedWithSave(studentId, title, fileUrl, sectionId, tasks, comment);
+                    })
+                    .catch(function(err) {
+                        alert('❌ Ошибка: ' + err.message);
+                    });
+                return;
+            }
+
+            // Если order_num не введён
+            proceedWithSave(studentId, title, fileUrl, null, tasks, comment);
+        }
+
+        function proceedWithSave(studentId, title, fileUrl, sectionId, tasks, comment) {
+            // Если выбран "Всем" и указан ID раздела
+            if (studentId === 'all' && sectionId) {
                 supabase
                     .from('students')
                     .select('id')
@@ -775,8 +847,10 @@
                                 deadline: null,
                                 video_link: null,
                                 file_url: fileUrl || null,
-                                section_id: videoId,
-                                tasks: tasks
+                                section_id: sectionId,
+                                tasks: tasks.length > 0 ? tasks : null,
+                                comment: comment || null,
+                                type: currentHomeworkType
                             };
                             promises.push(supabase.from('homeworks').insert([hwData]));
                         });
@@ -797,7 +871,7 @@
 
             // Если выбран конкретный ученик
             if (studentId === 'all') {
-                alert('Выберите конкретного ученика или укажите видео для выдачи всем');
+                alert('Выберите конкретного ученика или укажите номер раздела для выдачи всем');
                 return;
             }
 
@@ -808,8 +882,10 @@
                 deadline: null,
                 video_link: null,
                 file_url: fileUrl || null,
-                section_id: videoId || null,
-                tasks: tasks
+                section_id: sectionId || null,
+                tasks: tasks.length > 0 ? tasks : null,
+                comment: comment || null,
+                type: currentHomeworkType
             };
 
             supabase
@@ -830,6 +906,7 @@
                 });
         }
 
+        // ===== ЗАГРУЗКА КАТАЛОГА ЗАДАЧ =====
         function loadTaskCatalog() {
             var container = document.getElementById('taskList');
             container.innerHTML = '📭 Каталог задач пока пуст. Скоро добавлю!';
@@ -959,16 +1036,18 @@
                                 var isDone = hw.status === 'done';
                                 var statusText = isDone ? '✅ Выполнено' : '⏳ Ожидает выполнения';
                                 var btnHtml = !isDone ? `<a href="#dashboard" class="video-homework-link" onclick="document.getElementById('dashboard').scrollIntoView({behavior:'smooth'})">📝 Перейти к ДЗ</a>` : '';
+                                var typeLabel = hw.type === 'first' ? '1-я часть' : '2-я часть';
                                 html += `
                                     <div style="margin-top: 14px; padding: 14px 18px; background: rgba(39, 174, 96, 0.1); border-radius: 12px; border-left: 4px solid ${isDone ? '#2ecc71' : '#f39c12'};">
                                         <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
                                             <div>
-                                                <strong style="color: #ffffff;">📚 ДЗ: ${hw.title}</strong>
+                                                <strong style="color: #ffffff;">📚 ДЗ (${typeLabel}): ${hw.title}</strong>
                                                 <span style="color: #888; font-size: 14px; margin-left: 12px;">${statusText}</span>
                                             </div>
                                             ${btnHtml}
                                         </div>
                                         ${hw.file_url ? `<div style="margin-top: 6px; font-size: 14px;">📎 <a href="${hw.file_url}" target="_blank" style="color: #88ccff;">Скачать файл</a></div>` : ''}
+                                        ${hw.comment ? `<div style="margin-top: 6px; font-size: 14px; color: #b0c4de;">💬 ${hw.comment}</div>` : ''}
                                     </div>
                                 `;
                             }
@@ -1200,7 +1279,6 @@
                                             <input type="text" placeholder="Введите ответ" ${isDone ? 'disabled' : ''} value="${isDone ? '✅' : ''}">
                                             <button class="check-btn" onclick="checkAnswer(this, '${task.correct_answer}')" ${isDone ? 'disabled style="opacity:0.5;"' : ''}>Проверить</button>
                                             <span class="answer-result">${isDone ? '✅ Верно!' : ''}</span>
-                                            ${task.type === 'second_part' ? '<span style="color:#f39c12; font-size:12px;">(2-я часть)</span>' : ''}
                                         </div>
                                     `;
                                 }
@@ -1212,6 +1290,13 @@
                         if (hw.file_url) {
                             fileHtml = `<div class="meta">📎 <a href="${hw.file_url}" target="_blank">Скачать файл</a></div>`;
                         }
+
+                        var commentHtml = '';
+                        if (hw.comment) {
+                            commentHtml = `<div class="meta">💬 ${hw.comment}</div>`;
+                        }
+
+                        var typeLabel = hw.type === 'first' ? '1-я часть' : '2-я часть';
 
                         var sectionHtml = '';
                         if (hw.section_id) {
@@ -1234,12 +1319,13 @@
 
                         html += `
                             <div class="hw-card">
-                                <div class="title">${hw.title}</div>
+                                <div class="title">${hw.title} (${typeLabel})</div>
                                 ${sectionHtml}
                                 <div class="meta">📅 ${hw.deadline ? 'Срок: ' + hw.deadline : 'Без срока'}</div>
                                 <div class="status ${statusClass}">${statusText}</div>
                                 ${btnHtml}
                                 ${fileHtml}
+                                ${commentHtml}
                                 ${videoBlock}
                                 ${tasksHtml}
                             </div>
@@ -1816,7 +1902,7 @@
                 .order('created_at', { ascending: false })
                 .then(function(response) {
                     if (response.error) {
-                        container.innerHTML = '❌ Ошибка: ' + response.error.message;
+                        container.innerHTML = '❌ Ошибка: ' + response.error.message);
                         return;
                     }
                     var data = response.data || [];
@@ -1838,7 +1924,8 @@
                                 <td>${v.homework || '—'}</td>
                                 <td>${type}</td>
                                 <td>
-                                    <button class="admin-btn small" onclick="openHomeworkModal('${v.id}')" style="background:#27ae60; color:white; border:none; padding:4px 12px; border-radius:12px; cursor:pointer;">📝 ДЗ под видео</button>
+                                    <button class="admin-btn small" onclick="openHomeworkModal('first')" style="background:#27ae60; color:white; border:none; padding:4px 12px; border-radius:12px; cursor:pointer;">📝 ДЗ (1)</button>
+                                    <button class="admin-btn small" onclick="openHomeworkModal('second')" style="background:#8e44ad; color:white; border:none; padding:4px 12px; border-radius:12px; cursor:pointer;">📝 ДЗ (2)</button>
                                     <button class="admin-btn danger" onclick="deleteVideo('${v.id}')">🗑</button>
                                 </td>
                             </tr>
@@ -2137,17 +2224,19 @@
                                         sectionMap[s.id] = s.name;
                                     });
 
-                                    var html = '<table class="admin-table"><tr><th>Название</th><th>Ученик</th><th>Видео</th><th>Статус</th><th>Срок</th><th>Действия</th></tr>';
+                                    var html = '<table class="admin-table"><tr><th>Название</th><th>Ученик</th><th>Видео</th><th>Тип</th><th>Статус</th><th>Срок</th><th>Действия</th></tr>';
                                     for (var i = 0; i < data.length; i++) {
                                         var h = data[i];
                                         var studentName = studentMap[h.student_id] || 'Неизвестный ученик (ID: ' + h.student_id + ')';
                                         var statusText = h.status === 'done' ? '✅ Выполнено' : '⏳ В процессе';
                                         var sectionName = h.section_id ? (sectionMap[h.section_id] || 'Раздел ' + h.section_id) : '—';
+                                        var typeLabel = h.type === 'first' ? '1-я часть' : (h.type === 'second' ? '2-я часть' : '—');
                                         html += `
                                             <tr>
                                                 <td>${h.title}</td>
                                                 <td>${studentName}</td>
                                                 <td>${sectionName}</td>
+                                                <td>${typeLabel}</td>
                                                 <td>${statusText}</td>
                                                 <td>${h.deadline || '—'}</td>
                                                 <td>
