@@ -1807,9 +1807,10 @@
             var container = document.getElementById('homeworksList');
             container.innerHTML = '⏳ Загрузка...';
 
+            // Сначала загружаем все ДЗ
             supabase
                 .from('homeworks')
-                .select('*, students(name), video_sections(name)')
+                .select('*')
                 .order('created_at', { ascending: false })
                 .then(function(response) {
                     if (response.error) {
@@ -1821,29 +1822,60 @@
                         container.innerHTML = '📭 Нет домашних заданий';
                         return;
                     }
-                    var html = '<table class="admin-table"><tr><th>Название</th><th>Ученик</th><th>Видео</th><th>Статус</th><th>Срок</th><th>Ссылка на видео</th><th>Действия</th></tr>';
-                    for (var i = 0; i < data.length; i++) {
-                        var h = data[i];
-                        var studentName = h.students ? h.students.name : '—';
-                        var sectionName = h.video_sections ? h.video_sections.name : '—';
-                        var statusText = h.status === 'done' ? '✅ Выполнено' : '⏳ В процессе';
-                        html += `
-                            <tr>
-                                <td>${h.title}</td>
-                                <td>${studentName}</td>
-                                <td>${sectionName}</td>
-                                <td>${statusText}</td>
-                                <td>${h.deadline || '—'}</td>
-                                <td>${h.video_link ? `<a href="${h.video_link}" target="_blank" style="color:#88ccff;">Смотреть</a>` : '—'}</td>
-                                <td>
-                                    <button class="admin-btn" onclick="toggleHomeworkStatus('${h.id}', '${h.status}')">${h.status === 'done' ? '↩ Вернуть' : '✅ Отметить'}</button>
-                                    <button class="admin-btn danger" onclick="deleteHomework('${h.id}')">🗑</button>
-                                </td>
-                            </tr>
-                        `;
-                    }
-                    html += '</table>';
-                    container.innerHTML = html;
+
+                    // Загружаем учеников, чтобы показывать имена
+                    supabase
+                        .from('students')
+                        .select('id, name')
+                        .then(function(studentsRes) {
+                            var students = studentsRes.data || [];
+                            var studentMap = {};
+                            students.forEach(function(s) {
+                                studentMap[s.id] = s.name;
+                            });
+
+                            // Загружаем разделы для отображения названий
+                            supabase
+                                .from('video_sections')
+                                .select('id, name')
+                                .then(function(sectionsRes) {
+                                    var sections = sectionsRes.data || [];
+                                    var sectionMap = {};
+                                    sections.forEach(function(s) {
+                                        sectionMap[s.id] = s.name;
+                                    });
+
+                                    var html = '<table class="admin-table"><tr><th>Название</th><th>Ученик</th><th>Видео</th><th>Статус</th><th>Срок</th><th>Ссылка на видео</th><th>Действия</th></tr>';
+                                    for (var i = 0; i < data.length; i++) {
+                                        var h = data[i];
+                                        var studentName = studentMap[h.student_id] || 'Неизвестный ученик (ID: ' + h.student_id + ')';
+                                        var statusText = h.status === 'done' ? '✅ Выполнено' : '⏳ В процессе';
+                                        var sectionName = h.section_id ? (sectionMap[h.section_id] || 'Раздел ' + h.section_id) : '—';
+                                        html += `
+                                            <tr>
+                                                <td>${h.title}</td>
+                                                <td>${studentName}</td>
+                                                <td>${sectionName}</td>
+                                                <td>${statusText}</td>
+                                                <td>${h.deadline || '—'}</td>
+                                                <td>${h.video_link ? `<a href="${h.video_link}" target="_blank" style="color:#88ccff;">Смотреть</a>` : '—'}</td>
+                                                <td>
+                                                    <button class="admin-btn" onclick="toggleHomeworkStatus('${h.id}', '${h.status}')">${h.status === 'done' ? '↩ Вернуть' : '✅ Отметить'}</button>
+                                                    <button class="admin-btn danger" onclick="deleteHomework('${h.id}')">🗑</button>
+                                                </td>
+                                            </tr>
+                                        `;
+                                    }
+                                    html += '</table>';
+                                    container.innerHTML = html;
+                                })
+                                .catch(function(err) {
+                                    container.innerHTML = '❌ Ошибка загрузки разделов: ' + err.message;
+                                });
+                        })
+                        .catch(function(err) {
+                            container.innerHTML = '❌ Ошибка загрузки учеников: ' + err.message;
+                        });
                 })
                 .catch(function(err) {
                     container.innerHTML = '❌ Ошибка: ' + err.message;
