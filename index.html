@@ -805,7 +805,7 @@
                         // ==== ПОКАЗЫВАЕМ ССЫЛКУ НА ДЗ (ЕСЛИ ЕСТЬ ПРИВЯЗКА К ЭТОМУ ВИДЕО) ====
                         if (currentUser && currentUser.role === 'student') {
                             var hwForVideo = await supabase
-                                .from('homeworks')
+                                .from('homework')
                                 .select('*')
                                 .eq('section_id', videoId)
                                 .eq('student_id', currentUser.id)
@@ -1024,7 +1024,7 @@
             homeworkList.innerHTML = '⏳ Загрузка...';
 
             supabase
-                .from('homeworks')
+                .from('homework')
                 .select('*, video_sections(name, order_num)')
                 .eq('student_id', studentId)
                 .order('deadline', { ascending: true })
@@ -1123,7 +1123,7 @@
 
         function markDone(id) {
             supabase
-                .from('homeworks')
+                .from('homework')
                 .update({ status: 'done' })
                 .eq('id', id)
                 .then(function(response) {
@@ -1967,7 +1967,7 @@
             container.innerHTML = '⏳ Загрузка...';
 
             supabase
-                .from('homeworks')
+                .from('homework')
                 .select('*, video_sections(name, order_num), students(name)')
                 .order('created_at', { ascending: false })
                 .then(function(response) {
@@ -2170,13 +2170,13 @@
                 try {
                     const path = 'homeworks/' + Date.now() + '_' + file.name;
                     const { error: uploadError } = await supabase.storage
-                        .from('homeworks')
+                        .from('homework')
                         .upload(path, file);
                         
                     if (uploadError) throw uploadError;
                     
                     const { data: urlData } = supabase.storage
-                        .from('homeworks')
+                        .from('homework')
                         .getPublicUrl(path);
                         
                     pdfUrl = urlData.publicUrl;
@@ -2224,7 +2224,7 @@
 
             try {
                 const { error } = await supabase
-                    .from('homeworks')
+                    .from('homework')
                     .insert(homeworks);
                     
                 if (error) throw error;
@@ -2245,7 +2245,7 @@
         function toggleHomeworkStatus(id, currentStatus) {
             var newStatus = currentStatus === 'done' ? 'pending' : 'done';
             supabase
-                .from('homeworks')
+                .from('homework')
                 .update({ status: newStatus })
                 .eq('id', id)
                 .then(function(response) {
@@ -2264,7 +2264,7 @@
         function deleteHomework(id) {
             if (!confirm('Удалить задание?')) return;
             supabase
-                .from('homeworks')
+                .from('homework')
                 .delete()
                 .eq('id', id)
                 .then(function(response) {
@@ -2389,7 +2389,7 @@
                     totalStudents = r1.data ? r1.data.length : 0;
 
                     supabase
-                        .from('homeworks')
+                        .from('homework')
                         .select('*')
                         .then(function(r2) {
                             if (r2.error) { container.innerHTML = '❌ Ошибка'; return; }
