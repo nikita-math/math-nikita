@@ -73,6 +73,13 @@
         .hw-card .video-fallback .label { color: #f5a623; font-weight: 600; }
         .hw-card .video-fallback a { color: #88ccff; word-break: break-all; text-decoration: none; }
         .hw-card .video-fallback a:hover { text-decoration: underline; }
+        .hw-card .task-item-inline { padding: 4px 0; border-bottom: 1px solid rgba(255,255,255,0.05); display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+        .hw-card .task-item-inline .task-num { color: #b0c4de; font-weight: 600; min-width: 30px; }
+        .hw-card .task-item-inline input { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); border-radius: 6px; padding: 4px 10px; color: white; width: 120px; }
+        .hw-card .task-item-inline input:focus { border-color: #667eea; outline: none; }
+        .hw-card .task-item-inline .check-btn { background: #302b63; color: white; border: none; padding: 2px 14px; border-radius: 12px; cursor: pointer; font-size: 13px; }
+        .hw-card .task-item-inline .check-btn:hover { background: #667eea; }
+        .hw-card .task-item-inline .answer-result { margin-left: 4px; font-size: 14px; }
 
         .video-section { margin-top: 30px; }
         .video-section h3 { font-size: 22px; margin-bottom: 16px; color: #ffffff; }
@@ -289,6 +296,18 @@
         .video-item .video-fallback-link a:hover {
             text-decoration: underline;
         }
+        .video-item .video-homework-link {
+            margin-top: 12px;
+            display: inline-block;
+            background: #302b63;
+            color: white;
+            padding: 8px 20px;
+            border-radius: 20px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: 0.3s;
+        }
+        .video-item .video-homework-link:hover { background: #667eea; }
 
         #adminPanel { background: rgba(255,255,255,0.05); backdrop-filter: blur(10px); border-radius: 24px; padding: 30px 40px; border: 1px solid rgba(255,255,255,0.1); display: none; margin-top: 40px; }
         .admin-tabs { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 15px; }
@@ -306,6 +325,7 @@
         .admin-btn.danger:hover { background: #c0392b; }
         .admin-btn.success { background: #27ae60; }
         .admin-btn.success:hover { background: #1e8449; }
+        .admin-btn.small { padding: 4px 12px; font-size: 12px; }
 
         footer { text-align: center; padding: 30px 20px; color: #666; font-size: 14px; border-top: 1px solid rgba(255,255,255,0.05); margin-top: 40px; }
 
@@ -318,6 +338,8 @@
             .video-tabs button { font-size: 14px; padding: 10px 14px; flex: 1 1 100%; }
             .schedule-table { font-size: 12px; }
             .schedule-table th, .schedule-table td { padding: 6px 4px; min-width: 60px; }
+            .hw-card .task-item-inline { flex-direction: column; align-items: stretch; }
+            .hw-card .task-item-inline input { width: 100%; }
         }
     </style>
 </head>
@@ -553,12 +575,14 @@
                 if (videos.length === 0) {
                     html += '<div class="empty">📭 Нет видео в этом разделе</div>';
                 } else {
-                    videos.forEach(function(v) {
+                    for (var vIdx = 0; vIdx < videos.length; vIdx++) {
+                        var v = videos[vIdx];
                         var isFile = v.is_file || false;
                         var isVk = v.is_vk || false;
                         var videoUrl = v.video_url || v.youtube_url || '#';
                         var title = v.title || 'Видео';
                         var homework = v.homework || '';
+                        var videoId = v.id;
 
                         html += '<div class="video-item">';
 
@@ -572,7 +596,7 @@
                                 </div>
                             `;
                         } else if (videoUrl && videoUrl !== '#' && videoUrl.includes('youtube.com')) {
-                            var embedUrl = videoUrl.replace('watch?v=', 'embed/');
+                            var embedUrl = videoUrl.replace('watch?v=', 'embed/').replace('youtu.be/', 'youtube.com/embed/');
                             html += `
                                 <div class="video-player-wrapper">
                                     <iframe src="${embedUrl}" allowfullscreen></iframe>
@@ -582,9 +606,9 @@
                             var vkEmbed = videoUrl;
                             if (videoUrl.includes('vk.com/video')) {
                                 var parts = videoUrl.split('/');
-                                var videoId = parts[parts.length - 1];
-                                if (videoId && videoId.includes('_')) {
-                                    var ids = videoId.split('_');
+                                var videoIdParts = parts[parts.length - 1];
+                                if (videoIdParts && videoIdParts.includes('_')) {
+                                    var ids = videoIdParts.split('_');
                                     vkEmbed = 'https://vk.com/video_ext.php?oid=' + ids[0] + '&id=' + ids[1] + '&hash=' + Date.now();
                                 }
                             }
@@ -622,8 +646,37 @@
                             `;
                         }
 
+                        // ==== ПОКАЗЫВАЕМ ССЫЛКУ НА ДЗ (ЕСЛИ ЕСТЬ ПРИВЯЗКА К ЭТОМУ ВИДЕО) ====
+                        if (currentUser && currentUser.role === 'student') {
+                            var hwForVideo = await supabase
+                                .from('homeworks')
+                                .select('*')
+                                .eq('section_id', videoId)
+                                .eq('student_id', currentUser.id)
+                                .maybeSingle();
+
+                            if (hwForVideo.data) {
+                                var hw = hwForVideo.data;
+                                var isDone = hw.status === 'done';
+                                var statusText = isDone ? '✅ Выполнено' : '⏳ Ожидает выполнения';
+                                var btnHtml = !isDone ? `<a href="#dashboard" class="video-homework-link" onclick="document.getElementById('dashboard').scrollIntoView({behavior:'smooth'})">📝 Перейти к ДЗ</a>` : '';
+                                html += `
+                                    <div style="margin-top: 14px; padding: 14px 18px; background: rgba(39, 174, 96, 0.1); border-radius: 12px; border-left: 4px solid ${isDone ? '#2ecc71' : '#f39c12'};">
+                                        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
+                                            <div>
+                                                <strong style="color: #ffffff;">📚 ДЗ: ${hw.title}</strong>
+                                                <span style="color: #888; font-size: 14px; margin-left: 12px;">${statusText}</span>
+                                            </div>
+                                            ${btnHtml}
+                                        </div>
+                                        ${hw.file_url ? `<div style="margin-top: 6px; font-size: 14px;">📎 <a href="${hw.file_url}" target="_blank" style="color: #88ccff;">Скачать файл</a></div>` : ''}
+                                    </div>
+                                `;
+                            }
+                        }
+
                         html += '</div>';
-                    });
+                    }
                 }
 
                 content.innerHTML = html;
@@ -767,6 +820,34 @@
                 });
         });
 
+        function checkAnswer(button, correctAnswer) {
+            var input = button.previousElementSibling;
+            var resultSpan = button.nextElementSibling;
+            var userAnswer = input.value.trim();
+
+            if (!userAnswer) {
+                resultSpan.textContent = '❌ Введите ответ';
+                resultSpan.style.color = '#f1948a';
+                return;
+            }
+
+            // Нормализуем ответ (убираем пробелы, заменяем запятую на точку)
+            var normalizedUser = userAnswer.replace(/,/g, '.').replace(/\s/g, '');
+            var normalizedCorrect = String(correctAnswer).replace(/,/g, '.').replace(/\s/g, '');
+
+            if (normalizedUser === normalizedCorrect) {
+                resultSpan.textContent = '✅ Верно!';
+                resultSpan.style.color = '#2ecc71';
+                // Отключаем кнопку и инпут
+                input.disabled = true;
+                button.disabled = true;
+                button.style.opacity = '0.5';
+            } else {
+                resultSpan.textContent = '❌ Ошибка (правильно: ' + correctAnswer + ')';
+                resultSpan.style.color = '#f1948a';
+            }
+        }
+
         function loadHomework(studentId) {
             homeworkList.innerHTML = '⏳ Загрузка...';
 
@@ -798,7 +879,7 @@
                         var statusClass = hw.status === 'done' ? 'done' : 'pending';
                         var statusText = hw.status === 'done' ? '✅ Выполнено' : '⏳ Ожидает проверки';
                         var btnHtml = hw.status !== 'done' ? `<button class="btn-start" onclick="markDone('${hw.id}')">✅ Отметить выполненным</button>` : '';
-                        
+
                         var videoBlock = '';
                         if (hw.video_link) {
                             videoBlock = `
@@ -809,14 +890,64 @@
                             `;
                         }
 
+                        // ==== ИНТЕРАКТИВНЫЕ ЗАДАНИЯ ====
+                        var tasksHtml = '';
+                        if (hw.tasks && hw.tasks.length > 0) {
+                            tasksHtml = '<div style="margin-top: 10px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.05);">';
+                            for (var j = 0; j < hw.tasks.length; j++) {
+                                var task = hw.tasks[j];
+                                if (task.is_homework) {
+                                    var isDone = task.done || false;
+                                    tasksHtml += `
+                                        <div class="task-item-inline">
+                                            <span class="task-num">№${task.num}</span>
+                                            <input type="text" placeholder="Введите ответ" ${isDone ? 'disabled' : ''} value="${isDone ? '✅' : ''}">
+                                            <button class="check-btn" onclick="checkAnswer(this, '${task.correct_answer}')" ${isDone ? 'disabled style="opacity:0.5;"' : ''}>Проверить</button>
+                                            <span class="answer-result">${isDone ? '✅ Верно!' : ''}</span>
+                                            ${task.type === 'second_part' ? '<span style="color:#f39c12; font-size:12px;">(2-я часть)</span>' : ''}
+                                        </div>
+                                    `;
+                                }
+                            }
+                            tasksHtml += '</div>';
+                        }
+
+                        // ==== ФАЙЛ ====
+                        var fileHtml = '';
+                        if (hw.file_url) {
+                            fileHtml = `<div class="meta">📎 <a href="${hw.file_url}" target="_blank">Скачать файл</a></div>`;
+                        }
+
+                        // ==== СВЯЗЬ С ВИДЕО ====
+                        var sectionHtml = '';
+                        if (hw.section_id) {
+                            supabase
+                                .from('video_sections')
+                                .select('name')
+                                .eq('id', hw.section_id)
+                                .single()
+                                .then(function(sectionRes) {
+                                    if (!sectionRes.error && sectionRes.data) {
+                                        var sectionName = sectionRes.data.name;
+                                        var sectionEl = document.getElementById('section-label-' + hw.id);
+                                        if (sectionEl) {
+                                            sectionEl.textContent = '📺 ' + sectionName;
+                                        }
+                                    }
+                                });
+                            sectionHtml = `<div class="meta" id="section-label-${hw.id}">📺 Загрузка...</div>`;
+                        }
+
                         html += `
                             <div class="hw-card">
                                 <div class="title">${hw.title}</div>
+                                ${sectionHtml}
                                 <div class="meta">📅 ${hw.deadline ? 'Срок: ' + hw.deadline : 'Без срока'}</div>
                                 <div class="status ${statusClass}">${statusText}</div>
                                 ${btnHtml}
-                                ${hw.file_url ? `<div class="meta">📎 <a href="${hw.file_url}" target="_blank">Скачать файл</a></div>` : ''}
+                                ${fileHtml}
                                 ${videoBlock}
+                                ${tasksHtml}
                             </div>
                         `;
                     }
@@ -1678,7 +1809,7 @@
 
             supabase
                 .from('homeworks')
-                .select('*, students(name)')
+                .select('*, students(name), video_sections(name)')
                 .order('created_at', { ascending: false })
                 .then(function(response) {
                     if (response.error) {
@@ -1690,15 +1821,17 @@
                         container.innerHTML = '📭 Нет домашних заданий';
                         return;
                     }
-                    var html = '<table class="admin-table"><tr><th>Название</th><th>Ученик</th><th>Статус</th><th>Срок</th><th>Ссылка на видео</th><th>Действия</th></tr>';
+                    var html = '<table class="admin-table"><tr><th>Название</th><th>Ученик</th><th>Видео</th><th>Статус</th><th>Срок</th><th>Ссылка на видео</th><th>Действия</th></tr>';
                     for (var i = 0; i < data.length; i++) {
                         var h = data[i];
                         var studentName = h.students ? h.students.name : '—';
+                        var sectionName = h.video_sections ? h.video_sections.name : '—';
                         var statusText = h.status === 'done' ? '✅ Выполнено' : '⏳ В процессе';
                         html += `
                             <tr>
                                 <td>${h.title}</td>
                                 <td>${studentName}</td>
+                                <td>${sectionName}</td>
                                 <td>${statusText}</td>
                                 <td>${h.deadline || '—'}</td>
                                 <td>${h.video_link ? `<a href="${h.video_link}" target="_blank" style="color:#88ccff;">Смотреть</a>` : '—'}</td>
@@ -1722,59 +1855,128 @@
                 .from('students')
                 .select('*')
                 .eq('role', 'student')
-                .then(function(response) {
-                    if (response.error) {
-                        alert('Ошибка: ' + response.error.message);
+                .then(function(studentsRes) {
+                    if (studentsRes.error) {
+                        alert('Ошибка загрузки учеников: ' + studentsRes.error.message);
                         return;
                     }
-                    var students = response.data || [];
+                    var students = studentsRes.data || [];
                     if (students.length === 0) {
-                        alert('Нет учеников!');
+                        alert('Нет учеников! Добавь сначала.');
                         return;
                     }
-                    var list = 'Выберите ученика:\n';
+
+                    var studentList = 'Выберите ученика:\n';
                     for (var i = 0; i < students.length; i++) {
-                        list += (i + 1) + '. ' + students[i].name + ' (' + students[i].email + ')\n';
+                        studentList += (i + 1) + '. ' + students[i].name + ' (' + students[i].email + ')\n';
                     }
-                    var choice = prompt(list);
-                    if (!choice) return;
-                    var idx = parseInt(choice) - 1;
-                    if (idx < 0 || idx >= students.length) {
+                    var studentChoice = prompt(studentList);
+                    if (!studentChoice) return;
+                    var studentIdx = parseInt(studentChoice) - 1;
+                    if (studentIdx < 0 || studentIdx >= students.length) {
                         alert('Неверный выбор!');
                         return;
                     }
-                    var student = students[idx];
+                    var student = students[studentIdx];
+
                     var title = prompt('Введите название ДЗ:');
                     if (!title) return;
                     var deadline = prompt('Введите срок (ГГГГ-ММ-ДД) или Enter:');
                     var videoLink = prompt('Введите ссылку на видео (если видео не работает, Enter):');
 
-                    var studentId = student.id || student.student_id || student.user_id;
-
+                    // ==== ВЫБОР РАЗДЕЛА (ВИДЕО) ДЛЯ ПРИВЯЗКИ ====
+                    var sectionId = null;
                     supabase
-                        .from('homeworks')
-                        .insert([{
-                            title: title,
-                            student_id: studentId,
-                            status: 'pending',
-                            deadline: deadline || null,
-                            video_link: videoLink || null
-                        }])
-                        .then(function(r) {
-                            if (r.error) {
-                                alert('❌ Ошибка: ' + r.error.message);
-                            } else {
-                                alert('✅ ДЗ добавлено!');
-                                loadAllHomeworks();
-                                if (currentUser) loadHomework(currentUser.id);
+                        .from('video_sections')
+                        .select('*')
+                        .order('order_num', { ascending: true })
+                        .then(function(sectionsRes) {
+                            if (sectionsRes.error) {
+                                alert('Ошибка загрузки разделов: ' + sectionsRes.error.message);
+                                return;
                             }
+                            var sections = sectionsRes.data || [];
+                            if (sections.length > 0) {
+                                var sectionList = 'Выберите видео-раздел (или Enter для пропуска):\n';
+                                for (var s = 0; s < sections.length; s++) {
+                                    sectionList += (s + 1) + '. ' + sections[s].name + '\n';
+                                }
+                                var sectionChoice = prompt(sectionList);
+                                if (sectionChoice) {
+                                    var sectionIdx = parseInt(sectionChoice) - 1;
+                                    if (sectionIdx >= 0 && sectionIdx < sections.length) {
+                                        sectionId = sections[sectionIdx].id;
+                                    }
+                                }
+                            }
+
+                            // ==== ФАЙЛ ====
+                            var fileUrl = prompt('Введите ссылку на файл (PDF) или Enter:');
+
+                            // ==== ЗАДАНИЯ ====
+                            var tasksInput = prompt('Введите задания в формате: номер:тип:правильный_ответ (через запятую). Пример: 2:first:4,3:second:0.5,5:first:2.5\n"first" — 1-я часть, "second" — 2-я часть');
+                            var tasks = [];
+                            if (tasksInput) {
+                                var parts = tasksInput.split(',');
+                                for (var p = 0; p < parts.length; p++) {
+                                    var taskParts = parts[p].split(':');
+                                    if (taskParts.length >= 3) {
+                                        var num = parseInt(taskParts[0]);
+                                        var type = taskParts[1].trim();
+                                        var answer = taskParts[2].trim();
+                                        if (!isNaN(num)) {
+                                            tasks.push({
+                                                num: num,
+                                                type: type,
+                                                correct_answer: answer,
+                                                is_homework: true,
+                                                done: false
+                                            });
+                                        }
+                                    }
+                                }
+                            }
+
+                            if (tasks.length === 0) {
+                                var confirmNoTasks = confirm('Вы не добавили задания. Продолжить без них?');
+                                if (!confirmNoTasks) return;
+                            }
+
+                            var studentId = student.id || student.student_id || student.user_id;
+
+                            supabase
+                                .from('homeworks')
+                                .insert([{
+                                    title: title,
+                                    student_id: studentId,
+                                    status: 'pending',
+                                    deadline: deadline || null,
+                                    video_link: videoLink || null,
+                                    file_url: fileUrl || null,
+                                    section_id: sectionId || null,
+                                    tasks: tasks.length > 0 ? tasks : null
+                                }])
+                                .then(function(r) {
+                                    if (r.error) {
+                                        alert('❌ Ошибка: ' + r.error.message);
+                                    } else {
+                                        alert('✅ ДЗ добавлено!');
+                                        loadAllHomeworks();
+                                        if (currentUser) loadHomework(currentUser.id);
+                                        if (currentUser && currentUser.role === 'admin') loadAllHomeworks();
+                                    }
+                                })
+                                .catch(function(err) {
+                                    alert('❌ Ошибка: ' + err.message);
+                                });
                         })
                         .catch(function(err) {
-                            alert('❌ Ошибка: ' + err.message);
+                            alert('Ошибка загрузки разделов: ' + err.message);
                         });
+
                 })
                 .catch(function(err) {
-                    alert('Ошибка: ' + err.message);
+                    alert('Ошибка загрузки учеников: ' + err.message);
                 });
         }
 
