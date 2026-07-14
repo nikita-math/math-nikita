@@ -3,132 +3,2002 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Загрузка видео</title>
+    <title>Математика с Никитой</title>
     <style>
-        body { font-family: Arial; background: #0b0e1a; color: #fff; max-width: 600px; margin: 50px auto; padding: 20px; }
-        input, select, button { display: block; width: 100%; padding: 12px; margin: 10px 0; border-radius: 8px; border: 1px solid #444; background: #1a1a2e; color: #fff; font-size: 16px; }
-        button { background: #302b63; cursor: pointer; }
-        button:hover { background: #667eea; }
-        #status { margin-top: 20px; padding: 15px; border-radius: 8px; }
-        .success { background: #1e8449; color: #fff; }
-        .error { background: #922b21; color: #fff; }
-        .info { background: #1a5276; color: #fff; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: Arial, sans-serif; background: #0b0e1a; color: #ffffff; line-height: 1.6; min-height: 100vh; position: relative; overflow-x: hidden; }
+
+        .stars { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; background: transparent; }
+        .star { position: absolute; background: white; border-radius: 50%; animation: twinkle var(--duration) ease-in-out infinite alternate; }
+        @keyframes twinkle { 0% { opacity: 0.2; transform: scale(1); } 100% { opacity: 1; transform: scale(1.5); } }
+
+        .container { max-width: 1100px; margin: 0 auto; padding: 40px 20px; position: relative; z-index: 1; }
+
+        header { background: linear-gradient(135deg, #0d1b2a, #1b2a4a, #0d1b2a); padding: 60px 20px; text-align: center; border-radius: 24px; margin-bottom: 40px; border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 0 60px rgba(48, 43, 99, 0.3); }
+        header h1 { font-size: 48px; font-weight: 900; letter-spacing: 3px; }
+        header h1 span { color: #f5a623; text-shadow: 0 0 30px rgba(245, 166, 35, 0.3); }
+        header p { font-size: 20px; opacity: 0.8; margin-top: 8px; color: #b0c4de; }
+
+        .profile { background: rgba(255,255,255,0.05); backdrop-filter: blur(10px); border-radius: 24px; padding: 40px; border: 1px solid rgba(255,255,255,0.1); display: flex; flex-wrap: wrap; gap: 40px; align-items: center; margin-bottom: 40px; }
+        .profile-avatar { width: 150px; height: 150px; border-radius: 50%; background: linear-gradient(135deg, #667eea, #764ba2); display: flex; align-items: center; justify-content: center; font-size: 70px; color: white; flex-shrink: 0; }
+        .profile-info h2 { font-size: 32px; color: #ffffff; }
+        .profile-info .badge { display: inline-block; background: linear-gradient(135deg, #f5a623, #f7c948); color: #0b0e1a; padding: 4px 16px; border-radius: 30px; font-weight: 700; font-size: 14px; margin-top: 6px; }
+        .profile-info p { margin-top: 12px; font-size: 18px; color: #b0c4de; }
+        .profile-info ul { list-style: none; margin-top: 14px; }
+        .profile-info ul li { padding: 6px 0; font-size: 16px; color: #c0d0e0; }
+        .profile-info ul li::before { content: "✅ "; }
+
+        .contacts { background: rgba(255,255,255,0.05); backdrop-filter: blur(10px); border-radius: 24px; padding: 30px 40px; border: 1px solid rgba(255,255,255,0.1); margin-bottom: 40px; }
+        .contacts h3 { font-size: 24px; margin-bottom: 16px; color: #ffffff; }
+        .contacts a { display: inline-block; margin-right: 20px; color: #b0c4de; text-decoration: none; font-weight: 600; padding: 8px 20px; border-radius: 30px; background: rgba(255,255,255,0.08); transition: 0.3s; }
+        .contacts a:hover { background: #302b63; color: #ffffff; }
+
+        .task-catalog { background: rgba(255,255,255,0.05); backdrop-filter: blur(10px); border-radius: 24px; padding: 30px 40px; border: 1px solid rgba(255,255,255,0.1); margin-bottom: 40px; }
+        .task-catalog h3 { font-size: 24px; margin-bottom: 16px; color: #ffffff; }
+        .task-filter { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 20px; }
+        .task-filter button { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.1); padding: 8px 20px; border-radius: 30px; cursor: pointer; color: #b0c4de; transition: 0.3s; }
+        .task-filter button:hover { background: #302b63; color: white; border-color: #667eea; }
+        .task-filter button.active { background: #302b63; color: white; border-color: #667eea; }
+        .task-item { padding: 16px; border-bottom: 1px solid rgba(255,255,255,0.05); color: #c0d0e0; }
+        .task-item:last-child { border-bottom: none; }
+        .task-item .question { font-size: 18px; color: #ffffff; }
+        .task-item .topic { color: #888; font-size: 14px; }
+        .task-item .answer { display: none; margin-top: 10px; padding: 12px; background: rgba(39, 174, 96, 0.2); border-radius: 8px; color: #7ddfa0; border: 1px solid rgba(39, 174, 96, 0.2); }
+        .task-item .answer.show { display: block; }
+        .task-item button { background: #302b63; color: white; border: none; padding: 6px 16px; border-radius: 20px; cursor: pointer; margin-top: 10px; transition: 0.3s; }
+        .task-item button:hover { background: #667eea; }
+
+        .login-section { background: rgba(255,255,255,0.05); backdrop-filter: blur(10px); border-radius: 24px; padding: 30px 40px; border: 1px solid rgba(255,255,255,0.1); margin-bottom: 40px; }
+        .login-section h3 { font-size: 24px; margin-bottom: 16px; color: #ffffff; }
+        .login-section input { width: 100%; max-width: 320px; padding: 12px 18px; border: 1px solid rgba(255,255,255,0.1); border-radius: 30px; font-size: 16px; margin-bottom: 12px; display: block; background: rgba(255,255,255,0.05); color: #ffffff; }
+        .login-section input:focus { border-color: #667eea; outline: none; }
+        .login-section button { background: linear-gradient(135deg, #302b63, #667eea); color: white; border: none; padding: 12px 40px; border-radius: 30px; font-size: 18px; font-weight: 700; cursor: pointer; transition: 0.3s; }
+        .login-section button:hover { transform: scale(1.03); box-shadow: 0 0 40px rgba(102, 126, 234, 0.4); }
+
+        #dashboard { background: rgba(255,255,255,0.05); backdrop-filter: blur(10px); border-radius: 24px; padding: 30px 40px; border: 1px solid rgba(255,255,255,0.1); display: none; margin-top: 40px; }
+        #dashboard .header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; margin-bottom: 20px; }
+        #dashboard .logout-btn { background: #e74c3c; color: white; border: none; padding: 10px 24px; border-radius: 30px; cursor: pointer; }
+        #dashboard .logout-btn:hover { background: #c0392b; }
+        #dashboard .progress { background: rgba(255,255,255,0.05); padding: 15px; border-radius: 12px; margin-bottom: 20px; }
+        #dashboard .progress .bar { background: rgba(255,255,255,0.1); border-radius: 10px; height: 10px; overflow: hidden; margin-top: 5px; }
+        #dashboard .progress .bar .fill { background: linear-gradient(90deg, #27ae60, #2ecc71); height: 100%; transition: width 0.5s; }
+        .hw-card { padding: 16px; border: 1px solid rgba(255,255,255,0.05); border-radius: 12px; margin-bottom: 12px; background: rgba(255,255,255,0.03); }
+        .hw-card .title { font-size: 18px; font-weight: 700; color: #ffffff; }
+        .hw-card .meta { color: #888; font-size: 14px; margin: 4px 0; }
+        .hw-card .status.done { color: #2ecc71; }
+        .hw-card .status.pending { color: #f39c12; }
+        .hw-card .btn-start { background: #27ae60; color: white; border: none; padding: 6px 16px; border-radius: 20px; cursor: pointer; margin-top: 8px; }
+        .hw-card .btn-start:hover { background: #1e8449; }
+        .hw-card .video-fallback { margin-top: 10px; padding: 10px 14px; background: rgba(245, 166, 35, 0.1); border-radius: 8px; border-left: 4px solid #f5a623; }
+        .hw-card .video-fallback .label { color: #f5a623; font-weight: 600; }
+        .hw-card .video-fallback a { color: #88ccff; word-break: break-all; text-decoration: none; }
+        .hw-card .video-fallback a:hover { text-decoration: underline; }
+
+        .video-section { margin-top: 30px; }
+        .video-section h3 { font-size: 22px; margin-bottom: 16px; color: #ffffff; }
+
+        .part-divider { font-size: 24px; font-weight: 900; color: #f5a623; margin: 30px 0 20px 0; padding: 12px 20px; background: rgba(245, 166, 35, 0.1); border-radius: 12px; border-left: 6px solid #f5a623; text-shadow: 0 0 20px rgba(245, 166, 35, 0.2); }
+
+        .video-tabs { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 20px; }
+        .video-tabs button {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            padding: 14px 22px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 16px;
+            transition: 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex: 1 1 200px;
+            color: #b0c4de; box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+            width: 100%;
+            text-align: left;
+        }
+        .video-tabs button:hover { border-color: #667eea; transform: translateY(-2px); box-shadow: 0 6px 20px rgba(102, 126, 234, 0.2); background: rgba(102, 126, 234, 0.1); color: #ffffff; }
+        .video-tabs button .num { display: inline-flex; align-items: center; justify-content: center; width: 30px; height: 30px; background: rgba(255,255,255,0.1); color: #b0c4de; border-radius: 50%; font-size: 14px; font-weight: 900; flex-shrink: 0; }
+        .video-tabs button:hover .num { background: white; color: #302b63; }
+
+        .schedule-section { margin-top: 30px; }
+        .schedule-section h3 { font-size: 22px; margin-bottom: 16px; color: #ffffff; }
+        .schedule-table-wrap { overflow-x: auto; }
+        .schedule-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: rgba(255,255,255,0.03);
+            border-radius: 12px;
+            overflow: hidden;
+            font-size: 14px;
+        }
+        .schedule-table th,
+        .schedule-table td {
+            border: 1px solid rgba(255,255,255,0.08);
+            padding: 10px 8px;
+            text-align: center;
+            min-width: 80px;
+        }
+        .schedule-table th {
+            background: rgba(255,255,255,0.06);
+            color: #f5a623;
+            font-weight: 700;
+            font-size: 15px;
+        }
+        .schedule-table td {
+            color: #b0c4de;
+            vertical-align: middle;
+        }
+        .schedule-table .row-num {
+            color: #666;
+            font-weight: 700;
+            min-width: 40px;
+        }
+        .schedule-table .cell-empty {
+            color: #444;
+        }
+        .schedule-table .cell-occupied {
+            color: #7ddfa0;
+            background: rgba(39, 174, 96, 0.1);
+            border-color: rgba(39, 174, 96, 0.15);
+        }
+        .schedule-table .cell-occupied .student-name {
+            color: #ffffff;
+        }
+        .schedule-table .cell-occupied .topic {
+            color: #7ddfa0;
+            font-size: 12px;
+        }
+        .schedule-table td .cell-content {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            cursor: pointer;
+            padding: 4px;
+            border-radius: 6px;
+            transition: 0.2s;
+        }
+        .schedule-table td .cell-content:hover {
+            background: rgba(255,255,255,0.05);
+        }
+        .schedule-table td .cell-content .student-name {
+            font-weight: 600;
+            color: #ffffff;
+            font-size: 14px;
+        }
+        .schedule-table td .cell-content .topic {
+            font-size: 12px;
+            color: #888;
+        }
+        .schedule-table td .cell-content .empty-text {
+            color: #444;
+            font-size: 12px;
+        }
+
+        .schedule-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-top: 20px;
+            align-items: center;
+        }
+        .schedule-actions button {
+            background: #302b63;
+            color: white;
+            border: none;
+            padding: 10px 24px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: 0.3s;
+        }
+        .schedule-actions button:hover {
+            background: #667eea;
+            transform: scale(1.02);
+        }
+
+        #sectionPage {
+            display: none;
+            background: rgba(255,255,255,0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 24px;
+            padding: 30px 40px;
+            border: 1px solid rgba(255,255,255,0.1);
+            margin-top: 40px;
+        }
+        #sectionPage.active { display: block; }
+        #sectionPage .back-btn {
+            background: none;
+            border: none;
+            color: #f5a623;
+            font-size: 18px;
+            cursor: pointer; font-weight: 600;
+            padding: 10px 0;
+            transition: 0.3s;
+            display: block;
+            text-align: left;
+        }
+        #sectionPage .back-btn:hover { color: #ffffff; }
+        #sectionPage .section-title { font-size: 32px; color: #f5a623; margin-bottom: 30px; text-align: center; text-shadow: 0 0 30px rgba(245, 166, 35, 0.2); }
+
+        .video-player-wrapper {
+            position: relative;
+            padding-bottom: 56.25%;
+            height: 0;
+            overflow: hidden;
+            border-radius: 12px;
+            margin-bottom: 12px;
+            background: #000;
+        }
+        .video-player-wrapper video,
+        .video-player-wrapper iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+            border-radius: 12px;
+        }
+        .video-item {
+            padding: 20px;
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 16px;
+            margin-bottom: 16px;
+            background: rgba(255,255,255,0.05);
+            transition: 0.3s;
+        }
+        .video-item:hover {
+            background: rgba(255,255,255,0.08);
+            border-color: rgba(102, 126, 234, 0.3);
+        }
+        .video-item .video-title {
+            color: #b0c4de;
+            font-size: 18px;
+            font-weight: 500;
+            display: block;
+            margin-bottom: 8px;
+        }
+        .video-item .video-title:hover { color: #ffffff; }
+        .video-item .video-homework {
+            margin-top: 16px;
+            padding: 16px 20px;
+            background: rgba(39, 174, 96, 0.1);
+            border-radius: 12px;
+            border-left: 4px solid #27ae60;
+            color: #7ddfa0;
+            font-size: 16px;
+        }
+        .video-item .video-homework strong { color: #ffffff; }
+        .video-item .video-fallback-link {
+            margin-top: 12px;
+            padding: 10px 14px;
+            background: rgba(245, 166, 35, 0.08);
+            border-radius: 8px;
+            border-left: 4px solid #f5a623;
+        }
+        .video-item .video-fallback-link .label {
+            color: #f5a623;
+            font-weight: 600;
+        }
+        .video-item .video-fallback-link a {
+            color: #88ccff;
+            word-break: break-all;
+            text-decoration: none;
+        }
+        .video-item .video-fallback-link a:hover {
+            text-decoration: underline;
+        }
+
+        #adminPanel { background: rgba(255,255,255,0.05); backdrop-filter: blur(10px); border-radius: 24px; padding: 30px 40px; border: 1px solid rgba(255,255,255,0.1); display: none; margin-top: 40px; }
+        .admin-tabs { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 15px; }
+        .admin-tabs button { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.05); padding: 10px 20px; border-radius: 30px; cursor: pointer; font-weight: 600; transition: 0.3s; color: #b0c4de; }
+        .admin-tabs button:hover { background: #302b63; color: white; border-color: #667eea; }
+        .admin-tabs button.active { background: #302b63; color: white; border-color: #667eea; }
+        .admin-content { display: none; }
+        .admin-content.active { display: block; }
+        .admin-table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        .admin-table th, .admin-table td { padding: 10px; border-bottom: 1px solid rgba(255,255,255,0.05); text-align: left; color: #c0d0e0; }
+        .admin-table th { background: rgba(255,255,255,0.05); color: #ffffff; }
+        .admin-btn { background: #302b63; color: white; border: none; padding: 8px 16px; border-radius: 20px; cursor: pointer; transition: 0.3s; }
+        .admin-btn:hover { background: #667eea; }
+        .admin-btn.danger { background: #e74c3c; }
+        .admin-btn.danger:hover { background: #c0392b; }
+        .admin-btn.success { background: #27ae60; }
+        .admin-btn.success:hover { background: #1e8449; }
+
+        footer { text-align: center; padding: 30px 20px; color: #666; font-size: 14px; border-top: 1px solid rgba(255,255,255,0.05); margin-top: 40px; }
+
+        @media (max-width: 700px) {
+            header h1 { font-size: 28px; }
+            .profile { flex-direction: column; text-align: center; }
+            .profile-avatar { width: 120px; height: 120px; font-size: 50px; }
+            .contacts a { display: block; margin: 8px 0; text-align: center; }
+            .admin-tabs { flex-direction: column; } .admin-table { font-size: 14px; }
+            .video-tabs button { font-size: 14px; padding: 10px 14px; flex: 1 1 100%; }
+            .schedule-table { font-size: 12px; }
+            .schedule-table th, .schedule-table td { padding: 6px 4px; min-width: 60px; }
+        }
     </style>
 </head>
 <body>
 
-    <h1>🎥 Загрузка видео</h1>
+    <div class="stars" id="starsContainer"></div>
 
-    <select id="sectionSelect">
-        <option value="">Выберите раздел...</option>
-    </select>
+    <div class="container">
 
-    <input type="text" id="videoTitle" placeholder="Название видео">
+        <header>
+            <h1>📐 Математика с <span>Никитой</span></h1>
+            <p>Подготовка к ЕГЭ по профильной математике на 90+ баллов</p>
+        </header>
 
-    <input type="file" id="fileInput" accept="video/mp4,video/webm">
+        <div id="mainContent">
+            <div class="profile" id="profileBlock">
+                <div class="profile-avatar">👨‍🏫</div>
+                <div class="profile-info">
+                    <h2>Никита</h2>
+                    <span class="badge">⭐ Репетитор со стажем 1.5 года</span>
+                    <p>Учусь в Московском энергетическом институте (МЭИ) на направлении «Ядерная физика». Готовлю учеников к ЕГЭ по профильной математике с 2025 года.</p>
+                    <ul>
+                        <li>10+ выпущенных учеников</li>
+                        <li>3 ученика набрали 100 баллов</li>
+                        <li>Автор собственной методики подготовки</li>
+                    </ul>
+                </div>
+            </div>
 
-    <input type="text" id="homeworkInput" placeholder="ДЗ к уроку (необязательно)">
+            <div class="contacts" id="contactsBlock">
+                <h3>📬 Связаться со мной</h3>
+                <a href="tel:+79916834922">📞 +7 991 683-49-22</a>
+                <a href="https://t.me/Nikita_Lysikov" target="_blank">💬 Telegram</a>
+                <a href="mailto:nlysi6233@gmail.com">📧 nlysi6233@gmail.com</a>
+            </div>
 
-    <button id="uploadBtn">⬆ Загрузить видео</button>
+            <div class="task-catalog" id="taskCatalogBlock">
+                <h3>📚 Каталог задач</h3>
+                <div class="task-filter" id="taskFilter">
+                    <button class="active" data-topic="all">Все</button>
+                </div>
+                <div id="taskList">Загрузка...</div>
+            </div>
 
-    <div id="status">Готов к загрузке</div>
+            <div class="login-section" id="loginSection">
+                <h3>🔐 Войти в личный кабинет</h3>
+                <input type="email" id="email" placeholder="Email" value="">
+                <input type="password" id="password" placeholder="Пароль" value="">
+                <button id="loginBtn">Войти</button>
+                <div id="result"></div>
+                <p style="margin-top: 14px; font-size: 14px; color: #888;">
+                    *Нет аккаунта? Напиши мне в Telegram — я добавлю тебя!
+                </p>
+            </div>
+        </div>
+
+        <div id="dashboard">
+            <div class="header">
+                <h3 id="welcomeMessage">📚 Мои домашние задания</h3>
+                <button class="logout-btn" id="logoutBtn">Выйти</button>
+            </div>
+            <div class="progress">
+                <div>📊 Прогресс: <span id="progressText">0%</span></div>
+                <div class="bar"><div class="fill" id="progressBar" style="width:0%;"></div></div>
+            </div>
+            <div id="homeworkList"><p>Загрузка...</p></div>
+
+            <div class="schedule-section">
+                <h3>📅 Моё расписание</h3>
+                <div id="studentSchedule"><p>Загрузка...</p></div>
+            </div>
+
+            <div class="video-section">
+                <h3>🎥 Видеоуроки по темам</h3>
+
+                <div class="part-divider">📘 Первая часть</div>
+                <div class="video-tabs" id="videoTabsPart1"></div>
+
+                <div class="part-divider">📗 Вторая часть</div>
+                <div class="video-tabs" id="videoTabsPart2"></div>
+            </div>
+        </div>
+
+        <div id="sectionPage">
+            <button class="back-btn" id="backToDashboard">← Назад к списку разделов</button>
+            <div id="sectionContent">
+                <div class="loading">⏳ Загрузка...</div>
+            </div>
+        </div>
+
+        <div id="adminPanel">
+            <h3>🔧 Панель управления</h3>
+            <div class="admin-tabs">
+                <button class="active" data-tab="students">📋 Ученики (вход)</button>
+                <button data-tab="my-students">📋 Мои ученики</button>
+                <button data-tab="homeworks">📝 ДЗ</button>
+                <button data-tab="videos">🎥 Видео</button>
+                <button data-tab="tasks">📚 Задачи</button>
+                <button data-tab="schedule">📅 Расписание</button>
+                <button data-tab="stats">📊 Статистика</button>
+            </div>
+            <div class="admin-content active" id="tab-students">
+                <button class="admin-btn success" onclick="addStudent()">➕ Добавить ученика</button>
+                <div id="studentsList" style="margin-top:15px;">Загрузка...</div>
+            </div>
+            <div class="admin-content" id="tab-my-students">
+                <button class="admin-btn success" onclick="addMyStudent()">➕ Добавить ученика</button>
+                <div id="myStudentsList" style="margin-top:15px;">Загрузка...</div>
+            </div>
+            <div class="admin-content" id="tab-homeworks">
+                <button class="admin-btn success" onclick="addHomework()">➕ Выдать ДЗ</button>
+                <div id="homeworksList" style="margin-top:15px;">Загрузка...</div>
+            </div>
+            <div class="admin-content" id="tab-videos">
+                <button class="admin-btn success" onclick="addVideo()">➕ Добавить видео</button>
+                <div id="videosList" style="margin-top:15px;">Загрузка...</div>
+            </div>
+            <div class="admin-content" id="tab-tasks">
+                <button class="admin-btn success" onclick="addTask()">➕ Добавить задачу</button>
+                <div id="tasksList" style="margin-top:15px;">Загрузка...</div>
+            </div>
+            <div class="admin-content" id="tab-schedule">
+                <div class="schedule-actions">
+                    <button class="admin-btn success" onclick="addScheduleRow()">➕ Добавить строку</button>
+                    <button class="admin-btn" onclick="loadScheduleAdmin()">🔄 Обновить</button>
+                </div>
+                <div id="scheduleList" style="margin-top:15px;">Загрузка...</div>
+            </div>
+            <div class="admin-content" id="tab-stats">
+                <div id="statsContent" style="margin-top:15px;">Загрузка...</div>
+            </div>
+        </div>
+
+    </div>
+
+    <footer>
+        © 2026 Математика с Никитой. Все права защищены.
+    </footer>
+
+    <script>
+        // ===== ЗВЁЗДЫ =====
+        (function generateStars() {
+            var container = document.getElementById('starsContainer');
+            var count = 150;
+            for (var i = 0; i < count; i++) {
+                var star = document.createElement('div');
+                star.className = 'star';
+                var size = Math.random() * 3 + 1;
+                star.style.width = size + 'px';
+                star.style.height = size + 'px';
+                star.style.left = Math.random() * 100 + '%';
+                star.style.top = Math.random() * 100 + '%';
+                star.style.setProperty('--duration', (Math.random() * 3 + 2) + 's');
+                star.style.animationDelay = (Math.random() * 3) + 's';
+                container.appendChild(star);
+            }
+        })();
+    </script>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
     <script>
-        // ===== ПОДКЛЮЧЕНИЕ =====
-        const SUPABASE_URL = 'https://liqqdixrtvnrrvgkfvbn.supabase.co';
-        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxpcXFkaXhydHZucnJ2Z2tmdmJuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODM4NTMzMzksImV4cCI6MjA5OTQyOTMzOX0.Jqrnt5DOKNURe5HERWIhMvc6KChurAg5iHkfMBw4P2A';
-        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        // ===== НАСТРОЙКИ =====
+        var SUPABASE_URL = 'https://liqqdixrtvnrrvgkfvbn.supabase.co';
+        var SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxpcXFkaXhydHZucnJ2Z2tmdmJuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODM4NTMzMzksImV4cCI6MjA5OTQyOTMzOX0.Jqrnt5DOKNURe5HERWIhMvc6KChurAg5iHkfMBw4P2A';
+        var supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        const status = document.getElementById('status');
-        const sectionSelect = document.getElementById('sectionSelect');
-        const fileInput = document.getElementById('fileInput');
-        const videoTitle = document.getElementById('videoTitle');
-        const homeworkInput = document.getElementById('homeworkInput');
+        var currentUser = null;
+        var sections = [];
+        var allVideos = [];
 
-        async function loadSections() {
-            const { data, error } = await supabase
-                .from('video_sections')
-                .select('*')
-                .order('order_num');
+        var loginSection = document.getElementById('loginSection');
+        var dashboard = document.getElementById('dashboard');
+        var adminPanel = document.getElementById('adminPanel');
+        var resultDiv = document.getElementById('result');
+        var homeworkList = document.getElementById('homeworkList');
+        var welcomeMessage = document.getElementById('welcomeMessage');
+        var mainContent = document.getElementById('mainContent');
+        var sectionPage = document.getElementById('sectionPage');
 
-            if (error) {
-                status.innerHTML = '❌ Ошибка загрузки разделов: ' + error.message;
-                status.className = 'error';
-                return;
-            }
+        var daysMap = {
+            'mon': 'ПН',
+            'tue': 'ВТ',
+            'wed': 'СР',
+            'thu': 'ЧТ',
+            'fri': 'ПТ',
+            'sat': 'СБ',
+            'sun': 'ВС'
+        };
+        var daysArray = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'];
 
-            sectionSelect.innerHTML = '<option value="">Выберите раздел...</option>';
-            data.forEach(s => {
-                const opt = document.createElement('option');
-                opt.value = s.id;
-                opt.textContent = s.name;
-                sectionSelect.appendChild(opt);
-            });
+        function loadTaskCatalog() {
+            var container = document.getElementById('taskList');
+            container.innerHTML = '📭 Каталог задач пока пуст. Скоро добавлю!';
         }
 
-        document.getElementById('uploadBtn').addEventListener('click', async function() {
-            const sectionId = sectionSelect.value;
-            const title = videoTitle.value.trim();
-            const file = fileInput.files[0];
-            const homework = homeworkInput.value.trim();
+        function openSection(sectionId) {
+            mainContent.style.display = 'none';
+            dashboard.style.display = 'none';
+            adminPanel.style.display = 'none';
+            sectionPage.classList.add('active');
+            loadSectionContent(sectionId);
+        }
 
-            if (!sectionId) { status.innerHTML = '❌ Выберите раздел'; status.className = 'error'; return; }
-            if (!title) { status.innerHTML = '❌ Введите название видео'; status.className = 'error'; return; }
-            if (!file) { status.innerHTML = '❌ Выберите файл'; status.className = 'error'; return; }
-
-            status.innerHTML = '⏳ Загрузка...';
-            status.className = 'info';
+        async function loadSectionContent(sectionId) {
+            var content = document.getElementById('sectionContent');
+            content.innerHTML = '<div class="loading">⏳ Загрузка...</div>';
 
             try {
-                const path = 'videos/' + Date.now() + '_' + file.name;
-                const { error: uploadError } = await supabase.storage
-                    .from('videos')
-                    .upload(path, file);
+                var sectionResult = await supabase
+                    .from('video_sections')
+                    .select('*')
+                    .eq('id', sectionId)
+                    .single();
 
-                if (uploadError) {
-                    status.innerHTML = '❌ Ошибка загрузки файла: ' + uploadError.message;
-                    status.className = 'error';
+                if (sectionResult.error) {
+                    content.innerHTML = '<div class="empty">❌ Раздел не найден</div>';
                     return;
                 }
 
-                const { data: urlData } = supabase.storage
+                var section = sectionResult.data;
+
+                var videosResult = await supabase
                     .from('videos')
-                    .getPublicUrl(path);
+                    .select('*')
+                    .eq('section_id', sectionId)
+                    .order('created_at', { ascending: false });
 
-                const videoUrl = urlData.publicUrl;
+                var videos = videosResult.data || [];
 
-                const { error: insertError } = await supabase
-                    .from('videos')
-                    .insert([{
-                        title: title,
-                        video_url: videoUrl,
-                        section_id: parseInt(sectionId),
-                        homework: homework || null,
-                        is_file: true
-                    }]);
+                var html = '<h1 class="section-title">' + section.name + '</h1>';
 
-                if (insertError) {
-                    status.innerHTML = '❌ Ошибка сохранения: ' + insertError.message;
-                    status.className = 'error';
-                    return;
+                if (videos.length === 0) {
+                    html += '<div class="empty">📭 Нет видео в этом разделе</div>';
+                } else {
+                    videos.forEach(function(v) {
+                        var isFile = v.is_file || false;
+                        var isVk = v.is_vk || false;
+                        var videoUrl = v.video_url || v.youtube_url || '#';
+                        var title = v.title || 'Видео';
+                        var homework = v.homework || '';
+
+                        html += '<div class="video-item">';
+
+                        if (isFile && videoUrl && videoUrl !== '#') {
+                            html += `
+                                <div class="video-player-wrapper">
+                                    <video controls>
+                                        <source src="${videoUrl}" type="video/mp4">
+                                        Ваш браузер не поддерживает видео.
+                                    </video>
+                                </div>
+                            `;
+                        } else if (videoUrl && videoUrl !== '#' && videoUrl.includes('youtube.com')) {
+                            var embedUrl = videoUrl.replace('watch?v=', 'embed/');
+                            html += `
+                                <div class="video-player-wrapper">
+                                    <iframe src="${embedUrl}" allowfullscreen></iframe>
+                                </div>
+                            `;
+                        } else if (isVk && videoUrl && videoUrl !== '#') {
+                            var vkEmbed = videoUrl;
+                            if (videoUrl.includes('vk.com/video')) {
+                                var parts = videoUrl.split('/');
+                                var videoId = parts[parts.length - 1];
+                                if (videoId && videoId.includes('_')) {
+                                    var ids = videoId.split('_');
+                                    vkEmbed = 'https://vk.com/video_ext.php?oid=' + ids[0] + '&id=' + ids[1] + '&hash=' + Date.now();
+                                }
+                            }
+                            html += `
+                                <div class="video-player-wrapper">
+                                    <iframe src="${vkEmbed}" allowfullscreen></iframe>
+                                </div>
+                            `;
+                        } else if (videoUrl && videoUrl !== '#') {
+                            html += `
+                                <div class="video-player-wrapper" style="display:flex; align-items:center; justify-content:center; background:#111; min-height:200px;">
+                                    <a href="${videoUrl}" target="_blank" style="color:#f5a623; font-size:20px; text-decoration:none; border:2px solid #f5a623; padding:16px 32px; border-radius:12px;">
+                                        ▶️ Смотреть видео
+                                    </a>
+                                </div>
+                            `;
+                        }
+
+                        html += `<span class="video-title">🎬 ${title}</span>`;
+
+                        if (videoUrl && videoUrl !== '#') {
+                            html += `
+                                <div class="video-fallback-link">
+                                    <span class="label">⚠️ Если видео не работает, вот ссылка:</span><br>
+                                    <a href="${videoUrl}" target="_blank">${videoUrl}</a>
+                                </div>
+                            `;
+                        }
+
+                        if (homework) {
+                            html += `
+                                <div class="video-homework">
+                                    <strong>📝 ДЗ к уроку:</strong> ${homework}
+                                </div>
+                            `;
+                        }
+
+                        html += '</div>';
+                    });
                 }
 
-                status.innerHTML = '✅ Видео успешно загружено!';
-                status.className = 'success';
-
-                videoTitle.value = '';
-                fileInput.value = '';
-                homeworkInput.value = '';
+                content.innerHTML = html;
 
             } catch (err) {
-                status.innerHTML = '❌ Ошибка: ' + err.message;
-                status.className = 'error';
+                content.innerHTML = '<div class="empty">❌ Ошибка загрузки</div>';
                 console.error(err);
+            }
+        }
+
+        document.getElementById('backToDashboard').addEventListener('click', function() {
+            sectionPage.classList.remove('active');
+            mainContent.style.display = 'block';
+            dashboard.style.display = 'block';
+            if (currentUser && currentUser.role === 'admin') {
+                adminPanel.style.display = 'block';
             }
         });
 
-        loadSections();
+        function loadSectionsAndVideos() {
+            var tabsContainer1 = document.getElementById('videoTabsPart1');
+            var tabsContainer2 = document.getElementById('videoTabsPart2');
+
+            tabsContainer1.innerHTML = '⏳ Загрузка...';
+            tabsContainer2.innerHTML = '⏳ Загрузка...';
+
+            supabase
+                .from('video_sections')
+                .select('*')
+                .order('order_num', { ascending: true })
+                .then(function(response) {
+                    if (response.error) {
+                        tabsContainer1.innerHTML = '❌ Ошибка: ' + response.error.message;
+                        return;
+                    }
+
+                    sections = response.data || [];
+                    if (sections.length === 0) {
+                        tabsContainer1.innerHTML = '📭 Нет разделов. Добавьте их в базе.';
+                        tabsContainer2.innerHTML = '📭 Нет разделов. Добавьте их в базе.';
+                        return;
+                    }
+
+                    renderVideoTabs();
+                })
+                .catch(function(err) {
+                    tabsContainer1.innerHTML = '❌ Ошибка: ' + err.message;
+                });
+        }
+
+        function renderVideoTabs() {
+            var tabsContainer1 = document.getElementById('videoTabsPart1');
+            var tabsContainer2 = document.getElementById('videoTabsPart2');
+
+            if (!sections || sections.length === 0) {
+                tabsContainer1.innerHTML = '📭 Нет разделов';
+                tabsContainer2.innerHTML = '📭 Нет разделов';
+                return;
+            }
+
+            var part1 = sections.slice(0, 12);
+            var part2 = sections.slice(12);
+
+            var tabsHtml1 = '';
+            var tabsHtml2 = '';
+
+            part1.forEach(function(section, index) {
+                var num = index + 1;
+                tabsHtml1 += `
+                    <button onclick="openSection('${section.id}')">
+                        <span class="num">${num}</span> ${section.name}
+                    </button>
+                `;
+            });
+
+            part2.forEach(function(section, index) {
+                var num = index + 13;
+                tabsHtml2 += `
+                    <button onclick="openSection('${section.id}')">
+                        <span class="num">${num}</span> ${section.name}
+                    </button>
+                `;
+            });
+
+            tabsContainer1.innerHTML = tabsHtml1;
+            tabsContainer2.innerHTML = tabsHtml2;
+        }
+
+        document.getElementById('loginBtn').addEventListener('click', function() {
+            var email = document.getElementById('email').value;
+            var password = document.getElementById('password').value;
+
+            resultDiv.className = 'result-info';
+            resultDiv.innerHTML = '⏳ Проверяю...';
+
+            supabase
+                .from('students')
+                .select('*')
+                .eq('email', email)
+                .eq('password', password)
+                .then(function(response) {
+                    var error = response.error;
+                    var data = response.data;
+
+                    if (error) {
+                        resultDiv.className = 'result-error';
+                        resultDiv.innerHTML = '❌ Ошибка: ' + error.message;
+                        return;
+                    }
+
+                    if (data && data.length > 0) {
+                        var user = data[0];
+                        currentUser = user;
+                        resultDiv.className = 'result-success';
+                        resultDiv.innerHTML = '✅ Привет, ' + user.name + '!';
+
+                        document.getElementById('profileBlock').style.display = 'none';
+                        document.getElementById('contactsBlock').style.display = 'none';
+                        document.getElementById('taskCatalogBlock').style.display = 'none';
+                        document.getElementById('loginSection').style.display = 'none';
+
+                        document.getElementById('dashboard').style.display = 'block';
+                        welcomeMessage.textContent = '👋 Привет, ' + user.name + '!';
+
+                        if (user.role === 'admin') {
+                            document.getElementById('adminPanel').style.display = 'block';
+                            loadAdminData();
+                        }
+
+                        loadHomework(user.id);
+                        loadStudentSchedule(user.id);
+                        loadSectionsAndVideos();
+                    } else {
+                        resultDiv.className = 'result-error';
+                        resultDiv.innerHTML = '❌ Неверный логин или пароль.';
+                    }
+                })
+                .catch(function(err) {
+                    resultDiv.className = 'result-error';
+                    resultDiv.innerHTML = '❌ Ошибка: ' + err.message;
+                });
+        });
+
+        function loadHomework(studentId) {
+            homeworkList.innerHTML = '⏳ Загрузка...';
+
+            supabase
+                .from('homeworks')
+                .select('*')
+                .eq('student_id', studentId)
+                .order('deadline', { ascending: true })
+                .then(function(response) {
+                    var error = response.error;
+                    var data = response.data;
+
+                    if (error) {
+                        homeworkList.innerHTML = '❌ Ошибка загрузки ДЗ.';
+                        return;
+                    }
+
+                    if (!data || data.length === 0) {
+                        homeworkList.innerHTML = '📭 Нет заданий. Отдыхайте! 😊';
+                        updateProgress(0, 0);
+                        return;
+                    }
+
+                    var done = 0;
+                    var html = '';
+                    for (var i = 0; i < data.length; i++) {
+                        var hw = data[i];
+                        if (hw.status === 'done') done++;
+                        var statusClass = hw.status === 'done' ? 'done' : 'pending';
+                        var statusText = hw.status === 'done' ? '✅ Выполнено' : '⏳ Ожидает проверки';
+                        var btnHtml = hw.status !== 'done' ? `<button class="btn-start" onclick="markDone('${hw.id}')">✅ Отметить выполненным</button>` : '';
+                        
+                        var videoBlock = '';
+                        if (hw.video_link) {
+                            videoBlock = `
+                                <div class="video-fallback">
+                                    <div class="label">⚠️ Если видео не работает, вот ссылка:</div>
+                                    <a href="${hw.video_link}" target="_blank">${hw.video_link}</a>
+                                </div>
+                            `;
+                        }
+
+                        html += `
+                            <div class="hw-card">
+                                <div class="title">${hw.title}</div>
+                                <div class="meta">📅 ${hw.deadline ? 'Срок: ' + hw.deadline : 'Без срока'}</div>
+                                <div class="status ${statusClass}">${statusText}</div>
+                                ${btnHtml}
+                                ${hw.file_url ? `<div class="meta">📎 <a href="${hw.file_url}" target="_blank">Скачать файл</a></div>` : ''}
+                                ${videoBlock}
+                            </div>
+                        `;
+                    }
+                    homeworkList.innerHTML = html;
+                    updateProgress(data.length, done);
+                })
+                .catch(function(err) {
+                    homeworkList.innerHTML = '❌ Ошибка: ' + err.message;
+                });
+        }
+
+        function updateProgress(total, done) {
+            var pct = total > 0 ? Math.round((done / total) * 100) : 0;
+            document.getElementById('progressText').textContent = pct + '%';
+            document.getElementById('progressBar').style.width = pct + '%';
+        }
+
+        function markDone(id) {
+            supabase
+                .from('homeworks')
+                .update({ status: 'done' })
+                .eq('id', id)
+                .then(function(response) {
+                    if (response.error) {
+                        alert('❌ Ошибка: ' + response.error.message);
+                    } else {
+                        if (currentUser) loadHomework(currentUser.id);
+                        if (currentUser && currentUser.role === 'admin') loadAllHomeworks();
+                    }
+                })
+                .catch(function(err) {
+                    alert('❌ Ошибка: ' + err.message);
+                });
+        }
+
+        // ===== РАСПИСАНИЕ =====
+        function loadStudentSchedule(studentId) {
+            var container = document.getElementById('studentSchedule');
+            container.innerHTML = '⏳ Загрузка...';
+
+            supabase
+                .from('schedule')
+                .select('*')
+                .eq('student_id', studentId)
+                .order('row_num', { ascending: true })
+                .then(function(response) {
+                    if (response.error) {
+                        container.innerHTML = '❌ Ошибка загрузки расписания.';
+                        return;
+                    }
+
+                    var data = response.data || [];
+                    if (data.length === 0) {
+                        container.innerHTML = '📭 Нет занятий.';
+                        return;
+                    }
+
+                    var rows = {};
+                    data.forEach(function(item) {
+                        if (!rows[item.row_num]) rows[item.row_num] = {};
+                        rows[item.row_num][item.day_of_week] = item.topic || '';
+                    });
+
+                    var html = '<div class="schedule-table-wrap"><table class="schedule-table">';
+                    html += '<tr><th>№</th>';
+                    daysArray.forEach(function(day) {
+                        html += '<th>' + daysMap[day] + '</th>';
+                    });
+                    html += '</tr>';
+
+                    var sortedRows = Object.keys(rows).sort(function(a, b) { return parseInt(a) - parseInt(b); });
+                    sortedRows.forEach(function(rowNum) {
+                        html += '<tr>';
+                        html += '<td class="row-num">' + rowNum + '</td>';
+                        daysArray.forEach(function(day) {
+                            var cell = rows[rowNum][day] || '';
+                            if (cell) {
+                                html += '<td class="cell-occupied">' + cell + '</td>';
+                            } else {
+                                html += '<td class="cell-empty">—</td>';
+                            }
+                        });
+                        html += '</tr>';
+                    });
+
+                    html += '</table></div>';
+                    container.innerHTML = html;
+                })
+                .catch(function(err) {
+                    container.innerHTML = '❌ Ошибка: ' + err.message;
+                });
+        }
+
+        function loadScheduleAdmin() {
+            var container = document.getElementById('scheduleList');
+            container.innerHTML = '⏳ Загрузка...';
+
+            supabase
+                .from('students')
+                .select('id, name')
+                .eq('role', 'student')
+                .then(function(studentsRes) {
+                    var students = studentsRes.data || [];
+                    var studentsMap = {};
+                    students.forEach(function(s) {
+                        studentsMap[s.id] = s.name;
+                    });
+
+                    supabase
+                        .from('schedule')
+                        .select('*')
+                        .order('row_num', { ascending: true })
+                        .then(function(response) {
+                            if (response.error) {
+                                container.innerHTML = '❌ Ошибка: ' + response.error.message;
+                                return;
+                            }
+
+                            var data = response.data || [];
+                            if (data.length === 0) {
+                                container.innerHTML = '📭 Нет занятий. Нажмите "➕ Добавить строку".';
+                                return;
+                            }
+
+                            var rows = {};
+                            data.forEach(function(item) {
+                                if (!rows[item.row_num]) rows[item.row_num] = {};
+                                rows[item.row_num][item.day_of_week] = {
+                                    student_id: item.student_id,
+                                    topic: item.topic || '',
+                                    id: item.id
+                                };
+                            });
+
+                            var html = '<div class="schedule-table-wrap"><table class="schedule-table">';
+                            html += '<tr><th>№</th>';
+                            daysArray.forEach(function(day) {
+                                html += '<th>' + daysMap[day] + '</th>';
+                            });
+                            html += '</tr>';
+
+                            var sortedRows = Object.keys(rows).sort(function(a, b) { return parseInt(a) - parseInt(b); });
+                            sortedRows.forEach(function(rowNum) {
+                                html += '<tr>';
+                                html += '<td class="row-num">' + rowNum + '</td>';
+                                daysArray.forEach(function(day) {
+                                    var cell = rows[rowNum][day];
+                                    if (cell && cell.student_id) {
+                                        var studentName = studentsMap[cell.student_id] || 'Ученик';
+                                        html += '<td class="cell-occupied" onclick="editScheduleCell(' + cell.id + ', \'' + day + '\', ' + rowNum + ')">';
+                                        html += '<div class="cell-content">';
+                                        html += '<span class="student-name">' + studentName + '</span>';
+                                        if (cell.topic) html += '<span class="topic">' + cell.topic + '</span>';
+                                        html += '</div>';
+                                        html += '</td>';
+                                    } else {
+                                        html += '<td class="cell-empty" onclick="addScheduleCell(' + rowNum + ', \'' + day + '\')">';
+                                        html += '<div class="cell-content"><span class="empty-text">➕</span></div>';
+                                        html += '</td>';
+                                    }
+                                });
+                                html += '</tr>';
+                            });
+
+                            html += '</table></div>';
+                            container.innerHTML = html;
+                        })
+                        .catch(function(err) {
+                            container.innerHTML = '❌ Ошибка: ' + err.message;
+                        });
+                })
+                .catch(function(err) {
+                    container.innerHTML = '❌ Ошибка: ' + err.message;
+                });
+        }
+
+        function addScheduleRow() {
+            supabase
+                .from('schedule')
+                .select('row_num')
+                .order('row_num', { ascending: false })
+                .limit(1)
+                .then(function(response) {
+                    var maxRow = 0;
+                    if (response.data && response.data.length > 0) {
+                        maxRow = response.data[0].row_num || 0;
+                    }
+                    var newRow = maxRow + 1;
+
+                    var inserts = daysArray.map(function(day) {
+                        return {
+                            row_num: newRow,
+                            day_of_week: day,
+                            student_id: null,
+                            topic: null
+                        };
+                    });
+
+                    supabase
+                        .from('schedule')
+                        .insert(inserts)
+                        .then(function(r) {
+                            if (r.error) {
+                                alert('❌ Ошибка: ' + r.error.message);
+                            } else {
+                                alert('✅ Строка ' + newRow + ' добавлена!');
+                                loadScheduleAdmin();
+                            }
+                        })
+                        .catch(function(err) {
+                            alert('❌ Ошибка: ' + err.message);
+                        });
+                })
+                .catch(function(err) {
+                    alert('❌ Ошибка: ' + err.message);
+                });
+        }
+
+        function addScheduleCell(rowNum, day) {
+            supabase
+                .from('students')
+                .select('id, name')
+                .eq('role', 'student')
+                .then(function(response) {
+                    var students = response.data || [];
+                    if (students.length === 0) {
+                        alert('Нет учеников!');
+                        return;
+                    }
+
+                    var list = 'Выберите ученика:\n';
+                    students.forEach(function(s, i) {
+                        list += (i + 1) + '. ' + s.name + '\n';
+                    });
+
+                    var choice = prompt(list);
+                    if (!choice) return;
+
+                    var idx = parseInt(choice) - 1;
+                    if (idx < 0 || idx >= students.length) {
+                        alert('Неверный выбор!');
+                        return;
+                    }
+
+                    var student = students[idx];
+                    var topic = prompt('Введите тему занятия:');
+                    if (topic === null) return;
+
+                    supabase
+                        .from('schedule')
+                        .select('id')
+                        .eq('row_num', rowNum)
+                        .eq('day_of_week', day)
+                        .then(function(checkRes) {
+                            var existing = checkRes.data || [];
+                            if (existing.length > 0) {
+                                supabase
+                                    .from('schedule')
+                                    .update({
+                                        student_id: student.id,
+                                        topic: topic || null
+                                    })
+                                    .eq('id', existing[0].id)
+                                    .then(function() {
+                                        alert('✅ Ячейка обновлена!');
+                                        loadScheduleAdmin();
+                                        if (currentUser) loadStudentSchedule(currentUser.id);
+                                    })
+                                    .catch(function(err) {
+                                        alert('❌ Ошибка: ' + err.message);
+                                    });
+                            } else {
+                                supabase
+                                    .from('schedule')
+                                    .insert([{
+                                        row_num: rowNum,
+                                        day_of_week: day,
+                                        student_id: student.id,
+                                        topic: topic || null
+                                    }])
+                                    .then(function() {
+                                        alert('✅ Ячейка добавлена!');
+                                        loadScheduleAdmin();
+                                        if (currentUser) loadStudentSchedule(currentUser.id);
+                                    })
+                                    .catch(function(err) {
+                                        alert('❌ Ошибка: ' + err.message);
+                                    });
+                            }
+                        })
+                        .catch(function(err) {
+                            alert('❌ Ошибка: ' + err.message);
+                        });
+                })
+                .catch(function(err) {
+                    alert('❌ Ошибка: ' + err.message);
+                });
+        }
+
+        function editScheduleCell(cellId, day, rowNum) {
+            supabase
+                .from('students')
+                .select('id, name')
+                .eq('role', 'student')
+                .then(function(response) {
+                    var students = response.data || [];
+                    if (students.length === 0) {
+                        alert('Нет учеников!');
+                        return;
+                    }
+
+                    var list = 'Выберите ученика (или 0 для удаления):\n';
+                    students.forEach(function(s, i) {
+                        list += (i + 1) + '. ' + s.name + '\n';
+                    });
+                    list += '\n0. Удалить занятие';
+
+                    var choice = prompt(list);
+                    if (choice === null) return;
+
+                    var idx = parseInt(choice) - 1;
+
+                    if (choice === '0') {
+                        supabase
+                            .from('schedule')
+                            .update({
+                                student_id: null,
+                                topic: null
+                            })
+                            .eq('id', cellId)
+                            .then(function() {
+                                alert('✅ Занятие удалено');
+                                loadScheduleAdmin();
+                                if (currentUser) loadStudentSchedule(currentUser.id);
+                            })
+                            .catch(function(err) {
+                                alert('❌ Ошибка: ' + err.message);
+                            });
+                        return;
+                    }
+
+                    if (idx < 0 || idx >= students.length) {
+                        alert('Неверный выбор!');
+                        return;
+                    }
+
+                    var student = students[idx];
+                    var topic = prompt('Введите тему занятия (или Enter для удаления):');
+                    if (topic === null) return;
+
+                    if (topic === '') {
+                        supabase
+                            .from('schedule')
+                            .update({
+                                student_id: null,
+                                topic: null
+                            })
+                            .eq('id', cellId)
+                            .then(function() {
+                                alert('✅ Занятие удалено');
+                                loadScheduleAdmin();
+                                if (currentUser) loadStudentSchedule(currentUser.id);
+                            })
+                            .catch(function(err) {
+                                alert('❌ Ошибка: ' + err.message);
+                            });
+                        return;
+                    }
+
+                    supabase
+                        .from('schedule')
+                        .update({
+                            student_id: student.id,
+                            topic: topic
+                        })
+                        .eq('id', cellId)
+                        .then(function() {
+                            alert('✅ Ячейка обновлена!');
+                            loadScheduleAdmin();
+                            if (currentUser) loadStudentSchedule(currentUser.id);
+                        })
+                        .catch(function(err) {
+                            alert('❌ Ошибка: ' + err.message);
+                        });
+                })
+                .catch(function(err) {
+                    alert('❌ Ошибка: ' + err.message);
+                });
+        }
+
+        // ===== ФУНКЦИЯ ДОБАВЛЕНИЯ ВИДЕО (3 ТИПА: YouTube, MP4, ВК) =====
+        function addVideo() {
+            supabase
+                .from('video_sections')
+                .select('*')
+                .order('order_num', { ascending: true })
+                .then(function(response) {
+                    if (response.error) {
+                        alert('Ошибка загрузки разделов: ' + response.error.message);
+                        return;
+                    }
+
+                    var sections = response.data || [];
+                    if (sections.length === 0) {
+                        alert('Нет разделов! Сначала создайте разделы в базе.');
+                        return;
+                    }
+
+                    var list = 'Выберите раздел:\n';
+                    for (var i = 0; i < sections.length; i++) {
+                        list += (i + 1) + '. ' + sections[i].name + '\n';
+                    }
+                    var choice = prompt(list);
+                    if (!choice) return;
+
+                    var idx = parseInt(choice) - 1;
+                    if (idx < 0 || idx >= sections.length) {
+                        alert('Неверный выбор!');
+                        return;
+                    }
+                    var section = sections[idx];
+
+                    var title = prompt('Введите название видео:');
+                    if (!title) return;
+
+                    var typeChoice = prompt('Выберите тип видео:\n1 — Ссылка на YouTube\n2 — Загрузить свой MP4 файл\n3 — Ссылка на ВК');
+                    if (!typeChoice) return;
+
+                    if (typeChoice === '1') {
+                        var url = prompt('Введите ссылку на YouTube:'); if (!url) return;
+                        var homework = prompt('Введите ДЗ к уроку (или Enter):');
+
+                        supabase
+                            .from('videos')
+                            .insert([{
+                                title: title,
+                                youtube_url: url,
+                                section_id: section.id,
+                                homework: homework || null,
+                                is_file: false,
+                                is_vk: false
+                            }])
+                            .then(function(r) {
+                                if (r.error) {
+                                    alert('❌ Ошибка: ' + r.error.message);
+                                } else {
+                                    alert('✅ Видео добавлено!');
+                                    loadVideosAdmin();
+                                    loadSectionsAndVideos();
+                                }
+                            })
+                            .catch(function(err) {
+                                alert('❌ Ошибка: ' + err.message);
+                            });
+
+                    } else if (typeChoice === '2') {
+                        var homework = prompt('Введите ДЗ к уроку (или Enter):');
+
+                        var fileInput = document.createElement('input');
+                        fileInput.type = 'file';
+                        fileInput.accept = 'video/mp4,video/webm,video/ogg';
+                        fileInput.style.display = 'none';
+                        document.body.appendChild(fileInput);
+
+                        fileInput.onchange = function(e) {
+                            var file = e.target.files[0];
+                            if (!file) {
+                                document.body.removeChild(fileInput);
+                                return;
+                            }
+
+                            alert('⏳ Загрузка файла... Пожалуйста, подождите.');
+
+                            var path = 'videos/' + Date.now() + '_' + file.name;
+                            var storageRef = supabase.storage.from('videos');
+
+                            storageRef.upload(path, file)
+                                .then(function(uploadRes) {
+                                    if (uploadRes.error) {
+                                        alert('❌ Ошибка загрузки файла: ' + uploadRes.error.message);
+                                        document.body.removeChild(fileInput);
+                                        return;
+                                    }
+                                    return storageRef.getPublicUrl(path);
+                                })
+                                .then(function(urlRes) {
+                                    if (urlRes && urlRes.error) {
+                                        alert('❌ Ошибка получения ссылки: ' + urlRes.error.message);
+                                        document.body.removeChild(fileInput);
+                                        return;
+                                    }
+                                    var videoUrl = urlRes ? urlRes.data.publicUrl : null;
+                                    if (!videoUrl) {
+                                        alert('❌ Не удалось получить ссылку на видео');
+                                        document.body.removeChild(fileInput);
+                                        return;
+                                    }
+                                    return supabase
+                                        .from('videos')
+                                        .insert([{
+                                            title: title,
+                                            video_url: videoUrl,
+                                            section_id: section.id,
+                                            homework: homework || null,
+                                            is_file: true,
+                                            is_vk: false
+                                        }]);
+                                })
+                                .then(function(insertRes) {
+                                    document.body.removeChild(fileInput);
+                                    if (insertRes && insertRes.error) {
+                                        alert('❌ Ошибка сохранения: ' + insertRes.error.message);
+                                    } else {
+                                        alert('✅ Видео загружено и добавлено!');
+                                        loadVideosAdmin();
+                                        loadSectionsAndVideos();
+                                    }
+                                })
+                                .catch(function(err) {
+                                    document.body.removeChild(fileInput);
+                                    alert('❌ Ошибка: ' + err.message);
+                                    console.error(err);
+                                });
+                        };
+
+                        fileInput.click();
+
+                    } else if (typeChoice === '3') {
+                        var url = prompt('Введите ссылку на ВК:');
+                        if (!url) return;
+                        var homework = prompt('Введите ДЗ к уроку (или Enter):');
+
+                        supabase
+                            .from('videos')
+                            .insert([{
+                                title: title,
+                                youtube_url: url,
+                                section_id: section.id,
+                                homework: homework || null,
+                                is_file: false,
+                                is_vk: true
+                            }])
+                            .then(function(r) {
+                                if (r.error) {
+                                    alert('❌ Ошибка: ' + r.error.message);
+                                } else {
+                                    alert('✅ Видео добавлено!');
+                                    loadVideosAdmin();
+                                    loadSectionsAndVideos();
+                                }
+                            })
+                            .catch(function(err) {
+                                alert('❌ Ошибка: ' + err.message);
+                            });
+
+                    } else {
+                        alert('Неверный выбор!');
+                    }
+                })
+                .catch(function(err) {
+                    alert('Ошибка: ' + err.message);
+                });
+        }
+
+        function loadVideosAdmin() {
+            var container = document.getElementById('videosList');
+            container.innerHTML = '⏳ Загрузка...';
+
+            supabase
+                .from('videos')
+                .select('*, video_sections(name)')
+                .order('created_at', { ascending: false })
+                .then(function(response) {
+                    if (response.error) {
+                        container.innerHTML = '❌ Ошибка: ' + response.error.message;
+                        return;
+                    }
+                    var data = response.data || [];
+                    if (data.length === 0) {
+                        container.innerHTML = '📭 Нет видео';
+                        return;
+                    }
+                    var html = '<table class="admin-table"><tr><th>Название</th><th>Раздел</th><th>Ссылка</th><th>ДЗ</th><th>Тип</th><th>Действия</th></tr>';
+                    for (var i = 0; i < data.length; i++) {
+                        var v = data[i];
+                        var sectionName = v.video_sections ? v.video_sections.name : '—';
+                        var link = v.is_file ? (v.video_url || '—') : (v.youtube_url || '—');
+                        var type = v.is_file ? '📁 Файл' : (v.is_vk ? '📱 ВК' : '🔗 YouTube');
+                        html += `
+                            <tr>
+                                <td>${v.title}</td>
+                                <td>${sectionName}</td>
+                                <td>${link !== '—' ? `<a href="${link}" target="_blank">Смотреть</a>` : '—'}</td>
+                                <td>${v.homework || '—'}</td>
+                                <td>${type}</td>
+                                <td>
+                                    <button class="admin-btn danger" onclick="deleteVideo('${v.id}')">🗑</button>
+                                </td>
+                            </tr>
+                        `;
+                    }
+                    html += '</table>';
+                    container.innerHTML = html;
+                })
+                .catch(function(err) {
+                    container.innerHTML = '❌ Ошибка: ' + err.message;
+                });
+        }
+
+        function deleteVideo(id) {
+            if (!confirm('Удалить видео?')) return;
+            supabase
+                .from('videos')
+                .delete()
+                .eq('id', id)
+                .then(function(response) {
+                    if (response.error) {
+                        alert('❌ Ошибка: ' + response.error.message);
+                    } else {
+                        alert('✅ Видео удалено');
+                        loadVideosAdmin();
+                        loadSectionsAndVideos();
+                    }
+                })
+                .catch(function(err) {
+                    alert('❌ Ошибка: ' + err.message);
+                });
+        }
+
+        document.getElementById('logoutBtn').addEventListener('click', function() {
+            document.getElementById('profileBlock').style.display = 'flex';
+            document.getElementById('contactsBlock').style.display = 'block';
+            document.getElementById('taskCatalogBlock').style.display = 'block';
+            document.getElementById('loginSection').style.display = 'block';
+            document.getElementById('dashboard').style.display = 'none';
+            document.getElementById('adminPanel').style.display = 'none';
+            resultDiv.innerHTML = '';
+            resultDiv.className = '';
+            currentUser = null;
+        });
+
+        document.querySelectorAll('.admin-tabs button').forEach(function(btn) {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.admin-tabs button').forEach(function(b) { b.classList.remove('active'); });
+                btn.classList.add('active');
+                document.querySelectorAll('.admin-content').forEach(function(c) { c.classList.remove('active'); });
+                document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
+                loadAdminData();
+            });
+        });
+
+        function loadAdminData() {
+            loadStudents();
+            loadMyStudents();
+            loadAllHomeworks();
+            loadVideosAdmin();
+            loadTasks();
+            loadScheduleAdmin();
+            loadStats();
+        }
+
+        function loadStudents() {
+            var container = document.getElementById('studentsList');
+            container.innerHTML = '⏳ Загрузка...';
+            supabase
+                .from('students')
+                .select('*')
+                .order('created_at', { ascending: false })
+                .then(function(response) {
+                    if (response.error) {
+                        container.innerHTML = '❌ Ошибка: ' + response.error.message;
+                        return;
+                    }
+                    var data = response.data || [];
+                    if (data.length === 0) {
+                        container.innerHTML = '📭 Нет учеников';
+                        return;
+                    }
+                    var html = '<table class="admin-table"><tr><th>Имя</th><th>Email</th><th>Роль</th><th>Действия</th></tr>';
+                    for (var i = 0; i < data.length; i++) {
+                        var s = data[i];
+                        html += `
+                            <tr>
+                                <td>${s.name}</td>
+                                <td>${s.email}</td>
+                                <td>${s.role || 'student'}</td>
+                                <td>
+                                    <button class="admin-btn danger" onclick="deleteStudent('${s.id}')">Удалить</button>
+                                </td>
+                            </tr>
+                        `;
+                    }
+                    html += '</table>';
+                    container.innerHTML = html;
+                })
+                .catch(function(err) {
+                    container.innerHTML = '❌ Ошибка: ' + err.message;
+                });
+        }
+
+        function addStudent() {
+            var name = prompt('Введите имя ученика:');
+            if (!name) return;
+            var email = prompt('Введите email ученика:');
+            if (!email) return;
+            var password = prompt('Введите пароль:');
+            if (!password) return;
+
+            supabase
+                .from('students')
+                .insert([{ name: name, email: email, password: password, role: 'student' }])
+                .then(function(response) {
+                    if (response.error) {
+                        alert('❌ Ошибка: ' + response.error.message);
+                    } else {
+                        alert('✅ Ученик добавлен!');
+                        loadStudents();
+                    }
+                })
+                .catch(function(err) {
+                    alert('❌ Ошибка: ' + err.message);
+                });
+        }
+
+        function deleteStudent(id) {
+            if (!confirm('Удалить ученика?')) return;
+            supabase
+                .from('students')
+                .delete()
+                .eq('id', id)
+                .then(function(response) {
+                    if (response.error) {
+                        alert('❌ Ошибка: ' + response.error.message);
+                    } else {
+                        alert('✅ Ученик удалён');
+                        loadStudents();
+                    }
+                })
+                .catch(function(err) {
+                    alert('❌ Ошибка: ' + err.message);
+                });
+        }
+
+        // ===== НОВАЯ ТАБЛИЦА "МОИ УЧЕНИКИ" (СПРАВОЧНИК) =====
+        function loadMyStudents() {
+            var container = document.getElementById('myStudentsList');
+            container.innerHTML = '⏳ Загрузка...';
+
+            supabase
+                .from('my_students')
+                .select('*')
+                .order('created_at', { ascending: false })
+                .then(function(response) {
+                    if (response.error) {
+                        container.innerHTML = '❌ Ошибка: ' + response.error.message;
+                        return;
+                    }
+                    var data = response.data || [];
+                    if (data.length === 0) {
+                        container.innerHTML = '📭 Нет учеников. Добавь первого!';
+                        return;
+                    }
+
+                    var html = '<table class="admin-table"><tr><th>Имя</th><th>Класс</th><th>Начало занятий</th><th>Статус</th><th>Действия</th></tr>';
+                    for (var i = 0; i < data.length; i++) {
+                        var s = data[i];
+                        var statusText = s.status === 'active' ? '🟢 Активен' : '🔴 Неактивен';
+                        html += `
+                            <tr>
+                                <td>${s.name}</td>
+                                <td>${s.class || '—'}</td>
+                                <td>${s.start_date || '—'}</td>
+                                <td>${statusText}</td>
+                                <td>
+                                    <button class="admin-btn" onclick="toggleMyStudentStatus('${s.id}', '${s.status}')">${s.status === 'active' ? '🔴' : '🟢'}</button>
+                                    <button class="admin-btn danger" onclick="deleteMyStudent('${s.id}')">🗑</button>
+                                </td>
+                            </tr>
+                        `;
+                    }
+                    html += '</table>';
+                    container.innerHTML = html;
+                })
+                .catch(function(err) {
+                    container.innerHTML = '❌ Ошибка: ' + err.message;
+                });
+        }
+
+        function addMyStudent() {
+            var name = prompt('Введите имя ученика:');
+            if (!name) return;
+            var className = prompt('Введите класс (10 или 11):');
+            var startDate = prompt('Введите дату начала (ГГГГ-ММ-ДД):');
+            var status = confirm('Активен?') ? 'active' : 'inactive';
+
+            supabase
+                .from('my_students')
+                .insert([{
+                    name: name,
+                    class: className || null,
+                    start_date: startDate || null,
+                    status: status
+                }])
+                .then(function(r) {
+                    if (r.error) {
+                        alert('❌ Ошибка: ' + r.error.message);
+                    } else {
+                        alert('✅ Ученик добавлен в список!');
+                        loadMyStudents();
+                    }
+                })
+                .catch(function(err) {
+                    alert('❌ Ошибка: ' + err.message);
+                });
+        }
+
+        function deleteMyStudent(id) {
+            if (!confirm('Удалить ученика из списка?')) return;
+            supabase
+                .from('my_students')
+                .delete()
+                .eq('id', id)
+                .then(function(response) {
+                    if (response.error) {
+                        alert('❌ Ошибка: ' + response.error.message);
+                    } else {
+                        alert('✅ Удалено');
+                        loadMyStudents();
+                    }
+                })
+                .catch(function(err) {
+                    alert('❌ Ошибка: ' + err.message);
+                });
+        }
+
+        function toggleMyStudentStatus(id, currentStatus) {
+            var newStatus = currentStatus === 'active' ? 'inactive' : 'active';
+            supabase
+                .from('my_students')
+                .update({ status: newStatus })
+                .eq('id', id)
+                .then(function(response) {
+                    if (response.error) {
+                        alert('❌ Ошибка: ' + response.error.message);
+                    } else {
+                        loadMyStudents();
+                    }
+                })
+                .catch(function(err) {
+                    alert('❌ Ошибка: ' + err.message);
+                });
+        }
+
+        function loadAllHomeworks() {
+            var container = document.getElementById('homeworksList');
+            container.innerHTML = '⏳ Загрузка...';
+
+            supabase
+                .from('homeworks')
+                .select('*, students(name)')
+                .order('created_at', { ascending: false })
+                .then(function(response) {
+                    if (response.error) {
+                        container.innerHTML = '❌ Ошибка: ' + response.error.message;
+                        return;
+                    }
+                    var data = response.data || [];
+                    if (data.length === 0) {
+                        container.innerHTML = '📭 Нет домашних заданий';
+                        return;
+                    }
+                    var html = '<table class="admin-table"><tr><th>Название</th><th>Ученик</th><th>Статус</th><th>Срок</th><th>Ссылка на видео</th><th>Действия</th></tr>';
+                    for (var i = 0; i < data.length; i++) {
+                        var h = data[i];
+                        var studentName = h.students ? h.students.name : '—';
+                        var statusText = h.status === 'done' ? '✅ Выполнено' : '⏳ В процессе';
+                        html += `
+                            <tr>
+                                <td>${h.title}</td>
+                                <td>${studentName}</td>
+                                <td>${statusText}</td>
+                                <td>${h.deadline || '—'}</td>
+                                <td>${h.video_link ? `<a href="${h.video_link}" target="_blank" style="color:#88ccff;">Смотреть</a>` : '—'}</td>
+                                <td>
+                                    <button class="admin-btn" onclick="toggleHomeworkStatus('${h.id}', '${h.status}')">${h.status === 'done' ? '↩ Вернуть' : '✅ Отметить'}</button>
+                                    <button class="admin-btn danger" onclick="deleteHomework('${h.id}')">🗑</button>
+                                </td>
+                            </tr>
+                        `;
+                    }
+                    html += '</table>';
+                    container.innerHTML = html;
+                })
+                .catch(function(err) {
+                    container.innerHTML = '❌ Ошибка: ' + err.message;
+                });
+        }
+
+        function addHomework() {
+            supabase
+                .from('students')
+                .select('*')
+                .eq('role', 'student')
+                .then(function(response) {
+                    if (response.error) {
+                        alert('Ошибка: ' + response.error.message);
+                        return;
+                    }
+                    var students = response.data || [];
+                    if (students.length === 0) {
+                        alert('Нет учеников!');
+                        return;
+                    }
+                    var list = 'Выберите ученика:\n';
+                    for (var i = 0; i < students.length; i++) {
+                        list += (i + 1) + '. ' + students[i].name + ' (' + students[i].email + ')\n';
+                    }
+                    var choice = prompt(list);
+                    if (!choice) return;
+                    var idx = parseInt(choice) - 1;
+                    if (idx < 0 || idx >= students.length) {
+                        alert('Неверный выбор!');
+                        return;
+                    }
+                    var student = students[idx];
+                    var title = prompt('Введите название ДЗ:');
+                    if (!title) return;
+                    var deadline = prompt('Введите срок (ГГГГ-ММ-ДД) или Enter:');
+                    var videoLink = prompt('Введите ссылку на видео (если видео не работает, Enter):');
+
+                    var studentId = student.id || student.student_id || student.user_id;
+
+                    supabase
+                        .from('homeworks')
+                        .insert([{
+                            title: title,
+                            student_id: studentId,
+                            status: 'pending',
+                            deadline: deadline || null,
+                            video_link: videoLink || null
+                        }])
+                        .then(function(r) {
+                            if (r.error) {
+                                alert('❌ Ошибка: ' + r.error.message);
+                            } else {
+                                alert('✅ ДЗ добавлено!');
+                                loadAllHomeworks();
+                                if (currentUser) loadHomework(currentUser.id);
+                            }
+                        })
+                        .catch(function(err) {
+                            alert('❌ Ошибка: ' + err.message);
+                        });
+                })
+                .catch(function(err) {
+                    alert('Ошибка: ' + err.message);
+                });
+        }
+
+        function toggleHomeworkStatus(id, currentStatus) {
+            var newStatus = currentStatus === 'done' ? 'pending' : 'done';
+            supabase
+                .from('homeworks')
+                .update({ status: newStatus })
+                .eq('id', id)
+                .then(function(response) {
+                    if (response.error) {
+                        alert('❌ Ошибка: ' + response.error.message);
+                    } else {
+                        loadAllHomeworks();
+                        if (currentUser) loadHomework(currentUser.id);
+                    }
+                })
+                .catch(function(err) {
+                    alert('❌ Ошибка: ' + err.message);
+                });
+        }
+
+        function deleteHomework(id) {
+            if (!confirm('Удалить задание?')) return;
+            supabase
+                .from('homeworks')
+                .delete()
+                .eq('id', id)
+                .then(function(response) {
+                    if (response.error) {
+                        alert('❌ Ошибка: ' + response.error.message);
+                    } else {
+                        alert('✅ Задание удалено');
+                        loadAllHomeworks();
+                        if (currentUser) loadHomework(currentUser.id);
+                    }
+                })
+                .catch(function(err) {
+                    alert('❌ Ошибка: ' + err.message);
+                });
+        }
+
+        function loadTasks() {
+            var container = document.getElementById('tasksList');
+            container.innerHTML = '⏳ Загрузка...';
+
+            supabase
+                .from('tasks')
+                .select('*')
+                .order('created_at', { ascending: false })
+                .then(function(response) {
+                    if (response.error) {
+                        container.innerHTML = '❌ Ошибка: ' + response.error.message;
+                        return;
+                    }
+                    var data = response.data || [];
+                    if (data.length === 0) {
+                        container.innerHTML = '📭 Нет задач';
+                        return;
+                    }
+                    var html = '<table class="admin-table"><tr><th>Тема</th><th>Вопрос</th><th>Ответ</th><th>Действия</th></tr>';
+                    for (var i = 0; i < data.length; i++) {
+                        var t = data[i];
+                        html += `
+                            <tr>
+                                <td>${t.topic}</td>
+                                <td>${t.question}</td>
+                                <td>${t.answer}</td>
+                                <td>
+                                    <button class="admin-btn danger" onclick="deleteTask('${t.id}')">🗑</button>
+                                </td>
+                            </tr>
+                        `;
+                    }
+                    html += '</table>';
+                    container.innerHTML = html;
+                })
+                .catch(function(err) {
+                    container.innerHTML = '❌ Ошибка: ' + err.message;
+                });
+        }
+
+        function addTask() {
+            var topic = prompt('Введите тему (Тригонометрия, Логарифмы, и т.д.):');
+            if (!topic) return;
+            var question = prompt('Введите условие задачи:');
+            if (!question) return;
+            var answer = prompt('Введите ответ:');
+            if (!answer) return;
+
+            supabase
+                .from('tasks')
+                .insert([{ topic: topic, question: question, answer: answer }])
+                .then(function(response) {
+                    if (response.error) {
+                        alert('❌ Ошибка: ' + response.error.message);
+                    } else {
+                        alert('✅ Задача добавлена!');
+                        loadTasks();
+                        loadTaskCatalog();
+                    }
+                })
+                .catch(function(err) {
+                    alert('❌ Ошибка: ' + err.message);
+                });
+        }
+
+        function deleteTask(id) {
+            if (!confirm('Удалить задачу?')) return;
+            supabase
+                .from('tasks')
+                .delete()
+                .eq('id', id)
+                .then(function(response) {
+                    if (response.error) {
+                        alert('❌ Ошибка: ' + response.error.message);
+                    } else {
+                        alert('✅ Задача удалена');
+                        loadTasks();
+                        loadTaskCatalog();
+                    }
+                })
+                .catch(function(err) {
+                    alert('❌ Ошибка: ' + err.message);
+                });
+        }
+
+        function loadStats() {
+            var container = document.getElementById('statsContent');
+            container.innerHTML = '⏳ Загрузка...';
+
+            var totalStudents = 0;
+            var totalHomeworks = 0;
+            var doneHomeworks = 0;
+            var totalVideos = 0;
+            var totalTasks = 0;
+
+            supabase
+                .from('students').select('*')
+                .then(function(r1) {
+                    if (r1.error) { container.innerHTML = '❌ Ошибка'; return; }
+                    totalStudents = r1.data ? r1.data.length : 0;
+
+                    supabase
+                        .from('homeworks')
+                        .select('*')
+                        .then(function(r2) {
+                            if (r2.error) { container.innerHTML = '❌ Ошибка'; return; }
+                            var hw = r2.data || [];
+                            totalHomeworks = hw.length;
+                            doneHomeworks = hw.filter(function(h) { return h.status === 'done'; }).length;
+
+                            supabase
+                                .from('videos')
+                                .select('*')
+                                .then(function(r3) {
+                                    if (r3.error) { container.innerHTML = '❌ Ошибка'; return; }
+                                    totalVideos = r3.data ? r3.data.length : 0;
+
+                                    supabase
+                                        .from('tasks')
+                                        .select('*')
+                                        .then(function(r4) {
+                                            if (r4.error) { container.innerHTML = '❌ Ошибка'; return; }
+                                            totalTasks = r4.data ? r4.data.length : 0;
+
+                                            container.innerHTML = `
+                                                <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:20px;">
+                                                    <div style="background:rgba(255,255,255,0.05); padding:20px; border-radius:16px; text-align:center;">
+                                                        <div style="font-size:48px;">👨‍🎓</div>
+                                                        <div style="font-size:32px; font-weight:900; color:#ffffff;">${totalStudents}</div>
+                                                        <div style="color:#666;">Учеников</div>
+                                                    </div>
+                                                    <div style="background:rgba(255,255,255,0.05); padding:20px; border-radius:16px; text-align:center;">
+                                                        <div style="font-size:48px;">📝</div>
+                                                        <div style="font-size:32px; font-weight:900; color:#ffffff;">${totalHomeworks}</div>
+                                                        <div style="color:#666;">Всего ДЗ</div>
+                                                    </div>
+                                                    <div style="background:rgba(39,174,96,0.15); padding:20px; border-radius:16px; text-align:center;">
+                                                        <div style="font-size:48px;">✅</div>
+                                                        <div style="font-size:32px; font-weight:900; color:#2ecc71;">${doneHomeworks}</div>
+                                                        <div style="color:#7ddfa0;">Выполнено</div>
+                                                    </div>
+                                                    <div style="background:rgba(231,76,60,0.15); padding:20px; border-radius:16px; text-align:center;">
+                                                        <div style="font-size:48px;">⏳</div>
+                                                        <div style="font-size:32px; font-weight:900; color:#f1948a;">${totalHomeworks - doneHomeworks}</div>
+                                                        <div style="color:#f1948a;">В процессе</div>
+                                                    </div>
+                                                    <div style="background:rgba(52,152,219,0.15); padding:20px; border-radius:16px; text-align:center;">
+                                                        <div style="font-size:48px;">🎥</div>
+                                                        <div style="font-size:32px; font-weight:900; color:#85c1e9;">${totalVideos}</div>
+                                                        <div style="color:#85c1e9;">Видео</div>
+                                                    </div>
+                                                    <div style="background:rgba(245,166,35,0.15); padding:20px; border-radius:16px; text-align:center;">
+                                                        <div style="font-size:48px;">📚</div>
+                                                        <div style="font-size:32px; font-weight:900; color:#f5a623;">${totalTasks}</div>
+                                                        <div style="color:#f5a623;">Задач</div>
+                                                    </div>
+                                                </div>
+                                            `;
+                                        })
+                                        .catch(function(err) {
+                                            container.innerHTML = '❌ Ошибка: ' + err.message;
+                                        });
+                                })
+                                .catch(function(err) {
+                                    container.innerHTML = '❌ Ошибка: ' + err.message;
+                                });
+                        })
+                        .catch(function(err) {
+                            container.innerHTML = '❌ Ошибка: ' + err.message;
+                        });
+                })
+                .catch(function(err) {
+                    container.innerHTML = '❌ Ошибка: ' + err.message;
+                });
+        }
+
+        function loadTopics() {
+            // Заглушка
+        }
+
+        loadTaskCatalog();
+        loadTopics();
+
+        console.log('Сайт загружен.');
     </script>
 
 </body>
