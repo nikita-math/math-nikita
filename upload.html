@@ -1478,6 +1478,7 @@
             loadStats();
         }
 
+        // ===== УЧЕНИКИ С ПАРОЛЕМ (ДЛЯ ВХОДА) =====
         function loadStudents() {
             var container = document.getElementById('studentsList');
             container.innerHTML = '⏳ Загрузка...';
@@ -1560,7 +1561,7 @@
                 });
         }
 
-        // ===== НОВАЯ ТАБЛИЦА "МОИ УЧЕНИКИ" (СПРАВОЧНИК) =====
+        // ===== НОВАЯ ТАБЛИЦА "МОИ УЧЕНИКИ" (СПРАВОЧНИК БЕЗ ПАРОЛЯ) =====
         function loadMyStudents() {
             var container = document.getElementById('myStudentsList');
             container.innerHTML = '⏳ Загрузка...';
@@ -1670,6 +1671,7 @@
                 });
         }
 
+        // ===== ДЗ =====
         function loadAllHomeworks() {
             var container = document.getElementById('homeworksList');
             container.innerHTML = '⏳ Загрузка...';
@@ -1815,6 +1817,7 @@
                 });
         }
 
+        // ===== ЗАДАЧИ =====
         function loadTasks() {
             var container = document.getElementById('tasksList');
             container.innerHTML = '⏳ Загрузка...';
@@ -1900,6 +1903,7 @@
                 });
         }
 
+        // ===== СТАТИСТИКА =====
         function loadStats() {
             var container = document.getElementById('statsContent');
             container.innerHTML = '⏳ Загрузка...';
