@@ -364,8 +364,8 @@
 
             <div class="login-section" id="loginSection">
                 <h3>🔐 Войти в личный кабинет</h3>
-                <input type="email" id="email" placeholder="Email" value="test@mail.ru">
-                <input type="password" id="password" placeholder="Пароль" value="123456">
+                <input type="email" id="email" placeholder="Email" value="">
+                <input type="password" id="password" placeholder="Пароль" value="">
                 <button id="loginBtn">Войти</button>
                 <div id="result"></div>
                 <p style="margin-top: 14px; font-size: 14px; color: #888;">
@@ -411,7 +411,8 @@
         <div id="adminPanel">
             <h3>🔧 Панель управления</h3>
             <div class="admin-tabs">
-                <button class="active" data-tab="students">📋 Ученики</button>
+                <button class="active" data-tab="students">📋 Ученики (вход)</button>
+                <button data-tab="my-students">📋 Мои ученики</button>
                 <button data-tab="homeworks">📝 ДЗ</button>
                 <button data-tab="videos">🎥 Видео</button>
                 <button data-tab="tasks">📚 Задачи</button>
@@ -421,6 +422,10 @@
             <div class="admin-content active" id="tab-students">
                 <button class="admin-btn success" onclick="addStudent()">➕ Добавить ученика</button>
                 <div id="studentsList" style="margin-top:15px;">Загрузка...</div>
+            </div>
+            <div class="admin-content" id="tab-my-students">
+                <button class="admin-btn success" onclick="addMyStudent()">➕ Добавить ученика</button>
+                <div id="myStudentsList" style="margin-top:15px;">Загрузка...</div>
             </div>
             <div class="admin-content" id="tab-homeworks">
                 <button class="admin-btn success" onclick="addHomework()">➕ Выдать ДЗ</button>
@@ -517,7 +522,6 @@
             loadSectionContent(sectionId);
         }
 
-        // ===== ОСНОВНАЯ ФУНКЦИЯ ЗАГРУЗКИ ВИДЕО (С ДОБАВЛЕННОЙ ССЫЛКОЙ-ДУБЛИКАТОРОМ) =====
         async function loadSectionContent(sectionId) {
             var content = document.getElementById('sectionContent');
             content.innerHTML = '<div class="loading">⏳ Загрузка...</div>';
@@ -558,7 +562,6 @@
 
                         html += '<div class="video-item">';
 
-                        // ===== MP4 ФАЙЛ =====
                         if (isFile && videoUrl && videoUrl !== '#') {
                             html += `
                                 <div class="video-player-wrapper">
@@ -568,18 +571,14 @@
                                     </video>
                                 </div>
                             `;
-                        }
-                        // ===== YOUTUBE =====
-                        else if (videoUrl && videoUrl !== '#' && videoUrl.includes('youtube.com')) {
+                        } else if (videoUrl && videoUrl !== '#' && videoUrl.includes('youtube.com')) {
                             var embedUrl = videoUrl.replace('watch?v=', 'embed/');
                             html += `
                                 <div class="video-player-wrapper">
                                     <iframe src="${embedUrl}" allowfullscreen></iframe>
                                 </div>
                             `;
-                        }
-                        // ===== ВК ВИДЕО =====
-                        else if (isVk && videoUrl && videoUrl !== '#') {
+                        } else if (isVk && videoUrl && videoUrl !== '#') {
                             var vkEmbed = videoUrl;
                             if (videoUrl.includes('vk.com/video')) {
                                 var parts = videoUrl.split('/');
@@ -594,9 +593,7 @@
                                     <iframe src="${vkEmbed}" allowfullscreen></iframe>
                                 </div>
                             `;
-                        }
-                        // ===== ОБЫЧНАЯ ССЫЛКА =====
-                        else if (videoUrl && videoUrl !== '#') {
+                        } else if (videoUrl && videoUrl !== '#') {
                             html += `
                                 <div class="video-player-wrapper" style="display:flex; align-items:center; justify-content:center; background:#111; min-height:200px;">
                                     <a href="${videoUrl}" target="_blank" style="color:#f5a623; font-size:20px; text-decoration:none; border:2px solid #f5a623; padding:16px 32px; border-radius:12px;">
@@ -608,7 +605,6 @@
 
                         html += `<span class="video-title">🎬 ${title}</span>`;
 
-                        // ===== ⭐ НОВЫЙ БЛОК — ССЫЛКА-ДУБЛИКАТОР (ЕСЛИ ВИДЕО НЕ РАБОТАЕТ) =====
                         if (videoUrl && videoUrl !== '#') {
                             html += `
                                 <div class="video-fallback-link">
@@ -618,7 +614,6 @@
                             `;
                         }
 
-                        // ===== БЛОК С ДЗ =====
                         if (homework) {
                             html += `
                                 <div class="video-homework">
@@ -1251,7 +1246,6 @@
                     if (!typeChoice) return;
 
                     if (typeChoice === '1') {
-                        // ===== YOUTUBE =====
                         var url = prompt('Введите ссылку на YouTube:'); if (!url) return;
                         var homework = prompt('Введите ДЗ к уроку (или Enter):');
 
@@ -1279,7 +1273,6 @@
                             });
 
                     } else if (typeChoice === '2') {
-                        // ===== MP4 ФАЙЛ =====
                         var homework = prompt('Введите ДЗ к уроку (или Enter):');
 
                         var fileInput = document.createElement('input');
@@ -1352,7 +1345,6 @@
                         fileInput.click();
 
                     } else if (typeChoice === '3') {
-                        // ===== ВК ВИДЕО =====
                         var url = prompt('Введите ссылку на ВК:');
                         if (!url) return;
                         var homework = prompt('Введите ДЗ к уроку (или Enter):');
@@ -1478,6 +1470,7 @@
 
         function loadAdminData() {
             loadStudents();
+            loadMyStudents();
             loadAllHomeworks();
             loadVideosAdmin();
             loadTasks();
@@ -1485,6 +1478,7 @@
             loadStats();
         }
 
+        // ===== УЧЕНИКИ С ПАРОЛЕМ (ДЛЯ ВХОДА) =====
         function loadStudents() {
             var container = document.getElementById('studentsList');
             container.innerHTML = '⏳ Загрузка...';
@@ -1567,6 +1561,117 @@
                 });
         }
 
+        // ===== НОВАЯ ТАБЛИЦА "МОИ УЧЕНИКИ" (СПРАВОЧНИК БЕЗ ПАРОЛЯ) =====
+        function loadMyStudents() {
+            var container = document.getElementById('myStudentsList');
+            container.innerHTML = '⏳ Загрузка...';
+
+            supabase
+                .from('my_students')
+                .select('*')
+                .order('created_at', { ascending: false })
+                .then(function(response) {
+                    if (response.error) {
+                        container.innerHTML = '❌ Ошибка: ' + response.error.message;
+                        return;
+                    }
+                    var data = response.data || [];
+                    if (data.length === 0) {
+                        container.innerHTML = '📭 Нет учеников. Добавь первого!';
+                        return;
+                    }
+
+                    var html = '<table class="admin-table"><tr><th>Имя</th><th>Класс</th><th>Начало занятий</th><th>Статус</th><th>Действия</th></tr>';
+                    for (var i = 0; i < data.length; i++) {
+                        var s = data[i];
+                        var statusText = s.status === 'active' ? '🟢 Активен' : '🔴 Неактивен';
+                        html += `
+                            <tr>
+                                <td>${s.name}</td>
+                                <td>${s.class || '—'}</td>
+                                <td>${s.start_date || '—'}</td>
+                                <td>${statusText}</td>
+                                <td>
+                                    <button class="admin-btn" onclick="toggleMyStudentStatus('${s.id}', '${s.status}')">${s.status === 'active' ? '🔴' : '🟢'}</button>
+                                    <button class="admin-btn danger" onclick="deleteMyStudent('${s.id}')">🗑</button>
+                                </td>
+                            </tr>
+                        `;
+                    }
+                    html += '</table>';
+                    container.innerHTML = html;
+                })
+                .catch(function(err) {
+                    container.innerHTML = '❌ Ошибка: ' + err.message;
+                });
+        }
+
+        function addMyStudent() {
+            var name = prompt('Введите имя ученика:');
+            if (!name) return;
+            var className = prompt('Введите класс (10 или 11):');
+            var startDate = prompt('Введите дату начала (ГГГГ-ММ-ДД):');
+            var status = confirm('Активен?') ? 'active' : 'inactive';
+
+            supabase
+                .from('my_students')
+                .insert([{
+                    name: name,
+                    class: className || null,
+                    start_date: startDate || null,
+                    status: status
+                }])
+                .then(function(r) {
+                    if (r.error) {
+                        alert('❌ Ошибка: ' + r.error.message);
+                    } else {
+                        alert('✅ Ученик добавлен в список!');
+                        loadMyStudents();
+                    }
+                })
+                .catch(function(err) {
+                    alert('❌ Ошибка: ' + err.message);
+                });
+        }
+
+        function deleteMyStudent(id) {
+            if (!confirm('Удалить ученика из списка?')) return;
+            supabase
+                .from('my_students')
+                .delete()
+                .eq('id', id)
+                .then(function(response) {
+                    if (response.error) {
+                        alert('❌ Ошибка: ' + response.error.message);
+                    } else {
+                        alert('✅ Удалено');
+                        loadMyStudents();
+                    }
+                })
+                .catch(function(err) {
+                    alert('❌ Ошибка: ' + err.message);
+                });
+        }
+
+        function toggleMyStudentStatus(id, currentStatus) {
+            var newStatus = currentStatus === 'active' ? 'inactive' : 'active';
+            supabase
+                .from('my_students')
+                .update({ status: newStatus })
+                .eq('id', id)
+                .then(function(response) {
+                    if (response.error) {
+                        alert('❌ Ошибка: ' + response.error.message);
+                    } else {
+                        loadMyStudents();
+                    }
+                })
+                .catch(function(err) {
+                    alert('❌ Ошибка: ' + err.message);
+                });
+        }
+
+        // ===== ДЗ =====
         function loadAllHomeworks() {
             var container = document.getElementById('homeworksList');
             container.innerHTML = '⏳ Загрузка...';
@@ -1712,6 +1817,7 @@
                 });
         }
 
+        // ===== ЗАДАЧИ =====
         function loadTasks() {
             var container = document.getElementById('tasksList');
             container.innerHTML = '⏳ Загрузка...';
@@ -1797,6 +1903,7 @@
                 });
         }
 
+        // ===== СТАТИСТИКА =====
         function loadStats() {
             var container = document.getElementById('statsContent');
             container.innerHTML = '⏳ Загрузка...';
