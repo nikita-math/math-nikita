@@ -649,7 +649,7 @@
         };
         var daysArray = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'];
 
-        var currentHomeworkType = 'first'; // 'first' или 'second'
+        var currentHomeworkType = 'first';
 
         // ===== ФУНКЦИИ ДЛЯ МОДАЛЬНОГО ОКНА =====
         function openHomeworkModal(type) {
@@ -671,7 +671,6 @@
                 secondBlock.style.display = 'block';
             }
 
-            // Заполняем список учеников
             var select = document.getElementById('hwStudentSelect');
             select.innerHTML = '<option value="all">👥 ВСЕМ ученикам</option>';
 
@@ -690,13 +689,11 @@
                     }
                 });
 
-            // Очищаем поля
             document.getElementById('hwTitle').value = '';
             document.getElementById('hwFileUrl').value = '';
             document.getElementById('hwSectionId').value = '';
             document.getElementById('hwComment').value = '';
             
-            // Очищаем таблицу задач, оставляем одну строку
             var tbody = document.getElementById('hwTaskBody');
             tbody.innerHTML = `
                 <tr>
@@ -741,7 +738,6 @@
             }
         }
 
-        // ===== ОСНОВНАЯ ФУНКЦИЯ СОХРАНЕНИЯ =====
         function saveHomeworkFromModal() {
             var studentId = document.getElementById('hwStudentSelect').value;
             var title = document.getElementById('hwTitle').value.trim();
@@ -754,13 +750,11 @@
                 return;
             }
 
-            // Если 2-я часть — проверяем, что есть комментарий или файл
             if (currentHomeworkType === 'second' && !fileUrl && !comment) {
                 alert('Для 2-й части добавьте хотя бы файл или комментарий');
                 return;
             }
 
-            // Собираем задачи (только для 1-й части)
             var tasks = [];
             if (currentHomeworkType === 'first') {
                 var rows = document.querySelectorAll('#hwTaskBody tr');
@@ -785,7 +779,6 @@
                 }
             }
 
-            // Если введён order_num — ищем раздел
             if (sectionOrderInput) {
                 var orderNum = parseInt(sectionOrderInput);
                 if (isNaN(orderNum) || orderNum < 1) {
@@ -816,12 +809,10 @@
                 return;
             }
 
-            // Если order_num не введён
             proceedWithSave(studentId, title, fileUrl, null, tasks, comment);
         }
 
         function proceedWithSave(studentId, title, fileUrl, sectionId, tasks, comment) {
-            // Если выбран "Всем" и указан ID раздела
             if (studentId === 'all' && sectionId) {
                 supabase
                     .from('students')
@@ -869,7 +860,6 @@
                 return;
             }
 
-            // Если выбран конкретный ученик
             if (studentId === 'all') {
                 alert('Выберите конкретного ученика или укажите номер раздела для выдачи всем');
                 return;
@@ -906,7 +896,6 @@
                 });
         }
 
-        // ===== ЗАГРУЗКА КАТАЛОГА ЗАДАЧ =====
         function loadTaskCatalog() {
             var container = document.getElementById('taskList');
             container.innerHTML = '📭 Каталог задач пока пуст. Скоро добавлю!';
@@ -1022,7 +1011,6 @@
                             `;
                         }
 
-                        // ==== ПОКАЗЫВАЕМ ССЫЛКУ НА ДЗ (ЕСЛИ ЕСТЬ ПРИВЯЗКА К ЭТОМУ ВИДЕО) ====
                         if (currentUser && currentUser.role === 'student') {
                             var hwForVideo = await supabase
                                 .from('homeworks')
@@ -1363,7 +1351,6 @@
                 });
         }
 
-        // ===== РАСПИСАНИЕ =====
         function loadStudentSchedule(studentId) {
             var container = document.getElementById('studentSchedule');
             container.innerHTML = '⏳ Загрузка...';
@@ -1718,7 +1705,6 @@
                 });
         }
 
-        // ===== ФУНКЦИЯ ДОБАВЛЕНИЯ ВИДЕО (3 ТИПА: YouTube, MP4, ВК) =====
         function addVideo() {
             supabase
                 .from('video_sections')
@@ -1991,7 +1977,6 @@
             loadStats();
         }
 
-        // ===== УЧЕНИКИ С ПАРОЛЕМ (ДЛЯ ВХОДА) =====
         function loadStudents() {
             var container = document.getElementById('studentsList');
             container.innerHTML = '⏳ Загрузка...';
@@ -2074,7 +2059,6 @@
                 });
         }
 
-        // ===== НОВАЯ ТАБЛИЦА "МОИ УЧЕНИКИ" (СПРАВОЧНИК БЕЗ ПАРОЛЯ) =====
         function loadMyStudents() {
             var container = document.getElementById('myStudentsList');
             container.innerHTML = '⏳ Загрузка...';
@@ -2184,7 +2168,6 @@
                 });
         }
 
-        // ===== ДЗ =====
         function loadAllHomeworks() {
             var container = document.getElementById('homeworksList');
             container.innerHTML = '⏳ Загрузка...';
@@ -2301,7 +2284,6 @@
                 });
         }
 
-        // ===== ЗАДАЧИ =====
         function loadTasks() {
             var container = document.getElementById('tasksList');
             container.innerHTML = '⏳ Загрузка...';
@@ -2387,7 +2369,6 @@
                 });
         }
 
-        // ===== СТАТИСТИКА =====
         function loadStats() {
             var container = document.getElementById('statsContent');
             container.innerHTML = '⏳ Загрузка...';
