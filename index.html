@@ -506,10 +506,15 @@
                 <div id="myStudentsList" style="margin-top:15px;">Загрузка...</div>
             </div>
             <div class="admin-content" id="tab-homeworks">
-                <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 15px;">
-                    <button class="admin-btn success" onclick="openHomeworkModal('first')">➕ Выдать ДЗ (1-я часть)</button>
+                <!-- СТАРАЯ КНОПКА (ОСТАВЛЯЕМ) -->
+                <button class="admin-btn success" onclick="addHomework()">➕ Выдать ДЗ (старый способ)</button>
+                
+                <!-- НОВЫЕ КНОПКИ -->
+                <div style="margin-top: 10px; display: flex; gap: 10px; flex-wrap: wrap;">
+                    <button class="admin-btn success" onclick="openHomeworkModal('first')" style="background: #2ecc71;">➕ Выдать ДЗ (1-я часть)</button>
                     <button class="admin-btn success" onclick="openHomeworkModal('second')" style="background: #8e44ad;">➕ Выдать ДЗ (2-я часть)</button>
                 </div>
+                
                 <div id="homeworksList" style="margin-top:15px;">Загрузка...</div>
             </div>
             <div class="admin-content" id="tab-videos">
@@ -538,7 +543,7 @@
         © 2026 Математика с Никитой. Все права защищены.
     </footer>
 
-    <!-- ===== МОДАЛЬНОЕ ОКНО ДЛЯ ВЫДАЧИ ДЗ ===== -->
+    <!-- ===== МОДАЛЬНОЕ ОКНО ДЛЯ ВЫДАЧИ ДЗ (НОВОЕ) ===== -->
     <div class="modal" id="homeworkModal">
         <div class="modal-content">
             <h2 id="modalTitle">📝 Выдать ДЗ (1-я часть)</h2>
@@ -651,7 +656,7 @@
 
         var currentHomeworkType = 'first';
 
-        // ===== ФУНКЦИИ ДЛЯ МОДАЛЬНОГО ОКНА =====
+        // ===== НОВЫЕ ФУНКЦИИ ДЛЯ МОДАЛЬНОГО ОКНА =====
         function openHomeworkModal(type) {
             var modal = document.getElementById('homeworkModal');
             modal.classList.add('active');
@@ -738,7 +743,6 @@
             }
         }
 
-        // ===== ОСНОВНАЯ ФУНКЦИЯ СОХРАНЕНИЯ =====
         function saveHomeworkFromModal() {
             var studentId = document.getElementById('hwStudentSelect').value;
             var title = document.getElementById('hwTitle').value.trim();
@@ -897,6 +901,7 @@
                 });
         }
 
+        // ===== СТАРЫЕ ФУНКЦИИ (НЕ ТРОГАЕМ) =====
         function loadTaskCatalog() {
             var container = document.getElementById('taskList');
             container.innerHTML = '📭 Каталог задач пока пуст. Скоро добавлю!';
@@ -1431,7 +1436,7 @@
                         .order('row_num', { ascending: true })
                         .then(function(response) {
                             if (response.error) {
-                                container.innerHTML = '❌ Ошибка: ' + response.error.message);
+                                container.innerHTML = '❌ Ошибка: ' + response.error.message;
                                 return;
                             }
 
@@ -2248,6 +2253,134 @@
                 })
                 .catch(function(err) {
                     container.innerHTML = '❌ Ошибка: ' + err.message;
+                });
+        }
+
+        // ===== СТАРАЯ ФУНКЦИЯ addHomework (ОСТАВЛЯЕМ) =====
+        function addHomework() {
+            supabase
+                .from('students')
+                .select('*')
+                .eq('role', 'student')
+                .then(function(studentsRes) {
+                    if (studentsRes.error) {
+                        alert('Ошибка загрузки учеников: ' + studentsRes.error.message);
+                        return;
+                    }
+                    var students = studentsRes.data || [];
+                    if (students.length === 0) {
+                        alert('Нет учеников! Добавь сначала.');
+                        return;
+                    }
+
+                    var studentList = 'Выберите ученика:\n';
+                    for (var i = 0; i < students.length; i++) {
+                        studentList += (i + 1) + '. ' + students[i].name + ' (' + students[i].email + ')\n';
+                    }
+                    var studentChoice = prompt(studentList);
+                    if (!studentChoice) return;
+                    var studentIdx = parseInt(studentChoice) - 1;
+                    if (studentIdx < 0 || studentIdx >= students.length) {
+                        alert('Неверный выбор!');
+                        return;
+                    }
+                    var student = students[studentIdx];
+
+                    var title = prompt('Введите название ДЗ:');
+                    if (!title) return;
+                    var deadline = prompt('Введите срок (ГГГГ-ММ-ДД) или Enter:');
+                    var videoLink = prompt('Введите ссылку на видео (если видео не работает, Enter):');
+
+                    var sectionId = null;
+                    supabase
+                        .from('video_sections')
+                        .select('*')
+                        .order('order_num', { ascending: true })
+                        .then(function(sectionsRes) {
+                            if (sectionsRes.error) {
+                                alert('Ошибка загрузки разделов: ' + sectionsRes.error.message);
+                                return;
+                            }
+                            var sections = sectionsRes.data || [];
+                            if (sections.length > 0) {
+                                var sectionList = 'Выберите видео-раздел (или Enter для пропуска):\n';
+                                for (var s = 0; s < sections.length; s++) {
+                                    sectionList += (s + 1) + '. ' + sections[s].name + '\n';
+                                }
+                                var sectionChoice = prompt(sectionList);
+                                if (sectionChoice) {
+                                    var sectionIdx = parseInt(sectionChoice) - 1;
+                                    if (sectionIdx >= 0 && sectionIdx < sections.length) {
+                                        sectionId = sections[sectionIdx].id;
+                                    }
+                                }
+                            }
+
+                            var fileUrl = prompt('Введите ссылку на файл (PDF) или Enter:');
+
+                            var tasksInput = prompt('Введите задания в формате: номер:тип:правильный_ответ (через запятую). Пример: 2:first:4,3:second:0.5,5:first:2.5\n"first" — 1-я часть, "second" — 2-я часть');
+                            var tasks = [];
+                            if (tasksInput) {
+                                var parts = tasksInput.split(',');
+                                for (var p = 0; p < parts.length; p++) {
+                                    var taskParts = parts[p].split(':');
+                                    if (taskParts.length >= 3) {
+                                        var num = parseInt(taskParts[0]);
+                                        var type = taskParts[1].trim();
+                                        var answer = taskParts[2].trim();
+                                        if (!isNaN(num)) {
+                                            tasks.push({
+                                                num: num,
+                                                type: type,
+                                                correct_answer: answer,
+                                                is_homework: true,
+                                                done: false
+                                            });
+                                        }
+                                    }
+                                }
+                            }
+
+                            if (tasks.length === 0) {
+                                var confirmNoTasks = confirm('Вы не добавили задания. Продолжить без них?');
+                                if (!confirmNoTasks) return;
+                            }
+
+                            var studentId = student.id || student.student_id || student.user_id;
+
+                            supabase
+                                .from('homeworks')
+                                .insert([{
+                                    title: title,
+                                    student_id: studentId,
+                                    status: 'pending',
+                                    deadline: deadline || null,
+                                    video_link: videoLink || null,
+                                    file_url: fileUrl || null,
+                                    section_id: sectionId || null,
+                                    tasks: tasks.length > 0 ? tasks : null
+                                }])
+                                .then(function(r) {
+                                    if (r.error) {
+                                        alert('❌ Ошибка: ' + r.error.message);
+                                    } else {
+                                        alert('✅ ДЗ добавлено!');
+                                        loadAllHomeworks();
+                                        if (currentUser) loadHomework(currentUser.id);
+                                        if (currentUser && currentUser.role === 'admin') loadAllHomeworks();
+                                    }
+                                })
+                                .catch(function(err) {
+                                    alert('❌ Ошибка: ' + err.message);
+                                });
+                        })
+                        .catch(function(err) {
+                            alert('Ошибка загрузки разделов: ' + err.message);
+                        });
+
+                })
+                .catch(function(err) {
+                    alert('Ошибка загрузки учеников: ' + err.message);
                 });
         }
 
