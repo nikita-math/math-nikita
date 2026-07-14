@@ -327,6 +327,97 @@
         .admin-btn.success:hover { background: #1e8449; }
         .admin-btn.small { padding: 4px 12px; font-size: 12px; }
 
+        /* Стили для модального окна выдачи ДЗ */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-overlay.active {
+            display: flex;
+        }
+        .modal-content {
+            background: #1a1a2e;
+            padding: 40px;
+            border-radius: 24px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .modal-content h3 {
+            color: #f5a623;
+            margin-bottom: 20px;
+        }
+        .modal-content label {
+            color: #b0c4de;
+            display: block;
+            margin-bottom: 8px;
+        }
+        .modal-content input, .modal-content select {
+            width: 100%;
+            padding: 12px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 8px;
+            color: #fff;
+            font-size: 16px;
+            margin-bottom: 15px;
+        }
+        .modal-content input:focus, .modal-content select:focus {
+            border-color: #667eea;
+            outline: none;
+        }
+        .modal-content .preview-text {
+            margin-top: -10px;
+            margin-bottom: 15px;
+            font-size: 14px;
+            color: #666;
+        }
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            margin-top: 10px;
+        }
+        .modal-actions button {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 12px;
+            color: #fff;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .modal-actions .cancel-btn {
+            background: rgba(255,255,255,0.1);
+        }
+        .modal-actions .cancel-btn:hover {
+            background: rgba(255,255,255,0.2);
+        }
+        .modal-actions .submit-btn {
+            background: linear-gradient(135deg, #302b63, #667eea);
+        }
+        .modal-actions .submit-btn:hover {
+            transform: scale(1.02);
+            box-shadow: 0 0 30px rgba(102, 126, 234, 0.3);
+        }
+
+        .homework-controls {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+
         footer { text-align: center; padding: 30px 20px; color: #666; font-size: 14px; border-top: 1px solid rgba(255,255,255,0.05); margin-top: 40px; }
 
         @media (max-width: 700px) {
@@ -340,6 +431,7 @@
             .schedule-table th, .schedule-table td { padding: 6px 4px; min-width: 60px; }
             .hw-card .task-item-inline { flex-direction: column; align-items: stretch; }
             .hw-card .task-item-inline input { width: 100%; }
+            .modal-content { padding: 20px; }
         }
     </style>
 </head>
@@ -450,7 +542,10 @@
                 <div id="myStudentsList" style="margin-top:15px;">Загрузка...</div>
             </div>
             <div class="admin-content" id="tab-homeworks">
-                <button class="admin-btn success" onclick="addHomework()">➕ Выдать ДЗ</button>
+                <div class="homework-controls">
+                    <button class="admin-btn success" onclick="showAssignmentModal()">➕ Выдать ДЗ</button>
+                    <button class="admin-btn" onclick="loadAllHomeworks()">🔄 Обновить</button>
+                </div>
                 <div id="homeworksList" style="margin-top:15px;">Загрузка...</div>
             </div>
             <div class="admin-content" id="tab-videos">
@@ -473,6 +568,61 @@
             </div>
         </div>
 
+    </div>
+
+    <!-- ===== МОДАЛЬНОЕ ОКНО ВЫДАЧИ ДЗ ===== -->
+    <div class="modal-overlay" id="assignmentModal">
+        <div class="modal-content">
+            <h3>📝 Выдать домашнее задание</h3>
+            
+            <!-- Выбор способа выдачи -->
+            <div>
+                <label>Кому выдаем:</label>
+                <select id="assignmentTarget">
+                    <option value="single">📌 Конкретному ученику</option>
+                    <option value="all">👥 Всем ученикам</option>
+                </select>
+            </div>
+            
+            <!-- Список учеников -->
+            <div id="studentSelectWrapper">
+                <label>Выберите ученика:</label>
+                <select id="studentSelect">
+                    <option value="">Загрузка...</option>
+                </select>
+            </div>
+            
+            <!-- Номер раздела -->
+            <div>
+                <label>Номер раздела (для привязки к видео):</label>
+                <input type="number" id="sectionNumber" min="1" max="30" placeholder="Например: 1, 2, 3...">
+                <div class="preview-text" id="sectionPreview">Введите номер для просмотра раздела</div>
+            </div>
+            
+            <!-- Название ДЗ -->
+            <div>
+                <label>Название ДЗ:</label>
+                <input type="text" id="homeworkTitle" placeholder="Например: ДЗ к уроку 1">
+            </div>
+            
+            <!-- Загрузка PDF -->
+            <div>
+                <label>📎 PDF файл с ДЗ:</label>
+                <input type="file" id="pdfFile" accept=".pdf">
+            </div>
+            
+            <!-- Срок -->
+            <div>
+                <label>Срок выполнения:</label>
+                <input type="date" id="deadline">
+            </div>
+            
+            <!-- Кнопки -->
+            <div class="modal-actions">
+                <button class="cancel-btn" onclick="closeAssignmentModal()">Отмена</button>
+                <button class="submit-btn" onclick="submitAssignment()">✅ Выдать ДЗ</button>
+            </div>
+        </div>
     </div>
 
     <footer>
@@ -531,11 +681,17 @@
         };
         var daysArray = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'];
 
+        // ==========================================
+        // 1. ЗАГРУЗКА КАТАЛОГА ЗАДАЧ
+        // ==========================================
         function loadTaskCatalog() {
             var container = document.getElementById('taskList');
             container.innerHTML = '📭 Каталог задач пока пуст. Скоро добавлю!';
         }
 
+        // ==========================================
+        // 2. РАЗДЕЛЫ И ВИДЕО
+        // ==========================================
         function openSection(sectionId) {
             mainContent.style.display = 'none';
             dashboard.style.display = 'none';
@@ -765,6 +921,9 @@
             tabsContainer2.innerHTML = tabsHtml2;
         }
 
+        // ==========================================
+        // 3. АВТОРИЗАЦИЯ
+        // ==========================================
         document.getElementById('loginBtn').addEventListener('click', function() {
             var email = document.getElementById('email').value;
             var password = document.getElementById('password').value;
@@ -820,6 +979,21 @@
                 });
         });
 
+        document.getElementById('logoutBtn').addEventListener('click', function() {
+            document.getElementById('profileBlock').style.display = 'flex';
+            document.getElementById('contactsBlock').style.display = 'block';
+            document.getElementById('taskCatalogBlock').style.display = 'block';
+            document.getElementById('loginSection').style.display = 'block';
+            document.getElementById('dashboard').style.display = 'none';
+            document.getElementById('adminPanel').style.display = 'none';
+            resultDiv.innerHTML = '';
+            resultDiv.className = '';
+            currentUser = null;
+        });
+
+        // ==========================================
+        // 4. ДОМАШНИЕ ЗАДАНИЯ (СТУДЕНТ)
+        // ==========================================
         function checkAnswer(button, correctAnswer) {
             var input = button.previousElementSibling;
             var resultSpan = button.nextElementSibling;
@@ -831,14 +1005,12 @@
                 return;
             }
 
-            // Нормализуем ответ (убираем пробелы, заменяем запятую на точку)
             var normalizedUser = userAnswer.replace(/,/g, '.').replace(/\s/g, '');
             var normalizedCorrect = String(correctAnswer).replace(/,/g, '.').replace(/\s/g, '');
 
             if (normalizedUser === normalizedCorrect) {
                 resultSpan.textContent = '✅ Верно!';
                 resultSpan.style.color = '#2ecc71';
-                // Отключаем кнопку и инпут
                 input.disabled = true;
                 button.disabled = true;
                 button.style.opacity = '0.5';
@@ -853,7 +1025,7 @@
 
             supabase
                 .from('homeworks')
-                .select('*')
+                .select('*, video_sections(name, order_num)')
                 .eq('student_id', studentId)
                 .order('deadline', { ascending: true })
                 .then(function(response) {
@@ -880,6 +1052,12 @@
                         var statusText = hw.status === 'done' ? '✅ Выполнено' : '⏳ Ожидает проверки';
                         var btnHtml = hw.status !== 'done' ? `<button class="btn-start" onclick="markDone('${hw.id}')">✅ Отметить выполненным</button>` : '';
 
+                        // Показываем номер раздела
+                        var sectionInfo = '';
+                        if (hw.video_sections) {
+                            sectionInfo = `<div class="meta">📺 Раздел №${hw.video_sections.order_num}: ${hw.video_sections.name}</div>`;
+                        }
+
                         var videoBlock = '';
                         if (hw.video_link) {
                             videoBlock = `
@@ -890,7 +1068,6 @@
                             `;
                         }
 
-                        // ==== ИНТЕРАКТИВНЫЕ ЗАДАНИЯ ====
                         var tasksHtml = '';
                         if (hw.tasks && hw.tasks.length > 0) {
                             tasksHtml = '<div style="margin-top: 10px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.05);">';
@@ -912,36 +1089,15 @@
                             tasksHtml += '</div>';
                         }
 
-                        // ==== ФАЙЛ ====
                         var fileHtml = '';
                         if (hw.file_url) {
                             fileHtml = `<div class="meta">📎 <a href="${hw.file_url}" target="_blank">Скачать файл</a></div>`;
                         }
 
-                        // ==== СВЯЗЬ С ВИДЕО ====
-                        var sectionHtml = '';
-                        if (hw.section_id) {
-                            supabase
-                                .from('video_sections')
-                                .select('name')
-                                .eq('id', hw.section_id)
-                                .single()
-                                .then(function(sectionRes) {
-                                    if (!sectionRes.error && sectionRes.data) {
-                                        var sectionName = sectionRes.data.name;
-                                        var sectionEl = document.getElementById('section-label-' + hw.id);
-                                        if (sectionEl) {
-                                            sectionEl.textContent = '📺 ' + sectionName;
-                                        }
-                                    }
-                                });
-                            sectionHtml = `<div class="meta" id="section-label-${hw.id}">📺 Загрузка...</div>`;
-                        }
-
                         html += `
                             <div class="hw-card">
                                 <div class="title">${hw.title}</div>
-                                ${sectionHtml}
+                                ${sectionInfo}
                                 <div class="meta">📅 ${hw.deadline ? 'Срок: ' + hw.deadline : 'Без срока'}</div>
                                 <div class="status ${statusClass}">${statusText}</div>
                                 ${btnHtml}
@@ -983,7 +1139,9 @@
                 });
         }
 
-        // ===== РАСПИСАНИЕ =====
+        // ==========================================
+        // 5. РАСПИСАНИЕ
+        // ==========================================
         function loadStudentSchedule(studentId) {
             var container = document.getElementById('studentSchedule');
             container.innerHTML = '⏳ Загрузка...';
@@ -1338,7 +1496,9 @@
                 });
         }
 
-        // ===== ФУНКЦИЯ ДОБАВЛЕНИЯ ВИДЕО (3 ТИПА: YouTube, MP4, ВК) =====
+        // ==========================================
+        // 6. ВИДЕО (АДМИН)
+        // ==========================================
         function addVideo() {
             supabase
                 .from('video_sections')
@@ -1358,7 +1518,7 @@
 
                     var list = 'Выберите раздел:\n';
                     for (var i = 0; i < sections.length; i++) {
-                        list += (i + 1) + '. ' + sections[i].name + '\n';
+                        list += (i + 1) + '. ' + sections[i].name + ' (№' + sections[i].order_num + ')\n';
                     }
                     var choice = prompt(list);
                     if (!choice) return;
@@ -1518,7 +1678,7 @@
 
             supabase
                 .from('videos')
-                .select('*, video_sections(name)')
+                .select('*, video_sections(name, order_num)')
                 .order('created_at', { ascending: false })
                 .then(function(response) {
                     if (response.error) {
@@ -1530,16 +1690,18 @@
                         container.innerHTML = '📭 Нет видео';
                         return;
                     }
-                    var html = '<table class="admin-table"><tr><th>Название</th><th>Раздел</th><th>Ссылка</th><th>ДЗ</th><th>Тип</th><th>Действия</th></tr>';
+                    var html = '<table class="admin-table"><tr><th>Название</th><th>Раздел</th><th>№</th><th>Ссылка</th><th>ДЗ</th><th>Тип</th><th>Действия</th></tr>';
                     for (var i = 0; i < data.length; i++) {
                         var v = data[i];
                         var sectionName = v.video_sections ? v.video_sections.name : '—';
+                        var sectionNum = v.video_sections ? v.video_sections.order_num : '—';
                         var link = v.is_file ? (v.video_url || '—') : (v.youtube_url || '—');
                         var type = v.is_file ? '📁 Файл' : (v.is_vk ? '📱 ВК' : '🔗 YouTube');
                         html += `
                             <tr>
                                 <td>${v.title}</td>
                                 <td>${sectionName}</td>
+                                <td style="color:#f5a623; font-weight:700;">${sectionNum}</td>
                                 <td>${link !== '—' ? `<a href="${link}" target="_blank">Смотреть</a>` : '—'}</td>
                                 <td>${v.homework || '—'}</td>
                                 <td>${type}</td>
@@ -1577,18 +1739,9 @@
                 });
         }
 
-        document.getElementById('logoutBtn').addEventListener('click', function() {
-            document.getElementById('profileBlock').style.display = 'flex';
-            document.getElementById('contactsBlock').style.display = 'block';
-            document.getElementById('taskCatalogBlock').style.display = 'block';
-            document.getElementById('loginSection').style.display = 'block';
-            document.getElementById('dashboard').style.display = 'none';
-            document.getElementById('adminPanel').style.display = 'none';
-            resultDiv.innerHTML = '';
-            resultDiv.className = '';
-            currentUser = null;
-        });
-
+        // ==========================================
+        // 7. АДМИН - ВКЛАДКИ
+        // ==========================================
         document.querySelectorAll('.admin-tabs button').forEach(function(btn) {
             btn.addEventListener('click', function() {
                 document.querySelectorAll('.admin-tabs button').forEach(function(b) { b.classList.remove('active'); });
@@ -1609,7 +1762,9 @@
             loadStats();
         }
 
-        // ===== УЧЕНИКИ С ПАРОЛЕМ (ДЛЯ ВХОДА) =====
+        // ==========================================
+        // 8. УЧЕНИКИ (ВХОД)
+        // ==========================================
         function loadStudents() {
             var container = document.getElementById('studentsList');
             container.innerHTML = '⏳ Загрузка...';
@@ -1692,7 +1847,9 @@
                 });
         }
 
-        // ===== НОВАЯ ТАБЛИЦА "МОИ УЧЕНИКИ" (СПРАВОЧНИК БЕЗ ПАРОЛЯ) =====
+        // ==========================================
+        // 9. МОИ УЧЕНИКИ (СПРАВОЧНИК)
+        // ==========================================
         function loadMyStudents() {
             var container = document.getElementById('myStudentsList');
             container.innerHTML = '⏳ Загрузка...';
@@ -1802,15 +1959,16 @@
                 });
         }
 
-        // ===== ДЗ =====
+        // ==========================================
+        // 10. ДЗ (АДМИН) - НОВАЯ ВЕРСИЯ
+        // ==========================================
         function loadAllHomeworks() {
             var container = document.getElementById('homeworksList');
             container.innerHTML = '⏳ Загрузка...';
 
-            // Сначала загружаем все ДЗ
             supabase
                 .from('homeworks')
-                .select('*')
+                .select('*, video_sections(name, order_num), students(name)')
                 .order('created_at', { ascending: false })
                 .then(function(response) {
                     if (response.error) {
@@ -1823,195 +1981,267 @@
                         return;
                     }
 
-                    // Загружаем учеников, чтобы показывать имена
-                    supabase
-                        .from('students')
-                        .select('id, name')
-                        .then(function(studentsRes) {
-                            var students = studentsRes.data || [];
-                            var studentMap = {};
-                            students.forEach(function(s) {
-                                studentMap[s.id] = s.name;
-                            });
-
-                            // Загружаем разделы для отображения названий
-                            supabase
-                                .from('video_sections')
-                                .select('id, name')
-                                .then(function(sectionsRes) {
-                                    var sections = sectionsRes.data || [];
-                                    var sectionMap = {};
-                                    sections.forEach(function(s) {
-                                        sectionMap[s.id] = s.name;
-                                    });
-
-                                    var html = '<table class="admin-table"><tr><th>Название</th><th>Ученик</th><th>Видео</th><th>Статус</th><th>Срок</th><th>Ссылка на видео</th><th>Действия</th></tr>';
-                                    for (var i = 0; i < data.length; i++) {
-                                        var h = data[i];
-                                        var studentName = studentMap[h.student_id] || 'Неизвестный ученик (ID: ' + h.student_id + ')';
-                                        var statusText = h.status === 'done' ? '✅ Выполнено' : '⏳ В процессе';
-                                        var sectionName = h.section_id ? (sectionMap[h.section_id] || 'Раздел ' + h.section_id) : '—';
-                                        html += `
-                                            <tr>
-                                                <td>${h.title}</td>
-                                                <td>${studentName}</td>
-                                                <td>${sectionName}</td>
-                                                <td>${statusText}</td>
-                                                <td>${h.deadline || '—'}</td>
-                                                <td>${h.video_link ? `<a href="${h.video_link}" target="_blank" style="color:#88ccff;">Смотреть</a>` : '—'}</td>
-                                                <td>
-                                                    <button class="admin-btn" onclick="toggleHomeworkStatus('${h.id}', '${h.status}')">${h.status === 'done' ? '↩ Вернуть' : '✅ Отметить'}</button>
-                                                    <button class="admin-btn danger" onclick="deleteHomework('${h.id}')">🗑</button>
-                                                </td>
-                                            </tr>
-                                        `;
-                                    }
-                                    html += '</table>';
-                                    container.innerHTML = html;
-                                })
-                                .catch(function(err) {
-                                    container.innerHTML = '❌ Ошибка загрузки разделов: ' + err.message;
-                                });
-                        })
-                        .catch(function(err) {
-                            container.innerHTML = '❌ Ошибка загрузки учеников: ' + err.message;
-                        });
+                    var html = `
+                        <table class="admin-table">
+                            <tr>
+                                <th>Название</th>
+                                <th>Ученик</th>
+                                <th>Раздел</th>
+                                <th>№</th>
+                                <th>Статус</th>
+                                <th>Срок</th>
+                                <th>PDF</th>
+                                <th>Действия</th>
+                            </tr>
+                    `;
+                    
+                    for (var i = 0; i < data.length; i++) {
+                        var h = data[i];
+                        var studentName = h.students ? h.students.name : 'Неизвестный ученик';
+                        var sectionName = h.video_sections ? h.video_sections.name : '—';
+                        var sectionNum = h.video_sections ? h.video_sections.order_num : '—';
+                        var statusText = h.status === 'done' ? '✅ Выполнено' : '⏳ В процессе';
+                        
+                        html += `
+                            <tr>
+                                <td>${h.title}</td>
+                                <td>${studentName}</td>
+                                <td>${sectionName}</td>
+                                <td style="color:#f5a623; font-weight:700;">${sectionNum}</td>
+                                <td>${statusText}</td>
+                                <td>${h.deadline || '—'}</td>
+                                <td>${h.file_url ? `<a href="${h.file_url}" target="_blank" style="color:#88ccff;">📄 PDF</a>` : '—'}</td>
+                                <td>
+                                    <button class="admin-btn" onclick="toggleHomeworkStatus('${h.id}', '${h.status}')">
+                                        ${h.status === 'done' ? '↩ Вернуть' : '✅ Отметить'}
+                                    </button>
+                                    <button class="admin-btn danger" onclick="deleteHomework('${h.id}')">🗑</button>
+                                </td>
+                            </tr>
+                        `;
+                    }
+                    html += '</table>';
+                    container.innerHTML = html;
                 })
                 .catch(function(err) {
                     container.innerHTML = '❌ Ошибка: ' + err.message;
                 });
         }
 
-        function addHomework() {
-            supabase
-                .from('students')
-                .select('*')
-                .eq('role', 'student')
-                .then(function(studentsRes) {
-                    if (studentsRes.error) {
-                        alert('Ошибка загрузки учеников: ' + studentsRes.error.message);
-                        return;
-                    }
-                    var students = studentsRes.data || [];
-                    if (students.length === 0) {
-                        alert('Нет учеников! Добавь сначала.');
-                        return;
-                    }
-
-                    var studentList = 'Выберите ученика:\n';
-                    for (var i = 0; i < students.length; i++) {
-                        studentList += (i + 1) + '. ' + students[i].name + ' (' + students[i].email + ')\n';
-                    }
-                    var studentChoice = prompt(studentList);
-                    if (!studentChoice) return;
-                    var studentIdx = parseInt(studentChoice) - 1;
-                    if (studentIdx < 0 || studentIdx >= students.length) {
-                        alert('Неверный выбор!');
-                        return;
-                    }
-                    var student = students[studentIdx];
-
-                    var title = prompt('Введите название ДЗ:');
-                    if (!title) return;
-                    var deadline = prompt('Введите срок (ГГГГ-ММ-ДД) или Enter:');
-                    var videoLink = prompt('Введите ссылку на видео (если видео не работает, Enter):');
-
-                    // ==== ВЫБОР РАЗДЕЛА (ВИДЕО) ДЛЯ ПРИВЯЗКИ ====
-                    var sectionId = null;
-                    supabase
-                        .from('video_sections')
-                        .select('*')
-                        .order('order_num', { ascending: true })
-                        .then(function(sectionsRes) {
-                            if (sectionsRes.error) {
-                                alert('Ошибка загрузки разделов: ' + sectionsRes.error.message);
-                                return;
-                            }
-                            var sections = sectionsRes.data || [];
-                            if (sections.length > 0) {
-                                var sectionList = 'Выберите видео-раздел (или Enter для пропуска):\n';
-                                for (var s = 0; s < sections.length; s++) {
-                                    sectionList += (s + 1) + '. ' + sections[s].name + '\n';
-                                }
-                                var sectionChoice = prompt(sectionList);
-                                if (sectionChoice) {
-                                    var sectionIdx = parseInt(sectionChoice) - 1;
-                                    if (sectionIdx >= 0 && sectionIdx < sections.length) {
-                                        sectionId = sections[sectionIdx].id;
-                                    }
-                                }
-                            }
-
-                            // ==== ФАЙЛ ====
-                            var fileUrl = prompt('Введите ссылку на файл (PDF) или Enter:');
-
-                            // ==== ЗАДАНИЯ ====
-                            var tasksInput = prompt('Введите задания в формате: номер:тип:правильный_ответ (через запятую). Пример: 2:first:4,3:second:0.5,5:first:2.5\n"first" — 1-я часть, "second" — 2-я часть');
-                            var tasks = [];
-                            if (tasksInput) {
-                                var parts = tasksInput.split(',');
-                                for (var p = 0; p < parts.length; p++) {
-                                    var taskParts = parts[p].split(':');
-                                    if (taskParts.length >= 3) {
-                                        var num = parseInt(taskParts[0]);
-                                        var type = taskParts[1].trim();
-                                        var answer = taskParts[2].trim();
-                                        if (!isNaN(num)) {
-                                            tasks.push({
-                                                num: num,
-                                                type: type,
-                                                correct_answer: answer,
-                                                is_homework: true,
-                                                done: false
-                                            });
-                                        }
-                                    }
-                                }
-                            }
-
-                            if (tasks.length === 0) {
-                                var confirmNoTasks = confirm('Вы не добавили задания. Продолжить без них?');
-                                if (!confirmNoTasks) return;
-                            }
-
-                            var studentId = student.id || student.student_id || student.user_id;
-
-                            supabase
-                                .from('homeworks')
-                                .insert([{
-                                    title: title,
-                                    student_id: studentId,
-                                    status: 'pending',
-                                    deadline: deadline || null,
-                                    video_link: videoLink || null,
-                                    file_url: fileUrl || null,
-                                    section_id: sectionId || null,
-                                    tasks: tasks.length > 0 ? tasks : null
-                                }])
-                                .then(function(r) {
-                                    if (r.error) {
-                                        alert('❌ Ошибка: ' + r.error.message);
-                                    } else {
-                                        alert('✅ ДЗ добавлено!');
-                                        loadAllHomeworks();
-                                        if (currentUser) loadHomework(currentUser.id);
-                                        if (currentUser && currentUser.role === 'admin') loadAllHomeworks();
-                                    }
-                                })
-                                .catch(function(err) {
-                                    alert('❌ Ошибка: ' + err.message);
-                                });
-                        })
-                        .catch(function(err) {
-                            alert('Ошибка загрузки разделов: ' + err.message);
-                        });
-
-                })
-                .catch(function(err) {
-                    alert('Ошибка загрузки учеников: ' + err.message);
-                });
+        // ===== МОДАЛЬНОЕ ОКНО ВЫДАЧИ ДЗ =====
+        function showAssignmentModal() {
+            document.getElementById('assignmentModal').classList.add('active');
+            loadStudentsForSelect();
         }
 
+        function closeAssignmentModal() {
+            document.getElementById('assignmentModal').classList.remove('active');
+            document.getElementById('sectionNumber').value = '';
+            document.getElementById('homeworkTitle').value = '';
+            document.getElementById('pdfFile').value = '';
+            document.getElementById('deadline').value = '';
+            document.getElementById('sectionPreview').textContent = 'Введите номер для просмотра раздела';
+            document.getElementById('sectionPreview').style.color = '#666';
+        }
+
+        async function loadStudentsForSelect() {
+            const select = document.getElementById('studentSelect');
+            try {
+                const { data, error } = await supabase
+                    .from('students')
+                    .select('id, name')
+                    .eq('role', 'student')
+                    .order('name');
+                    
+                if (error) throw error;
+                
+                select.innerHTML = '<option value="">Выберите ученика</option>';
+                data.forEach(student => {
+                    select.innerHTML += `<option value="${student.id}">${student.name}</option>`;
+                });
+                
+                toggleStudentSelect();
+                
+            } catch (err) {
+                select.innerHTML = '<option value="">Ошибка загрузки</option>';
+                console.error('Ошибка загрузки учеников:', err);
+            }
+        }
+
+        function toggleStudentSelect() {
+            const target = document.getElementById('assignmentTarget').value;
+            const wrapper = document.getElementById('studentSelectWrapper');
+            wrapper.style.display = target === 'single' ? 'block' : 'none';
+        }
+
+        // События для модального окна
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('assignmentTarget').addEventListener('change', toggleStudentSelect);
+            
+            document.getElementById('sectionNumber').addEventListener('input', function() {
+                const num = parseInt(this.value);
+                const preview = document.getElementById('sectionPreview');
+                if (num && num > 0) {
+                    preview.textContent = '🔍 Поиск раздела №' + num + '...';
+                    preview.style.color = '#666';
+                    previewSection(num);
+                } else {
+                    preview.textContent = 'Введите номер для просмотра раздела';
+                    preview.style.color = '#666';
+                }
+            });
+        });
+
+        async function previewSection(number) {
+            try {
+                const { data, error } = await supabase
+                    .from('video_sections')
+                    .select('id, name')
+                    .eq('order_num', number)
+                    .single();
+                    
+                const preview = document.getElementById('sectionPreview');
+                if (error) {
+                    preview.textContent = '❌ Раздел №' + number + ' не найден';
+                    preview.style.color = '#f1948a';
+                    return;
+                }
+                
+                preview.textContent = '✅ Найден раздел: "' + data.name + '"';
+                preview.style.color = '#2ecc71';
+                
+            } catch (err) {
+                console.error('Ошибка поиска раздела:', err);
+            }
+        }
+
+        async function submitAssignment() {
+            const target = document.getElementById('assignmentTarget').value;
+            const studentId = document.getElementById('studentSelect').value;
+            const sectionNumber = document.getElementById('sectionNumber').value;
+            const title = document.getElementById('homeworkTitle').value.trim();
+            const fileInput = document.getElementById('pdfFile');
+            const deadline = document.getElementById('deadline').value;
+
+            // Валидация
+            if (!title) {
+                alert('❌ Введите название ДЗ');
+                return;
+            }
+            
+            if (!sectionNumber) {
+                alert('❌ Введите номер раздела');
+                return;
+            }
+            
+            if (target === 'single' && !studentId) {
+                alert('❌ Выберите ученика');
+                return;
+            }
+
+            // Проверяем существование раздела
+            let sectionData;
+            try {
+                const { data, error } = await supabase
+                    .from('video_sections')
+                    .select('id, name')
+                    .eq('order_num', parseInt(sectionNumber))
+                    .single();
+                    
+                if (error) {
+                    alert('❌ Раздел с номером ' + sectionNumber + ' не найден');
+                    return;
+                }
+                sectionData = data;
+            } catch (err) {
+                alert('❌ Ошибка поиска раздела: ' + err.message);
+                return;
+            }
+
+            // Загружаем PDF если выбран
+            let pdfUrl = null;
+            if (fileInput.files.length > 0) {
+                const file = fileInput.files[0];
+                if (file.type !== 'application/pdf') {
+                    alert('❌ Загрузите PDF файл');
+                    return;
+                }
+                
+                try {
+                    const path = 'homeworks/' + Date.now() + '_' + file.name;
+                    const { error: uploadError } = await supabase.storage
+                        .from('homeworks')
+                        .upload(path, file);
+                        
+                    if (uploadError) throw uploadError;
+                    
+                    const { data: urlData } = supabase.storage
+                        .from('homeworks')
+                        .getPublicUrl(path);
+                        
+                    pdfUrl = urlData.publicUrl;
+                } catch (err) {
+                    alert('❌ Ошибка загрузки PDF: ' + err.message);
+                    return;
+                }
+            }
+
+            // Определяем кому выдаем
+            let students = [];
+            if (target === 'all') {
+                const { data, error } = await supabase
+                    .from('students')
+                    .select('id')
+                    .eq('role', 'student');
+                    
+                if (error) {
+                    alert('❌ Ошибка загрузки учеников: ' + error.message);
+                    return;
+                }
+                students = data;
+            } else {
+                students = [{ id: studentId }];
+            }
+
+            if (students.length === 0) {
+                alert('❌ Нет учеников для выдачи ДЗ');
+                return;
+            }
+
+            // Создаем ДЗ для каждого ученика
+            const homeworks = students.map(function(s) {
+                return {
+                    title: title,
+                    student_id: s.id,
+                    section_id: sectionData.id,
+                    status: 'pending',
+                    deadline: deadline || null,
+                    file_url: pdfUrl,
+                    video_link: null,
+                    tasks: null
+                };
+            });
+
+            try {
+                const { error } = await supabase
+                    .from('homeworks')
+                    .insert(homeworks);
+                    
+                if (error) throw error;
+                
+                var count = homeworks.length;
+                alert('✅ ДЗ "' + title + '" выдано ' + count + ' ученикам в раздел "' + sectionData.name + '"!');
+                
+                closeAssignmentModal();
+                loadAllHomeworks();
+                if (currentUser) loadHomework(currentUser.id);
+                
+            } catch (err) {
+                alert('❌ Ошибка сохранения ДЗ: ' + err.message);
+            }
+        }
+
+        // ===== УПРАВЛЕНИЕ ДЗ =====
         function toggleHomeworkStatus(id, currentStatus) {
             var newStatus = currentStatus === 'done' ? 'pending' : 'done';
             supabase
@@ -2051,7 +2281,9 @@
                 });
         }
 
-        // ===== ЗАДАЧИ =====
+        // ==========================================
+        // 11. ЗАДАЧИ
+        // ==========================================
         function loadTasks() {
             var container = document.getElementById('tasksList');
             container.innerHTML = '⏳ Загрузка...';
@@ -2137,7 +2369,9 @@
                 });
         }
 
-        // ===== СТАТИСТИКА =====
+        // ==========================================
+        // 12. СТАТИСТИКА
+        // ==========================================
         function loadStats() {
             var container = document.getElementById('statsContent');
             container.innerHTML = '⏳ Загрузка...';
@@ -2233,6 +2467,9 @@
             // Заглушка
         }
 
+        // ==========================================
+        // 13. ИНИЦИАЛИЗАЦИЯ
+        // ==========================================
         loadTaskCatalog();
         loadTopics();
 
