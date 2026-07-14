@@ -327,6 +327,60 @@
         .admin-btn.success:hover { background: #1e8449; }
         .admin-btn.small { padding: 4px 12px; font-size: 12px; }
 
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .modal.active { display: flex; }
+        .modal-content {
+            background: #0b0e1a;
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 24px;
+            padding: 30px;
+            max-width: 800px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        .modal-content h2 { color: #f5a623; margin-bottom: 20px; }
+        .modal-content label { color: #b0c4de; font-weight: 600; display: block; margin-top: 12px; margin-bottom: 4px; }
+        .modal-content input, .modal-content select {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 12px;
+            padding: 10px 14px;
+            color: #ffffff;
+            width: 100%;
+            font-size: 16px;
+        }
+        .modal-content input:focus, .modal-content select:focus {
+            border-color: #667eea;
+            outline: none;
+        }
+        .modal-content .task-table { width: 100%; border-collapse: collapse; margin: 12px 0; }
+        .modal-content .task-table th { background: rgba(255,255,255,0.05); color: #f5a623; padding: 8px; text-align: left; }
+        .modal-content .task-table td { padding: 6px 4px; }
+        .modal-content .task-table input { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; padding: 6px 10px; color: white; width: 100%; }
+        .modal-actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 15px; }
+        .modal-actions button { padding: 10px 20px; border: none; border-radius: 12px; cursor: pointer; font-weight: 600; }
+        .modal-actions .btn-add { background: #27ae60; color: white; }
+        .modal-actions .btn-add:hover { background: #1e8449; }
+        .modal-actions .btn-save { background: #302b63; color: white; }
+        .modal-actions .btn-save:hover { background: #667eea; }
+        .modal-actions .btn-cancel { background: #e74c3c; color: white; }
+        .modal-actions .btn-cancel:hover { background: #c0392b; }
+        .modal-actions .btn-remove { background: #e67e22; color: white; }
+        .modal-actions .btn-remove:hover { background: #d35400; }
+
         footer { text-align: center; padding: 30px 20px; color: #666; font-size: 14px; border-top: 1px solid rgba(255,255,255,0.05); margin-top: 40px; }
 
         @media (max-width: 700px) {
@@ -340,6 +394,8 @@
             .schedule-table th, .schedule-table td { padding: 6px 4px; min-width: 60px; }
             .hw-card .task-item-inline { flex-direction: column; align-items: stretch; }
             .hw-card .task-item-inline input { width: 100%; }
+            .modal-content { padding: 15px; }
+            .modal-content .task-table { font-size: 14px; }
         }
     </style>
 </head>
@@ -450,7 +506,7 @@
                 <div id="myStudentsList" style="margin-top:15px;">Загрузка...</div>
             </div>
             <div class="admin-content" id="tab-homeworks">
-                <button class="admin-btn success" onclick="addHomework()">➕ Выдать ДЗ</button>
+                <button class="admin-btn success" onclick="openHomeworkModal()">➕ Выдать ДЗ</button>
                 <div id="homeworksList" style="margin-top:15px;">Загрузка...</div>
             </div>
             <div class="admin-content" id="tab-videos">
@@ -478,6 +534,52 @@
     <footer>
         © 2026 Математика с Никитой. Все права защищены.
     </footer>
+
+    <!-- ===== МОДАЛЬНОЕ ОКНО ДЛЯ ВЫДАЧИ ДЗ ===== -->
+    <div class="modal" id="homeworkModal">
+        <div class="modal-content">
+            <h2>📝 Выдать ДЗ</h2>
+            
+            <label>👤 Ученик</label>
+            <select id="hwStudentSelect">
+                <option value="all">👥 ВСЕМ ученикам</option>
+            </select>
+
+            <label>📝 Название ДЗ</label>
+            <input type="text" id="hwTitle" placeholder="Например: ДЗ по векторам">
+
+            <label>📎 Ссылка на PDF-файл</label>
+            <input type="text" id="hwFileUrl" placeholder="https://...pdf">
+
+            <label>📋 Задания (1-я часть)</label>
+            <table class="task-table" id="hwTaskTable">
+                <thead>
+                    <tr>
+                        <th style="width:40%;">№ задачи</th>
+                        <th style="width:40%;">Правильный ответ</th>
+                        <th style="width:20%;">Действие</th>
+                    </tr>
+                </thead>
+                <tbody id="hwTaskBody">
+                    <tr>
+                        <td><input type="text" class="task-num-input" placeholder="5"></td>
+                        <td><input type="text" class="task-answer-input" placeholder="4"></td>
+                        <td><button class="admin-btn danger small" onclick="removeTaskRow(this)">🗑</button></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="modal-actions">
+                <button class="btn-add" onclick="addTaskRow()">➕ Добавить строку</button>
+                <button class="btn-remove" onclick="removeLastTaskRow()">🗑 Удалить последнюю</button>
+            </div>
+
+            <div class="modal-actions" style="margin-top: 20px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 20px;">
+                <button class="btn-save" onclick="saveHomeworkFromModal()">✅ Сохранить ДЗ</button>
+                <button class="btn-cancel" onclick="closeHomeworkModal()">❌ Отмена</button>
+            </div>
+        </div>
+    </div>
 
     <script>
         // ===== ЗВЁЗДЫ =====
@@ -530,6 +632,203 @@
             'sun': 'ВС'
         };
         var daysArray = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'];
+
+        // ===== ФУНКЦИИ ДЛЯ МОДАЛЬНОГО ОКНА =====
+        function openHomeworkModal(videoId) {
+            var modal = document.getElementById('homeworkModal');
+            modal.classList.add('active');
+
+            // Заполняем список учеников
+            var select = document.getElementById('hwStudentSelect');
+            select.innerHTML = '<option value="all">👥 ВСЕМ ученикам</option>';
+
+            supabase
+                .from('students')
+                .select('id, name, email')
+                .eq('role', 'student')
+                .then(function(response) {
+                    if (!response.error && response.data) {
+                        response.data.forEach(function(s) {
+                            var option = document.createElement('option');
+                            option.value = s.id;
+                            option.textContent = s.name + ' (' + s.email + ')';
+                            select.appendChild(option);
+                        });
+                    }
+                });
+
+            // Если передан videoId — сохраняем его в атрибуте
+            if (videoId) {
+                modal.dataset.videoId = videoId;
+            } else {
+                delete modal.dataset.videoId;
+            }
+
+            // Очищаем поля
+            document.getElementById('hwTitle').value = '';
+            document.getElementById('hwFileUrl').value = '';
+            // Очищаем таблицу задач, оставляем одну строку
+            var tbody = document.getElementById('hwTaskBody');
+            tbody.innerHTML = `
+                <tr>
+                    <td><input type="text" class="task-num-input" placeholder="5"></td>
+                    <td><input type="text" class="task-answer-input" placeholder="4"></td>
+                    <td><button class="admin-btn danger small" onclick="removeTaskRow(this)">🗑</button></td>
+                </tr>
+            `;
+        }
+
+        function closeHomeworkModal() {
+            document.getElementById('homeworkModal').classList.remove('active');
+        }
+
+        function addTaskRow() {
+            var tbody = document.getElementById('hwTaskBody');
+            var tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td><input type="text" class="task-num-input" placeholder="5"></td>
+                <td><input type="text" class="task-answer-input" placeholder="4"></td>
+                <td><button class="admin-btn danger small" onclick="removeTaskRow(this)">🗑</button></td>
+            `;
+            tbody.appendChild(tr);
+        }
+
+        function removeTaskRow(button) {
+            var tr = button.closest('tr');
+            var tbody = document.getElementById('hwTaskBody');
+            if (tbody.children.length > 1) {
+                tr.remove();
+            } else {
+                alert('Должна остаться хотя бы одна строка.');
+            }
+        }
+
+        function removeLastTaskRow() {
+            var tbody = document.getElementById('hwTaskBody');
+            if (tbody.children.length > 1) {
+                tbody.removeChild(tbody.lastElementChild);
+            } else {
+                alert('Должна остаться хотя бы одна строка.');
+            }
+        }
+
+        function saveHomeworkFromModal() {
+            // Собираем данные
+            var studentId = document.getElementById('hwStudentSelect').value;
+            var title = document.getElementById('hwTitle').value.trim();
+            var fileUrl = document.getElementById('hwFileUrl').value.trim();
+            var modal = document.getElementById('homeworkModal');
+            var videoId = modal.dataset.videoId || null;
+
+            if (!title) {
+                alert('Введите название ДЗ');
+                return;
+            }
+
+            // Собираем задачи
+            var rows = document.querySelectorAll('#hwTaskBody tr');
+            var tasks = [];
+            for (var i = 0; i < rows.length; i++) {
+                var numInput = rows[i].querySelector('.task-num-input');
+                var answerInput = rows[i].querySelector('.task-answer-input');
+                var num = numInput.value.trim();
+                var answer = answerInput.value.trim();
+                if (num && answer) {
+                    tasks.push({
+                        num: parseInt(num),
+                        type: 'first',
+                        correct_answer: answer,
+                        is_homework: true,
+                        done: false
+                    });
+                }
+            }
+
+            if (tasks.length === 0) {
+                alert('Добавьте хотя бы одно задание');
+                return;
+            }
+
+            // Если выбран "Всем" и есть videoId — выдаём ДЗ каждому ученику
+            if (studentId === 'all' && videoId) {
+                supabase
+                    .from('students')
+                    .select('id')
+                    .eq('role', 'student')
+                    .then(function(response) {
+                        if (response.error) {
+                            alert('❌ Ошибка загрузки учеников: ' + response.error.message);
+                            return;
+                        }
+                        var students = response.data || [];
+                        if (students.length === 0) {
+                            alert('Нет учеников');
+                            return;
+                        }
+
+                        var promises = [];
+                        students.forEach(function(s) {
+                            var hwData = {
+                                title: title,
+                                student_id: s.id,
+                                status: 'pending',
+                                deadline: null,
+                                video_link: null,
+                                file_url: fileUrl || null,
+                                section_id: videoId,
+                                tasks: tasks
+                            };
+                            promises.push(supabase.from('homeworks').insert([hwData]));
+                        });
+
+                        Promise.all(promises)
+                            .then(function() {
+                                alert('✅ ДЗ выдано всем ученикам!');
+                                closeHomeworkModal();
+                                loadAllHomeworks();
+                                loadVideosAdmin();
+                            })
+                            .catch(function(err) {
+                                alert('❌ Ошибка: ' + err.message);
+                            });
+                    });
+                return;
+            }
+
+            // Если выбран конкретный ученик
+            if (studentId === 'all') {
+                alert('Выберите конкретного ученика или укажите видео для выдачи всем');
+                return;
+            }
+
+            var hwData = {
+                title: title,
+                student_id: studentId,
+                status: 'pending',
+                deadline: null,
+                video_link: null,
+                file_url: fileUrl || null,
+                section_id: videoId || null,
+                tasks: tasks
+            };
+
+            supabase
+                .from('homeworks')
+                .insert([hwData])
+                .then(function(response) {
+                    if (response.error) {
+                        alert('❌ Ошибка: ' + response.error.message);
+                    } else {
+                        alert('✅ ДЗ выдано!');
+                        closeHomeworkModal();
+                        loadAllHomeworks();
+                        loadVideosAdmin();
+                    }
+                })
+                .catch(function(err) {
+                    alert('❌ Ошибка: ' + err.message);
+                });
+        }
 
         function loadTaskCatalog() {
             var container = document.getElementById('taskList');
@@ -831,14 +1130,12 @@
                 return;
             }
 
-            // Нормализуем ответ (убираем пробелы, заменяем запятую на точку)
             var normalizedUser = userAnswer.replace(/,/g, '.').replace(/\s/g, '');
             var normalizedCorrect = String(correctAnswer).replace(/,/g, '.').replace(/\s/g, '');
 
             if (normalizedUser === normalizedCorrect) {
                 resultSpan.textContent = '✅ Верно!';
                 resultSpan.style.color = '#2ecc71';
-                // Отключаем кнопку и инпут
                 input.disabled = true;
                 button.disabled = true;
                 button.style.opacity = '0.5';
@@ -890,7 +1187,6 @@
                             `;
                         }
 
-                        // ==== ИНТЕРАКТИВНЫЕ ЗАДАНИЯ ====
                         var tasksHtml = '';
                         if (hw.tasks && hw.tasks.length > 0) {
                             tasksHtml = '<div style="margin-top: 10px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.05);">';
@@ -912,13 +1208,11 @@
                             tasksHtml += '</div>';
                         }
 
-                        // ==== ФАЙЛ ====
                         var fileHtml = '';
                         if (hw.file_url) {
                             fileHtml = `<div class="meta">📎 <a href="${hw.file_url}" target="_blank">Скачать файл</a></div>`;
                         }
 
-                        // ==== СВЯЗЬ С ВИДЕО ====
                         var sectionHtml = '';
                         if (hw.section_id) {
                             supabase
@@ -1544,6 +1838,7 @@
                                 <td>${v.homework || '—'}</td>
                                 <td>${type}</td>
                                 <td>
+                                    <button class="admin-btn small" onclick="openHomeworkModal('${v.id}')" style="background:#27ae60; color:white; border:none; padding:4px 12px; border-radius:12px; cursor:pointer;">📝 ДЗ под видео</button>
                                     <button class="admin-btn danger" onclick="deleteVideo('${v.id}')">🗑</button>
                                 </td>
                             </tr>
@@ -1807,7 +2102,6 @@
             var container = document.getElementById('homeworksList');
             container.innerHTML = '⏳ Загрузка...';
 
-            // Сначала загружаем все ДЗ
             supabase
                 .from('homeworks')
                 .select('*')
@@ -1823,7 +2117,6 @@
                         return;
                     }
 
-                    // Загружаем учеников, чтобы показывать имена
                     supabase
                         .from('students')
                         .select('id, name')
@@ -1834,7 +2127,6 @@
                                 studentMap[s.id] = s.name;
                             });
 
-                            // Загружаем разделы для отображения названий
                             supabase
                                 .from('video_sections')
                                 .select('id, name')
@@ -1845,7 +2137,7 @@
                                         sectionMap[s.id] = s.name;
                                     });
 
-                                    var html = '<table class="admin-table"><tr><th>Название</th><th>Ученик</th><th>Видео</th><th>Статус</th><th>Срок</th><th>Ссылка на видео</th><th>Действия</th></tr>';
+                                    var html = '<table class="admin-table"><tr><th>Название</th><th>Ученик</th><th>Видео</th><th>Статус</th><th>Срок</th><th>Действия</th></tr>';
                                     for (var i = 0; i < data.length; i++) {
                                         var h = data[i];
                                         var studentName = studentMap[h.student_id] || 'Неизвестный ученик (ID: ' + h.student_id + ')';
@@ -1858,7 +2150,6 @@
                                                 <td>${sectionName}</td>
                                                 <td>${statusText}</td>
                                                 <td>${h.deadline || '—'}</td>
-                                                <td>${h.video_link ? `<a href="${h.video_link}" target="_blank" style="color:#88ccff;">Смотреть</a>` : '—'}</td>
                                                 <td>
                                                     <button class="admin-btn" onclick="toggleHomeworkStatus('${h.id}', '${h.status}')">${h.status === 'done' ? '↩ Вернуть' : '✅ Отметить'}</button>
                                                     <button class="admin-btn danger" onclick="deleteHomework('${h.id}')">🗑</button>
@@ -1879,136 +2170,6 @@
                 })
                 .catch(function(err) {
                     container.innerHTML = '❌ Ошибка: ' + err.message;
-                });
-        }
-
-        function addHomework() {
-            supabase
-                .from('students')
-                .select('*')
-                .eq('role', 'student')
-                .then(function(studentsRes) {
-                    if (studentsRes.error) {
-                        alert('Ошибка загрузки учеников: ' + studentsRes.error.message);
-                        return;
-                    }
-                    var students = studentsRes.data || [];
-                    if (students.length === 0) {
-                        alert('Нет учеников! Добавь сначала.');
-                        return;
-                    }
-
-                    var studentList = 'Выберите ученика:\n';
-                    for (var i = 0; i < students.length; i++) {
-                        studentList += (i + 1) + '. ' + students[i].name + ' (' + students[i].email + ')\n';
-                    }
-                    var studentChoice = prompt(studentList);
-                    if (!studentChoice) return;
-                    var studentIdx = parseInt(studentChoice) - 1;
-                    if (studentIdx < 0 || studentIdx >= students.length) {
-                        alert('Неверный выбор!');
-                        return;
-                    }
-                    var student = students[studentIdx];
-
-                    var title = prompt('Введите название ДЗ:');
-                    if (!title) return;
-                    var deadline = prompt('Введите срок (ГГГГ-ММ-ДД) или Enter:');
-                    var videoLink = prompt('Введите ссылку на видео (если видео не работает, Enter):');
-
-                    // ==== ВЫБОР РАЗДЕЛА (ВИДЕО) ДЛЯ ПРИВЯЗКИ ====
-                    var sectionId = null;
-                    supabase
-                        .from('video_sections')
-                        .select('*')
-                        .order('order_num', { ascending: true })
-                        .then(function(sectionsRes) {
-                            if (sectionsRes.error) {
-                                alert('Ошибка загрузки разделов: ' + sectionsRes.error.message);
-                                return;
-                            }
-                            var sections = sectionsRes.data || [];
-                            if (sections.length > 0) {
-                                var sectionList = 'Выберите видео-раздел (или Enter для пропуска):\n';
-                                for (var s = 0; s < sections.length; s++) {
-                                    sectionList += (s + 1) + '. ' + sections[s].name + '\n';
-                                }
-                                var sectionChoice = prompt(sectionList);
-                                if (sectionChoice) {
-                                    var sectionIdx = parseInt(sectionChoice) - 1;
-                                    if (sectionIdx >= 0 && sectionIdx < sections.length) {
-                                        sectionId = sections[sectionIdx].id;
-                                    }
-                                }
-                            }
-
-                            // ==== ФАЙЛ ====
-                            var fileUrl = prompt('Введите ссылку на файл (PDF) или Enter:');
-
-                            // ==== ЗАДАНИЯ ====
-                            var tasksInput = prompt('Введите задания в формате: номер:тип:правильный_ответ (через запятую). Пример: 2:first:4,3:second:0.5,5:first:2.5\n"first" — 1-я часть, "second" — 2-я часть');
-                            var tasks = [];
-                            if (tasksInput) {
-                                var parts = tasksInput.split(',');
-                                for (var p = 0; p < parts.length; p++) {
-                                    var taskParts = parts[p].split(':');
-                                    if (taskParts.length >= 3) {
-                                        var num = parseInt(taskParts[0]);
-                                        var type = taskParts[1].trim();
-                                        var answer = taskParts[2].trim();
-                                        if (!isNaN(num)) {
-                                            tasks.push({
-                                                num: num,
-                                                type: type,
-                                                correct_answer: answer,
-                                                is_homework: true,
-                                                done: false
-                                            });
-                                        }
-                                    }
-                                }
-                            }
-
-                            if (tasks.length === 0) {
-                                var confirmNoTasks = confirm('Вы не добавили задания. Продолжить без них?');
-                                if (!confirmNoTasks) return;
-                            }
-
-                            var studentId = student.id || student.student_id || student.user_id;
-
-                            supabase
-                                .from('homeworks')
-                                .insert([{
-                                    title: title,
-                                    student_id: studentId,
-                                    status: 'pending',
-                                    deadline: deadline || null,
-                                    video_link: videoLink || null,
-                                    file_url: fileUrl || null,
-                                    section_id: sectionId || null,
-                                    tasks: tasks.length > 0 ? tasks : null
-                                }])
-                                .then(function(r) {
-                                    if (r.error) {
-                                        alert('❌ Ошибка: ' + r.error.message);
-                                    } else {
-                                        alert('✅ ДЗ добавлено!');
-                                        loadAllHomeworks();
-                                        if (currentUser) loadHomework(currentUser.id);
-                                        if (currentUser && currentUser.role === 'admin') loadAllHomeworks();
-                                    }
-                                })
-                                .catch(function(err) {
-                                    alert('❌ Ошибка: ' + err.message);
-                                });
-                        })
-                        .catch(function(err) {
-                            alert('Ошибка загрузки разделов: ' + err.message);
-                        });
-
-                })
-                .catch(function(err) {
-                    alert('Ошибка загрузки учеников: ' + err.message);
                 });
         }
 
