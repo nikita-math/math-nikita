@@ -805,7 +805,7 @@
                         // ==== ПОКАЗЫВАЕМ ССЫЛКУ НА ДЗ (ЕСЛИ ЕСТЬ ПРИВЯЗКА К ЭТОМУ ВИДЕО) ====
                         if (currentUser && currentUser.role === 'student') {
                             var hwForVideo = await supabase
-                                .from('homework')
+                                .from('homeworks')
                                 .select('*')
                                 .eq('section_id', videoId)
                                 .eq('student_id', currentUser.id)
@@ -1024,7 +1024,7 @@
             homeworkList.innerHTML = '⏳ Загрузка...';
 
             supabase
-                .from('homework')
+                .from('homeworks')
                 .select('*, video_sections(name, order_num)')
                 .eq('student_id', studentId)
                 .order('deadline', { ascending: true })
@@ -1123,7 +1123,7 @@
 
         function markDone(id) {
             supabase
-                .from('homework')
+                .from('homeworks')
                 .update({ status: 'done' })
                 .eq('id', id)
                 .then(function(response) {
@@ -1967,7 +1967,7 @@
             container.innerHTML = '⏳ Загрузка...';
 
             supabase
-                .from('homework')
+                .from('homeworks')
                 .select('*, video_sections(name, order_num), students(name)')
                 .order('created_at', { ascending: false })
                 .then(function(response) {
@@ -2050,7 +2050,6 @@
                 const { data, error } = await supabase
                     .from('students')
                     .select('id, name')
-                    .eq('role', 'student')
                     .order('name');
                     
                 if (error) throw error;
@@ -2173,7 +2172,10 @@
                         .from('homework')
                         .upload(path, file);
                         
-                    if (uploadError) throw uploadError;
+                    if (uploadError) {
+                        alert('❌ Ошибка загрузки PDF: ' + uploadError.message);
+                        return;
+                    }
                     
                     const { data: urlData } = supabase.storage
                         .from('homework')
@@ -2191,8 +2193,7 @@
             if (target === 'all') {
                 const { data, error } = await supabase
                     .from('students')
-                    .select('id')
-                    .eq('role', 'student');
+                    .select('id');
                     
                 if (error) {
                     alert('❌ Ошибка загрузки учеников: ' + error.message);
@@ -2217,14 +2218,13 @@
                     status: 'pending',
                     deadline: deadline || null,
                     file_url: pdfUrl,
-                    video_link: null,
-                    tasks: null
+                    video_link: null
                 };
             });
 
             try {
                 const { error } = await supabase
-                    .from('homework')
+                    .from('homeworks')
                     .insert(homeworks);
                     
                 if (error) throw error;
@@ -2245,7 +2245,7 @@
         function toggleHomeworkStatus(id, currentStatus) {
             var newStatus = currentStatus === 'done' ? 'pending' : 'done';
             supabase
-                .from('homework')
+                .from('homeworks')
                 .update({ status: newStatus })
                 .eq('id', id)
                 .then(function(response) {
@@ -2264,7 +2264,7 @@
         function deleteHomework(id) {
             if (!confirm('Удалить задание?')) return;
             supabase
-                .from('homework')
+                .from('homeworks')
                 .delete()
                 .eq('id', id)
                 .then(function(response) {
@@ -2389,7 +2389,7 @@
                     totalStudents = r1.data ? r1.data.length : 0;
 
                     supabase
-                        .from('homework')
+                        .from('homeworks')
                         .select('*')
                         .then(function(r2) {
                             if (r2.error) { container.innerHTML = '❌ Ошибка'; return; }
