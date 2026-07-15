@@ -650,6 +650,131 @@
             font-size: 13px;
         }
 
+        /* ===== СТАТИСТИКА ===== */
+        .section-progress {
+            background: rgba(255,255,255,0.03);
+            border-radius: 12px;
+            padding: 14px 18px;
+            margin-bottom: 10px;
+            border: 1px solid rgba(255,255,255,0.05);
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            flex-wrap: wrap;
+        }
+
+        .section-progress .name {
+            min-width: 140px;
+            color: #b0c4de;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .section-progress .bar-wrap {
+            flex: 1;
+            min-width: 100px;
+            height: 8px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .section-progress .bar-wrap .fill {
+            height: 100%;
+            border-radius: 10px;
+            transition: width 0.8s ease;
+        }
+
+        .section-progress .bar-wrap .fill.green { background: linear-gradient(90deg, #27ae60, #2ecc71); }
+        .section-progress .bar-wrap .fill.yellow { background: linear-gradient(90deg, #f39c12, #f1c40f); }
+        .section-progress .bar-wrap .fill.red { background: linear-gradient(90deg, #e74c3c, #c0392b); }
+
+        .section-progress .percent {
+            min-width: 50px;
+            text-align: right;
+            font-weight: 700;
+            font-size: 14px;
+            color: #b0c4de;
+        }
+
+        .section-progress .status-icon {
+            font-size: 18px;
+        }
+
+        /* Достижения */
+        .achievement-card {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.05);
+            border-radius: 50px;
+            padding: 8px 20px 8px 12px;
+            margin: 0 8px 8px 0;
+            transition: 0.3s;
+        }
+
+        .achievement-card:hover {
+            background: rgba(255,255,255,0.06);
+            border-color: rgba(245,166,35,0.2);
+        }
+
+        .achievement-card .icon {
+            font-size: 24px;
+        }
+
+        .achievement-card .info {
+            font-size: 13px;
+            color: #b0c4de;
+        }
+
+        .achievement-card .info .name {
+            font-weight: 600;
+            color: #ffffff;
+        }
+
+        .achievement-card.locked {
+            opacity: 0.3;
+            filter: grayscale(1);
+        }
+
+        /* График активности */
+        .activity-bars {
+            display: flex;
+            gap: 8px;
+            justify-content: space-around;
+            align-items: flex-end;
+            height: 120px;
+            padding: 10px 0;
+        }
+
+        .activity-bars .bar-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            flex: 1;
+        }
+
+        .activity-bars .bar-item .bar {
+            width: 24px;
+            border-radius: 6px 6px 0 0;
+            background: linear-gradient(180deg, #667eea, #764ba2);
+            transition: height 0.8s ease;
+            min-height: 4px;
+        }
+
+        .activity-bars .bar-item .label {
+            font-size: 11px;
+            color: #666;
+        }
+
+        .activity-bars .bar-item .value {
+            font-size: 11px;
+            color: #b0c4de;
+            font-weight: 600;
+        }
+
         footer { text-align: center; padding: 30px 20px; color: #666; font-size: 14px; border-top: 1px solid rgba(255,255,255,0.05); margin-top: 40px; }
 
         @media (max-width: 700px) {
@@ -693,6 +818,30 @@
             }
             .stats-grid {
                 grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            }
+            .section-progress {
+                flex-direction: column;
+                align-items: stretch;
+                text-align: center;
+            }
+            .section-progress .bar-wrap {
+                min-width: 60px;
+            }
+            .section-progress .percent {
+                text-align: center;
+            }
+            .activity-bars {
+                height: 80px;
+            }
+            .activity-bars .bar-item .bar {
+                width: 18px;
+            }
+            .achievement-card {
+                font-size: 12px;
+                padding: 6px 14px 6px 10px;
+            }
+            .achievement-card .icon {
+                font-size: 18px;
             }
         }
     </style>
@@ -773,6 +922,7 @@
                 </div>
 
                 <div class="dashboard-content">
+                    <!-- Обзор -->
                     <div id="page-overview" class="dashboard-page">
                         <div class="section-title">🏠 Обзор</div>
                         
@@ -814,20 +964,62 @@
                         </div>
                     </div>
 
+                    <!-- Мои ДЗ -->
                     <div id="page-homeworks" class="dashboard-page" style="display:none;">
                         <div class="section-title">📚 Мои домашние задания</div>
                         <div id="homeworkList"><p>Загрузка...</p></div>
                     </div>
 
+                    <!-- Статистика -->
                     <div id="page-stats" class="dashboard-page" style="display:none;">
                         <div class="section-title">📊 Статистика</div>
-                        <div class="empty-state">
-                            <span class="icon">📈</span>
-                            <div class="title">Статистика в разработке</div>
-                            <div class="desc">Скоро здесь появится подробная аналитика по вашему прогрессу</div>
+                        
+                        <div class="stats-grid" id="statsOverview">
+                            <div class="stat-card">
+                                <div class="icon">📝</div>
+                                <div class="number" id="statsTotal">0</div>
+                                <div class="label">Всего ДЗ</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="icon">✅</div>
+                                <div class="number" id="statsDone">0</div>
+                                <div class="label">Выполнено</div>
+                            </div>
+                            <div class="stat-card" style="border-color: rgba(46,204,113,0.2);">
+                                <div class="icon">📊</div>
+                                <div class="number" id="statsPercent">0%</div>
+                                <div class="label">Прогресс</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="icon">⭐</div>
+                                <div class="number" id="statsAvg">0</div>
+                                <div class="label">Средний балл</div>
+                            </div>
+                        </div>
+
+                        <div style="margin-top: 30px;">
+                            <h4 style="color: #f5a623; margin-bottom: 16px;">📚 Прогресс по разделам</h4>
+                            <div id="sectionsProgress">
+                                <p style="color:#666;">Загрузка...</p>
+                            </div>
+                        </div>
+
+                        <div style="margin-top: 30px;">
+                            <h4 style="color: #f5a623; margin-bottom: 16px;">📈 Активность по дням</h4>
+                            <div id="activityChart">
+                                <p style="color:#666;">Загрузка...</p>
+                            </div>
+                        </div>
+
+                        <div style="margin-top: 30px;">
+                            <h4 style="color: #f5a623; margin-bottom: 16px;">🏆 Достижения</h4>
+                            <div id="achievementsList">
+                                <p style="color:#666;">Загрузка...</p>
+                            </div>
                         </div>
                     </div>
 
+                    <!-- Сообщения -->
                     <div id="page-messages" class="dashboard-page" style="display:none;">
                         <div class="section-title">💬 Сообщения</div>
                         <div class="empty-state">
@@ -837,6 +1029,7 @@
                         </div>
                     </div>
 
+                    <!-- Настройки -->
                     <div id="page-settings" class="dashboard-page" style="display:none;">
                         <div class="section-title">⚙️ Настройки</div>
                         <div class="empty-state">
@@ -1242,6 +1435,11 @@
             });
             var target = document.getElementById('page-' + page);
             if (target) target.style.display = 'block';
+            
+            // Если перешли на статистику - загружаем
+            if (page === 'stats' && currentUser) {
+                loadStatistics(currentUser.id);
+            }
         }
 
         // ==========================================
@@ -1652,7 +1850,6 @@
                     }
                 });
             }
-            // Проверяем существование элементов
             var hwBadgeEl = document.getElementById('hwBadge');
             if (hwBadgeEl) hwBadgeEl.textContent = active;
         }
@@ -1861,6 +2058,313 @@
                     container.innerHTML = '❌ Ошибка: ' + err.message;
                 });
         }
+
+        // ==========================================
+        // 5. СТАТИСТИКА
+        // ==========================================
+
+        async function loadStatistics(studentId) {
+            await loadOverviewStats(studentId);
+            await loadSectionsProgress(studentId);
+            await loadActivityChart(studentId);
+            await loadAchievements(studentId);
+        }
+
+        async function loadOverviewStats(studentId) {
+            try {
+                const { data, error } = await supabase
+                    .from('homeworks')
+                    .select('*')
+                    .eq('student_id', studentId);
+                    
+                if (error) throw error;
+                
+                var total = data.length;
+                var done = data.filter(function(h) { return h.status === 'done'; }).length;
+                var percent = total > 0 ? Math.round((done / total) * 100) : 0;
+                
+                var avg = 0;
+                var tasksCount = 0;
+                var tasksCorrect = 0;
+                data.forEach(function(hw) {
+                    if (hw.tasks && hw.tasks.length > 0) {
+                        hw.tasks.forEach(function(task) {
+                            if (task.done) {
+                                tasksCorrect++;
+                            }
+                            tasksCount++;
+                        });
+                    }
+                });
+                avg = tasksCount > 0 ? Math.round((tasksCorrect / tasksCount) * 10) / 10 : 0;
+                
+                document.getElementById('statsTotal').textContent = total;
+                document.getElementById('statsDone').textContent = done;
+                document.getElementById('statsPercent').textContent = percent + '%';
+                document.getElementById('statsAvg').textContent = avg;
+                
+            } catch (err) {
+                console.error('Ошибка загрузки статистики:', err);
+            }
+        }
+
+        async function loadSectionsProgress(studentId) {
+            var container = document.getElementById('sectionsProgress');
+            if (!container) return;
+            
+            try {
+                // Получаем все разделы
+                const { data: sectionsData, error: sectionsError } = await supabase
+                    .from('video_sections')
+                    .select('*')
+                    .order('order_num', { ascending: true });
+                    
+                if (sectionsError) throw sectionsError;
+                
+                // Получаем ДЗ ученика
+                const { data: homeworks, error: hwError } = await supabase
+                    .from('homeworks')
+                    .select('*')
+                    .eq('student_id', studentId);
+                    
+                if (hwError) throw hwError;
+                
+                if (!sectionsData || sectionsData.length === 0) {
+                    container.innerHTML = '<p style="color:#666;">Нет разделов для отображения</p>';
+                    return;
+                }
+                
+                var html = '';
+                sectionsData.forEach(function(section) {
+                    var sectionHomeworks = homeworks.filter(function(h) { 
+                        return h.section_id === section.id; 
+                    });
+                    var total = sectionHomeworks.length;
+                    var done = sectionHomeworks.filter(function(h) { 
+                        return h.status === 'done'; 
+                    }).length;
+                    var percent = total > 0 ? Math.round((done / total) * 100) : 0;
+                    
+                    var colorClass = 'red';
+                    if (percent >= 80) colorClass = 'green';
+                    else if (percent >= 40) colorClass = 'yellow';
+                    
+                    var statusIcon = '⏳';
+                    if (total === 0) statusIcon = '📭';
+                    else if (percent === 100) statusIcon = '✅';
+                    
+                    html += `
+                        <div class="section-progress">
+                            <span class="status-icon">${statusIcon}</span>
+                            <span class="name">${section.name}</span>
+                            <div class="bar-wrap">
+                                <div class="fill ${colorClass}" style="width:${percent}%;"></div>
+                            </div>
+                            <span class="percent">${percent}% (${done}/${total})</span>
+                        </div>
+                    `;
+                });
+                
+                container.innerHTML = html;
+                
+            } catch (err) {
+                container.innerHTML = '<p style="color:#666;">Ошибка загрузки</p>';
+                console.error(err);
+            }
+        }
+
+        async function loadActivityChart(studentId) {
+            var container = document.getElementById('activityChart');
+            if (!container) return;
+            
+            try {
+                const { data, error } = await supabase
+                    .from('homeworks')
+                    .select('*')
+                    .eq('student_id', studentId);
+                    
+                if (error) throw error;
+                
+                // Считаем по дням недели
+                var days = {
+                    'mon': 0, 'tue': 0, 'wed': 0, 'thu': 0, 'fri': 0, 'sat': 0, 'sun': 0
+                };
+                var dayNames = {
+                    'mon': 'ПН', 'tue': 'ВТ', 'wed': 'СР', 'thu': 'ЧТ', 'fri': 'ПТ', 'sat': 'СБ', 'sun': 'ВС'
+                };
+                
+                data.forEach(function(hw) {
+                    if (hw.created_at) {
+                        var date = new Date(hw.created_at);
+                        var day = date.getDay();
+                        var dayMap = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'];
+                        var dayKey = dayMap[day];
+                        if (days[dayKey] !== undefined) {
+                            days[dayKey]++;
+                        }
+                    }
+                });
+                
+                var maxVal = Math.max(...Object.values(days), 1);
+                
+                var html = '<div class="activity-bars">';
+                var dayKeys = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'];
+                dayKeys.forEach(function(key) {
+                    var val = days[key];
+                    var height = Math.round((val / maxVal) * 80) + 10;
+                    html += `
+                        <div class="bar-item">
+                            <div class="value">${val}</div>
+                            <div class="bar" style="height:${height}px;"></div>
+                            <div class="label">${dayNames[key]}</div>
+                        </div>
+                    `;
+                });
+                html += '</div>';
+                
+                container.innerHTML = html;
+                
+            } catch (err) {
+                container.innerHTML = '<p style="color:#666;">Ошибка загрузки</p>';
+                console.error(err);
+            }
+        }
+
+        async function loadAchievements(studentId) {
+            var container = document.getElementById('achievementsList');
+            if (!container) return;
+            
+            try {
+                // Проверяем, есть ли достижения в таблице
+                const { data, error } = await supabase
+                    .from('achievements')
+                    .select('*')
+                    .eq('student_id', studentId);
+                    
+                if (error) throw error;
+                
+                // Базовые достижения (проверяем по данным)
+                var achievements = [];
+                
+                // 1. Первое ДЗ
+                const { data: hwData } = await supabase
+                    .from('homeworks')
+                    .select('*')
+                    .eq('student_id', studentId)
+                    .order('created_at', { ascending: true });
+                    
+                if (hwData && hwData.length > 0) {
+                    achievements.push({
+                        id: 'first_homework',
+                        icon: '🎯',
+                        name: 'Первое ДЗ',
+                        description: 'Выполнено первое домашнее задание',
+                        earned: true
+                    });
+                }
+                
+                // 2. 5 ДЗ
+                var doneHw = hwData ? hwData.filter(function(h) { return h.status === 'done'; }) : [];
+                if (doneHw.length >= 5) {
+                    achievements.push({
+                        id: 'five_homeworks',
+                        icon: '🔥',
+                        name: '5 ДЗ выполнено',
+                        description: 'Выполнено 5 домашних заданий',
+                        earned: true
+                    });
+                }
+                
+                // 3. 100% в разделе
+                var sectionsProgress = {};
+                if (hwData) {
+                    hwData.forEach(function(h) {
+                        if (h.section_id) {
+                            if (!sectionsProgress[h.section_id]) {
+                                sectionsProgress[h.section_id] = { total: 0, done: 0 };
+                            }
+                            sectionsProgress[h.section_id].total++;
+                            if (h.status === 'done') {
+                                sectionsProgress[h.section_id].done++;
+                            }
+                        }
+                    });
+                }
+                var hasFullSection = false;
+                for (var secId in sectionsProgress) {
+                    if (sectionsProgress[secId].total > 0 && 
+                        sectionsProgress[secId].done === sectionsProgress[secId].total) {
+                        hasFullSection = true;
+                        break;
+                    }
+                }
+                if (hasFullSection) {
+                    achievements.push({
+                        id: 'full_section',
+                        icon: '💯',
+                        name: 'Раздел пройден на 100%',
+                        description: 'Все ДЗ в разделе выполнены',
+                        earned: true
+                    });
+                }
+                
+                // 4. Всего ДЗ > 0
+                if (hwData && hwData.length > 0) {
+                    achievements.push({
+                        id: 'started',
+                        icon: '🚀',
+                        name: 'Старт!',
+                        description: 'Начат путь к ЕГЭ',
+                        earned: true
+                    });
+                }
+                
+                // Достижения, которые ещё не получены (заглушки)
+                var allAchievements = [
+                    { id: 'first_homework', icon: '🎯', name: 'Первое ДЗ', description: 'Выполните первое ДЗ' },
+                    { id: 'five_homeworks', icon: '🔥', name: '5 ДЗ', description: 'Выполните 5 ДЗ' },
+                    { id: 'full_section', icon: '💯', name: '100% раздела', description: 'Выполните все ДЗ в одном разделе' },
+                    { id: 'ten_homeworks', icon: '⭐', name: '10 ДЗ', description: 'Выполните 10 ДЗ' },
+                    { id: 'all_sections', icon: '🏆', name: 'Все разделы', description: 'Пройдите все разделы' }
+                ];
+                
+                // Отмечаем полученные
+                allAchievements.forEach(function(a) {
+                    var found = achievements.find(function(ach) { return ach.id === a.id; });
+                    if (found) {
+                        a.earned = true;
+                        a.description = found.description;
+                    } else {
+                        a.earned = false;
+                    }
+                });
+                
+                var html = '';
+                allAchievements.forEach(function(a) {
+                    var earnedClass = a.earned ? '' : ' locked';
+                    var statusText = a.earned ? '' : ' 🔒';
+                    html += `
+                        <div class="achievement-card${earnedClass}">
+                            <span class="icon">${a.icon}</span>
+                            <span class="info">
+                                <span class="name">${a.name}</span>
+                                <span style="color:#888; font-size:12px; display:block;">${a.description}${statusText}</span>
+                            </span>
+                        </div>
+                    `;
+                });
+                
+                container.innerHTML = html || '<p style="color:#666;">Нет достижений</p>';
+                
+            } catch (err) {
+                container.innerHTML = '<p style="color:#666;">Ошибка загрузки</p>';
+                console.error(err);
+            }
+        }
+
+        // ==========================================
+        // 6. ОСТАЛЬНЫЕ ФУНКЦИИ (АДМИНКА)
+        // ==========================================
 
         function loadScheduleAdmin() {
             var container = document.getElementById('scheduleList');
