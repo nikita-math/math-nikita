@@ -20,7 +20,8 @@
         header p { font-size: 20px; opacity: 0.8; margin-top: 8px; color: #b0c4de; }
 
         .profile { background: rgba(255,255,255,0.05); backdrop-filter: blur(10px); border-radius: 24px; padding: 40px; border: 1px solid rgba(255,255,255,0.1); display: flex; flex-wrap: wrap; gap: 40px; align-items: center; margin-bottom: 40px; }
-        .profile-avatar { width: 150px; height: 150px; border-radius: 50%; background: linear-gradient(135deg, #667eea, #764ba2); display: flex; align-items: center; justify-content: center; font-size: 70px; color: white; flex-shrink: 0; }
+        .profile-avatar { width: 150px; height: 150px; border-radius: 50%; background: linear-gradient(135deg, #667eea, #764ba2); display: flex; align-items: center; justify-content: center; font-size: 70px; color: white; flex-shrink: 0; overflow: hidden; }
+        .profile-avatar img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
         .profile-info h2 { font-size: 32px; color: #ffffff; }
         .profile-info .badge { display: inline-block; background: linear-gradient(135deg, #f5a623, #f7c948); color: #0b0e1a; padding: 4px 16px; border-radius: 30px; font-weight: 700; font-size: 14px; margin-top: 6px; }
         .profile-info p { margin-top: 12px; font-size: 18px; color: #b0c4de; }
@@ -126,7 +127,12 @@
 
         .part-divider { font-size: 24px; font-weight: 900; color: #f5a623; margin: 30px 0 20px 0; padding: 12px 20px; background: rgba(245, 166, 35, 0.1); border-radius: 12px; border-left: 6px solid #f5a623; text-shadow: 0 0 20px rgba(245, 166, 35, 0.2); }
 
-        .video-tabs { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 20px; }
+        .video-tabs {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 10px;
+            margin-bottom: 20px;
+        }
         .video-tabs button {
             background: rgba(255,255,255,0.05);
             border: 1px solid rgba(255,255,255,0.1);
@@ -139,10 +145,10 @@
             display: flex;
             align-items: center;
             gap: 10px;
-            flex: 1 1 200px;
-            color: #b0c4de; box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-            width: 100%;
+            color: #b0c4de;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
             text-align: left;
+            font-family: Arial, sans-serif;
         }
         .video-tabs button:hover { border-color: #667eea; transform: translateY(-2px); box-shadow: 0 6px 20px rgba(102, 126, 234, 0.2); background: rgba(102, 126, 234, 0.1); color: #ffffff; }
         .video-tabs button .num { display: inline-flex; align-items: center; justify-content: center; width: 30px; height: 30px; background: rgba(255,255,255,0.1); color: #b0c4de; border-radius: 50%; font-size: 14px; font-weight: 900; flex-shrink: 0; }
@@ -351,7 +357,7 @@
 
         #adminPanel { background: rgba(255,255,255,0.05); backdrop-filter: blur(10px); border-radius: 24px; padding: 30px 40px; border: 1px solid rgba(255,255,255,0.1); display: none; margin-top: 40px; }
         .admin-tabs { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 15px; }
-        .admin-tabs button { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.05); padding: 10px 20px; border-radius: 30px; cursor: pointer; font-weight: 600; transition: 0.3s; color: #b0c4de; }
+        .admin-tabs button { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.05); padding: 10px 20px; border-radius: 30px; cursor: pointer; font-weight: 600; transition: 0.3s; color: #b0c4de; font-family: Arial, sans-serif; font-size: 14px; }
         .admin-tabs button:hover { background: #302b63; color: white; border-color: #667eea; }
         .admin-tabs button.active { background: #302b63; color: white; border-color: #667eea; }
         .admin-content { display: none; }
@@ -359,7 +365,7 @@
         .admin-table { width: 100%; border-collapse: collapse; margin-top: 15px; }
         .admin-table th, .admin-table td { padding: 10px; border-bottom: 1px solid rgba(255,255,255,0.05); text-align: left; color: #c0d0e0; }
         .admin-table th { background: rgba(255,255,255,0.05); color: #ffffff; }
-        .admin-btn { background: #302b63; color: white; border: none; padding: 8px 16px; border-radius: 20px; cursor: pointer; transition: 0.3s; }
+        .admin-btn { background: #302b63; color: white; border: none; padding: 8px 16px; border-radius: 20px; cursor: pointer; transition: 0.3s; font-family: Arial, sans-serif; font-size: 14px; }
         .admin-btn:hover { background: #667eea; }
         .admin-btn.danger { background: #e74c3c; }
         .admin-btn.danger:hover { background: #c0392b; }
@@ -411,6 +417,7 @@
             color: #fff;
             font-size: 16px;
             margin-bottom: 15px;
+            font-family: Arial, sans-serif;
         }
         .modal-content input:focus, .modal-content select:focus {
             border-color: #667eea;
@@ -436,6 +443,8 @@
             font-weight: 700;
             cursor: pointer;
             transition: 0.3s;
+            font-family: Arial, sans-serif;
+            font-size: 14px;
         }
         .modal-actions .cancel-btn {
             background: rgba(255,255,255,0.1);
@@ -487,6 +496,77 @@
             flex-shrink: 0;
         }
 
+        /* Стили для настроек */
+        .settings-avatar-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+        }
+        .settings-avatar-container .avatar-preview {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 60px;
+            border: 3px solid rgba(255,255,255,0.1);
+            overflow: hidden;
+        }
+        .settings-avatar-container .avatar-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .settings-avatar-container input[type="file"] {
+            padding: 10px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 12px;
+            color: #fff;
+            cursor: pointer;
+            font-family: Arial, sans-serif;
+            font-size: 14px;
+        }
+        .settings-avatar-container .btn-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .settings-info {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .settings-info label {
+            color: #b0c4de;
+            font-size: 14px;
+            display: block;
+            margin-bottom: 4px;
+        }
+        .settings-info input,
+        .settings-info textarea {
+            width: 100%;
+            padding: 10px 16px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 12px;
+            color: #fff;
+            font-size: 14px;
+            font-family: Arial, sans-serif;
+        }
+        .settings-info input:focus,
+        .settings-info textarea:focus {
+            border-color: #667eea;
+            outline: none;
+        }
+        .settings-info textarea {
+            resize: vertical;
+        }
+
         footer { text-align: center; padding: 30px 20px; color: #666; font-size: 14px; border-top: 1px solid rgba(255,255,255,0.05); margin-top: 40px; }
 
         @media (max-width: 700px) {
@@ -495,7 +575,8 @@
             .profile-avatar { width: 120px; height: 120px; font-size: 50px; }
             .contacts a { display: block; margin: 8px 0; text-align: center; }
             .admin-tabs { flex-direction: column; } .admin-table { font-size: 14px; }
-            .video-tabs button { font-size: 14px; padding: 10px 14px; flex: 1 1 100%; }
+            .video-tabs { grid-template-columns: 1fr; }
+            .video-tabs button { font-size: 14px; padding: 10px 14px; }
             .schedule-table { font-size: 12px; }
             .schedule-table th, .schedule-table td { padding: 6px 4px; min-width: 60px; }
             .hw-card .task-item-inline { flex-direction: column; align-items: stretch; }
@@ -519,11 +600,11 @@
 
         <div id="mainContent">
             <div class="profile" id="profileBlock">
-                <div class="profile-avatar">👨‍🏫</div>
+                <div class="profile-avatar" id="profileAvatar">👨‍🏫</div>
                 <div class="profile-info">
-                    <h2>Никита</h2>
+                    <h2 id="teacherNameDisplay">Никита</h2>
                     <span class="badge">⭐ Репетитор со стажем 1.5 года</span>
-                    <p>Учусь в Московском энергетическом институте (МЭИ) на направлении «Ядерная физика». Готовлю учеников к ЕГЭ по профильной математике с 2025 года.</p>
+                    <p id="teacherDescDisplay">Учусь в Московском энергетическом институте (МЭИ) на направлении «Ядерная физика». Готовлю учеников к ЕГЭ по профильной математике с 2025 года.</p>
                     <ul>
                         <li>10+ выпущенных учеников</li>
                         <li>3 ученика набрали 100 баллов</li>
@@ -613,6 +694,7 @@
                 <button data-tab="tasks">📚 Задачи</button>
                 <button data-tab="schedule">📅 Расписание</button>
                 <button data-tab="stats">📊 Статистика</button>
+                <button data-tab="settings">⚙️ Настройки</button>
             </div>
             <div class="admin-content active" id="tab-students">
                 <button class="admin-btn success" onclick="addStudent()">➕ Добавить ученика</button>
@@ -646,6 +728,40 @@
             </div>
             <div class="admin-content" id="tab-stats">
                 <div id="statsContent" style="margin-top:15px;">Загрузка...</div>
+            </div>
+            <div class="admin-content" id="tab-settings">
+                <div style="display: flex; flex-wrap: wrap; gap: 40px; align-items: flex-start;">
+                    <!-- Левая колонка - Аватар -->
+                    <div style="flex: 1; min-width: 250px;">
+                        <h4 style="color: #f5a623; margin-bottom: 15px;">📸 Фото профиля</h4>
+                        <div class="settings-avatar-container">
+                            <div class="avatar-preview" id="avatarPreview">
+                                <span id="avatarEmoji">👨‍🏫</span>
+                                <img id="avatarImage" style="display: none;" alt="Аватар">
+                            </div>
+                            <input type="file" id="avatarUpload" accept="image/*">
+                            <div class="btn-group">
+                                <button class="admin-btn success" onclick="uploadAvatar()">📤 Загрузить</button>
+                                <button class="admin-btn danger" onclick="deleteAvatar()">🗑 Удалить</button>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Правая колонка - Информация -->
+                    <div style="flex: 2; min-width: 300px;">
+                        <h4 style="color: #f5a623; margin-bottom: 15px;">📝 Информация</h4>
+                        <div class="settings-info">
+                            <div>
+                                <label>Имя:</label>
+                                <input type="text" id="teacherName" value="Никита">
+                            </div>
+                            <div>
+                                <label>Описание:</label>
+                                <textarea id="teacherDesc" rows="4">Учусь в Московском энергетическом институте (МЭИ) на направлении «Ядерная физика». Готовлю учеников к ЕГЭ по профильной математике с 2025 года.</textarea>
+                            </div>
+                            <button class="admin-btn success" onclick="saveTeacherInfo()" style="width: fit-content;">💾 Сохранить</button>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -759,11 +875,123 @@
         };
         var daysArray = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'];
 
+        // ==========================================
+        // НАСТРОЙКИ - АВАТАР И ИНФОРМАЦИЯ
+        // ==========================================
+
+        function loadTeacherSettings() {
+            var savedAvatar = localStorage.getItem('teacher_avatar');
+            var savedName = localStorage.getItem('teacher_name');
+            var savedDesc = localStorage.getItem('teacher_desc');
+            
+            // Аватар
+            if (savedAvatar) {
+                document.getElementById('avatarEmoji').style.display = 'none';
+                var img = document.getElementById('avatarImage');
+                img.style.display = 'block';
+                img.src = savedAvatar;
+                // Обновляем на главной
+                var avatarContainer = document.querySelector('.profile-avatar');
+                if (avatarContainer) {
+                    avatarContainer.innerHTML = '<img src="' + savedAvatar + '" alt="Аватар">';
+                }
+            }
+            
+            // Имя
+            if (savedName) {
+                document.getElementById('teacherName').value = savedName;
+                document.getElementById('teacherNameDisplay').textContent = savedName;
+            }
+            
+            // Описание
+            if (savedDesc) {
+                document.getElementById('teacherDesc').value = savedDesc;
+                document.getElementById('teacherDescDisplay').textContent = savedDesc;
+            }
+        }
+
+        function uploadAvatar() {
+            var fileInput = document.getElementById('avatarUpload');
+            var file = fileInput.files[0];
+            
+            if (!file) {
+                alert('❌ Выберите файл');
+                return;
+            }
+            
+            if (!file.type.startsWith('image/')) {
+                alert('❌ Загрузите изображение');
+                return;
+            }
+            
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                var imageData = e.target.result;
+                
+                localStorage.setItem('teacher_avatar', imageData);
+                
+                document.getElementById('avatarEmoji').style.display = 'none';
+                var img = document.getElementById('avatarImage');
+                img.style.display = 'block';
+                img.src = imageData;
+                
+                var avatarContainer = document.querySelector('.profile-avatar');
+                if (avatarContainer) {
+                    avatarContainer.innerHTML = '<img src="' + imageData + '" alt="Аватар">';
+                }
+                
+                alert('✅ Фото загружено!');
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function deleteAvatar() {
+            if (!confirm('Удалить фото?')) return;
+            
+            localStorage.removeItem('teacher_avatar');
+            
+            document.getElementById('avatarEmoji').style.display = 'block';
+            document.getElementById('avatarImage').style.display = 'none';
+            document.getElementById('avatarImage').src = '';
+            document.getElementById('avatarUpload').value = '';
+            
+            var avatarContainer = document.querySelector('.profile-avatar');
+            if (avatarContainer) {
+                avatarContainer.innerHTML = '👨‍🏫';
+            }
+            
+            alert('✅ Фото удалено');
+        }
+
+        function saveTeacherInfo() {
+            var name = document.getElementById('teacherName').value.trim();
+            var desc = document.getElementById('teacherDesc').value.trim();
+            
+            if (!name) {
+                alert('❌ Введите имя');
+                return;
+            }
+            
+            localStorage.setItem('teacher_name', name);
+            localStorage.setItem('teacher_desc', desc);
+            
+            document.getElementById('teacherNameDisplay').textContent = name;
+            document.getElementById('teacherDescDisplay').textContent = desc;
+            
+            alert('✅ Информация сохранена!');
+        }
+
+        // ==========================================
+        // 1. ЗАГРУЗКА КАТАЛОГА ЗАДАЧ
+        // ==========================================
         function loadTaskCatalog() {
             var container = document.getElementById('taskList');
             container.innerHTML = '📭 Каталог задач пока пуст. Скоро добавлю!';
         }
 
+        // ==========================================
+        // 2. РАЗДЕЛЫ И ВИДЕО
+        // ==========================================
         function openSection(sectionId) {
             mainContent.style.display = 'none';
             dashboard.style.display = 'none';
@@ -988,8 +1216,8 @@
                 `;
             });
 
-            tabsContainer1.innerHTML = tabsHtml1;
-            tabsContainer2.innerHTML = tabsHtml2;
+            tabsContainer1.innerHTML = tabsHtml1 || '📭 Нет разделов в первой части';
+            tabsContainer2.innerHTML = tabsHtml2 || '📭 Нет разделов во второй части';
         }
 
         document.getElementById('loginBtn').addEventListener('click', function() {
@@ -1031,6 +1259,7 @@
                         if (user.role === 'admin') {
                             document.getElementById('adminPanel').style.display = 'block';
                             loadAdminData();
+                            loadTeacherSettings();
                         }
 
                         loadHomework(user.id);
@@ -1855,6 +2084,9 @@
                 btn.classList.add('active');
                 document.querySelectorAll('.admin-content').forEach(function(c) { c.classList.remove('active'); });
                 document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
+                if (btn.dataset.tab === 'settings') {
+                    loadTeacherSettings();
+                }
                 loadAdminData();
             });
         });
@@ -2201,6 +2433,9 @@
                     preview.style.color = '#666';
                 }
             });
+
+            // Загружаем настройки при загрузке страницы
+            loadTeacherSettings();
         });
 
         async function previewSection(number) {
