@@ -888,63 +888,17 @@
         var daysArray = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'];
 
         // ==========================================
-        // НАСТРОЙКИ - АВАТАР И ИНФОРМАЦИЯ (С ХРАНЕНИЕМ В SUPABASE)
+        // НАСТРОЙКИ - АВАТАР И ИНФОРМАЦИЯ
         // ==========================================
 
-        // Загружаем настройки из Supabase
-        async function loadTeacherSettings() {
-            try {
-                // Загружаем аватар
-                const { data: avatarData, error: avatarError } = await supabase
-                    .from('settings')
-                    .select('value')
-                    .eq('key', 'teacher_avatar')
-                    .single();
-                    
-                if (!avatarError && avatarData && avatarData.value) {
-                    updateAvatarDisplay(avatarData.value);
-                } else {
-                    resetAvatarDisplay();
-                }
-                
-                // Загружаем имя
-                const { data: nameData, error: nameError } = await supabase
-                    .from('settings')
-                    .select('value')
-                    .eq('key', 'teacher_name')
-                    .single();
-                    
-                if (!nameError && nameData && nameData.value) {
-                    document.getElementById('teacherName').value = nameData.value;
-                    document.getElementById('teacherNameDisplay').textContent = nameData.value;
-                }
-                
-                // Загружаем описание
-                const { data: descData, error: descError } = await supabase
-                    .from('settings')
-                    .select('value')
-                    .eq('key', 'teacher_desc')
-                    .single();
-                    
-                if (!descError && descData && descData.value) {
-                    document.getElementById('teacherDesc').value = descData.value;
-                    document.getElementById('teacherDescDisplay').textContent = descData.value;
-                }
-                
-            } catch (err) {
-                console.error('Ошибка загрузки настроек:', err);
-            }
-        }
-
-        // Обновляем отображение аватара
-        function updateAvatarDisplay(imageUrl) {
+        function updateAvatarDisplay(imageData) {
             // Обновляем в настройках
             var avatarEmoji = document.getElementById('avatarEmoji');
             var avatarImg = document.getElementById('avatarImage');
             if (avatarEmoji) avatarEmoji.style.display = 'none';
             if (avatarImg) {
                 avatarImg.style.display = 'block';
-                avatarImg.src = imageUrl;
+                avatarImg.src = imageData;
             }
             
             // Обновляем на главной странице
@@ -953,12 +907,12 @@
             if (profileEmoji) profileEmoji.style.display = 'none';
             if (profileImg) {
                 profileImg.style.display = 'block';
-                profileImg.src = imageUrl;
+                profileImg.src = imageData;
             }
         }
 
-        // Сбрасываем отображение аватара
         function resetAvatarDisplay() {
+            // Сбрасываем в настройках
             var avatarEmoji = document.getElementById('avatarEmoji');
             var avatarImg = document.getElementById('avatarImage');
             if (avatarEmoji) avatarEmoji.style.display = 'block';
@@ -967,6 +921,7 @@
                 avatarImg.src = '';
             }
             
+            // Сбрасываем на главной
             var profileEmoji = document.getElementById('profileAvatarEmoji');
             var profileImg = document.getElementById('profileAvatarImg');
             if (profileEmoji) profileEmoji.style.display = 'block';
@@ -976,8 +931,7 @@
             }
         }
 
-        // Загружаем аватар в Supabase
-        async function uploadAvatar() {
+        function uploadAvatar() {
             var fileInput = document.getElementById('avatarUpload');
             var file = fileInput.files[0];
             
@@ -996,11 +950,10 @@
                 return;
             }
             
-            // Сжимаем изображение
             var reader = new FileReader();
-            reader.onload = async function(e) {
+            reader.onload = function(e) {
                 var img = new Image();
-                img.onload = async function() {
+                img.onload = function() {
                     var canvas = document.createElement('canvas');
                     var ctx = canvas.getContext('2d');
                     
@@ -1024,80 +977,59 @@
                     canvas.height = height;
                     ctx.drawImage(img, 0, 0, width, height);
                     
-                    // Конвертируем в Blob
-                    canvas.toBlob(async function(blob) {
-                        var fileName = 'avatar_' + Date.now() + '.jpg';
-                        var filePath = 'avatars/' + fileName;
-                        
-                        try {
-                            // Загружаем в Supabase Storage
-                            const { error: uploadError } = await supabase.storage
-                                .from('avatars')
-                                .upload(filePath, blob, {
-                                    contentType: 'image/jpeg',
-                                    upsert: true
-                                });
-                                
-                            if (uploadError) throw uploadError;
-                            
-                            // Получаем публичный URL
-                            const { data: urlData } = supabase.storage
-                                .from('avatars')
-                                .getPublicUrl(filePath);
-                                
-                            var imageUrl = urlData.publicUrl;
-                            
-                            // Сохраняем URL в таблицу settings
-                            const { error: saveError } = await supabase
-                                .from('settings')
-                                .upsert({ 
-                                    key: 'teacher_avatar', 
-                                    value: imageUrl 
-                                }, { onConflict: 'key' });
-                                
-                            if (saveError) throw saveError;
-                            
-                            // Обновляем отображение
-                            updateAvatarDisplay(imageUrl);
-                            alert('✅ Фото загружено!');
-                            
-                        } catch (err) {
-                            alert('❌ Ошибка загрузки: ' + err.message);
-                            console.error(err);
-                        }
-                    }, 'image/jpeg', 0.8);
+                    var imageData = canvas.toDataURL('image/jpeg', 0.8);
+                    
+                    try {
+                        localStorage.setItem('teacher_avatar', imageData);
+                    } catch (e) {
+                        alert('❌ Не удалось сохранить изображение. Попробуйте файл меньшего размера.');
+                        return;
+                    }
+                    
+                    updateAvatarDisplay(imageData);
+                    alert('✅ Фото загружено!');
                 };
                 img.src = e.target.result;
             };
             reader.readAsDataURL(file);
         }
 
-        // Удаляем аватар
-        async function deleteAvatar() {
+        function deleteAvatar() {
             if (!confirm('Удалить фото?')) return;
             
-            try {
-                // Удаляем из таблицы settings
-                const { error: deleteError } = await supabase
-                    .from('settings')
-                    .delete()
-                    .eq('key', 'teacher_avatar');
-                    
-                if (deleteError) throw deleteError;
-                
-                // Сбрасываем отображение
+            localStorage.removeItem('teacher_avatar');
+            document.getElementById('avatarUpload').value = '';
+            resetAvatarDisplay();
+            
+            alert('✅ Фото удалено');
+        }
+
+        function loadTeacherSettings() {
+            var savedAvatar = localStorage.getItem('teacher_avatar');
+            var savedName = localStorage.getItem('teacher_name');
+            var savedDesc = localStorage.getItem('teacher_desc');
+            
+            // Аватар
+            if (savedAvatar && savedAvatar.length > 100) {
+                updateAvatarDisplay(savedAvatar);
+            } else {
                 resetAvatarDisplay();
-                document.getElementById('avatarUpload').value = '';
-                
-                alert('✅ Фото удалено');
-                
-            } catch (err) {
-                alert('❌ Ошибка удаления: ' + err.message);
+            }
+            
+            // Имя
+            if (savedName) {
+                document.getElementById('teacherName').value = savedName;
+                document.getElementById('teacherNameDisplay').textContent = savedName;
+            }
+            
+            // Описание
+            if (savedDesc) {
+                document.getElementById('teacherDesc').value = savedDesc;
+                document.getElementById('teacherDescDisplay').textContent = savedDesc;
             }
         }
 
-        // Сохраняем информацию
-        async function saveTeacherInfo() {
+        function saveTeacherInfo() {
             var name = document.getElementById('teacherName').value.trim();
             var desc = document.getElementById('teacherDesc').value.trim();
             
@@ -1106,26 +1038,13 @@
                 return;
             }
             
-            try {
-                // Сохраняем имя
-                await supabase
-                    .from('settings')
-                    .upsert({ key: 'teacher_name', value: name }, { onConflict: 'key' });
-                    
-                // Сохраняем описание
-                await supabase
-                    .from('settings')
-                    .upsert({ key: 'teacher_desc', value: desc }, { onConflict: 'key' });
-                
-                // Обновляем на странице
-                document.getElementById('teacherNameDisplay').textContent = name;
-                document.getElementById('teacherDescDisplay').textContent = desc;
-                
-                alert('✅ Информация сохранена!');
-                
-            } catch (err) {
-                alert('❌ Ошибка сохранения: ' + err.message);
-            }
+            localStorage.setItem('teacher_name', name);
+            localStorage.setItem('teacher_desc', desc);
+            
+            document.getElementById('teacherNameDisplay').textContent = name;
+            document.getElementById('teacherDescDisplay').textContent = desc;
+            
+            alert('✅ Информация сохранена!');
         }
 
         // ==========================================
@@ -2782,7 +2701,7 @@
                 .order('created_at', { ascending: false })
                 .then(function(response) {
                     if (response.error) {
-                        container.innerHTML = '❌ Ошибка: ' + response.error.message);
+                        container.innerHTML = '❌ Ошибка: ' + response.error.message;
                         return;
                     }
                     var data = response.data || [];
