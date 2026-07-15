@@ -35,21 +35,6 @@
         .contacts a { display: inline-block; margin-right: 20px; color: #b0c4de; text-decoration: none; font-weight: 600; padding: 8px 20px; border-radius: 30px; background: rgba(255,255,255,0.08); transition: 0.3s; }
         .contacts a:hover { background: #302b63; color: #ffffff; }
 
-        .task-catalog { background: rgba(255,255,255,0.05); backdrop-filter: blur(10px); border-radius: 24px; padding: 30px 40px; border: 1px solid rgba(255,255,255,0.1); margin-bottom: 40px; }
-        .task-catalog h3 { font-size: 24px; margin-bottom: 16px; color: #ffffff; }
-        .task-filter { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 20px; }
-        .task-filter button { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.1); padding: 8px 20px; border-radius: 30px; cursor: pointer; color: #b0c4de; transition: 0.3s; }
-        .task-filter button:hover { background: #302b63; color: white; border-color: #667eea; }
-        .task-filter button.active { background: #302b63; color: white; border-color: #667eea; }
-        .task-item { padding: 16px; border-bottom: 1px solid rgba(255,255,255,0.05); color: #c0d0e0; }
-        .task-item:last-child { border-bottom: none; }
-        .task-item .question { font-size: 18px; color: #ffffff; }
-        .task-item .topic { color: #888; font-size: 14px; }
-        .task-item .answer { display: none; margin-top: 10px; padding: 12px; background: rgba(39, 174, 96, 0.2); border-radius: 8px; color: #7ddfa0; border: 1px solid rgba(39, 174, 96, 0.2); }
-        .task-item .answer.show { display: block; }
-        .task-item button { background: #302b63; color: white; border: none; padding: 6px 16px; border-radius: 20px; cursor: pointer; margin-top: 10px; transition: 0.3s; }
-        .task-item button:hover { background: #667eea; }
-
         .login-section { background: rgba(255,255,255,0.05); backdrop-filter: blur(10px); border-radius: 24px; padding: 30px 40px; border: 1px solid rgba(255,255,255,0.1); margin-bottom: 40px; }
         .login-section h3 { font-size: 24px; margin-bottom: 16px; color: #ffffff; }
         .login-section input { width: 100%; max-width: 320px; padding: 12px 18px; border: 1px solid rgba(255,255,255,0.1); border-radius: 30px; font-size: 16px; margin-bottom: 12px; display: block; background: rgba(255,255,255,0.05); color: #ffffff; }
@@ -632,14 +617,6 @@
                 <a href="mailto:nlysi6233@gmail.com">📧 nlysi6233@gmail.com</a>
             </div>
 
-            <div class="task-catalog" id="taskCatalogBlock">
-                <h3>📚 Каталог задач</h3>
-                <div class="task-filter" id="taskFilter">
-                    <button class="active" data-topic="all">Все</button>
-                </div>
-                <div id="taskList">Загрузка...</div>
-            </div>
-
             <div class="login-section" id="loginSection">
                 <h3>🔐 Войти в личный кабинет</h3>
                 <input type="email" id="email" placeholder="Email" value="">
@@ -1051,8 +1028,7 @@
         // 1. ЗАГРУЗКА КАТАЛОГА ЗАДАЧ
         // ==========================================
         function loadTaskCatalog() {
-            var container = document.getElementById('taskList');
-            container.innerHTML = '📭 Каталог задач пока пуст. Скоро добавлю!';
+            // Функция заглушка, каталог задач скрыт
         }
 
         // ==========================================
@@ -1316,7 +1292,6 @@
 
                         document.getElementById('profileBlock').style.display = 'none';
                         document.getElementById('contactsBlock').style.display = 'none';
-                        document.getElementById('taskCatalogBlock').style.display = 'none';
                         document.getElementById('loginSection').style.display = 'none';
 
                         document.getElementById('dashboard').style.display = 'block';
@@ -1345,7 +1320,6 @@
         document.getElementById('logoutBtn').addEventListener('click', function() {
             document.getElementById('profileBlock').style.display = 'flex';
             document.getElementById('contactsBlock').style.display = 'block';
-            document.getElementById('taskCatalogBlock').style.display = 'block';
             document.getElementById('loginSection').style.display = 'block';
             document.getElementById('dashboard').style.display = 'none';
             document.getElementById('adminPanel').style.display = 'none';
@@ -2748,7 +2722,6 @@
                     } else {
                         alert('✅ Задача добавлена!');
                         loadTasks();
-                        loadTaskCatalog();
                     }
                 })
                 .catch(function(err) {
@@ -2768,7 +2741,6 @@
                     } else {
                         alert('✅ Задача удалена');
                         loadTasks();
-                        loadTaskCatalog();
                     }
                 })
                 .catch(function(err) {
