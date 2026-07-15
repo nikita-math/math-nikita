@@ -374,6 +374,91 @@
         .empty-state .title { font-size: 18px; color: #b0c4de; font-weight: 600; }
         .empty-state .desc { font-size: 14px; color: #666; margin-top: 4px; }
 
+        .chat-container {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+        .chat-user-item {
+            padding: 12px 16px;
+            background: rgba(255,255,255,0.03);
+            border-radius: 10px;
+            cursor: pointer;
+            border: 1px solid rgba(255,255,255,0.05);
+            transition: 0.3s;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .chat-user-item:hover {
+            background: rgba(255,255,255,0.06);
+            border-color: rgba(102,126,234,0.2);
+        }
+        .chat-user-item .name {
+            color: #b0c4de;
+        }
+        .chat-user-item .unread {
+            font-size: 12px;
+            color: #e74c3c;
+        }
+        .chat-window {
+            display: none;
+            margin-top: 20px;
+        }
+        .chat-window .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+        .chat-window .header h4 {
+            color: #f5a623;
+        }
+        .chat-messages {
+            max-height: 400px;
+            overflow-y: auto;
+            padding: 10px;
+            background: rgba(255,255,255,0.02);
+            border-radius: 12px;
+            min-height: 200px;
+        }
+        .chat-messages .empty {
+            color: #666;
+            text-align: center;
+            padding: 20px;
+        }
+        .chat-message {
+            display: flex;
+            margin-bottom: 8px;
+        }
+        .chat-message .bubble {
+            max-width: 70%;
+            padding: 10px 14px;
+            border-radius: 12px;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+        .chat-message .bubble .text {
+            font-size: 14px;
+            color: #c0d0e0;
+        }
+        .chat-message .bubble .time {
+            font-size: 10px;
+            color: #555;
+            text-align: right;
+            margin-top: 4px;
+        }
+        .chat-message.mine {
+            justify-content: flex-end;
+        }
+        .chat-message.mine .bubble {
+            background: rgba(102,126,234,0.2);
+        }
+        .chat-message.other .bubble {
+            background: rgba(255,255,255,0.05);
+        }
+
         footer { text-align: center; padding: 30px 20px; color: #666; font-size: 14px; border-top: 1px solid rgba(255,255,255,0.05); margin-top: 40px; }
 
         @media (max-width: 700px) {
@@ -409,6 +494,7 @@
             .settings-grid { grid-template-columns: 1fr; }
             .comment-input-wrap { flex-direction: column; }
             .comment-input-wrap button { width: 100%; }
+            .chat-message .bubble { max-width: 85%; }
         }
     </style>
 </head>
@@ -478,7 +564,7 @@
                     <button data-page="stats" onclick="window.switchDashboardPage('stats')">
                         📊 Статистика
                     </button>
-                    <button data-page="messages" onclick="window.switchDashboardPage('messages')">
+                    <button data-page="messages" onclick="window.switchDashboardPage('messages')" id="messagesSidebarBtn">
                         💬 Сообщения
                         <span class="badge" id="msgBadge">0</span>
                     </button>
@@ -571,10 +657,23 @@
 
                     <div id="page-messages" class="dashboard-page" style="display:none;">
                         <div class="section-title">💬 Сообщения</div>
-                        <div class="empty-state">
-                            <span class="icon">💬</span>
-                            <div class="title">Чат с преподавателем</div>
-                            <div class="desc">Здесь будут ваши сообщения с репетитором</div>
+                        
+                        <div id="chatList">
+                            <p style="color:#666;">Загрузка...</p>
+                        </div>
+                        
+                        <div class="chat-window" id="chatWindow">
+                            <div class="header">
+                                <h4 id="chatPartnerName">Чат</h4>
+                                <button class="admin-btn" onclick="closeChat()">✕ Закрыть</button>
+                            </div>
+                            <div class="chat-messages" id="chatMessages">
+                                <p class="empty">Загрузка сообщений...</p>
+                            </div>
+                            <div class="comment-input-wrap" style="margin-top:12px;">
+                                <input type="text" id="chatInput" placeholder="Написать сообщение..." onkeypress="if(event.key==='Enter') sendMessage()">
+                                <button onclick="sendMessage()">➤</button>
+                            </div>
                         </div>
                     </div>
 
@@ -847,6 +946,8 @@
         var sections = [];
         var currentHomeworkTab = 'active';
         var currentDashboardPage = 'overview';
+        var currentChatPartner = null;
+        var chatInterval = null;
 
         var loginSection = document.getElementById('loginSection');
         var dashboard = document.getElementById('dashboard');
@@ -893,6 +994,7 @@
 
         window.logout = function() {
             if (confirm('Вы уверены, что хотите выйти?')) {
+                if (chatInterval) clearInterval(chatInterval);
                 document.getElementById('profileBlock').style.display = 'flex';
                 document.getElementById('contactsBlock').style.display = 'block';
                 document.getElementById('loginSection').style.display = 'block';
@@ -901,8 +1003,24 @@
                 resultDiv.innerHTML = '';
                 resultDiv.className = '';
                 currentUser = null;
+                currentChatPartner = null;
             }
         };
+
+        // ==========================================
+        // СКРЫВАЕМ СООБЩЕНИЯ ДЛЯ АДМИНА
+        // ==========================================
+
+        function updateSidebarVisibility() {
+            var messagesBtn = document.getElementById('messagesSidebarBtn');
+            if (messagesBtn) {
+                if (currentUser && currentUser.role === 'admin') {
+                    messagesBtn.style.display = 'none';
+                } else {
+                    messagesBtn.style.display = 'flex';
+                }
+            }
+        }
 
         // ==========================================
         // НАСТРОЙКИ
@@ -1142,6 +1260,10 @@
             if (target) target.style.display = 'block';
             if (page === 'stats' && currentUser) window.loadStatistics(currentUser.id);
             if (page === 'settings' && currentUser) window.loadSettings();
+            if (page === 'messages' && currentUser) {
+                if (chatInterval) clearInterval(chatInterval);
+                loadChatList();
+            }
         };
 
         window.openSection = function(sectionId) {
@@ -1625,6 +1747,248 @@
         };
 
         // ==========================================
+        // ЧАТ
+        // ==========================================
+
+        function loadChatList() {
+            var container = document.getElementById('chatList');
+            if (!container) return;
+            
+            var isAdmin = currentUser && currentUser.role === 'admin';
+            
+            if (isAdmin) {
+                supabase
+                    .from('students')
+                    .select('id, name')
+                    .eq('role', 'student')
+                    .order('name')
+                    .then(function(response) {
+                        if (response.error) {
+                            container.innerHTML = '❌ Ошибка загрузки';
+                            return;
+                        }
+                        var students = response.data || [];
+                        if (students.length === 0) {
+                            container.innerHTML = '<p style="color:#666; text-align:center; padding:20px;">Нет учеников</p>';
+                            return;
+                        }
+                        
+                        var html = '<div style="display:flex; flex-direction:column; gap:6px;">';
+                        students.forEach(function(student) {
+                            html += `
+                                <div class="chat-user-item" onclick="openChat('${student.id}', '${student.name}')">
+                                    <span class="name">👤 ${student.name}</span>
+                                    <span class="unread" id="unread_${student.id}"></span>
+                                </div>
+                            `;
+                        });
+                        html += '</div>';
+                        container.innerHTML = html;
+                        
+                        loadUnreadCounts();
+                    })
+                    .catch(function(err) {
+                        container.innerHTML = '❌ Ошибка: ' + err.message;
+                    });
+            } else {
+                supabase
+                    .from('students')
+                    .select('id, name')
+                    .eq('role', 'admin')
+                    .then(function(response) {
+                        if (response.error) {
+                            container.innerHTML = '❌ Ошибка загрузки';
+                            return;
+                        }
+                        var admins = response.data || [];
+                        if (admins.length === 0) {
+                            container.innerHTML = '<p style="color:#666; text-align:center; padding:20px;">Нет преподавателей</p>';
+                            return;
+                        }
+                        
+                        var html = '<div style="display:flex; flex-direction:column; gap:6px;">';
+                        admins.forEach(function(admin) {
+                            html += `
+                                <div class="chat-user-item" onclick="openChat('${admin.id}', '${admin.name}')">
+                                    <span class="name">👨‍🏫 ${admin.name}</span>
+                                    <span class="unread" id="unread_${admin.id}"></span>
+                                </div>
+                            `;
+                        });
+                        html += '</div>';
+                        container.innerHTML = html;
+                        
+                        loadUnreadCounts();
+                    })
+                    .catch(function(err) {
+                        container.innerHTML = '❌ Ошибка: ' + err.message;
+                    });
+            }
+        }
+
+        function loadUnreadCounts() {
+            if (!currentUser) return;
+            
+            supabase
+                .from('messages')
+                .select('sender_id, receiver_id')
+                .eq('receiver_id', currentUser.id)
+                .eq('is_read', false)
+                .then(function(response) {
+                    if (response.error) return;
+                    var messages = response.data || [];
+                    
+                    var counts = {};
+                    messages.forEach(function(msg) {
+                        var senderId = msg.sender_id;
+                        if (!counts[senderId]) counts[senderId] = 0;
+                        counts[senderId]++;
+                    });
+                    
+                    for (var id in counts) {
+                        var badge = document.getElementById('unread_' + id);
+                        if (badge) {
+                            badge.textContent = '🔴 ' + counts[id];
+                        }
+                    }
+                    
+                    var totalUnread = messages.length;
+                    var msgBadge = document.getElementById('msgBadge');
+                    if (msgBadge) msgBadge.textContent = totalUnread;
+                });
+        }
+
+        function openChat(userId, userName) {
+            document.getElementById('chatWindow').style.display = 'block';
+            document.getElementById('chatList').style.display = 'none';
+            document.getElementById('chatPartnerName').textContent = '💬 ' + userName;
+            currentChatPartner = userId;
+            
+            loadMessages(userId);
+            
+            if (chatInterval) clearInterval(chatInterval);
+            chatInterval = setInterval(function() {
+                loadMessages(userId, true);
+            }, 3000);
+        }
+
+        function closeChat() {
+            document.getElementById('chatWindow').style.display = 'none';
+            document.getElementById('chatList').style.display = 'block';
+            if (chatInterval) {
+                clearInterval(chatInterval);
+                chatInterval = null;
+            }
+            currentChatPartner = null;
+            loadChatList();
+        }
+
+        function loadMessages(partnerId, silent) {
+            if (!currentUser) return;
+            
+            var container = document.getElementById('chatMessages');
+            if (!silent) {
+                container.innerHTML = '<p class="empty">Загрузка...</p>';
+            }
+            
+            supabase
+                .from('messages')
+                .select('*')
+                .or('sender_id.eq.' + currentUser.id + ',sender_id.eq.' + partnerId)
+                .or('receiver_id.eq.' + currentUser.id + ',receiver_id.eq.' + partnerId)
+                .order('created_at', { ascending: true })
+                .then(function(response) {
+                    if (response.error) {
+                        if (!silent) container.innerHTML = '❌ Ошибка загрузки';
+                        return;
+                    }
+                    
+                    var messages = response.data || [];
+                    
+                    if (messages.length === 0) {
+                        container.innerHTML = '<p class="empty">Нет сообщений. Напишите что-нибудь!</p>';
+                        return;
+                    }
+                    
+                    var html = '';
+                    messages.forEach(function(msg) {
+                        var isMine = msg.sender_id === currentUser.id;
+                        var align = isMine ? 'mine' : 'other';
+                        var time = new Date(msg.created_at).toLocaleString('ru-RU', {
+                            hour: '2-digit', minute: '2-digit'
+                        });
+                        
+                        html += `
+                            <div class="chat-message ${align}">
+                                <div class="bubble">
+                                    <div class="text">${msg.message}</div>
+                                    <div class="time">${time}</div>
+                                </div>
+                            </div>
+                        `;
+                    });
+                    
+                    container.innerHTML = html;
+                    
+                    supabase
+                        .from('messages')
+                        .update({ is_read: true })
+                        .eq('receiver_id', currentUser.id)
+                        .eq('sender_id', partnerId)
+                        .eq('is_read', false)
+                        .then(function() {
+                            loadUnreadCounts();
+                        });
+                    
+                    container.scrollTop = container.scrollHeight;
+                })
+                .catch(function(err) {
+                    if (!silent) container.innerHTML = '❌ Ошибка: ' + err.message;
+                });
+        }
+
+        function sendMessage() {
+            var input = document.getElementById('chatInput');
+            var message = input.value.trim();
+            
+            if (!message) return;
+            if (!currentChatPartner) {
+                alert('❌ Выберите собеседника');
+                return;
+            }
+            if (!currentUser) {
+                alert('❌ Вы не авторизованы');
+                return;
+            }
+            
+            supabase
+                .from('messages')
+                .insert([{
+                    sender_id: currentUser.id,
+                    receiver_id: currentChatPartner,
+                    message: message,
+                    is_read: false
+                }])
+                .then(function(response) {
+                    if (response.error) {
+                        alert('❌ Ошибка отправки: ' + response.error.message);
+                        return;
+                    }
+                    
+                    input.value = '';
+                    loadMessages(currentChatPartner);
+                    loadUnreadCounts();
+                })
+                .catch(function(err) {
+                    alert('❌ Ошибка: ' + err.message);
+                });
+        }
+
+        window.openChat = openChat;
+        window.closeChat = closeChat;
+        window.sendMessage = sendMessage;
+
+        // ==========================================
         // АВТОРИЗАЦИЯ
         // ==========================================
 
@@ -1654,6 +2018,9 @@
                         document.getElementById('loginSection').style.display = 'none';
                         document.getElementById('dashboard').style.display = 'block';
                         welcomeMessage.textContent = '👋 Привет, ' + user.name + '!';
+                        
+                        updateSidebarVisibility();
+                        
                         if (user.role === 'admin') {
                             document.getElementById('adminPanel').style.display = 'block';
                             window.loadAdminData();
@@ -1834,7 +2201,7 @@
         };
 
         // ==========================================
-        // АДМИНКА - БЫСТРАЯ ЗАГРУЗКА ДЗ (ОПТИМИЗИРОВАНА)
+        // АДМИНКА - БЫСТРАЯ ЗАГРУЗКА ДЗ
         // ==========================================
 
         window.loadAllHomeworks = function() {
