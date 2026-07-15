@@ -69,6 +69,21 @@
         .hw-card .task-item-inline .check-btn:hover { background: #667eea; }
         .hw-card .task-item-inline .answer-result { margin-left: 4px; font-size: 14px; }
 
+        .comments-section { margin-top: 14px; padding-top: 14px; border-top: 1px solid rgba(255,255,255,0.05); }
+        .comments-section .comments-title { color: #888; font-size: 14px; font-weight: 600; margin-bottom: 10px; }
+        .comment-item { background: rgba(255,255,255,0.03); border-radius: 10px; padding: 10px 14px; margin-bottom: 8px; border: 1px solid rgba(255,255,255,0.04); }
+        .comment-item .comment-header { display: flex; justify-content: space-between; align-items: center; font-size: 12px; color: #666; margin-bottom: 4px; }
+        .comment-item .comment-header .author { font-weight: 600; color: #b0c4de; }
+        .comment-item .comment-header .author.admin { color: #f5a623; }
+        .comment-item .comment-text { color: #c0d0e0; font-size: 14px; }
+        .comment-item .comment-time { font-size: 11px; color: #555; }
+        .comment-input-wrap { display: flex; gap: 10px; margin-top: 10px; }
+        .comment-input-wrap input { flex: 1; padding: 8px 14px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08); border-radius: 20px; color: #fff; font-size: 14px; outline: none; transition: 0.3s; }
+        .comment-input-wrap input:focus { border-color: #667eea; background: rgba(255,255,255,0.08); }
+        .comment-input-wrap input::placeholder { color: #555; }
+        .comment-input-wrap button { background: linear-gradient(135deg, #302b63, #667eea); color: white; border: none; padding: 8px 20px; border-radius: 20px; cursor: pointer; font-weight: 600; font-size: 13px; transition: 0.3s; white-space: nowrap; }
+        .comment-input-wrap button:hover { transform: scale(1.03); box-shadow: 0 4px 20px rgba(102, 126, 234, 0.3); }
+
         .video-section { margin-top: 30px; }
         .video-section h3 { font-size: 22px; margin-bottom: 16px; color: #ffffff; }
 
@@ -363,6 +378,8 @@
             .achievement-card { font-size: 12px; padding: 6px 14px 6px 10px; }
             .achievement-card .icon { font-size: 18px; }
             .settings-grid { grid-template-columns: 1fr; }
+            .comment-input-wrap { flex-direction: column; }
+            .comment-input-wrap button { width: 100%; }
         }
     </style>
 </head>
@@ -1229,7 +1246,526 @@
         };
 
         // ==========================================
-        // ОСТАЛЬНЫЕ ФУНКЦИИ (ЗАГЛУШКИ)
+        // 5. КОММЕНТАРИИ К ДЗ
+        // ==========================================
+
+        window.loadHomeworkComments = async function(homeworkId, containerId) {
+            var container = document.getElementById(containerId);
+            if (!container) return;
+            
+            try {
+                const { data, error } = await supabase
+                    .from('homework_comments')
+                    .select('*, students(name, role)')
+                    .eq('homework_id', homeworkId)
+                    .order('created_at', { ascending: true });
+                    
+                if (error) throw error;
+                
+                if (!data || data.length === 0) {
+                    container.innerHTML = '<p style="color:#555; font-size:13px; text-align:center; padding:4px 0;">Нет комментариев</p>';
+                    return;
+                }
+                
+                var html = '';
+                data.forEach(function(comment) {
+                    var authorName = comment.students ? comment.students.name : 'Ученик';
+                    var isAdmin = comment.is_admin || false;
+                    var authorClass = isAdmin ? 'admin' : '';
+                    var authorLabel = isAdmin ? '👨‍🏫 ' + authorName : '👤 ' + authorName;
+                    var time = new Date(comment.created_at).toLocaleString('ru-RU', {
+                        day: '2-digit', month: '2-digit', year: 'numeric',
+                        hour: '2-digit', minute: '2-digit'
+                    });
+                    
+                    html += `
+                        <div class="comment-item">
+                            <div class="comment-header">
+                                <span class="author ${authorClass}">${authorLabel}</span>
+                                <span class="comment-time">${time}</span>
+                            </div>
+                            <div class="comment-text">${comment.comment}</div>
+                        </div>
+                    `;
+                });
+                
+                container.innerHTML = html;
+                
+            } catch (err) {
+                console.error('Ошибка загрузки комментариев:', err);
+                container.innerHTML = '<p style="color:#555; font-size:13px;">Ошибка загрузки</p>';
+            }
+        };
+
+        window.sendHomeworkComment = async function(homeworkId, studentId) {
+            var input = document.getElementById('commentInput_' + homeworkId);
+            var comment = input.value.trim();
+            
+            if (!comment) {
+                alert('❌ Введите комментарий');
+                return;
+            }
+            
+            var isAdmin = currentUser && currentUser.role === 'admin';
+            var studentIdToSave = isAdmin ? studentId : currentUser.id;
+            
+            try {
+                const { error } = await supabase
+                    .from('homework_comments')
+                    .insert([{
+                        homework_id: homeworkId,
+                        student_id: studentIdToSave,
+                        comment: comment,
+                        is_admin: isAdmin
+                    }]);
+                    
+                if (error) throw error;
+                
+                input.value = '';
+                await window.loadHomeworkComments(homeworkId, 'comments_' + homeworkId);
+                
+                if (currentUser && currentUser.role === 'admin') {
+                    window.loadAllHomeworks();
+                }
+                
+            } catch (err) {
+                alert('❌ Ошибка отправки комментария: ' + err.message);
+                console.error(err);
+            }
+        };
+
+        // ==========================================
+        // 6. ДОМАШНИЕ ЗАДАНИЯ (СТУДЕНТ)
+        // ==========================================
+
+        window.loadHomework = function(studentId) {
+            var container = document.getElementById('homeworkList');
+            if (!container) return;
+            container.innerHTML = '⏳ Загрузка...';
+            supabase
+                .from('homeworks')
+                .select('*, video_sections(name, order_num)')
+                .eq('student_id', studentId)
+                .order('deadline', { ascending: true, nulls_last: true })
+                .then(function(response) {
+                    if (response.error) { container.innerHTML = '❌ Ошибка загрузки ДЗ.'; return; }
+                    var data = response.data || [];
+                    if (!data || data.length === 0) {
+                        container.innerHTML = '<div style="color:#666; text-align:center; padding:30px;">📭 Нет заданий. Отдыхайте! 😊</div>';
+                        window.updateProgress(0, 0);
+                        window.updateHomeworkCounts([]);
+                        return;
+                    }
+                    window.updateHomeworkCounts(data);
+                    var filteredData = data.filter(function(hw) {
+                        if (currentHomeworkTab === 'active') return hw.status !== 'done';
+                        else return hw.status === 'done';
+                    });
+                    if (filteredData.length === 0) {
+                        var emptyText = currentHomeworkTab === 'active' ? '🎉 Все задания выполнены!' : '📭 Нет выполненных заданий';
+                        container.innerHTML = '<p style="color:#666; text-align:center; padding:30px;">' + emptyText + '</p>';
+                        var done = data.filter(function(h) { return h.status === 'done'; }).length;
+                        window.updateProgress(data.length, done);
+                        return;
+                    }
+                    var done = data.filter(function(h) { return h.status === 'done'; }).length;
+                    var html = '';
+                    for (var i = 0; i < filteredData.length; i++) {
+                        var hw = filteredData[i];
+                        var statusClass = hw.status === 'done' ? 'done' : 'pending';
+                        var statusText = hw.status === 'done' ? '✅ Выполнено' : '⏳ Ожидает проверки';
+                        var btnHtml = hw.status !== 'done' ? '<button class="btn-start" onclick="window.markDone(\'' + hw.id + '\')">✅ Отметить выполненным</button>' : '';
+                        var sectionInfo = '';
+                        if (hw.video_sections) {
+                            sectionInfo = '<div class="meta">📺 Раздел №' + hw.video_sections.order_num + ': ' + hw.video_sections.name + '</div>';
+                        }
+                        var videoBlock = '';
+                        if (hw.video_link) {
+                            videoBlock = '<div class="video-fallback"><div class="label">⚠️ Если видео не работает, вот ссылка:</div><a href="' + hw.video_link + '" target="_blank">' + hw.video_link + '</a></div>';
+                        }
+                        var tasksHtml = '';
+                        if (hw.tasks && hw.tasks.length > 0) {
+                            tasksHtml = '<div style="margin-top: 10px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.05);">';
+                            for (var j = 0; j < hw.tasks.length; j++) {
+                                var task = hw.tasks[j];
+                                if (task.is_homework) {
+                                    var isDone = task.done || false;
+                                    tasksHtml += '<div class="task-item-inline"><span class="task-num">№' + task.num + '</span><input type="text" placeholder="Введите ответ" ' + (isDone ? 'disabled' : '') + ' value="' + (isDone ? '✅' : '') + '"><button class="check-btn" onclick="window.checkAnswer(this, \'' + task.correct_answer + '\')" ' + (isDone ? 'disabled style="opacity:0.5;"' : '') + '>Проверить</button><span class="answer-result">' + (isDone ? '✅ Верно!' : '') + '</span>' + (task.type === 'second_part' ? '<span style="color:#f39c12; font-size:12px;">(2-я часть)</span>' : '') + '</div>';
+                                }
+                            }
+                            tasksHtml += '</div>';
+                        }
+                        var fileHtml = '';
+                        if (hw.file_url) {
+                            fileHtml = '<div class="meta">📎 <a href="' + hw.file_url + '" target="_blank">Скачать файл</a></div>';
+                        }
+                        var deadlineText = hw.deadline ? '📅 Срок: ' + hw.deadline : '📅 Без срока';
+                        
+                        // ===== КОММЕНТАРИИ =====
+                        var commentsHtml = `
+                            <div class="comments-section">
+                                <div class="comments-title">💬 Комментарии</div>
+                                <div id="comments_${hw.id}">
+                                    <p style="color:#555; font-size:13px;">Загрузка...</p>
+                                </div>
+                                <div class="comment-input-wrap">
+                                    <input type="text" id="commentInput_${hw.id}" placeholder="Написать комментарий...">
+                                    <button onclick="window.sendHomeworkComment('${hw.id}', '${hw.student_id}')">➤</button>
+                                </div>
+                            </div>
+                        `;
+                        
+                        html += '<div class="hw-card"><div class="title">' + hw.title + '</div>' + sectionInfo + '<div class="meta">' + deadlineText + '</div><div class="status ' + statusClass + '">' + statusText + '</div>' + btnHtml + fileHtml + videoBlock + tasksHtml + commentsHtml + '</div>';
+                        
+                        // Загружаем комментарии для этого ДЗ
+                        setTimeout(function() {
+                            window.loadHomeworkComments(hw.id, 'comments_' + hw.id);
+                        }, 100);
+                    }
+                    container.innerHTML = html;
+                    window.updateProgress(data.length, done);
+                })
+                .catch(function(err) { container.innerHTML = '❌ Ошибка: ' + err.message; });
+        };
+
+        window.updateProgress = function(total, done) {
+            var pct = total > 0 ? Math.round((done / total) * 100) : 0;
+            var progressText = document.getElementById('progressText');
+            var progressBar = document.getElementById('progressBar');
+            if (progressText) progressText.textContent = pct + '%';
+            if (progressBar) progressBar.style.width = pct + '%';
+        };
+
+        window.updateHomeworkCounts = function(data) {
+            var active = 0;
+            if (data && data.length > 0) {
+                data.forEach(function(hw) { if (hw.status !== 'done') active++; });
+            }
+            var hwBadgeEl = document.getElementById('hwBadge');
+            if (hwBadgeEl) hwBadgeEl.textContent = active;
+        };
+
+        window.markDone = function(id) {
+            supabase
+                .from('homeworks')
+                .update({ status: 'done' })
+                .eq('id', id)
+                .then(function(response) {
+                    if (response.error) { alert('❌ Ошибка: ' + response.error.message); return; }
+                    if (currentUser) {
+                        window.loadHomework(currentUser.id);
+                        window.loadDashboardOverview(currentUser.id);
+                    }
+                })
+                .catch(function(err) { alert('❌ Ошибка: ' + err.message); });
+        };
+
+        window.checkAnswer = function(button, correctAnswer) {
+            var input = button.previousElementSibling;
+            var resultSpan = button.nextElementSibling;
+            var userAnswer = input.value.trim();
+            if (!userAnswer) {
+                resultSpan.textContent = '❌ Введите ответ';
+                resultSpan.style.color = '#f1948a';
+                return;
+            }
+            var normalizedUser = userAnswer.replace(/,/g, '.').replace(/\s/g, '');
+            var normalizedCorrect = String(correctAnswer).replace(/,/g, '.').replace(/\s/g, '');
+            if (normalizedUser === normalizedCorrect) {
+                resultSpan.textContent = '✅ Верно!';
+                resultSpan.style.color = '#2ecc71';
+                input.disabled = true;
+                button.disabled = true;
+                button.style.opacity = '0.5';
+            } else {
+                resultSpan.textContent = '❌ Ошибка (правильно: ' + correctAnswer + ')';
+                resultSpan.style.color = '#f1948a';
+            }
+        };
+
+        window.loadDashboardOverview = function(studentId) {
+            supabase
+                .from('homeworks')
+                .select('*')
+                .eq('student_id', studentId)
+                .then(function(response) {
+                    if (response.error) return;
+                    var data = response.data || [];
+                    var total = data.length;
+                    var done = data.filter(function(h) { return h.status === 'done'; }).length;
+                    var pending = total - done;
+                    document.getElementById('statTotal').textContent = total;
+                    document.getElementById('statDone').textContent = done;
+                    document.getElementById('statPending').textContent = pending;
+                    var sectionsSet = new Set();
+                    data.forEach(function(h) { if (h.section_id) sectionsSet.add(h.section_id); });
+                    document.getElementById('statSections').textContent = sectionsSet.size;
+                    var pendingHw = data.filter(function(h) { return h.status !== 'done' && h.deadline; });
+                    pendingHw.sort(function(a, b) { return new Date(a.deadline) - new Date(b.deadline); });
+                    if (pendingHw.length > 0) {
+                        var next = pendingHw[0];
+                        document.getElementById('nextDeadlineTitle').textContent = next.title;
+                        var days = Math.ceil((new Date(next.deadline) - new Date()) / (1000 * 60 * 60 * 24));
+                        document.getElementById('nextDeadlineDays').textContent = days + ' дн.';
+                    } else {
+                        document.getElementById('nextDeadlineTitle').textContent = '🎉 Все задания выполнены!';
+                        document.getElementById('nextDeadlineDays').textContent = '✅';
+                    }
+                    var recent = data.slice(-3).reverse();
+                    var html = '';
+                    if (recent.length > 0) {
+                        html = '<div style="margin-top:12px;"><p style="color:#888; font-size:14px; margin-bottom:10px;">📋 Последние ДЗ</p>';
+                        recent.forEach(function(hw) {
+                            var status = hw.status === 'done' ? '✅' : '⏳';
+                            html += '<div style="display:flex; justify-content:space-between; padding:10px 14px; background:rgba(255,255,255,0.03); border-radius:10px; margin-bottom:6px; border:1px solid rgba(255,255,255,0.04);"><span style="color:#b0c4de;">' + hw.title + '</span><span style="color:' + (hw.status === 'done' ? '#2ecc71' : '#f39c12') + ';">' + status + '</span></div>';
+                        });
+                        html += '</div>';
+                    } else {
+                        html = '<p style="color:#666; text-align:center; padding:20px;">📭 Нет ДЗ</p>';
+                    }
+                    document.getElementById('recentHomeworks').innerHTML = html;
+                });
+        };
+
+        window.loadSectionsAndVideos = function() {
+            var tabsContainer1 = document.getElementById('videoTabsPart1');
+            var tabsContainer2 = document.getElementById('videoTabsPart2');
+            tabsContainer1.innerHTML = '⏳ Загрузка...';
+            tabsContainer2.innerHTML = '⏳ Загрузка...';
+            supabase
+                .from('video_sections')
+                .select('*')
+                .order('order_num', { ascending: true })
+                .then(function(response) {
+                    if (response.error) { tabsContainer1.innerHTML = '❌ Ошибка: ' + response.error.message; return; }
+                    sections = response.data || [];
+                    if (sections.length === 0) {
+                        tabsContainer1.innerHTML = '📭 Нет разделов. Добавьте их в базе.';
+                        tabsContainer2.innerHTML = '📭 Нет разделов. Добавьте их в базе.';
+                        return;
+                    }
+                    window.renderVideoTabs();
+                })
+                .catch(function(err) { tabsContainer1.innerHTML = '❌ Ошибка: ' + err.message; });
+        };
+
+        window.renderVideoTabs = function() {
+            var tabsContainer1 = document.getElementById('videoTabsPart1');
+            var tabsContainer2 = document.getElementById('videoTabsPart2');
+            if (!sections || sections.length === 0) {
+                tabsContainer1.innerHTML = '📭 Нет разделов';
+                tabsContainer2.innerHTML = '📭 Нет разделов';
+                return;
+            }
+            var part1 = sections.slice(0, 12);
+            var part2 = sections.slice(12);
+            var tabsHtml1 = '';
+            var tabsHtml2 = '';
+            part1.forEach(function(section, index) {
+                var num = index + 1;
+                tabsHtml1 += '<button onclick="window.openSection(\'' + section.id + '\')"><span class="num">' + num + '</span> ' + section.name + '</button>';
+            });
+            part2.forEach(function(section, index) {
+                var num = index + 13;
+                tabsHtml2 += '<button onclick="window.openSection(\'' + section.id + '\')"><span class="num">' + num + '</span> ' + section.name + '</button>';
+            });
+            tabsContainer1.innerHTML = tabsHtml1 || '📭 Нет разделов в первой части';
+            tabsContainer2.innerHTML = tabsHtml2 || '📭 Нет разделов во второй части';
+        };
+
+        // ==========================================
+        // 7. АВТОРИЗАЦИЯ
+        // ==========================================
+
+        document.getElementById('loginBtn').addEventListener('click', function() {
+            var email = document.getElementById('email').value;
+            var password = document.getElementById('password').value;
+            resultDiv.className = 'result-info';
+            resultDiv.innerHTML = '⏳ Проверяю...';
+            supabase
+                .from('students')
+                .select('*')
+                .eq('email', email)
+                .eq('password', password)
+                .then(function(response) {
+                    if (response.error) {
+                        resultDiv.className = 'result-error';
+                        resultDiv.innerHTML = '❌ Ошибка: ' + response.error.message;
+                        return;
+                    }
+                    if (response.data && response.data.length > 0) {
+                        var user = response.data[0];
+                        currentUser = user;
+                        resultDiv.className = 'result-success';
+                        resultDiv.innerHTML = '✅ Привет, ' + user.name + '!';
+                        document.getElementById('profileBlock').style.display = 'none';
+                        document.getElementById('contactsBlock').style.display = 'none';
+                        document.getElementById('loginSection').style.display = 'none';
+                        document.getElementById('dashboard').style.display = 'block';
+                        welcomeMessage.textContent = '👋 Привет, ' + user.name + '!';
+                        if (user.role === 'admin') {
+                            document.getElementById('adminPanel').style.display = 'block';
+                            window.loadAdminData();
+                            window.loadTeacherSettings();
+                        }
+                        window.loadHomework(user.id);
+                        window.loadDashboardOverview(user.id);
+                        window.loadStudentSchedule(user.id);
+                        window.loadSectionsAndVideos();
+                        window.loadSettings();
+                        if (user.settings) {
+                            window.applyTheme(user.settings.theme || 'dark');
+                        }
+                    } else {
+                        resultDiv.className = 'result-error';
+                        resultDiv.innerHTML = '❌ Неверный логин или пароль.';
+                    }
+                })
+                .catch(function(err) {
+                    resultDiv.className = 'result-error';
+                    resultDiv.innerHTML = '❌ Ошибка: ' + err.message;
+                });
+        });
+
+        document.getElementById('backToDashboard').addEventListener('click', function() {
+            sectionPage.classList.remove('active');
+            mainContent.style.display = 'block';
+            dashboard.style.display = 'block';
+            if (currentUser && currentUser.role === 'admin') adminPanel.style.display = 'block';
+        });
+
+        // ==========================================
+        // 8. МОДАЛЬНОЕ ОКНО ВЫДАЧИ ДЗ
+        // ==========================================
+
+        window.showAssignmentModal = function() {
+            document.getElementById('assignmentModal').classList.add('active');
+            window.loadStudentsForSelect();
+        };
+
+        window.closeAssignmentModal = function() {
+            document.getElementById('assignmentModal').classList.remove('active');
+            document.getElementById('sectionNumber').value = '';
+            document.getElementById('homeworkTitle').value = '';
+            document.getElementById('pdfFile').value = '';
+            document.getElementById('deadline').value = '';
+            document.getElementById('noDeadline').checked = false;
+            document.getElementById('sectionPreview').textContent = 'Введите номер для просмотра раздела';
+            document.getElementById('sectionPreview').style.color = '#666';
+        };
+
+        window.loadStudentsForSelect = async function() {
+            const select = document.getElementById('studentSelect');
+            try {
+                const { data, error } = await supabase.from('students').select('id, name').order('name');
+                if (error) throw error;
+                select.innerHTML = '<option value="">Выберите ученика</option>';
+                data.forEach(function(student) {
+                    select.innerHTML += '<option value="' + student.id + '">' + student.name + '</option>';
+                });
+                window.toggleStudentSelect();
+            } catch (err) {
+                select.innerHTML = '<option value="">Ошибка загрузки</option>';
+                console.error('Ошибка загрузки учеников:', err);
+            }
+        };
+
+        window.toggleStudentSelect = function() {
+            var target = document.getElementById('assignmentTarget').value;
+            var wrapper = document.getElementById('studentSelectWrapper');
+            wrapper.style.display = target === 'single' ? 'block' : 'none';
+        };
+
+        document.getElementById('assignmentTarget').addEventListener('change', window.toggleStudentSelect);
+
+        document.getElementById('sectionNumber').addEventListener('input', function() {
+            var num = parseInt(this.value);
+            var preview = document.getElementById('sectionPreview');
+            if (num && num > 0) {
+                preview.textContent = '🔍 Поиск раздела №' + num + '...';
+                preview.style.color = '#666';
+                window.previewSection(num);
+            } else {
+                preview.textContent = 'Введите номер для просмотра раздела';
+                preview.style.color = '#666';
+            }
+        });
+
+        window.previewSection = async function(number) {
+            try {
+                const { data, error } = await supabase.from('video_sections').select('id, name').eq('order_num', number).single();
+                var preview = document.getElementById('sectionPreview');
+                if (error) {
+                    preview.textContent = '❌ Раздел №' + number + ' не найден';
+                    preview.style.color = '#f1948a';
+                    return;
+                }
+                preview.textContent = '✅ Найден раздел: "' + data.name + '"';
+                preview.style.color = '#2ecc71';
+            } catch (err) {
+                console.error('Ошибка поиска раздела:', err);
+            }
+        };
+
+        window.submitAssignment = async function() {
+            var target = document.getElementById('assignmentTarget').value;
+            var studentId = document.getElementById('studentSelect').value;
+            var sectionNumber = document.getElementById('sectionNumber').value;
+            var title = document.getElementById('homeworkTitle').value.trim();
+            var fileInput = document.getElementById('pdfFile');
+            var deadline = document.getElementById('deadline').value;
+            var noDeadline = document.getElementById('noDeadline').checked;
+            if (!title) { alert('❌ Введите название ДЗ'); return; }
+            if (!sectionNumber) { alert('❌ Введите номер раздела'); return; }
+            if (target === 'single' && !studentId) { alert('❌ Выберите ученика'); return; }
+            var sectionData;
+            try {
+                var result = await supabase.from('video_sections').select('id, name').eq('order_num', parseInt(sectionNumber)).single();
+                if (result.error) { alert('❌ Раздел с номером ' + sectionNumber + ' не найден'); return; }
+                sectionData = result.data;
+            } catch (err) { alert('❌ Ошибка поиска раздела: ' + err.message); return; }
+            var pdfUrl = null;
+            if (fileInput.files.length > 0) {
+                var file = fileInput.files[0];
+                if (file.type !== 'application/pdf') { alert('❌ Загрузите PDF файл'); return; }
+                try {
+                    var path = 'homeworks/' + Date.now() + '_' + file.name;
+                    var uploadResult = await supabase.storage.from('homework').upload(path, file);
+                    if (uploadResult.error) { alert('❌ Ошибка загрузки PDF: ' + uploadResult.error.message); return; }
+                    var urlData = supabase.storage.from('homework').getPublicUrl(path);
+                    pdfUrl = urlData.data.publicUrl;
+                } catch (err) { alert('❌ Ошибка загрузки PDF: ' + err.message); return; }
+            }
+            var students = [];
+            if (target === 'all') {
+                var studentResult = await supabase.from('students').select('id');
+                if (studentResult.error) { alert('❌ Ошибка загрузки учеников: ' + studentResult.error.message); return; }
+                students = studentResult.data;
+            } else {
+                students = [{ id: studentId }];
+            }
+            if (students.length === 0) { alert('❌ Нет учеников для выдачи ДЗ'); return; }
+            var finalDeadline = noDeadline ? null : (deadline || null);
+            var homeworks = students.map(function(s) {
+                return { title: title, student_id: s.id, section_id: sectionData.id, status: 'pending', deadline: finalDeadline, file_url: pdfUrl, video_link: null };
+            });
+            try {
+                var insertResult = await supabase.from('homeworks').insert(homeworks);
+                if (insertResult.error) throw insertResult.error;
+                var count = homeworks.length;
+                var deadlineText = noDeadline ? 'без дедлайна' : (deadline || 'не указан');
+                alert('✅ ДЗ "' + title + '" выдано ' + count + ' ученикам в раздел "' + sectionData.name + '"!\n📅 Срок: ' + deadlineText);
+                window.closeAssignmentModal();
+                window.loadAllHomeworks();
+                if (currentUser) {
+                    window.loadHomework(currentUser.id);
+                    window.loadDashboardOverview(currentUser.id);
+                }
+            } catch (err) { alert('❌ Ошибка сохранения ДЗ: ' + err.message); }
+        };
+
+        // ==========================================
+        // 9. АДМИНКА - ОСТАЛЬНЫЕ ФУНКЦИИ
         // ==========================================
 
         window.addMyStudent = function() {
@@ -1658,7 +2194,7 @@
         };
 
         // ==========================================
-        // 5. СТАТИСТИКА
+        // 10. СТАТИСТИКА
         // ==========================================
 
         window.loadStatistics = async function(studentId) {
@@ -1848,417 +2384,7 @@
         };
 
         // ==========================================
-        // 6. ОСТАЛЬНЫЕ ФУНКЦИИ (ДЛЯ СТУДЕНТА)
-        // ==========================================
-
-        window.loadHomework = function(studentId) {
-            var container = document.getElementById('homeworkList');
-            if (!container) return;
-            container.innerHTML = '⏳ Загрузка...';
-            supabase
-                .from('homeworks')
-                .select('*, video_sections(name, order_num)')
-                .eq('student_id', studentId)
-                .order('deadline', { ascending: true, nulls_last: true })
-                .then(function(response) {
-                    if (response.error) { container.innerHTML = '❌ Ошибка загрузки ДЗ.'; return; }
-                    var data = response.data || [];
-                    if (!data || data.length === 0) {
-                        container.innerHTML = '<div style="color:#666; text-align:center; padding:30px;">📭 Нет заданий. Отдыхайте! 😊</div>';
-                        window.updateProgress(0, 0);
-                        window.updateHomeworkCounts([]);
-                        return;
-                    }
-                    window.updateHomeworkCounts(data);
-                    var filteredData = data.filter(function(hw) {
-                        if (currentHomeworkTab === 'active') return hw.status !== 'done';
-                        else return hw.status === 'done';
-                    });
-                    if (filteredData.length === 0) {
-                        var emptyText = currentHomeworkTab === 'active' ? '🎉 Все задания выполнены!' : '📭 Нет выполненных заданий';
-                        container.innerHTML = '<p style="color:#666; text-align:center; padding:30px;">' + emptyText + '</p>';
-                        var done = data.filter(function(h) { return h.status === 'done'; }).length;
-                        window.updateProgress(data.length, done);
-                        return;
-                    }
-                    var done = data.filter(function(h) { return h.status === 'done'; }).length;
-                    var html = '';
-                    for (var i = 0; i < filteredData.length; i++) {
-                        var hw = filteredData[i];
-                        var statusClass = hw.status === 'done' ? 'done' : 'pending';
-                        var statusText = hw.status === 'done' ? '✅ Выполнено' : '⏳ Ожидает проверки';
-                        var btnHtml = hw.status !== 'done' ? '<button class="btn-start" onclick="window.markDone(\'' + hw.id + '\')">✅ Отметить выполненным</button>' : '';
-                        var sectionInfo = '';
-                        if (hw.video_sections) {
-                            sectionInfo = '<div class="meta">📺 Раздел №' + hw.video_sections.order_num + ': ' + hw.video_sections.name + '</div>';
-                        }
-                        var videoBlock = '';
-                        if (hw.video_link) {
-                            videoBlock = '<div class="video-fallback"><div class="label">⚠️ Если видео не работает, вот ссылка:</div><a href="' + hw.video_link + '" target="_blank">' + hw.video_link + '</a></div>';
-                        }
-                        var tasksHtml = '';
-                        if (hw.tasks && hw.tasks.length > 0) {
-                            tasksHtml = '<div style="margin-top: 10px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.05);">';
-                            for (var j = 0; j < hw.tasks.length; j++) {
-                                var task = hw.tasks[j];
-                                if (task.is_homework) {
-                                    var isDone = task.done || false;
-                                    tasksHtml += '<div class="task-item-inline"><span class="task-num">№' + task.num + '</span><input type="text" placeholder="Введите ответ" ' + (isDone ? 'disabled' : '') + ' value="' + (isDone ? '✅' : '') + '"><button class="check-btn" onclick="window.checkAnswer(this, \'' + task.correct_answer + '\')" ' + (isDone ? 'disabled style="opacity:0.5;"' : '') + '>Проверить</button><span class="answer-result">' + (isDone ? '✅ Верно!' : '') + '</span>' + (task.type === 'second_part' ? '<span style="color:#f39c12; font-size:12px;">(2-я часть)</span>' : '') + '</div>';
-                                }
-                            }
-                            tasksHtml += '</div>';
-                        }
-                        var fileHtml = '';
-                        if (hw.file_url) {
-                            fileHtml = '<div class="meta">📎 <a href="' + hw.file_url + '" target="_blank">Скачать файл</a></div>';
-                        }
-                        var deadlineText = hw.deadline ? '📅 Срок: ' + hw.deadline : '📅 Без срока';
-                        html += '<div class="hw-card"><div class="title">' + hw.title + '</div>' + sectionInfo + '<div class="meta">' + deadlineText + '</div><div class="status ' + statusClass + '">' + statusText + '</div>' + btnHtml + fileHtml + videoBlock + tasksHtml + '</div>';
-                    }
-                    container.innerHTML = html;
-                    window.updateProgress(data.length, done);
-                })
-                .catch(function(err) { container.innerHTML = '❌ Ошибка: ' + err.message; });
-        };
-
-        window.updateProgress = function(total, done) {
-            var pct = total > 0 ? Math.round((done / total) * 100) : 0;
-            var progressText = document.getElementById('progressText');
-            var progressBar = document.getElementById('progressBar');
-            if (progressText) progressText.textContent = pct + '%';
-            if (progressBar) progressBar.style.width = pct + '%';
-        };
-
-        window.updateHomeworkCounts = function(data) {
-            var active = 0;
-            if (data && data.length > 0) {
-                data.forEach(function(hw) { if (hw.status !== 'done') active++; });
-            }
-            var hwBadgeEl = document.getElementById('hwBadge');
-            if (hwBadgeEl) hwBadgeEl.textContent = active;
-        };
-
-        window.markDone = function(id) {
-            supabase
-                .from('homeworks')
-                .update({ status: 'done' })
-                .eq('id', id)
-                .then(function(response) {
-                    if (response.error) { alert('❌ Ошибка: ' + response.error.message); return; }
-                    if (currentUser) {
-                        window.loadHomework(currentUser.id);
-                        window.loadDashboardOverview(currentUser.id);
-                    }
-                })
-                .catch(function(err) { alert('❌ Ошибка: ' + err.message); });
-        };
-
-        window.checkAnswer = function(button, correctAnswer) {
-            var input = button.previousElementSibling;
-            var resultSpan = button.nextElementSibling;
-            var userAnswer = input.value.trim();
-            if (!userAnswer) {
-                resultSpan.textContent = '❌ Введите ответ';
-                resultSpan.style.color = '#f1948a';
-                return;
-            }
-            var normalizedUser = userAnswer.replace(/,/g, '.').replace(/\s/g, '');
-            var normalizedCorrect = String(correctAnswer).replace(/,/g, '.').replace(/\s/g, '');
-            if (normalizedUser === normalizedCorrect) {
-                resultSpan.textContent = '✅ Верно!';
-                resultSpan.style.color = '#2ecc71';
-                input.disabled = true;
-                button.disabled = true;
-                button.style.opacity = '0.5';
-            } else {
-                resultSpan.textContent = '❌ Ошибка (правильно: ' + correctAnswer + ')';
-                resultSpan.style.color = '#f1948a';
-            }
-        };
-
-        window.loadDashboardOverview = function(studentId) {
-            supabase
-                .from('homeworks')
-                .select('*')
-                .eq('student_id', studentId)
-                .then(function(response) {
-                    if (response.error) return;
-                    var data = response.data || [];
-                    var total = data.length;
-                    var done = data.filter(function(h) { return h.status === 'done'; }).length;
-                    var pending = total - done;
-                    document.getElementById('statTotal').textContent = total;
-                    document.getElementById('statDone').textContent = done;
-                    document.getElementById('statPending').textContent = pending;
-                    var sectionsSet = new Set();
-                    data.forEach(function(h) { if (h.section_id) sectionsSet.add(h.section_id); });
-                    document.getElementById('statSections').textContent = sectionsSet.size;
-                    var pendingHw = data.filter(function(h) { return h.status !== 'done' && h.deadline; });
-                    pendingHw.sort(function(a, b) { return new Date(a.deadline) - new Date(b.deadline); });
-                    if (pendingHw.length > 0) {
-                        var next = pendingHw[0];
-                        document.getElementById('nextDeadlineTitle').textContent = next.title;
-                        var days = Math.ceil((new Date(next.deadline) - new Date()) / (1000 * 60 * 60 * 24));
-                        document.getElementById('nextDeadlineDays').textContent = days + ' дн.';
-                    } else {
-                        document.getElementById('nextDeadlineTitle').textContent = '🎉 Все задания выполнены!';
-                        document.getElementById('nextDeadlineDays').textContent = '✅';
-                    }
-                    var recent = data.slice(-3).reverse();
-                    var html = '';
-                    if (recent.length > 0) {
-                        html = '<div style="margin-top:12px;"><p style="color:#888; font-size:14px; margin-bottom:10px;">📋 Последние ДЗ</p>';
-                        recent.forEach(function(hw) {
-                            var status = hw.status === 'done' ? '✅' : '⏳';
-                            html += '<div style="display:flex; justify-content:space-between; padding:10px 14px; background:rgba(255,255,255,0.03); border-radius:10px; margin-bottom:6px; border:1px solid rgba(255,255,255,0.04);"><span style="color:#b0c4de;">' + hw.title + '</span><span style="color:' + (hw.status === 'done' ? '#2ecc71' : '#f39c12') + ';">' + status + '</span></div>';
-                        });
-                        html += '</div>';
-                    } else {
-                        html = '<p style="color:#666; text-align:center; padding:20px;">📭 Нет ДЗ</p>';
-                    }
-                    document.getElementById('recentHomeworks').innerHTML = html;
-                });
-        };
-
-        window.loadSectionsAndVideos = function() {
-            var tabsContainer1 = document.getElementById('videoTabsPart1');
-            var tabsContainer2 = document.getElementById('videoTabsPart2');
-            tabsContainer1.innerHTML = '⏳ Загрузка...';
-            tabsContainer2.innerHTML = '⏳ Загрузка...';
-            supabase
-                .from('video_sections')
-                .select('*')
-                .order('order_num', { ascending: true })
-                .then(function(response) {
-                    if (response.error) { tabsContainer1.innerHTML = '❌ Ошибка: ' + response.error.message; return; }
-                    sections = response.data || [];
-                    if (sections.length === 0) {
-                        tabsContainer1.innerHTML = '📭 Нет разделов. Добавьте их в базе.';
-                        tabsContainer2.innerHTML = '📭 Нет разделов. Добавьте их в базе.';
-                        return;
-                    }
-                    window.renderVideoTabs();
-                })
-                .catch(function(err) { tabsContainer1.innerHTML = '❌ Ошибка: ' + err.message; });
-        };
-
-        window.renderVideoTabs = function() {
-            var tabsContainer1 = document.getElementById('videoTabsPart1');
-            var tabsContainer2 = document.getElementById('videoTabsPart2');
-            if (!sections || sections.length === 0) {
-                tabsContainer1.innerHTML = '📭 Нет разделов';
-                tabsContainer2.innerHTML = '📭 Нет разделов';
-                return;
-            }
-            var part1 = sections.slice(0, 12);
-            var part2 = sections.slice(12);
-            var tabsHtml1 = '';
-            var tabsHtml2 = '';
-            part1.forEach(function(section, index) {
-                var num = index + 1;
-                tabsHtml1 += '<button onclick="window.openSection(\'' + section.id + '\')"><span class="num">' + num + '</span> ' + section.name + '</button>';
-            });
-            part2.forEach(function(section, index) {
-                var num = index + 13;
-                tabsHtml2 += '<button onclick="window.openSection(\'' + section.id + '\')"><span class="num">' + num + '</span> ' + section.name + '</button>';
-            });
-            tabsContainer1.innerHTML = tabsHtml1 || '📭 Нет разделов в первой части';
-            tabsContainer2.innerHTML = tabsHtml2 || '📭 Нет разделов во второй части';
-        };
-
-        // ==========================================
-        // 7. АВТОРИЗАЦИЯ
-        // ==========================================
-
-        document.getElementById('loginBtn').addEventListener('click', function() {
-            var email = document.getElementById('email').value;
-            var password = document.getElementById('password').value;
-            resultDiv.className = 'result-info';
-            resultDiv.innerHTML = '⏳ Проверяю...';
-            supabase
-                .from('students')
-                .select('*')
-                .eq('email', email)
-                .eq('password', password)
-                .then(function(response) {
-                    if (response.error) {
-                        resultDiv.className = 'result-error';
-                        resultDiv.innerHTML = '❌ Ошибка: ' + response.error.message;
-                        return;
-                    }
-                    if (response.data && response.data.length > 0) {
-                        var user = response.data[0];
-                        currentUser = user;
-                        resultDiv.className = 'result-success';
-                        resultDiv.innerHTML = '✅ Привет, ' + user.name + '!';
-                        document.getElementById('profileBlock').style.display = 'none';
-                        document.getElementById('contactsBlock').style.display = 'none';
-                        document.getElementById('loginSection').style.display = 'none';
-                        document.getElementById('dashboard').style.display = 'block';
-                        welcomeMessage.textContent = '👋 Привет, ' + user.name + '!';
-                        if (user.role === 'admin') {
-                            document.getElementById('adminPanel').style.display = 'block';
-                            window.loadAdminData();
-                            window.loadTeacherSettings();
-                        }
-                        window.loadHomework(user.id);
-                        window.loadDashboardOverview(user.id);
-                        window.loadStudentSchedule(user.id);
-                        window.loadSectionsAndVideos();
-                        window.loadSettings();
-                        if (user.settings) {
-                            window.applyTheme(user.settings.theme || 'dark');
-                        }
-                    } else {
-                        resultDiv.className = 'result-error';
-                        resultDiv.innerHTML = '❌ Неверный логин или пароль.';
-                    }
-                })
-                .catch(function(err) {
-                    resultDiv.className = 'result-error';
-                    resultDiv.innerHTML = '❌ Ошибка: ' + err.message;
-                });
-        });
-
-        document.getElementById('backToDashboard').addEventListener('click', function() {
-            sectionPage.classList.remove('active');
-            mainContent.style.display = 'block';
-            dashboard.style.display = 'block';
-            if (currentUser && currentUser.role === 'admin') adminPanel.style.display = 'block';
-        });
-
-        // ==========================================
-        // 8. МОДАЛЬНОЕ ОКНО ВЫДАЧИ ДЗ
-        // ==========================================
-
-        window.showAssignmentModal = function() {
-            document.getElementById('assignmentModal').classList.add('active');
-            window.loadStudentsForSelect();
-        };
-
-        window.closeAssignmentModal = function() {
-            document.getElementById('assignmentModal').classList.remove('active');
-            document.getElementById('sectionNumber').value = '';
-            document.getElementById('homeworkTitle').value = '';
-            document.getElementById('pdfFile').value = '';
-            document.getElementById('deadline').value = '';
-            document.getElementById('noDeadline').checked = false;
-            document.getElementById('sectionPreview').textContent = 'Введите номер для просмотра раздела';
-            document.getElementById('sectionPreview').style.color = '#666';
-        };
-
-        window.loadStudentsForSelect = async function() {
-            const select = document.getElementById('studentSelect');
-            try {
-                const { data, error } = await supabase.from('students').select('id, name').order('name');
-                if (error) throw error;
-                select.innerHTML = '<option value="">Выберите ученика</option>';
-                data.forEach(function(student) {
-                    select.innerHTML += '<option value="' + student.id + '">' + student.name + '</option>';
-                });
-                window.toggleStudentSelect();
-            } catch (err) {
-                select.innerHTML = '<option value="">Ошибка загрузки</option>';
-                console.error('Ошибка загрузки учеников:', err);
-            }
-        };
-
-        window.toggleStudentSelect = function() {
-            var target = document.getElementById('assignmentTarget').value;
-            var wrapper = document.getElementById('studentSelectWrapper');
-            wrapper.style.display = target === 'single' ? 'block' : 'none';
-        };
-
-        document.getElementById('assignmentTarget').addEventListener('change', window.toggleStudentSelect);
-
-        document.getElementById('sectionNumber').addEventListener('input', function() {
-            var num = parseInt(this.value);
-            var preview = document.getElementById('sectionPreview');
-            if (num && num > 0) {
-                preview.textContent = '🔍 Поиск раздела №' + num + '...';
-                preview.style.color = '#666';
-                window.previewSection(num);
-            } else {
-                preview.textContent = 'Введите номер для просмотра раздела';
-                preview.style.color = '#666';
-            }
-        });
-
-        window.previewSection = async function(number) {
-            try {
-                const { data, error } = await supabase.from('video_sections').select('id, name').eq('order_num', number).single();
-                var preview = document.getElementById('sectionPreview');
-                if (error) {
-                    preview.textContent = '❌ Раздел №' + number + ' не найден';
-                    preview.style.color = '#f1948a';
-                    return;
-                }
-                preview.textContent = '✅ Найден раздел: "' + data.name + '"';
-                preview.style.color = '#2ecc71';
-            } catch (err) {
-                console.error('Ошибка поиска раздела:', err);
-            }
-        };
-
-        window.submitAssignment = async function() {
-            var target = document.getElementById('assignmentTarget').value;
-            var studentId = document.getElementById('studentSelect').value;
-            var sectionNumber = document.getElementById('sectionNumber').value;
-            var title = document.getElementById('homeworkTitle').value.trim();
-            var fileInput = document.getElementById('pdfFile');
-            var deadline = document.getElementById('deadline').value;
-            var noDeadline = document.getElementById('noDeadline').checked;
-            if (!title) { alert('❌ Введите название ДЗ'); return; }
-            if (!sectionNumber) { alert('❌ Введите номер раздела'); return; }
-            if (target === 'single' && !studentId) { alert('❌ Выберите ученика'); return; }
-            var sectionData;
-            try {
-                var result = await supabase.from('video_sections').select('id, name').eq('order_num', parseInt(sectionNumber)).single();
-                if (result.error) { alert('❌ Раздел с номером ' + sectionNumber + ' не найден'); return; }
-                sectionData = result.data;
-            } catch (err) { alert('❌ Ошибка поиска раздела: ' + err.message); return; }
-            var pdfUrl = null;
-            if (fileInput.files.length > 0) {
-                var file = fileInput.files[0];
-                if (file.type !== 'application/pdf') { alert('❌ Загрузите PDF файл'); return; }
-                try {
-                    var path = 'homeworks/' + Date.now() + '_' + file.name;
-                    var uploadResult = await supabase.storage.from('homework').upload(path, file);
-                    if (uploadResult.error) { alert('❌ Ошибка загрузки PDF: ' + uploadResult.error.message); return; }
-                    var urlData = supabase.storage.from('homework').getPublicUrl(path);
-                    pdfUrl = urlData.data.publicUrl;
-                } catch (err) { alert('❌ Ошибка загрузки PDF: ' + err.message); return; }
-            }
-            var students = [];
-            if (target === 'all') {
-                var studentResult = await supabase.from('students').select('id');
-                if (studentResult.error) { alert('❌ Ошибка загрузки учеников: ' + studentResult.error.message); return; }
-                students = studentResult.data;
-            } else {
-                students = [{ id: studentId }];
-            }
-            if (students.length === 0) { alert('❌ Нет учеников для выдачи ДЗ'); return; }
-            var finalDeadline = noDeadline ? null : (deadline || null);
-            var homeworks = students.map(function(s) {
-                return { title: title, student_id: s.id, section_id: sectionData.id, status: 'pending', deadline: finalDeadline, file_url: pdfUrl, video_link: null };
-            });
-            try {
-                var insertResult = await supabase.from('homeworks').insert(homeworks);
-                if (insertResult.error) throw insertResult.error;
-                var count = homeworks.length;
-                var deadlineText = noDeadline ? 'без дедлайна' : (deadline || 'не указан');
-                alert('✅ ДЗ "' + title + '" выдано ' + count + ' ученикам в раздел "' + sectionData.name + '"!\n📅 Срок: ' + deadlineText);
-                window.closeAssignmentModal();
-                window.loadAllHomeworks();
-                if (currentUser) {
-                    window.loadHomework(currentUser.id);
-                    window.loadDashboardOverview(currentUser.id);
-                }
-            } catch (err) { alert('❌ Ошибка сохранения ДЗ: ' + err.message); }
-        };
-
-        // ==========================================
-        // 9. АДМИНКА - ЗАГРУЗКА ВСЕХ ДАННЫХ
+        // 11. АДМИНКА - ЗАГРУЗКА ВСЕХ ДАННЫХ
         // ==========================================
 
         window.loadAdminData = function() {
