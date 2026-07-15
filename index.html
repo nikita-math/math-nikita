@@ -50,6 +50,109 @@
         #dashboard .progress .bar { background: rgba(255,255,255,0.1); border-radius: 10px; height: 10px; overflow: hidden; margin-top: 5px; }
         #dashboard .progress .bar .fill { background: linear-gradient(90deg, #27ae60, #2ecc71); height: 100%; transition: width 0.5s; }
 
+        /* ===== СООБЩЕНИЯ В ДАШБОРДЕ ===== */
+        .messages-container {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            margin-top: 10px;
+        }
+        .messages-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #f5a623;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .messages-title .badge {
+            background: #e74c3c;
+            color: white;
+            font-size: 12px;
+            padding: 2px 12px;
+            border-radius: 30px;
+            font-weight: 500;
+        }
+        .message-card {
+            background: rgba(255,255,255,0.03);
+            border-radius: 16px;
+            padding: 16px 18px;
+            border: 1px solid rgba(255,255,255,0.05);
+            transition: all 0.2s ease;
+        }
+        .message-card:hover {
+            background: rgba(255,255,255,0.06);
+            border-color: rgba(102,126,234,0.2);
+        }
+        .message-card.unread {
+            border-left: 4px solid #4a7cf7;
+            background: rgba(74,124,247,0.05);
+        }
+        .message-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 8px;
+            flex-wrap: wrap;
+        }
+        .message-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 16px;
+            color: white;
+            flex-shrink: 0;
+        }
+        .message-avatar.blue { background: linear-gradient(135deg, #4a7cf7, #6c5ce7); }
+        .message-avatar.pink { background: linear-gradient(135deg, #fd79a8, #e17055); }
+        .message-avatar.green { background: linear-gradient(135deg, #00b894, #00cec9); }
+        .message-avatar.orange { background: linear-gradient(135deg, #fdcb6e, #e17055); }
+        .message-avatar.purple { background: linear-gradient(135deg, #a29bfe, #6c5ce7); }
+        .message-student-info {
+            display: flex;
+            align-items: baseline;
+            gap: 6px;
+            flex-wrap: wrap;
+            flex: 1;
+        }
+        .message-student-name {
+            font-weight: 600;
+            font-size: 15px;
+            color: #ffffff;
+        }
+        .message-student-class {
+            font-size: 13px;
+            color: #7a8a9f;
+        }
+        .message-time {
+            font-size: 12px;
+            color: #666;
+            white-space: nowrap;
+            margin-left: auto;
+        }
+        .message-text {
+            font-size: 14px;
+            line-height: 1.5;
+            color: #b0c4de;
+            padding-left: 52px;
+            word-wrap: break-word;
+        }
+        .message-text::before {
+            content: "«";
+            color: #666;
+            opacity: 0.5;
+        }
+        .message-text::after {
+            content: "»";
+            color: #666;
+            opacity: 0.5;
+        }
+
         .hw-card { padding: 16px; border: 1px solid rgba(255,255,255,0.05); border-radius: 12px; margin-bottom: 12px; background: rgba(255,255,255,0.03); transition: background 0.3s, border-color 0.3s; }
         .hw-card .title { font-size: 18px; font-weight: 700; color: #ffffff; }
         .hw-card .meta { color: #888; font-size: 14px; margin: 4px 0; }
@@ -495,6 +598,9 @@
             .comment-input-wrap { flex-direction: column; }
             .comment-input-wrap button { width: 100%; }
             .chat-message .bubble { max-width: 85%; }
+            .message-text { padding-left: 0; margin-top: 6px; }
+            .message-header { flex-wrap: wrap; }
+            .message-time { margin-left: 0; width: 100%; padding-left: 52px; }
         }
     </style>
 </head>
@@ -655,14 +761,97 @@
                         </div>
                     </div>
 
+                    <!-- ===== СТРАНИЦА СООБЩЕНИЙ ===== -->
                     <div id="page-messages" class="dashboard-page" style="display:none;">
                         <div class="section-title">💬 Сообщения</div>
                         
-                        <div id="chatList">
+                        <div class="messages-container">
+                            <div class="messages-title">
+                                📩 Сообщения от учеников
+                                <span class="badge" id="messagesBadge">3</span>
+                            </div>
+
+                            <!-- Сообщение 1 -->
+                            <div class="message-card unread">
+                                <div class="message-header">
+                                    <div class="message-avatar blue">А</div>
+                                    <div class="message-student-info">
+                                        <span class="message-student-name">Алексей Г.</span>
+                                        <span class="message-student-class">· 8Б класс</span>
+                                    </div>
+                                    <span class="message-time">сегодня, 14:32</span>
+                                </div>
+                                <div class="message-text">
+                                    Здравствуйте! Не могу открыть файл с домашним заданием по физике. Ссылка не работает.
+                                </div>
+                            </div>
+
+                            <!-- Сообщение 2 -->
+                            <div class="message-card">
+                                <div class="message-header">
+                                    <div class="message-avatar pink">М</div>
+                                    <div class="message-student-info">
+                                        <span class="message-student-name">Мария С.</span>
+                                        <span class="message-student-class">· 8А класс</span>
+                                    </div>
+                                    <span class="message-time">вчера, 19:10</span>
+                                </div>
+                                <div class="message-text">
+                                    Когда будет проверена контрольная работа? Переживаю за результат.
+                                </div>
+                            </div>
+
+                            <!-- Сообщение 3 -->
+                            <div class="message-card">
+                                <div class="message-header">
+                                    <div class="message-avatar green">Д</div>
+                                    <div class="message-student-info">
+                                        <span class="message-student-name">Дмитрий К.</span>
+                                        <span class="message-student-class">· 8В класс</span>
+                                    </div>
+                                    <span class="message-time">вчера, 11:05</span>
+                                </div>
+                                <div class="message-text">
+                                    Можно ли сдать домашнее задание завтра? Болею, не успеваю сделать.
+                                </div>
+                            </div>
+
+                            <!-- Сообщение 4 -->
+                            <div class="message-card">
+                                <div class="message-header">
+                                    <div class="message-avatar orange">Е</div>
+                                    <div class="message-student-info">
+                                        <span class="message-student-name">Екатерина П.</span>
+                                        <span class="message-student-class">· 8А класс</span>
+                                    </div>
+                                    <span class="message-time">вчера, 09:42</span>
+                                </div>
+                                <div class="message-text">
+                                    Спасибо за подробное объяснение на уроке! Всё стало понятно.
+                                </div>
+                            </div>
+
+                            <!-- Сообщение 5 -->
+                            <div class="message-card">
+                                <div class="message-header">
+                                    <div class="message-avatar purple">С</div>
+                                    <div class="message-student-info">
+                                        <span class="message-student-name">Сергей М.</span>
+                                        <span class="message-student-class">· 8Б класс</span>
+                                    </div>
+                                    <span class="message-time">позавчера, 16:20</span>
+                                </div>
+                                <div class="message-text">
+                                    Подскажите, пожалуйста, где можно посмотреть расписание консультаций?
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="chatList" style="display:none;">
                             <p style="color:#666;">Загрузка...</p>
                         </div>
                         
-                        <div class="chat-window" id="chatWindow">
+                        <div class="chat-window" id="chatWindow" style="display:none;">
                             <div class="header">
                                 <h4 id="chatPartnerName">Чат</h4>
                                 <button class="admin-btn" onclick="closeChat()">✕ Закрыть</button>
@@ -1197,7 +1386,7 @@
                 document.querySelectorAll('.profile, .contacts, .login-section, #dashboard, #adminPanel, #sectionPage').forEach(function(el) {
                     if (el) { el.style.background = 'rgba(255,255,255,0.8)'; el.style.borderColor = 'rgba(0,0,0,0.05)'; }
                 });
-                document.querySelectorAll('.hw-card, .video-item, .stat-card, .section-progress, .deadline-card, .settings-group').forEach(function(el) {
+                document.querySelectorAll('.hw-card, .video-item, .stat-card, .section-progress, .deadline-card, .settings-group, .message-card').forEach(function(el) {
                     if (el) { el.style.background = 'rgba(255,255,255,0.5)'; el.style.borderColor = 'rgba(0,0,0,0.05)'; }
                 });
             } else {
@@ -1206,7 +1395,7 @@
                 document.querySelectorAll('.profile, .contacts, .login-section, #dashboard, #adminPanel, #sectionPage').forEach(function(el) {
                     if (el) { el.style.background = 'rgba(255,255,255,0.05)'; el.style.borderColor = 'rgba(255,255,255,0.1)'; }
                 });
-                document.querySelectorAll('.hw-card, .video-item, .stat-card, .section-progress, .deadline-card, .settings-group').forEach(function(el) {
+                document.querySelectorAll('.hw-card, .video-item, .stat-card, .section-progress, .deadline-card, .settings-group, .message-card').forEach(function(el) {
                     if (el) { el.style.background = 'rgba(255,255,255,0.03)'; el.style.borderColor = 'rgba(255,255,255,0.05)'; }
                 });
             }
