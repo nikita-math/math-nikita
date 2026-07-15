@@ -829,6 +829,41 @@
         var daysArray = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'];
 
         // ==========================================
+        // ДЕЛАЕМ ФУНКЦИИ ГЛОБАЛЬНЫМИ ДЛЯ АДМИНКИ
+        // ==========================================
+
+        // Сохраняем ссылки на функции в window объект
+        // Это нужно чтобы onclick в HTML работал
+        window.addStudent = addStudent;
+        window.addMyStudent = addMyStudent;
+        window.addVideo = addVideo;
+        window.addTask = addTask;
+        window.addScheduleRow = addScheduleRow;
+        window.loadAllHomeworks = loadAllHomeworks;
+        window.loadScheduleAdmin = loadScheduleAdmin;
+        window.showAssignmentModal = showAssignmentModal;
+        window.closeAssignmentModal = closeAssignmentModal;
+        window.submitAssignment = submitAssignment;
+        window.deleteStudent = deleteStudent;
+        window.deleteMyStudent = deleteMyStudent;
+        window.deleteVideo = deleteVideo;
+        window.deleteTask = deleteTask;
+        window.toggleMyStudentStatus = toggleMyStudentStatus;
+        window.toggleHomeworkStatus = toggleHomeworkStatus;
+        window.deleteHomework = deleteHomework;
+        window.uploadAvatar = uploadAvatar;
+        window.deleteAvatar = deleteAvatar;
+        window.saveTeacherInfo = saveTeacherInfo;
+        window.openSection = openSection;
+        window.switchDashboardPage = switchDashboardPage;
+        window.switchHomeworkTab = switchHomeworkTab;
+        window.loadTeacherSettings = loadTeacherSettings;
+        window.loadSettings = loadSettings;
+        window.saveProfileSettings = saveProfileSettings;
+        window.changePassword = changePassword;
+        window.logout = logout;
+
+        // ==========================================
         // 1. НАСТРОЙКИ - АВАТАР И ИНФОРМАЦИЯ
         // ==========================================
 
