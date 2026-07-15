@@ -1329,7 +1329,7 @@
                         var v = videos[vIdx];
                         var isFile = v.is_file || false;
                         var isVk = v.is_vk || false;
-                        var videoUrl = v.video_url || v.youtube_url || '#';
+                        var videoUrl = v.youtube_url || '#';
                         var title = v.title || 'Видео';
                         var homework = v.homework || '';
                         html += '<div class="video-item">';
@@ -2475,7 +2475,7 @@
             container.innerHTML = '⏳ Загрузка...';
             supabase
                 .from('videos')
-                .select('id, title, video_url, youtube_url, section_id, homework, is_file, is_vk, video_sections(name, order_num)')
+                .select('id, title, youtube_url, section_id, homework, is_file, is_vk, video_sections(name, order_num)')
                 .order('created_at', { ascending: false })
                 .then(function(response) {
                     if (response.error) { container.innerHTML = '❌ Ошибка: ' + response.error.message; return; }
@@ -2486,7 +2486,7 @@
                         var v = data[i];
                         var sectionName = v.video_sections ? v.video_sections.name : '—';
                         var sectionNum = v.video_sections ? v.video_sections.order_num : '—';
-                        var link = v.is_file ? (v.video_url || '—') : (v.youtube_url || '—');
+                        var link = v.is_file ? (v.youtube_url || '—') : (v.youtube_url || '—');
                         var type = v.is_file ? '📁 Файл' : (v.is_vk ? '📱 ВК' : '🔗 YouTube');
                         html += '<tr><td>' + v.title + '</td><td>' + sectionName + '</td><td style="color:#f5a623; font-weight:700;">' + sectionNum + '</td><td>' + (link !== '—' ? '<a href="' + link + '" target="_blank">Смотреть</a>' : '—') + '</td><td>' + (v.homework || '—') + '</td><td>' + type + '</td><td><button class="admin-btn danger" onclick="window.deleteVideo(\'' + v.id + '\')">🗑</button></td></tr>';
                     }
