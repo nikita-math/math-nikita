@@ -53,6 +53,7 @@
         .hw-card { padding: 16px; border: 1px solid rgba(255,255,255,0.05); border-radius: 12px; margin-bottom: 12px; background: rgba(255,255,255,0.03); transition: background 0.3s, border-color 0.3s; }
         .hw-card .title { font-size: 18px; font-weight: 700; color: #ffffff; }
         .hw-card .meta { color: #888; font-size: 14px; margin: 4px 0; }
+        .hw-card .meta.comment { color: #f5a623; border-left: 3px solid #f5a623; padding-left: 10px; margin-top: 6px; }
         .hw-card .status.done { color: #2ecc71; }
         .hw-card .status.pending { color: #f39c12; }
         .hw-card .btn-start { background: #27ae60; color: white; border: none; padding: 6px 16px; border-radius: 20px; cursor: pointer; margin-top: 8px; }
@@ -258,6 +259,8 @@
         .modal-content label { color: #b0c4de; display: block; margin-bottom: 8px; }
         .modal-content input, .modal-content select { width: 100%; padding: 12px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; color: #fff; font-size: 16px; margin-bottom: 15px; font-family: Arial, sans-serif; }
         .modal-content input:focus, .modal-content select:focus { border-color: #667eea; outline: none; }
+        .modal-content textarea { width: 100%; padding: 12px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; color: #fff; font-size: 14px; font-family: Arial, sans-serif; resize: vertical; }
+        .modal-content textarea:focus { border-color: #667eea; outline: none; }
         .modal-content .preview-text { margin-top: -10px; margin-bottom: 15px; font-size: 14px; color: #666; }
         .modal-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 10px; }
         .modal-actions button { padding: 12px 30px; border: none; border-radius: 12px; color: #fff; font-weight: 700; cursor: pointer; transition: 0.3s; font-family: Arial, sans-serif; font-size: 14px; }
@@ -742,6 +745,7 @@
     <div class="modal-overlay" id="assignmentModal">
         <div class="modal-content">
             <h3>📝 Выдать домашнее задание</h3>
+            
             <div>
                 <label>Кому выдаем:</label>
                 <select id="assignmentTarget">
@@ -749,25 +753,36 @@
                     <option value="all">👥 Всем ученикам</option>
                 </select>
             </div>
+            
             <div id="studentSelectWrapper">
                 <label>Выберите ученика:</label>
                 <select id="studentSelect">
                     <option value="">Загрузка...</option>
                 </select>
             </div>
+            
             <div>
                 <label>Номер раздела (для привязки к видео):</label>
                 <input type="number" id="sectionNumber" min="1" max="30" placeholder="Например: 1, 2, 3...">
                 <div class="preview-text" id="sectionPreview">Введите номер для просмотра раздела</div>
             </div>
+            
             <div>
                 <label>Название ДЗ:</label>
                 <input type="text" id="homeworkTitle" placeholder="Например: ДЗ к уроку 1">
             </div>
+
+            <!-- ===== НОВОЕ ПОЛЕ: КОММЕНТАРИЙ К ДЗ ===== -->
+            <div>
+                <label>📝 Комментарий к ДЗ (для ученика):</label>
+                <textarea id="homeworkComment" rows="3" placeholder="Например: сделать номера 1, 3, 5, 7..."></textarea>
+            </div>
+            
             <div>
                 <label>📎 PDF файл с ДЗ:</label>
                 <input type="file" id="pdfFile" accept=".pdf">
             </div>
+            
             <div>
                 <label>Срок выполнения:</label>
                 <div class="deadline-row">
@@ -778,6 +793,7 @@
                     </label>
                 </div>
             </div>
+            
             <div class="modal-actions">
                 <button class="cancel-btn" onclick="window.closeAssignmentModal()">Отмена</button>
                 <button class="submit-btn" onclick="window.submitAssignment()">✅ Выдать ДЗ</button>
@@ -1401,10 +1417,16 @@
                         }
                         var deadlineText = hw.deadline ? '📅 Срок: ' + hw.deadline : '📅 Без срока';
                         
-                        // ===== КОММЕНТАРИИ =====
+                        // ===== КОММЕНТАРИЙ К ДЗ =====
+                        var commentHtml = '';
+                        if (hw.comment) {
+                            commentHtml = '<div class="meta comment">📝 ' + hw.comment + '</div>';
+                        }
+                        
+                        // ===== КОММЕНТАРИИ (обсуждение) =====
                         var commentsHtml = `
                             <div class="comments-section">
-                                <div class="comments-title">💬 Комментарии</div>
+                                <div class="comments-title">💬 Обсуждение</div>
                                 <div id="comments_${hw.id}">
                                     <p style="color:#555; font-size:13px;">Загрузка...</p>
                                 </div>
@@ -1415,7 +1437,7 @@
                             </div>
                         `;
                         
-                        html += '<div class="hw-card"><div class="title">' + hw.title + '</div>' + sectionInfo + '<div class="meta">' + deadlineText + '</div><div class="status ' + statusClass + '">' + statusText + '</div>' + btnHtml + fileHtml + videoBlock + tasksHtml + commentsHtml + '</div>';
+                        html += '<div class="hw-card"><div class="title">' + hw.title + '</div>' + sectionInfo + '<div class="meta">' + deadlineText + '</div>' + commentHtml + '<div class="status ' + statusClass + '">' + statusText + '</div>' + btnHtml + fileHtml + videoBlock + tasksHtml + commentsHtml + '</div>';
                         
                         // Загружаем комментарии для этого ДЗ
                         setTimeout(function() {
@@ -1647,6 +1669,7 @@
             document.getElementById('assignmentModal').classList.remove('active');
             document.getElementById('sectionNumber').value = '';
             document.getElementById('homeworkTitle').value = '';
+            document.getElementById('homeworkComment').value = '';
             document.getElementById('pdfFile').value = '';
             document.getElementById('deadline').value = '';
             document.getElementById('noDeadline').checked = false;
@@ -1712,18 +1735,22 @@
             var studentId = document.getElementById('studentSelect').value;
             var sectionNumber = document.getElementById('sectionNumber').value;
             var title = document.getElementById('homeworkTitle').value.trim();
+            var comment = document.getElementById('homeworkComment').value.trim();
             var fileInput = document.getElementById('pdfFile');
             var deadline = document.getElementById('deadline').value;
             var noDeadline = document.getElementById('noDeadline').checked;
+            
             if (!title) { alert('❌ Введите название ДЗ'); return; }
             if (!sectionNumber) { alert('❌ Введите номер раздела'); return; }
             if (target === 'single' && !studentId) { alert('❌ Выберите ученика'); return; }
+            
             var sectionData;
             try {
                 var result = await supabase.from('video_sections').select('id, name').eq('order_num', parseInt(sectionNumber)).single();
                 if (result.error) { alert('❌ Раздел с номером ' + sectionNumber + ' не найден'); return; }
                 sectionData = result.data;
             } catch (err) { alert('❌ Ошибка поиска раздела: ' + err.message); return; }
+            
             var pdfUrl = null;
             if (fileInput.files.length > 0) {
                 var file = fileInput.files[0];
@@ -1736,6 +1763,7 @@
                     pdfUrl = urlData.data.publicUrl;
                 } catch (err) { alert('❌ Ошибка загрузки PDF: ' + err.message); return; }
             }
+            
             var students = [];
             if (target === 'all') {
                 var studentResult = await supabase.from('students').select('id');
@@ -1745,16 +1773,28 @@
                 students = [{ id: studentId }];
             }
             if (students.length === 0) { alert('❌ Нет учеников для выдачи ДЗ'); return; }
+            
             var finalDeadline = noDeadline ? null : (deadline || null);
+            
             var homeworks = students.map(function(s) {
-                return { title: title, student_id: s.id, section_id: sectionData.id, status: 'pending', deadline: finalDeadline, file_url: pdfUrl, video_link: null };
+                return { 
+                    title: title, 
+                    student_id: s.id, 
+                    section_id: sectionData.id, 
+                    status: 'pending', 
+                    deadline: finalDeadline, 
+                    file_url: pdfUrl, 
+                    video_link: null,
+                    comment: comment || null
+                };
             });
+            
             try {
                 var insertResult = await supabase.from('homeworks').insert(homeworks);
                 if (insertResult.error) throw insertResult.error;
                 var count = homeworks.length;
                 var deadlineText = noDeadline ? 'без дедлайна' : (deadline || 'не указан');
-                alert('✅ ДЗ "' + title + '" выдано ' + count + ' ученикам в раздел "' + sectionData.name + '"!\n📅 Срок: ' + deadlineText);
+                alert('✅ ДЗ "' + title + '" выдано ' + count + ' ученикам в раздел "' + sectionData.name + '"!\n📅 Срок: ' + deadlineText + (comment ? '\n📝 Комментарий: ' + comment : ''));
                 window.closeAssignmentModal();
                 window.loadAllHomeworks();
                 if (currentUser) {
@@ -1940,14 +1980,15 @@
                         .then(function(studentsRes) {
                             var studentsMap = {};
                             if (studentsRes.data) { studentsRes.data.forEach(function(s) { studentsMap[s.id] = s.name; }); }
-                            var html = '<table class="admin-table"><tr><th>Название</th><th>Ученик</th><th>Раздел</th><th>№</th><th>Статус</th><th>Срок</th><th>PDF</th><th>Действия</th></tr>';
+                            var html = '<table class="admin-table"><tr><th>Название</th><th>Ученик</th><th>Раздел</th><th>№</th><th>Статус</th><th>Срок</th><th>PDF</th><th>Комментарий</th><th>Действия</th></tr>';
                             for (var i = 0; i < data.length; i++) {
                                 var h = data[i];
                                 var studentName = studentsMap[h.student_id] || 'Неизвестный ученик (ID: ' + h.student_id + ')';
                                 var sectionName = h.video_sections ? h.video_sections.name : '—';
                                 var sectionNum = h.video_sections ? h.video_sections.order_num : '—';
                                 var statusText = h.status === 'done' ? '✅ Выполнено' : '⏳ В процессе';
-                                html += '<tr><td>' + h.title + '</td><td>' + studentName + '</td><td>' + sectionName + '</td><td style="color:#f5a623; font-weight:700;">' + sectionNum + '</td><td>' + statusText + '</td><td>' + (h.deadline || 'Без срока') + '</td><td>' + (h.file_url ? '<a href="' + h.file_url + '" target="_blank" style="color:#88ccff;">📄 PDF</a>' : '—') + '</td><td><button class="admin-btn" onclick="window.toggleHomeworkStatus(\'' + h.id + '\', \'' + h.status + '\')">' + (h.status === 'done' ? '↩ Вернуть' : '✅ Отметить') + '</button> <button class="admin-btn danger" onclick="window.deleteHomework(\'' + h.id + '\')">🗑</button></td></tr>';
+                                var commentPreview = h.comment ? (h.comment.length > 30 ? h.comment.substring(0, 30) + '...' : h.comment) : '—';
+                                html += '<tr><td>' + h.title + '</td><td>' + studentName + '</td><td>' + sectionName + '</td><td style="color:#f5a623; font-weight:700;">' + sectionNum + '</td><td>' + statusText + '</td><td>' + (h.deadline || 'Без срока') + '</td><td>' + (h.file_url ? '<a href="' + h.file_url + '" target="_blank" style="color:#88ccff;">📄 PDF</a>' : '—') + '</td><td style="color:#f5a623; font-size:13px;">' + commentPreview + '</td><td><button class="admin-btn" onclick="window.toggleHomeworkStatus(\'' + h.id + '\', \'' + h.status + '\')">' + (h.status === 'done' ? '↩ Вернуть' : '✅ Отметить') + '</button> <button class="admin-btn danger" onclick="window.deleteHomework(\'' + h.id + '\')">🗑</button></td></tr>';
                             }
                             html += '</table>';
                             container.innerHTML = html;
