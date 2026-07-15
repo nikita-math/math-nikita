@@ -417,26 +417,26 @@
         <div id="dashboard">
             <div class="header">
                 <h3 id="welcomeMessage">👋 Привет!</h3>
-                <button class="logout-btn" onclick="logout()">Выйти</button>
+                <button class="logout-btn" onclick="window.logout()">Выйти</button>
             </div>
 
             <div class="dashboard-layout">
                 <div class="dashboard-sidebar">
-                    <button class="active" data-page="overview" onclick="switchDashboardPage('overview')">
+                    <button class="active" data-page="overview" onclick="window.switchDashboardPage('overview')">
                         🏠 Обзор
                     </button>
-                    <button data-page="homeworks" onclick="switchDashboardPage('homeworks')">
+                    <button data-page="homeworks" onclick="window.switchDashboardPage('homeworks')">
                         📚 Мои ДЗ
                         <span class="badge" id="hwBadge">0</span>
                     </button>
-                    <button data-page="stats" onclick="switchDashboardPage('stats')">
+                    <button data-page="stats" onclick="window.switchDashboardPage('stats')">
                         📊 Статистика
                     </button>
-                    <button data-page="messages" onclick="switchDashboardPage('messages')">
+                    <button data-page="messages" onclick="window.switchDashboardPage('messages')">
                         💬 Сообщения
                         <span class="badge" id="msgBadge">0</span>
                     </button>
-                    <button data-page="settings" onclick="switchDashboardPage('settings')">
+                    <button data-page="settings" onclick="window.switchDashboardPage('settings')">
                         ⚙️ Настройки
                     </button>
                 </div>
@@ -561,7 +561,7 @@
                                     <input type="text" id="settingsTelegram" placeholder="@username">
                                 </div>
                             </div>
-                            <button class="admin-btn success" onclick="saveProfileSettings()" style="margin-top:16px;">💾 Сохранить</button>
+                            <button class="admin-btn success" onclick="window.saveProfileSettings()" style="margin-top:16px;">💾 Сохранить</button>
                         </div>
 
                         <!-- Уведомления -->
@@ -611,12 +611,12 @@
                                     <input type="password" id="settingsConfirmPassword" placeholder="Подтвердите новый пароль">
                                 </div>
                             </div>
-                            <button class="admin-btn success" onclick="changePassword()" style="margin-top:16px;">🔑 Сменить пароль</button>
+                            <button class="admin-btn success" onclick="window.changePassword()" style="margin-top:16px;">🔑 Сменить пароль</button>
                         </div>
 
                         <!-- Выход -->
                         <div>
-                            <button class="admin-btn danger" onclick="logout()" style="width:100%; padding:12px;">🚪 Выйти из аккаунта</button>
+                            <button class="admin-btn danger" onclick="window.logout()" style="width:100%; padding:12px;">🚪 Выйти из аккаунта</button>
                         </div>
                     </div>
                 </div>
@@ -648,37 +648,37 @@
         <div id="adminPanel">
             <h3>🔧 Панель управления</h3>
             <div class="admin-tabs">
-                <button class="active" data-tab="students">📋 Ученики (вход)</button>
-                <button data-tab="my-students">📋 Мои ученики</button>
-                <button data-tab="homeworks">📝 ДЗ</button>
-                <button data-tab="videos">🎥 Видео</button>
-                <button data-tab="schedule">📅 Расписание</button>
-                <button data-tab="stats">📊 Статистика</button>
-                <button data-tab="settings">⚙️ Настройки</button>
+                <button class="active" data-tab="students" onclick="window.switchAdminTab('students')">📋 Ученики (вход)</button>
+                <button data-tab="my-students" onclick="window.switchAdminTab('my-students')">📋 Мои ученики</button>
+                <button data-tab="homeworks" onclick="window.switchAdminTab('homeworks')">📝 ДЗ</button>
+                <button data-tab="videos" onclick="window.switchAdminTab('videos')">🎥 Видео</button>
+                <button data-tab="schedule" onclick="window.switchAdminTab('schedule')">📅 Расписание</button>
+                <button data-tab="stats" onclick="window.switchAdminTab('stats')">📊 Статистика</button>
+                <button data-tab="settings" onclick="window.switchAdminTab('settings')">⚙️ Настройки</button>
             </div>
             <div class="admin-content active" id="tab-students">
-                <button class="admin-btn success" onclick="addStudent()">➕ Добавить ученика</button>
+                <button class="admin-btn success" onclick="window.addStudent()">➕ Добавить ученика</button>
                 <div id="studentsList" style="margin-top:15px;">Загрузка...</div>
             </div>
             <div class="admin-content" id="tab-my-students">
-                <button class="admin-btn success" onclick="addMyStudent()">➕ Добавить ученика</button>
+                <button class="admin-btn success" onclick="window.addMyStudent()">➕ Добавить ученика</button>
                 <div id="myStudentsList" style="margin-top:15px;">Загрузка...</div>
             </div>
             <div class="admin-content" id="tab-homeworks">
                 <div class="homework-controls">
-                    <button class="admin-btn success" onclick="showAssignmentModal()">➕ Выдать ДЗ</button>
-                    <button class="admin-btn" onclick="loadAllHomeworks()">🔄 Обновить</button>
+                    <button class="admin-btn success" onclick="window.showAssignmentModal()">➕ Выдать ДЗ</button>
+                    <button class="admin-btn" onclick="window.loadAllHomeworks()">🔄 Обновить</button>
                 </div>
                 <div id="homeworksList" style="margin-top:15px;">Загрузка...</div>
             </div>
             <div class="admin-content" id="tab-videos">
-                <button class="admin-btn success" onclick="addVideo()">➕ Добавить видео</button>
+                <button class="admin-btn success" onclick="window.addVideo()">➕ Добавить видео</button>
                 <div id="videosList" style="margin-top:15px;">Загрузка...</div>
             </div>
             <div class="admin-content" id="tab-schedule">
                 <div class="schedule-actions">
-                    <button class="admin-btn success" onclick="addScheduleRow()">➕ Добавить строку</button>
-                    <button class="admin-btn" onclick="loadScheduleAdmin()">🔄 Обновить</button>
+                    <button class="admin-btn success" onclick="window.addScheduleRow()">➕ Добавить строку</button>
+                    <button class="admin-btn" onclick="window.loadScheduleAdmin()">🔄 Обновить</button>
                 </div>
                 <div id="scheduleList" style="margin-top:15px;">Загрузка...</div>
             </div>
@@ -696,8 +696,8 @@
                             </div>
                             <input type="file" id="avatarUpload" accept="image/*">
                             <div class="btn-group">
-                                <button class="admin-btn success" onclick="uploadAvatar()">📤 Загрузить</button>
-                                <button class="admin-btn danger" onclick="deleteAvatar()">🗑 Удалить</button>
+                                <button class="admin-btn success" onclick="window.uploadAvatar()">📤 Загрузить</button>
+                                <button class="admin-btn danger" onclick="window.deleteAvatar()">🗑 Удалить</button>
                             </div>
                         </div>
                     </div>
@@ -712,7 +712,7 @@
                                 <label>Описание:</label>
                                 <textarea id="teacherDesc" rows="4">Учусь в Московском энергетическом институте (МЭИ) на направлении «Ядерная физика». Готовлю учеников к ЕГЭ по профильной математике с 2025 года.</textarea>
                             </div>
-                            <button class="admin-btn success" onclick="saveTeacherInfo()" style="width: fit-content;">💾 Сохранить</button>
+                            <button class="admin-btn success" onclick="window.saveTeacherInfo()" style="width: fit-content;">💾 Сохранить</button>
                         </div>
                     </div>
                 </div>
@@ -762,8 +762,8 @@
                 </div>
             </div>
             <div class="modal-actions">
-                <button class="cancel-btn" onclick="closeAssignmentModal()">Отмена</button>
-                <button class="submit-btn" onclick="submitAssignment()">✅ Выдать ДЗ</button>
+                <button class="cancel-btn" onclick="window.closeAssignmentModal()">Отмена</button>
+                <button class="submit-btn" onclick="window.submitAssignment()">✅ Выдать ДЗ</button>
             </div>
         </div>
     </div>
@@ -824,104 +824,46 @@
         var daysArray = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'];
 
         // ==========================================
-        // ДЕЛАЕМ ВСЕ ФУНКЦИИ ГЛОБАЛЬНЫМИ
+        // ВСЕ ФУНКЦИИ ЧЕРЕЗ window
         // ==========================================
-        
-        // Объявляем функции заранее, чтобы они были доступны
-        function addStudent() {}
-        function addMyStudent() {}
-        function addVideo() {}
-        function addScheduleRow() {}
-        function loadAllHomeworks() {}
-        function loadScheduleAdmin() {}
-        function showAssignmentModal() {}
-        function closeAssignmentModal() {}
-        function submitAssignment() {}
-        function deleteStudent() {}
-        function deleteMyStudent() {}
-        function deleteVideo() {}
-        function toggleMyStudentStatus() {}
-        function toggleHomeworkStatus() {}
-        function deleteHomework() {}
-        function uploadAvatar() {}
-        function deleteAvatar() {}
-        function saveTeacherInfo() {}
-        function openSection() {}
-        function switchDashboardPage() {}
-        function switchHomeworkTab() {}
-        function loadTeacherSettings() {}
-        function loadSettings() {}
-        function saveProfileSettings() {}
-        function changePassword() {}
-        function logout() {}
 
-        // Теперь присваиваем их в window
-        window.addStudent = addStudent;
-        window.addMyStudent = addMyStudent;
-        window.addVideo = addVideo;
-        window.addScheduleRow = addScheduleRow;
-        window.loadAllHomeworks = loadAllHomeworks;
-        window.loadScheduleAdmin = loadScheduleAdmin;
-        window.showAssignmentModal = showAssignmentModal;
-        window.closeAssignmentModal = closeAssignmentModal;
-        window.submitAssignment = submitAssignment;
-        window.deleteStudent = deleteStudent;
-        window.deleteMyStudent = deleteMyStudent;
-        window.deleteVideo = deleteVideo;
-        window.toggleMyStudentStatus = toggleMyStudentStatus;
-        window.toggleHomeworkStatus = toggleHomeworkStatus;
-        window.deleteHomework = deleteHomework;
-        window.uploadAvatar = uploadAvatar;
-        window.deleteAvatar = deleteAvatar;
-        window.saveTeacherInfo = saveTeacherInfo;
-        window.openSection = openSection;
-        window.switchDashboardPage = switchDashboardPage;
-        window.switchHomeworkTab = switchHomeworkTab;
-        window.loadTeacherSettings = loadTeacherSettings;
-        window.loadSettings = loadSettings;
-        window.saveProfileSettings = saveProfileSettings;
-        window.changePassword = changePassword;
-        window.logout = logout;
+        window.switchAdminTab = function(tab) {
+            document.querySelectorAll('.admin-tabs button').forEach(function(btn) {
+                btn.classList.remove('active');
+            });
+            var targetBtn = document.querySelector('.admin-tabs button[data-tab="' + tab + '"]');
+            if (targetBtn) targetBtn.classList.add('active');
+            document.querySelectorAll('.admin-content').forEach(function(c) { c.classList.remove('active'); });
+            var targetContent = document.getElementById('tab-' + tab);
+            if (targetContent) targetContent.classList.add('active');
+            
+            if (tab === 'students') window.loadStudents();
+            else if (tab === 'my-students') window.loadMyStudents();
+            else if (tab === 'homeworks') window.loadAllHomeworks();
+            else if (tab === 'videos') window.loadVideosAdmin();
+            else if (tab === 'schedule') window.loadScheduleAdmin();
+            else if (tab === 'stats') window.loadStats();
+            else if (tab === 'settings') window.loadTeacherSettings();
+        };
+
+        window.logout = function() {
+            if (confirm('Вы уверены, что хотите выйти?')) {
+                document.getElementById('profileBlock').style.display = 'flex';
+                document.getElementById('contactsBlock').style.display = 'block';
+                document.getElementById('loginSection').style.display = 'block';
+                document.getElementById('dashboard').style.display = 'none';
+                document.getElementById('adminPanel').style.display = 'none';
+                resultDiv.innerHTML = '';
+                resultDiv.className = '';
+                currentUser = null;
+            }
+        };
 
         // ==========================================
         // 1. НАСТРОЙКИ - АВАТАР И ИНФОРМАЦИЯ
         // ==========================================
 
-        function updateAvatarDisplay(imageData) {
-            var avatarEmoji = document.getElementById('avatarEmoji');
-            var avatarImg = document.getElementById('avatarImage');
-            if (avatarEmoji) avatarEmoji.style.display = 'none';
-            if (avatarImg) {
-                avatarImg.style.display = 'block';
-                avatarImg.src = imageData;
-            }
-            var profileEmoji = document.getElementById('profileAvatarEmoji');
-            var profileImg = document.getElementById('profileAvatarImg');
-            if (profileEmoji) profileEmoji.style.display = 'none';
-            if (profileImg) {
-                profileImg.style.display = 'block';
-                profileImg.src = imageData;
-            }
-        }
-
-        function resetAvatarDisplay() {
-            var avatarEmoji = document.getElementById('avatarEmoji');
-            var avatarImg = document.getElementById('avatarImage');
-            if (avatarEmoji) avatarEmoji.style.display = 'block';
-            if (avatarImg) {
-                avatarImg.style.display = 'none';
-                avatarImg.src = '';
-            }
-            var profileEmoji = document.getElementById('profileAvatarEmoji');
-            var profileImg = document.getElementById('profileAvatarImg');
-            if (profileEmoji) profileEmoji.style.display = 'block';
-            if (profileImg) {
-                profileImg.style.display = 'none';
-                profileImg.src = '';
-            }
-        }
-
-        function uploadAvatar() {
+        window.uploadAvatar = function() {
             var fileInput = document.getElementById('avatarUpload');
             var file = fileInput.files[0];
             if (!file) { alert('❌ Выберите файл'); return; }
@@ -954,33 +896,55 @@
                     try {
                         localStorage.setItem('teacher_avatar', imageData);
                     } catch (e) {
-                        alert('❌ Не удалось сохранить изображение. Попробуйте файл меньшего размера.');
+                        alert('❌ Не удалось сохранить изображение.');
                         return;
                     }
-                    updateAvatarDisplay(imageData);
+                    window.updateAvatarDisplay(imageData);
                     alert('✅ Фото загружено!');
                 };
                 img.src = e.target.result;
             };
             reader.readAsDataURL(file);
-        }
+        };
 
-        function deleteAvatar() {
+        window.deleteAvatar = function() {
             if (!confirm('Удалить фото?')) return;
             localStorage.removeItem('teacher_avatar');
             document.getElementById('avatarUpload').value = '';
-            resetAvatarDisplay();
+            window.resetAvatarDisplay();
             alert('✅ Фото удалено');
-        }
+        };
 
-        function loadTeacherSettings() {
+        window.updateAvatarDisplay = function(imageData) {
+            var avatarEmoji = document.getElementById('avatarEmoji');
+            var avatarImg = document.getElementById('avatarImage');
+            if (avatarEmoji) avatarEmoji.style.display = 'none';
+            if (avatarImg) { avatarImg.style.display = 'block'; avatarImg.src = imageData; }
+            var profileEmoji = document.getElementById('profileAvatarEmoji');
+            var profileImg = document.getElementById('profileAvatarImg');
+            if (profileEmoji) profileEmoji.style.display = 'none';
+            if (profileImg) { profileImg.style.display = 'block'; profileImg.src = imageData; }
+        };
+
+        window.resetAvatarDisplay = function() {
+            var avatarEmoji = document.getElementById('avatarEmoji');
+            var avatarImg = document.getElementById('avatarImage');
+            if (avatarEmoji) avatarEmoji.style.display = 'block';
+            if (avatarImg) { avatarImg.style.display = 'none'; avatarImg.src = ''; }
+            var profileEmoji = document.getElementById('profileAvatarEmoji');
+            var profileImg = document.getElementById('profileAvatarImg');
+            if (profileEmoji) profileEmoji.style.display = 'block';
+            if (profileImg) { profileImg.style.display = 'none'; profileImg.src = ''; }
+        };
+
+        window.loadTeacherSettings = function() {
             var savedAvatar = localStorage.getItem('teacher_avatar');
             var savedName = localStorage.getItem('teacher_name');
             var savedDesc = localStorage.getItem('teacher_desc');
             if (savedAvatar && savedAvatar.length > 100) {
-                updateAvatarDisplay(savedAvatar);
+                window.updateAvatarDisplay(savedAvatar);
             } else {
-                resetAvatarDisplay();
+                window.resetAvatarDisplay();
             }
             if (savedName) {
                 document.getElementById('teacherName').value = savedName;
@@ -990,9 +954,9 @@
                 document.getElementById('teacherDesc').value = savedDesc;
                 document.getElementById('teacherDescDisplay').textContent = savedDesc;
             }
-        }
+        };
 
-        function saveTeacherInfo() {
+        window.saveTeacherInfo = function() {
             var name = document.getElementById('teacherName').value.trim();
             var desc = document.getElementById('teacherDesc').value.trim();
             if (!name) { alert('❌ Введите имя'); return; }
@@ -1001,13 +965,13 @@
             document.getElementById('teacherNameDisplay').textContent = name;
             document.getElementById('teacherDescDisplay').textContent = desc;
             alert('✅ Информация сохранена!');
-        }
+        };
 
         // ==========================================
         // 2. НАСТРОЙКИ - ПРОФИЛЬ
         // ==========================================
 
-        function loadSettings() {
+        window.loadSettings = function() {
             if (!currentUser) return;
             supabase
                 .from('students')
@@ -1015,10 +979,7 @@
                 .eq('id', currentUser.id)
                 .single()
                 .then(function(response) {
-                    if (response.error) {
-                        console.error('Ошибка загрузки настроек:', response.error);
-                        return;
-                    }
+                    if (response.error) { console.error('Ошибка загрузки настроек:', response.error); return; }
                     var user = response.data;
                     document.getElementById('settingsName').value = user.name || '';
                     document.getElementById('settingsEmail').value = user.email || '';
@@ -1033,9 +994,9 @@
                         document.getElementById('settingShowProgress').checked = settings.show_progress !== false;
                     }
                 });
-        }
+        };
 
-        function saveProfileSettings() {
+        window.saveProfileSettings = function() {
             if (!currentUser) { alert('❌ Вы не авторизованы'); return; }
             var name = document.getElementById('settingsName').value.trim();
             var phone = document.getElementById('settingsPhone').value.trim();
@@ -1053,81 +1014,42 @@
                 .update({ name: name, phone: phone, telegram: telegram, settings: settings })
                 .eq('id', currentUser.id)
                 .then(function(response) {
-                    if (response.error) {
-                        alert('❌ Ошибка сохранения: ' + response.error.message);
-                        return;
-                    }
+                    if (response.error) { alert('❌ Ошибка сохранения: ' + response.error.message); return; }
                     currentUser.name = name;
                     currentUser.phone = phone;
                     currentUser.telegram = telegram;
                     currentUser.settings = settings;
                     document.getElementById('teacherNameDisplay').textContent = name;
                     document.getElementById('welcomeMessage').textContent = '👋 Привет, ' + name + '!';
-                    applyTheme(settings.theme);
+                    window.applyTheme(settings.theme);
                     alert('✅ Настройки сохранены!');
                 })
-                .catch(function(err) {
-                    alert('❌ Ошибка: ' + err.message);
-                });
-        }
+                .catch(function(err) { alert('❌ Ошибка: ' + err.message); });
+        };
 
-        function applyTheme(theme) {
+        window.applyTheme = function(theme) {
             if (theme === 'light') {
                 document.body.style.background = '#f0f2f5';
                 document.body.style.color = '#1a1a2e';
                 document.querySelectorAll('.profile, .contacts, .login-section, #dashboard, #adminPanel, #sectionPage').forEach(function(el) {
-                    if (el) { el.style.background = 'rgba(255,255,255,0.8)';
-                        el.style.borderColor = 'rgba(0,0,0,0.05)'; }
+                    if (el) { el.style.background = 'rgba(255,255,255,0.8)'; el.style.borderColor = 'rgba(0,0,0,0.05)'; }
                 });
                 document.querySelectorAll('.hw-card, .video-item, .stat-card, .section-progress, .deadline-card, .settings-group').forEach(function(el) {
-                    if (el) { el.style.background = 'rgba(255,255,255,0.5)';
-                        el.style.borderColor = 'rgba(0,0,0,0.05)'; }
-                });
-                document.querySelectorAll('.dashboard-sidebar button').forEach(function(el) {
-                    if (el) { el.style.background = 'rgba(0,0,0,0.03)';
-                        el.style.borderColor = 'rgba(0,0,0,0.05)'; }
-                });
-                document.querySelectorAll('.settings-group input').forEach(function(el) {
-                    if (el) { el.style.background = 'rgba(0,0,0,0.05)';
-                        el.style.borderColor = 'rgba(0,0,0,0.08)';
-                        el.style.color = '#1a1a2e'; }
-                });
-                document.querySelectorAll('.settings-group label').forEach(function(el) {
-                    if (el) { el.style.color = '#666'; }
-                });
-                document.querySelectorAll('.settings-group h4').forEach(function(el) {
-                    if (el) { el.style.color = '#764ba2'; }
+                    if (el) { el.style.background = 'rgba(255,255,255,0.5)'; el.style.borderColor = 'rgba(0,0,0,0.05)'; }
                 });
             } else {
                 document.body.style.background = '#0b0e1a';
                 document.body.style.color = '#ffffff';
                 document.querySelectorAll('.profile, .contacts, .login-section, #dashboard, #adminPanel, #sectionPage').forEach(function(el) {
-                    if (el) { el.style.background = 'rgba(255,255,255,0.05)';
-                        el.style.borderColor = 'rgba(255,255,255,0.1)'; }
+                    if (el) { el.style.background = 'rgba(255,255,255,0.05)'; el.style.borderColor = 'rgba(255,255,255,0.1)'; }
                 });
                 document.querySelectorAll('.hw-card, .video-item, .stat-card, .section-progress, .deadline-card, .settings-group').forEach(function(el) {
-                    if (el) { el.style.background = 'rgba(255,255,255,0.03)';
-                        el.style.borderColor = 'rgba(255,255,255,0.05)'; }
-                });
-                document.querySelectorAll('.dashboard-sidebar button').forEach(function(el) {
-                    if (el) { el.style.background = 'rgba(255,255,255,0.03)';
-                        el.style.borderColor = 'rgba(255,255,255,0.05)'; }
-                });
-                document.querySelectorAll('.settings-group input').forEach(function(el) {
-                    if (el) { el.style.background = 'rgba(255,255,255,0.05)';
-                        el.style.borderColor = 'rgba(255,255,255,0.08)';
-                        el.style.color = '#ffffff'; }
-                });
-                document.querySelectorAll('.settings-group label').forEach(function(el) {
-                    if (el) { el.style.color = '#888'; }
-                });
-                document.querySelectorAll('.settings-group h4').forEach(function(el) {
-                    if (el) { el.style.color = '#f5a623'; }
+                    if (el) { el.style.background = 'rgba(255,255,255,0.03)'; el.style.borderColor = 'rgba(255,255,255,0.05)'; }
                 });
             }
-        }
+        };
 
-        function changePassword() {
+        window.changePassword = function() {
             if (!currentUser) { alert('❌ Вы не авторизованы'); return; }
             var oldPassword = document.getElementById('settingsOldPassword').value;
             var newPassword = document.getElementById('settingsNewPassword').value;
@@ -1158,28 +1080,13 @@
                         .catch(function(err) { alert('❌ Ошибка: ' + err.message); });
                 })
                 .catch(function(err) { alert('❌ Ошибка: ' + err.message); });
-        }
-
-        function logout() {
-            if (confirm('Вы уверены, что хотите выйти?')) {
-                document.getElementById('profileBlock').style.display = 'flex';
-                document.getElementById('contactsBlock').style.display = 'block';
-                document.getElementById('loginSection').style.display = 'block';
-                document.getElementById('dashboard').style.display = 'none';
-                document.getElementById('adminPanel').style.display = 'none';
-                resultDiv.innerHTML = '';
-                resultDiv.className = '';
-                currentUser = null;
-            }
-        }
+        };
 
         // ==========================================
         // 3. ОСТАЛЬНЫЕ ФУНКЦИИ
         // ==========================================
 
-        function loadTaskCatalog() { /* Заглушка */ }
-
-        function switchDashboardPage(page) {
+        window.switchDashboardPage = function(page) {
             currentDashboardPage = page;
             document.querySelectorAll('.dashboard-sidebar button').forEach(function(btn) {
                 btn.classList.remove('active');
@@ -1188,68 +1095,19 @@
             document.querySelectorAll('.dashboard-page').forEach(function(p) { p.style.display = 'none'; });
             var target = document.getElementById('page-' + page);
             if (target) target.style.display = 'block';
-            if (page === 'stats' && currentUser) loadStatistics(currentUser.id);
-            if (page === 'settings' && currentUser) loadSettings();
-        }
+            if (page === 'stats' && currentUser) window.loadStatistics(currentUser.id);
+            if (page === 'settings' && currentUser) window.loadSettings();
+        };
 
-        function loadDashboardOverview(studentId) {
-            supabase
-                .from('homeworks')
-                .select('*')
-                .eq('student_id', studentId)
-                .then(function(response) {
-                    if (response.error) return;
-                    var data = response.data || [];
-                    var total = data.length;
-                    var done = data.filter(function(h) { return h.status === 'done'; }).length;
-                    var pending = total - done;
-                    document.getElementById('statTotal').textContent = total;
-                    document.getElementById('statDone').textContent = done;
-                    document.getElementById('statPending').textContent = pending;
-                    var sectionsSet = new Set();
-                    data.forEach(function(h) { if (h.section_id) sectionsSet.add(h.section_id); });
-                    document.getElementById('statSections').textContent = sectionsSet.size;
-                    var pendingHw = data.filter(function(h) { return h.status !== 'done' && h.deadline; });
-                    pendingHw.sort(function(a, b) { return new Date(a.deadline) - new Date(b.deadline); });
-                    if (pendingHw.length > 0) {
-                        var next = pendingHw[0];
-                        document.getElementById('nextDeadlineTitle').textContent = next.title;
-                        var days = Math.ceil((new Date(next.deadline) - new Date()) / (1000 * 60 * 60 * 24));
-                        document.getElementById('nextDeadlineDays').textContent = days + ' дн.';
-                    } else {
-                        document.getElementById('nextDeadlineTitle').textContent = '🎉 Все задания выполнены!';
-                        document.getElementById('nextDeadlineDays').textContent = '✅';
-                    }
-                    var recent = data.slice(-3).reverse();
-                    var html = '';
-                    if (recent.length > 0) {
-                        html = '<div style="margin-top:12px;"><p style="color:#888; font-size:14px; margin-bottom:10px;">📋 Последние ДЗ</p>';
-                        recent.forEach(function(hw) {
-                            var status = hw.status === 'done' ? '✅' : '⏳';
-                            html += `
-                                <div style="display:flex; justify-content:space-between; padding:10px 14px; background:rgba(255,255,255,0.03); border-radius:10px; margin-bottom:6px; border:1px solid rgba(255,255,255,0.04);">
-                                    <span style="color:#b0c4de;">${hw.title}</span>
-                                    <span style="color:${hw.status === 'done' ? '#2ecc71' : '#f39c12'};">${status}</span>
-                                </div>
-                            `;
-                        });
-                        html += '</div>';
-                    } else {
-                        html = '<p style="color:#666; text-align:center; padding:20px;">📭 Нет ДЗ</p>';
-                    }
-                    document.getElementById('recentHomeworks').innerHTML = html;
-                });
-        }
-
-        function openSection(sectionId) {
+        window.openSection = function(sectionId) {
             mainContent.style.display = 'none';
             dashboard.style.display = 'none';
             adminPanel.style.display = 'none';
             sectionPage.classList.add('active');
-            loadSectionContent(sectionId);
-        }
+            window.loadSectionContent(sectionId);
+        };
 
-        async function loadSectionContent(sectionId) {
+        window.loadSectionContent = async function(sectionId) {
             var content = document.getElementById('sectionContent');
             content.innerHTML = '<div class="loading">⏳ Загрузка...</div>';
             try {
@@ -1271,10 +1129,10 @@
                         var homework = v.homework || '';
                         html += '<div class="video-item">';
                         if (isFile && videoUrl && videoUrl !== '#') {
-                            html += `<div class="video-player-wrapper"><video controls><source src="${videoUrl}" type="video/mp4">Ваш браузер не поддерживает видео.</video></div>`;
+                            html += '<div class="video-player-wrapper"><video controls><source src="' + videoUrl + '" type="video/mp4">Ваш браузер не поддерживает видео.</video></div>';
                         } else if (videoUrl && videoUrl !== '#' && videoUrl.includes('youtube.com')) {
                             var embedUrl = videoUrl.replace('watch?v=', 'embed/').replace('youtu.be/', 'youtube.com/embed/');
-                            html += `<div class="video-player-wrapper"><iframe src="${embedUrl}" allowfullscreen></iframe></div>`;
+                            html += '<div class="video-player-wrapper"><iframe src="' + embedUrl + '" allowfullscreen></iframe></div>';
                         } else if (isVk && videoUrl && videoUrl !== '#') {
                             var vkEmbed = videoUrl;
                             if (videoUrl.includes('vk.com/video')) {
@@ -1285,18 +1143,16 @@
                                     vkEmbed = 'https://vk.com/video_ext.php?oid=' + ids[0] + '&id=' + ids[1] + '&hash=' + Date.now();
                                 }
                             }
-                            html += `<div class="video-player-wrapper"><iframe src="${vkEmbed}" allowfullscreen></iframe></div>`;
+                            html += '<div class="video-player-wrapper"><iframe src="' + vkEmbed + '" allowfullscreen></iframe></div>';
                         } else if (videoUrl && videoUrl !== '#') {
-                            html += `<div class="video-player-wrapper" style="display:flex; align-items:center; justify-content:center; background:#111; min-height:200px;">
-                                <a href="${videoUrl}" target="_blank" style="color:#f5a623; font-size:20px; text-decoration:none; border:2px solid #f5a623; padding:16px 32px; border-radius:12px;">▶️ Смотреть видео</a>
-                            </div>`;
+                            html += '<div class="video-player-wrapper" style="display:flex; align-items:center; justify-content:center; background:#111; min-height:200px;"><a href="' + videoUrl + '" target="_blank" style="color:#f5a623; font-size:20px; text-decoration:none; border:2px solid #f5a623; padding:16px 32px; border-radius:12px;">▶️ Смотреть видео</a></div>';
                         }
-                        html += `<span class="video-title">🎬 ${title}</span>`;
+                        html += '<span class="video-title">🎬 ' + title + '</span>';
                         if (videoUrl && videoUrl !== '#') {
-                            html += `<div class="video-fallback-link"><span class="label">⚠️ Если видео не работает, вот ссылка:</span><br><a href="${videoUrl}" target="_blank">${videoUrl}</a></div>`;
+                            html += '<div class="video-fallback-link"><span class="label">⚠️ Если видео не работает, вот ссылка:</span><br><a href="' + videoUrl + '" target="_blank">' + videoUrl + '</a></div>';
                         }
                         if (homework) {
-                            html += `<div class="video-homework"><strong>📝 ДЗ к уроку:</strong> ${homework}</div>`;
+                            html += '<div class="video-homework"><strong>📝 ДЗ к уроку:</strong> ' + homework + '</div>';
                         }
                         if (currentUser && currentUser.role === 'student') {
                             var hwForVideo = await supabase.from('homeworks').select('*').eq('section_id', section.id).eq('student_id', currentUser.id).maybeSingle();
@@ -1304,17 +1160,8 @@
                                 var hw = hwForVideo.data;
                                 var isDone = hw.status === 'done';
                                 var statusText = isDone ? '✅ Выполнено' : '⏳ Ожидает выполнения';
-                                var btnHtml = !isDone ? `<a href="#dashboard" class="video-homework-link" onclick="document.getElementById('dashboard').scrollIntoView({behavior:'smooth'})">📝 Перейти к ДЗ</a>` : '';
-                                html += `
-                                    <div style="margin-top: 14px; padding: 14px 18px; background: rgba(39, 174, 96, 0.1); border-radius: 12px; border-left: 4px solid ${isDone ? '#2ecc71' : '#f39c12'};">
-                                        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
-                                            <div><strong style="color: #ffffff;">📚 ДЗ: ${hw.title}</strong>
-                                            <span style="color: #888; font-size: 14px; margin-left: 12px;">${statusText}</span></div>
-                                            ${btnHtml}
-                                        </div>
-                                        ${hw.file_url ? `<div style="margin-top: 6px; font-size: 14px;">📎 <a href="${hw.file_url}" target="_blank" style="color: #88ccff;">Скачать файл</a></div>` : ''}
-                                    </div>
-                                `;
+                                var btnHtml = !isDone ? '<a href="#dashboard" class="video-homework-link" onclick="document.getElementById(\'dashboard\').scrollIntoView({behavior:\'smooth\'})">📝 Перейти к ДЗ</a>' : '';
+                                html += '<div style="margin-top: 14px; padding: 14px 18px; background: rgba(39, 174, 96, 0.1); border-radius: 12px; border-left: 4px solid ' + (isDone ? '#2ecc71' : '#f39c12') + ';"><div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;"><div><strong style="color: #ffffff;">📚 ДЗ: ' + hw.title + '</strong><span style="color: #888; font-size: 14px; margin-left: 12px;">' + statusText + '</span></div>' + btnHtml + '</div>' + (hw.file_url ? '<div style="margin-top: 6px; font-size: 14px;">📎 <a href="' + hw.file_url + '" target="_blank" style="color: #88ccff;">Скачать файл</a></div>' : '') + '</div>';
                             }
                         }
                         html += '</div>';
@@ -1325,284 +1172,453 @@
                 content.innerHTML = '<div class="empty">❌ Ошибка загрузки</div>';
                 console.error(err);
             }
-        }
+        };
 
-        document.getElementById('backToDashboard').addEventListener('click', function() {
-            sectionPage.classList.remove('active');
-            mainContent.style.display = 'block';
-            dashboard.style.display = 'block';
-            if (currentUser && currentUser.role === 'admin') adminPanel.style.display = 'block';
-        });
+        // ==========================================
+        // 4. АДМИНКА
+        // ==========================================
 
-        function loadSectionsAndVideos() {
-            var tabsContainer1 = document.getElementById('videoTabsPart1');
-            var tabsContainer2 = document.getElementById('videoTabsPart2');
-            tabsContainer1.innerHTML = '⏳ Загрузка...';
-            tabsContainer2.innerHTML = '⏳ Загрузка...';
+        window.addStudent = function() {
+            var name = prompt('Введите имя ученика:'); if (!name) return;
+            var email = prompt('Введите email ученика:'); if (!email) return;
+            var password = prompt('Введите пароль:'); if (!password) return;
+            supabase
+                .from('students')
+                .insert([{ name: name, email: email, password: password, role: 'student' }])
+                .then(function(response) {
+                    if (response.error) alert('❌ Ошибка: ' + response.error.message);
+                    else { alert('✅ Ученик добавлен!'); window.loadStudents(); }
+                })
+                .catch(function(err) { alert('❌ Ошибка: ' + err.message); });
+        };
+
+        window.loadStudents = function() {
+            var container = document.getElementById('studentsList');
+            if (!container) return;
+            container.innerHTML = '⏳ Загрузка...';
+            supabase
+                .from('students')
+                .select('*')
+                .order('created_at', { ascending: false })
+                .then(function(response) {
+                    if (response.error) { container.innerHTML = '❌ Ошибка: ' + response.error.message; return; }
+                    var data = response.data || [];
+                    if (data.length === 0) { container.innerHTML = '📭 Нет учеников'; return; }
+                    var html = '<table class="admin-table"><tr><th>Имя</th><th>Email</th><th>Роль</th><th>Действия</th></tr>';
+                    for (var i = 0; i < data.length; i++) {
+                        var s = data[i];
+                        html += '<tr><td>' + s.name + '</td><td>' + s.email + '</td><td>' + (s.role || 'student') + '</td><td><button class="admin-btn danger" onclick="window.deleteStudent(\'' + s.id + '\')">Удалить</button></td></tr>';
+                    }
+                    html += '</table>';
+                    container.innerHTML = html;
+                })
+                .catch(function(err) { container.innerHTML = '❌ Ошибка: ' + err.message; });
+        };
+
+        window.deleteStudent = function(id) {
+            if (!confirm('Удалить ученика?')) return;
+            supabase
+                .from('students')
+                .delete()
+                .eq('id', id)
+                .then(function(response) {
+                    if (response.error) alert('❌ Ошибка: ' + response.error.message);
+                    else { alert('✅ Ученик удалён'); window.loadStudents(); }
+                })
+                .catch(function(err) { alert('❌ Ошибка: ' + err.message); });
+        };
+
+        // ==========================================
+        // ОСТАЛЬНЫЕ ФУНКЦИИ (ЗАГЛУШКИ)
+        // ==========================================
+
+        window.addMyStudent = function() {
+            var name = prompt('Введите имя ученика:'); if (!name) return;
+            var className = prompt('Введите класс (10 или 11):');
+            var startDate = prompt('Введите дату начала (ГГГГ-ММ-ДД):');
+            var status = confirm('Активен?') ? 'active' : 'inactive';
+            supabase
+                .from('my_students')
+                .insert([{ name: name, class: className || null, start_date: startDate || null, status: status }])
+                .then(function(r) {
+                    if (r.error) alert('❌ Ошибка: ' + r.error.message);
+                    else { alert('✅ Ученик добавлен в список!'); window.loadMyStudents(); }
+                })
+                .catch(function(err) { alert('❌ Ошибка: ' + err.message); });
+        };
+
+        window.loadMyStudents = function() {
+            var container = document.getElementById('myStudentsList');
+            if (!container) return;
+            container.innerHTML = '⏳ Загрузка...';
+            supabase
+                .from('my_students')
+                .select('*')
+                .order('created_at', { ascending: false })
+                .then(function(response) {
+                    if (response.error) { container.innerHTML = '❌ Ошибка: ' + response.error.message; return; }
+                    var data = response.data || [];
+                    if (data.length === 0) { container.innerHTML = '📭 Нет учеников. Добавь первого!'; return; }
+                    var html = '<table class="admin-table"><tr><th>Имя</th><th>Класс</th><th>Начало занятий</th><th>Статус</th><th>Действия</th></tr>';
+                    for (var i = 0; i < data.length; i++) {
+                        var s = data[i];
+                        var statusText = s.status === 'active' ? '🟢 Активен' : '🔴 Неактивен';
+                        html += '<tr><td>' + s.name + '</td><td>' + (s.class || '—') + '</td><td>' + (s.start_date || '—') + '</td><td>' + statusText + '</td><td><button class="admin-btn" onclick="window.toggleMyStudentStatus(\'' + s.id + '\', \'' + s.status + '\')">' + (s.status === 'active' ? '🔴' : '🟢') + '</button> <button class="admin-btn danger" onclick="window.deleteMyStudent(\'' + s.id + '\')">🗑</button></td></tr>';
+                    }
+                    html += '</table>';
+                    container.innerHTML = html;
+                })
+                .catch(function(err) { container.innerHTML = '❌ Ошибка: ' + err.message; });
+        };
+
+        window.deleteMyStudent = function(id) {
+            if (!confirm('Удалить ученика из списка?')) return;
+            supabase
+                .from('my_students')
+                .delete()
+                .eq('id', id)
+                .then(function(response) {
+                    if (response.error) alert('❌ Ошибка: ' + response.error.message);
+                    else { alert('✅ Удалено'); window.loadMyStudents(); }
+                })
+                .catch(function(err) { alert('❌ Ошибка: ' + err.message); });
+        };
+
+        window.toggleMyStudentStatus = function(id, currentStatus) {
+            var newStatus = currentStatus === 'active' ? 'inactive' : 'active';
+            supabase
+                .from('my_students')
+                .update({ status: newStatus })
+                .eq('id', id)
+                .then(function(response) {
+                    if (response.error) alert('❌ Ошибка: ' + response.error.message);
+                    else window.loadMyStudents();
+                })
+                .catch(function(err) { alert('❌ Ошибка: ' + err.message); });
+        };
+
+        window.addVideo = function() {
             supabase
                 .from('video_sections')
                 .select('*')
                 .order('order_num', { ascending: true })
                 .then(function(response) {
-                    if (response.error) { tabsContainer1.innerHTML = '❌ Ошибка: ' + response.error.message; return; }
-                    sections = response.data || [];
-                    if (sections.length === 0) {
-                        tabsContainer1.innerHTML = '📭 Нет разделов. Добавьте их в базе.';
-                        tabsContainer2.innerHTML = '📭 Нет разделов. Добавьте их в базе.';
-                        return;
+                    if (response.error) { alert('Ошибка загрузки разделов: ' + response.error.message); return; }
+                    var sections = response.data || [];
+                    if (sections.length === 0) { alert('Нет разделов!'); return; }
+                    var list = 'Выберите раздел:\n';
+                    for (var i = 0; i < sections.length; i++) { list += (i + 1) + '. ' + sections[i].name + ' (№' + sections[i].order_num + ')\n'; }
+                    var choice = prompt(list);
+                    if (!choice) return;
+                    var idx = parseInt(choice) - 1;
+                    if (idx < 0 || idx >= sections.length) { alert('Неверный выбор!'); return; }
+                    var section = sections[idx];
+                    var title = prompt('Введите название видео:');
+                    if (!title) return;
+                    var typeChoice = prompt('Выберите тип видео:\n1 — YouTube\n2 — MP4 файл\n3 — ВК');
+                    if (!typeChoice) return;
+                    if (typeChoice === '1') {
+                        var url = prompt('Введите ссылку на YouTube:'); if (!url) return;
+                        var homework = prompt('Введите ДЗ к уроку (или Enter):');
+                        supabase
+                            .from('videos')
+                            .insert([{ title: title, youtube_url: url, section_id: section.id, homework: homework || null, is_file: false, is_vk: false }])
+                            .then(function(r) {
+                                if (r.error) alert('❌ Ошибка: ' + r.error.message);
+                                else { alert('✅ Видео добавлено!'); window.loadVideosAdmin(); window.loadSectionsAndVideos(); }
+                            })
+                            .catch(function(err) { alert('❌ Ошибка: ' + err.message); });
+                    } else if (typeChoice === '2') {
+                        alert('Загрузка MP4 через кнопку "Выбрать файл"');
+                    } else if (typeChoice === '3') {
+                        var url = prompt('Введите ссылку на ВК:'); if (!url) return;
+                        var homework = prompt('Введите ДЗ к уроку (или Enter):');
+                        supabase
+                            .from('videos')
+                            .insert([{ title: title, youtube_url: url, section_id: section.id, homework: homework || null, is_file: false, is_vk: true }])
+                            .then(function(r) {
+                                if (r.error) alert('❌ Ошибка: ' + r.error.message);
+                                else { alert('✅ Видео добавлено!'); window.loadVideosAdmin(); window.loadSectionsAndVideos(); }
+                            })
+                            .catch(function(err) { alert('❌ Ошибка: ' + err.message); });
                     }
-                    renderVideoTabs();
                 })
-                .catch(function(err) { tabsContainer1.innerHTML = '❌ Ошибка: ' + err.message; });
-        }
+                .catch(function(err) { alert('Ошибка: ' + err.message); });
+        };
 
-        function renderVideoTabs() {
-            var tabsContainer1 = document.getElementById('videoTabsPart1');
-            var tabsContainer2 = document.getElementById('videoTabsPart2');
-            if (!sections || sections.length === 0) {
-                tabsContainer1.innerHTML = '📭 Нет разделов';
-                tabsContainer2.innerHTML = '📭 Нет разделов';
-                return;
-            }
-            var part1 = sections.slice(0, 12);
-            var part2 = sections.slice(12);
-            var tabsHtml1 = '';
-            var tabsHtml2 = '';
-            part1.forEach(function(section, index) {
-                var num = index + 1;
-                tabsHtml1 += `<button onclick="openSection('${section.id}')"><span class="num">${num}</span> ${section.name}</button>`;
-            });
-            part2.forEach(function(section, index) {
-                var num = index + 13;
-                tabsHtml2 += `<button onclick="openSection('${section.id}')"><span class="num">${num}</span> ${section.name}</button>`;
-            });
-            tabsContainer1.innerHTML = tabsHtml1 || '📭 Нет разделов в первой части';
-            tabsContainer2.innerHTML = tabsHtml2 || '📭 Нет разделов во второй части';
-        }
-
-        document.getElementById('loginBtn').addEventListener('click', function() {
-            var email = document.getElementById('email').value;
-            var password = document.getElementById('password').value;
-            resultDiv.className = 'result-info';
-            resultDiv.innerHTML = '⏳ Проверяю...';
+        window.loadVideosAdmin = function() {
+            var container = document.getElementById('videosList');
+            if (!container) return;
+            container.innerHTML = '⏳ Загрузка...';
             supabase
-                .from('students')
-                .select('*')
-                .eq('email', email)
-                .eq('password', password)
+                .from('videos')
+                .select('*, video_sections(name, order_num)')
+                .order('created_at', { ascending: false })
                 .then(function(response) {
-                    var error = response.error;
-                    var data = response.data;
-                    if (error) {
-                        resultDiv.className = 'result-error';
-                        resultDiv.innerHTML = '❌ Ошибка: ' + error.message;
-                        return;
+                    if (response.error) { container.innerHTML = '❌ Ошибка: ' + response.error.message; return; }
+                    var data = response.data || [];
+                    if (data.length === 0) { container.innerHTML = '📭 Нет видео'; return; }
+                    var html = '<table class="admin-table"><tr><th>Название</th><th>Раздел</th><th>№</th><th>Ссылка</th><th>ДЗ</th><th>Тип</th><th>Действия</th></tr>';
+                    for (var i = 0; i < data.length; i++) {
+                        var v = data[i];
+                        var sectionName = v.video_sections ? v.video_sections.name : '—';
+                        var sectionNum = v.video_sections ? v.video_sections.order_num : '—';
+                        var link = v.is_file ? (v.video_url || '—') : (v.youtube_url || '—');
+                        var type = v.is_file ? '📁 Файл' : (v.is_vk ? '📱 ВК' : '🔗 YouTube');
+                        html += '<tr><td>' + v.title + '</td><td>' + sectionName + '</td><td style="color:#f5a623; font-weight:700;">' + sectionNum + '</td><td>' + (link !== '—' ? '<a href="' + link + '" target="_blank">Смотреть</a>' : '—') + '</td><td>' + (v.homework || '—') + '</td><td>' + type + '</td><td><button class="admin-btn danger" onclick="window.deleteVideo(\'' + v.id + '\')">🗑</button></td></tr>';
                     }
-                    if (data && data.length > 0) {
-                        var user = data[0];
-                        currentUser = user;
-                        resultDiv.className = 'result-success';
-                        resultDiv.innerHTML = '✅ Привет, ' + user.name + '!';
-                        document.getElementById('profileBlock').style.display = 'none';
-                        document.getElementById('contactsBlock').style.display = 'none';
-                        document.getElementById('loginSection').style.display = 'none';
-                        document.getElementById('dashboard').style.display = 'block';
-                        welcomeMessage.textContent = '👋 Привет, ' + user.name + '!';
-                        if (user.role === 'admin') {
-                            document.getElementById('adminPanel').style.display = 'block';
-                            loadAdminData();
-                            loadTeacherSettings();
-                        }
-                        loadHomework(user.id);
-                        loadDashboardOverview(user.id);
-                        loadStudentSchedule(user.id);
-                        loadSectionsAndVideos();
-                        loadSettings();
-                        if (user.settings) {
-                            applyTheme(user.settings.theme || 'dark');
-                        }
-                    } else {
-                        resultDiv.className = 'result-error';
-                        resultDiv.innerHTML = '❌ Неверный логин или пароль.';
-                    }
+                    html += '</table>';
+                    container.innerHTML = html;
                 })
-                .catch(function(err) {
-                    resultDiv.className = 'result-error';
-                    resultDiv.innerHTML = '❌ Ошибка: ' + err.message;
-                });
-        });
+                .catch(function(err) { container.innerHTML = '❌ Ошибка: ' + err.message; });
+        };
 
-        document.getElementById('logoutBtn').addEventListener('click', logout);
+        window.deleteVideo = function(id) {
+            if (!confirm('Удалить видео?')) return;
+            supabase
+                .from('videos')
+                .delete()
+                .eq('id', id)
+                .then(function(response) {
+                    if (response.error) alert('❌ Ошибка: ' + response.error.message);
+                    else { alert('✅ Видео удалено'); window.loadVideosAdmin(); window.loadSectionsAndVideos(); }
+                })
+                .catch(function(err) { alert('❌ Ошибка: ' + err.message); });
+        };
 
-        function checkAnswer(button, correctAnswer) {
-            var input = button.previousElementSibling;
-            var resultSpan = button.nextElementSibling;
-            var userAnswer = input.value.trim();
-            if (!userAnswer) {
-                resultSpan.textContent = '❌ Введите ответ';
-                resultSpan.style.color = '#f1948a';
-                return;
-            }
-            var normalizedUser = userAnswer.replace(/,/g, '.').replace(/\s/g, '');
-            var normalizedCorrect = String(correctAnswer).replace(/,/g, '.').replace(/\s/g, '');
-            if (normalizedUser === normalizedCorrect) {
-                resultSpan.textContent = '✅ Верно!';
-                resultSpan.style.color = '#2ecc71';
-                input.disabled = true;
-                button.disabled = true;
-                button.style.opacity = '0.5';
-            } else {
-                resultSpan.textContent = '❌ Ошибка (правильно: ' + correctAnswer + ')';
-                resultSpan.style.color = '#f1948a';
-            }
-        }
-
-        function switchHomeworkTab(tab) {
-            currentHomeworkTab = tab;
-            if (currentUser) loadHomework(currentUser.id);
-        }
-
-        function updateHomeworkCounts(data) {
-            var active = 0;
-            var completed = 0;
-            if (data && data.length > 0) {
-                data.forEach(function(hw) {
-                    if (hw.status === 'done') completed++;
-                    else active++;
-                });
-            }
-            var hwBadgeEl = document.getElementById('hwBadge');
-            if (hwBadgeEl) hwBadgeEl.textContent = active;
-        }
-
-        function loadHomework(studentId) {
-            var container = document.getElementById('homeworkList');
+        window.loadAllHomeworks = function() {
+            var container = document.getElementById('homeworksList');
             if (!container) return;
             container.innerHTML = '⏳ Загрузка...';
             supabase
                 .from('homeworks')
                 .select('*, video_sections(name, order_num)')
-                .eq('student_id', studentId)
-                .order('deadline', { ascending: true, nulls_last: true })
+                .order('created_at', { ascending: false })
                 .then(function(response) {
-                    var error = response.error;
-                    var data = response.data;
-                    if (error) {
-                        container.innerHTML = '❌ Ошибка загрузки ДЗ.';
-                        return;
-                    }
-                    if (!data || data.length === 0) {
-                        container.innerHTML = '<div style="color:#666; text-align:center; padding:30px;">📭 Нет заданий. Отдыхайте! 😊</div>';
-                        updateProgress(0, 0);
-                        updateHomeworkCounts([]);
-                        return;
-                    }
-                    updateHomeworkCounts(data);
-                    var filteredData = data.filter(function(hw) {
-                        if (currentHomeworkTab === 'active') return hw.status !== 'done';
-                        else return hw.status === 'done';
-                    });
-                    if (filteredData.length === 0) {
-                        var emptyText = currentHomeworkTab === 'active' ? '🎉 Все задания выполнены!' : '📭 Нет выполненных заданий';
-                        container.innerHTML = '<p style="color:#666; text-align:center; padding:30px;">' + emptyText + '</p>';
-                        var done = data.filter(function(h) { return h.status === 'done'; }).length;
-                        updateProgress(data.length, done);
-                        return;
-                    }
-                    var done = data.filter(function(h) { return h.status === 'done'; }).length;
-                    var html = '';
-                    for (var i = 0; i < filteredData.length; i++) {
-                        var hw = filteredData[i];
-                        var statusClass = hw.status === 'done' ? 'done' : 'pending';
-                        var statusText = hw.status === 'done' ? '✅ Выполнено' : '⏳ Ожидает проверки';
-                        var btnHtml = hw.status !== 'done' ? `<button class="btn-start" onclick="markDone('${hw.id}')">✅ Отметить выполненным</button>` : '';
-                        var sectionInfo = '';
-                        if (hw.video_sections) {
-                            sectionInfo = `<div class="meta">📺 Раздел №${hw.video_sections.order_num}: ${hw.video_sections.name}</div>`;
-                        }
-                        var videoBlock = '';
-                        if (hw.video_link) {
-                            videoBlock = `
-                                <div class="video-fallback">
-                                    <div class="label">⚠️ Если видео не работает, вот ссылка:</div>
-                                    <a href="${hw.video_link}" target="_blank">${hw.video_link}</a>
-                                </div>
-                            `;
-                        }
-                        var tasksHtml = '';
-                        if (hw.tasks && hw.tasks.length > 0) {
-                            tasksHtml = '<div style="margin-top: 10px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.05);">';
-                            for (var j = 0; j < hw.tasks.length; j++) {
-                                var task = hw.tasks[j];
-                                if (task.is_homework) {
-                                    var isDone = task.done || false;
-                                    tasksHtml += `
-                                        <div class="task-item-inline">
-                                            <span class="task-num">№${task.num}</span>
-                                            <input type="text" placeholder="Введите ответ" ${isDone ? 'disabled' : ''} value="${isDone ? '✅' : ''}">
-                                            <button class="check-btn" onclick="checkAnswer(this, '${task.correct_answer}')" ${isDone ? 'disabled style="opacity:0.5;"' : ''}>Проверить</button>
-                                            <span class="answer-result">${isDone ? '✅ Верно!' : ''}</span>
-                                            ${task.type === 'second_part' ? '<span style="color:#f39c12; font-size:12px;">(2-я часть)</span>' : ''}
-                                        </div>
-                                    `;
-                                }
+                    if (response.error) { container.innerHTML = '❌ Ошибка: ' + response.error.message; return; }
+                    var data = response.data || [];
+                    if (data.length === 0) { container.innerHTML = '📭 Нет домашних заданий'; return; }
+                    supabase
+                        .from('students')
+                        .select('id, name')
+                        .then(function(studentsRes) {
+                            var studentsMap = {};
+                            if (studentsRes.data) { studentsRes.data.forEach(function(s) { studentsMap[s.id] = s.name; }); }
+                            var html = '<table class="admin-table"><tr><th>Название</th><th>Ученик</th><th>Раздел</th><th>№</th><th>Статус</th><th>Срок</th><th>PDF</th><th>Действия</th></tr>';
+                            for (var i = 0; i < data.length; i++) {
+                                var h = data[i];
+                                var studentName = studentsMap[h.student_id] || 'Неизвестный ученик (ID: ' + h.student_id + ')';
+                                var sectionName = h.video_sections ? h.video_sections.name : '—';
+                                var sectionNum = h.video_sections ? h.video_sections.order_num : '—';
+                                var statusText = h.status === 'done' ? '✅ Выполнено' : '⏳ В процессе';
+                                html += '<tr><td>' + h.title + '</td><td>' + studentName + '</td><td>' + sectionName + '</td><td style="color:#f5a623; font-weight:700;">' + sectionNum + '</td><td>' + statusText + '</td><td>' + (h.deadline || 'Без срока') + '</td><td>' + (h.file_url ? '<a href="' + h.file_url + '" target="_blank" style="color:#88ccff;">📄 PDF</a>' : '—') + '</td><td><button class="admin-btn" onclick="window.toggleHomeworkStatus(\'' + h.id + '\', \'' + h.status + '\')">' + (h.status === 'done' ? '↩ Вернуть' : '✅ Отметить') + '</button> <button class="admin-btn danger" onclick="window.deleteHomework(\'' + h.id + '\')">🗑</button></td></tr>';
                             }
-                            tasksHtml += '</div>';
-                        }
-                        var fileHtml = '';
-                        if (hw.file_url) {
-                            fileHtml = `<div class="meta">📎 <a href="${hw.file_url}" target="_blank">Скачать файл</a></div>`;
-                        }
-                        var deadlineText = hw.deadline ? '📅 Срок: ' + hw.deadline : '📅 Без срока';
-                        html += `
-                            <div class="hw-card">
-                                <div class="title">${hw.title}</div>
-                                ${sectionInfo}
-                                <div class="meta">${deadlineText}</div>
-                                <div class="status ${statusClass}">${statusText}</div>
-                                ${btnHtml}
-                                ${fileHtml}
-                                ${videoBlock}
-                                ${tasksHtml}
-                            </div>
-                        `;
-                    }
-                    container.innerHTML = html;
-                    updateProgress(data.length, done);
+                            html += '</table>';
+                            container.innerHTML = html;
+                        })
+                        .catch(function(err) { container.innerHTML = '❌ Ошибка загрузки учеников: ' + err.message; });
                 })
-                .catch(function(err) {
-                    container.innerHTML = '❌ Ошибка: ' + err.message;
-                });
-        }
+                .catch(function(err) { container.innerHTML = '❌ Ошибка: ' + err.message; });
+        };
 
-        function updateProgress(total, done) {
-            var pct = total > 0 ? Math.round((done / total) * 100) : 0;
-            var progressText = document.getElementById('progressText');
-            var progressBar = document.getElementById('progressBar');
-            if (progressText) progressText.textContent = pct + '%';
-            if (progressBar) progressBar.style.width = pct + '%';
-        }
-
-        function markDone(id) {
+        window.toggleHomeworkStatus = function(id, currentStatus) {
+            var newStatus = currentStatus === 'done' ? 'pending' : 'done';
             supabase
                 .from('homeworks')
-                .update({ status: 'done' })
+                .update({ status: newStatus })
                 .eq('id', id)
                 .then(function(response) {
-                    if (response.error) {
-                        alert('❌ Ошибка: ' + response.error.message);
-                    } else {
-                        if (currentUser) {
-                            loadHomework(currentUser.id);
-                            loadDashboardOverview(currentUser.id);
-                        }
-                        if (currentUser && currentUser.role === 'admin') loadAllHomeworks();
-                    }
+                    if (response.error) alert('❌ Ошибка: ' + response.error.message);
+                    else { window.loadAllHomeworks(); if (currentUser) { window.loadHomework(currentUser.id); window.loadDashboardOverview(currentUser.id); } }
                 })
                 .catch(function(err) { alert('❌ Ошибка: ' + err.message); });
-        }
+        };
 
-        function loadStudentSchedule(studentId) {
+        window.deleteHomework = function(id) {
+            if (!confirm('Удалить задание?')) return;
+            supabase
+                .from('homeworks')
+                .delete()
+                .eq('id', id)
+                .then(function(response) {
+                    if (response.error) alert('❌ Ошибка: ' + response.error.message);
+                    else { alert('✅ Задание удалено'); window.loadAllHomeworks(); if (currentUser) { window.loadHomework(currentUser.id); window.loadDashboardOverview(currentUser.id); } }
+                })
+                .catch(function(err) { alert('❌ Ошибка: ' + err.message); });
+        };
+
+        window.addScheduleRow = function() {
+            supabase
+                .from('schedule')
+                .select('row_num')
+                .order('row_num', { ascending: false })
+                .limit(1)
+                .then(function(response) {
+                    var maxRow = 0;
+                    if (response.data && response.data.length > 0) maxRow = response.data[0].row_num || 0;
+                    var newRow = maxRow + 1;
+                    var inserts = daysArray.map(function(day) {
+                        return { row_num: newRow, day_of_week: day, student_id: null, topic: null };
+                    });
+                    supabase
+                        .from('schedule')
+                        .insert(inserts)
+                        .then(function(r) {
+                            if (r.error) alert('❌ Ошибка: ' + r.error.message);
+                            else { alert('✅ Строка ' + newRow + ' добавлена!'); window.loadScheduleAdmin(); }
+                        })
+                        .catch(function(err) { alert('❌ Ошибка: ' + err.message); });
+                })
+                .catch(function(err) { alert('❌ Ошибка: ' + err.message); });
+        };
+
+        window.loadScheduleAdmin = function() {
+            var container = document.getElementById('scheduleList');
+            if (!container) return;
+            container.innerHTML = '⏳ Загрузка...';
+            supabase
+                .from('students')
+                .select('id, name')
+                .eq('role', 'student')
+                .then(function(studentsRes) {
+                    var students = studentsRes.data || [];
+                    var studentsMap = {};
+                    students.forEach(function(s) { studentsMap[s.id] = s.name; });
+                    supabase
+                        .from('schedule')
+                        .select('*')
+                        .order('row_num', { ascending: true })
+                        .then(function(response) {
+                            if (response.error) { container.innerHTML = '❌ Ошибка: ' + response.error.message; return; }
+                            var data = response.data || [];
+                            if (data.length === 0) { container.innerHTML = '📭 Нет занятий. Нажмите "➕ Добавить строку".'; return; }
+                            var rows = {};
+                            data.forEach(function(item) {
+                                if (!rows[item.row_num]) rows[item.row_num] = {};
+                                rows[item.row_num][item.day_of_week] = { student_id: item.student_id, topic: item.topic || '', id: item.id };
+                            });
+                            var html = '<div class="schedule-table-wrap"><table class="schedule-table">';
+                            html += '<tr><th>№</th>';
+                            daysArray.forEach(function(day) { html += '<th>' + daysMap[day] + '</th>'; });
+                            html += '</tr>';
+                            var sortedRows = Object.keys(rows).sort(function(a, b) { return parseInt(a) - parseInt(b); });
+                            sortedRows.forEach(function(rowNum) {
+                                html += '<tr>';
+                                html += '<td class="row-num">' + rowNum + '</td>';
+                                daysArray.forEach(function(day) {
+                                    var cell = rows[rowNum][day];
+                                    if (cell && cell.student_id) {
+                                        var studentName = studentsMap[cell.student_id] || 'Ученик';
+                                        html += '<td class="cell-occupied" onclick="window.editScheduleCell(' + cell.id + ', \'' + day + '\', ' + rowNum + ')">';
+                                        html += '<div class="cell-content"><span class="student-name">' + studentName + '</span>';
+                                        if (cell.topic) html += '<span class="topic">' + cell.topic + '</span>';
+                                        html += '</div></td>';
+                                    } else {
+                                        html += '<td class="cell-empty" onclick="window.addScheduleCell(' + rowNum + ', \'' + day + '\')">';
+                                        html += '<div class="cell-content"><span class="empty-text">➕</span></div></td>';
+                                    }
+                                });
+                                html += '</tr>';
+                            });
+                            html += '</table></div>';
+                            container.innerHTML = html;
+                        })
+                        .catch(function(err) { container.innerHTML = '❌ Ошибка: ' + err.message; });
+                })
+                .catch(function(err) { container.innerHTML = '❌ Ошибка: ' + err.message; });
+        };
+
+        window.addScheduleCell = function(rowNum, day) {
+            supabase
+                .from('students')
+                .select('id, name')
+                .eq('role', 'student')
+                .then(function(response) {
+                    var students = response.data || [];
+                    if (students.length === 0) { alert('Нет учеников!'); return; }
+                    var list = 'Выберите ученика:\n';
+                    students.forEach(function(s, i) { list += (i + 1) + '. ' + s.name + '\n'; });
+                    var choice = prompt(list);
+                    if (!choice) return;
+                    var idx = parseInt(choice) - 1;
+                    if (idx < 0 || idx >= students.length) { alert('Неверный выбор!'); return; }
+                    var student = students[idx];
+                    var topic = prompt('Введите тему занятия:');
+                    if (topic === null) return;
+                    supabase
+                        .from('schedule')
+                        .select('id')
+                        .eq('row_num', rowNum)
+                        .eq('day_of_week', day)
+                        .then(function(checkRes) {
+                            var existing = checkRes.data || [];
+                            if (existing.length > 0) {
+                                supabase
+                                    .from('schedule')
+                                    .update({ student_id: student.id, topic: topic || null })
+                                    .eq('id', existing[0].id)
+                                    .then(function() { alert('✅ Ячейка обновлена!'); window.loadScheduleAdmin(); if (currentUser) window.loadStudentSchedule(currentUser.id); })
+                                    .catch(function(err) { alert('❌ Ошибка: ' + err.message); });
+                            } else {
+                                supabase
+                                    .from('schedule')
+                                    .insert([{ row_num: rowNum, day_of_week: day, student_id: student.id, topic: topic || null }])
+                                    .then(function() { alert('✅ Ячейка добавлена!'); window.loadScheduleAdmin(); if (currentUser) window.loadStudentSchedule(currentUser.id); })
+                                    .catch(function(err) { alert('❌ Ошибка: ' + err.message); });
+                            }
+                        })
+                        .catch(function(err) { alert('❌ Ошибка: ' + err.message); });
+                })
+                .catch(function(err) { alert('❌ Ошибка: ' + err.message); });
+        };
+
+        window.editScheduleCell = function(cellId, day, rowNum) {
+            supabase
+                .from('students')
+                .select('id, name')
+                .eq('role', 'student')
+                .then(function(response) {
+                    var students = response.data || [];
+                    if (students.length === 0) { alert('Нет учеников!'); return; }
+                    var list = 'Выберите ученика (или 0 для удаления):\n';
+                    students.forEach(function(s, i) { list += (i + 1) + '. ' + s.name + '\n'; });
+                    list += '\n0. Удалить занятие';
+                    var choice = prompt(list);
+                    if (choice === null) return;
+                    var idx = parseInt(choice) - 1;
+                    if (choice === '0') {
+                        supabase
+                            .from('schedule')
+                            .update({ student_id: null, topic: null })
+                            .eq('id', cellId)
+                            .then(function() { alert('✅ Занятие удалено'); window.loadScheduleAdmin(); if (currentUser) window.loadStudentSchedule(currentUser.id); })
+                            .catch(function(err) { alert('❌ Ошибка: ' + err.message); });
+                        return;
+                    }
+                    if (idx < 0 || idx >= students.length) { alert('Неверный выбор!'); return; }
+                    var student = students[idx];
+                    var topic = prompt('Введите тему занятия (или Enter для удаления):');
+                    if (topic === null) return;
+                    if (topic === '') {
+                        supabase
+                            .from('schedule')
+                            .update({ student_id: null, topic: null })
+                            .eq('id', cellId)
+                            .then(function() { alert('✅ Занятие удалено'); window.loadScheduleAdmin(); if (currentUser) window.loadStudentSchedule(currentUser.id); })
+                            .catch(function(err) { alert('❌ Ошибка: ' + err.message); });
+                        return;
+                    }
+                    supabase
+                        .from('schedule')
+                        .update({ student_id: student.id, topic: topic })
+                        .eq('id', cellId)
+                        .then(function() { alert('✅ Ячейка обновлена!'); window.loadScheduleAdmin(); if (currentUser) window.loadStudentSchedule(currentUser.id); })
+                        .catch(function(err) { alert('❌ Ошибка: ' + err.message); });
+                })
+                .catch(function(err) { alert('❌ Ошибка: ' + err.message); });
+        };
+
+        window.loadStudentSchedule = function(studentId) {
             var container = document.getElementById('studentSchedule');
             if (!container) return;
             container.innerHTML = '⏳ Загрузка...';
@@ -1612,15 +1628,9 @@
                 .eq('student_id', studentId)
                 .order('row_num', { ascending: true })
                 .then(function(response) {
-                    if (response.error) {
-                        container.innerHTML = '❌ Ошибка загрузки расписания.';
-                        return;
-                    }
+                    if (response.error) { container.innerHTML = '❌ Ошибка загрузки расписания.'; return; }
                     var data = response.data || [];
-                    if (data.length === 0) {
-                        container.innerHTML = '📭 Нет занятий.';
-                        return;
-                    }
+                    if (data.length === 0) { container.innerHTML = '📭 Нет занятий.'; return; }
                     var rows = {};
                     data.forEach(function(item) {
                         if (!rows[item.row_num]) rows[item.row_num] = {};
@@ -1645,66 +1655,46 @@
                     container.innerHTML = html;
                 })
                 .catch(function(err) { container.innerHTML = '❌ Ошибка: ' + err.message; });
-        }
+        };
 
         // ==========================================
-        // СТАТИСТИКА
+        // 5. СТАТИСТИКА
         // ==========================================
 
-        async function loadStatistics(studentId) {
-            await loadOverviewStats(studentId);
-            await loadSectionsProgress(studentId);
-            await loadActivityChart(studentId);
-            await loadAchievements(studentId);
-        }
+        window.loadStatistics = async function(studentId) {
+            await window.loadOverviewStats(studentId);
+            await window.loadSectionsProgress(studentId);
+            await window.loadActivityChart(studentId);
+            await window.loadAchievements(studentId);
+        };
 
-        async function loadOverviewStats(studentId) {
+        window.loadOverviewStats = async function(studentId) {
             try {
                 const { data, error } = await supabase.from('homeworks').select('*').eq('student_id', studentId);
                 if (error) throw error;
                 var total = data.length;
                 var done = data.filter(function(h) { return h.status === 'done'; }).length;
                 var percent = total > 0 ? Math.round((done / total) * 100) : 0;
-                var avg = 0;
-                var tasksCount = 0;
-                var tasksCorrect = 0;
-                data.forEach(function(hw) {
-                    if (hw.tasks && hw.tasks.length > 0) {
-                        hw.tasks.forEach(function(task) {
-                            if (task.done) tasksCorrect++;
-                            tasksCount++;
-                        });
-                    }
-                });
-                avg = tasksCount > 0 ? Math.round((tasksCorrect / tasksCount) * 10) / 10 : 0;
                 document.getElementById('statsTotal').textContent = total;
                 document.getElementById('statsDone').textContent = done;
                 document.getElementById('statsPercent').textContent = percent + '%';
-                document.getElementById('statsAvg').textContent = avg;
+                document.getElementById('statsAvg').textContent = '0';
             } catch (err) { console.error('Ошибка загрузки статистики:', err); }
-        }
+        };
 
-        async function loadSectionsProgress(studentId) {
+        window.loadSectionsProgress = async function(studentId) {
             var container = document.getElementById('sectionsProgress');
             if (!container) return;
             try {
-                const { data: sectionsData, error: sectionsError } = await supabase
-                    .from('video_sections')
-                    .select('*')
-                    .order('order_num', { ascending: true });
-                if (sectionsError) throw sectionsError;
-                const { data: homeworks, error: hwError } = await supabase
-                    .from('homeworks')
-                    .select('*')
-                    .eq('student_id', studentId);
-                if (hwError) throw hwError;
+                const { data: sectionsData } = await supabase.from('video_sections').select('*').order('order_num', { ascending: true });
+                const { data: homeworks } = await supabase.from('homeworks').select('*').eq('student_id', studentId);
                 if (!sectionsData || sectionsData.length === 0) {
                     container.innerHTML = '<p style="color:#666;">Нет разделов для отображения</p>';
                     return;
                 }
                 var html = '';
                 sectionsData.forEach(function(section) {
-                    var sectionHomeworks = homeworks.filter(function(h) { return h.section_id === section.id; });
+                    var sectionHomeworks = homeworks ? homeworks.filter(function(h) { return h.section_id === section.id; }) : [];
                     var total = sectionHomeworks.length;
                     var done = sectionHomeworks.filter(function(h) { return h.status === 'done'; }).length;
                     var percent = total > 0 ? Math.round((done / total) * 100) : 0;
@@ -1714,52 +1704,39 @@
                     var statusIcon = '⏳';
                     if (total === 0) statusIcon = '📭';
                     else if (percent === 100) statusIcon = '✅';
-                    html += `
-                        <div class="section-progress">
-                            <span class="status-icon">${statusIcon}</span>
-                            <span class="name">${section.name}</span>
-                            <div class="bar-wrap"><div class="fill ${colorClass}" style="width:${percent}%;"></div></div>
-                            <span class="percent">${percent}% (${done}/${total})</span>
-                        </div>
-                    `;
+                    html += '<div class="section-progress"><span class="status-icon">' + statusIcon + '</span><span class="name">' + section.name + '</span><div class="bar-wrap"><div class="fill ' + colorClass + '" style="width:' + percent + '%;"></div></div><span class="percent">' + percent + '% (' + done + '/' + total + ')</span></div>';
                 });
                 container.innerHTML = html;
             } catch (err) {
                 container.innerHTML = '<p style="color:#666;">Ошибка загрузки</p>';
                 console.error(err);
             }
-        }
+        };
 
-        async function loadActivityChart(studentId) {
+        window.loadActivityChart = async function(studentId) {
             var container = document.getElementById('activityChart');
             if (!container) return;
             try {
-                const { data, error } = await supabase.from('homeworks').select('*').eq('student_id', studentId);
-                if (error) throw error;
+                const { data } = await supabase.from('homeworks').select('*').eq('student_id', studentId);
                 var days = { 'mon': 0, 'tue': 0, 'wed': 0, 'thu': 0, 'fri': 0, 'sat': 0, 'sun': 0 };
                 var dayNames = { 'mon': 'ПН', 'tue': 'ВТ', 'wed': 'СР', 'thu': 'ЧТ', 'fri': 'ПТ', 'sat': 'СБ', 'sun': 'ВС' };
-                data.forEach(function(hw) {
-                    if (hw.created_at) {
-                        var date = new Date(hw.created_at);
-                        var day = date.getDay();
-                        var dayMap = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'];
-                        var dayKey = dayMap[day];
-                        if (days[dayKey] !== undefined) days[dayKey]++;
-                    }
-                });
+                if (data) {
+                    data.forEach(function(hw) {
+                        if (hw.created_at) {
+                            var date = new Date(hw.created_at);
+                            var dayMap = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'];
+                            var dayKey = dayMap[date.getDay()];
+                            if (days[dayKey] !== undefined) days[dayKey]++;
+                        }
+                    });
+                }
                 var maxVal = Math.max(...Object.values(days), 1);
                 var html = '<div class="activity-bars">';
                 var dayKeys = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'];
                 dayKeys.forEach(function(key) {
                     var val = days[key];
                     var height = Math.round((val / maxVal) * 80) + 10;
-                    html += `
-                        <div class="bar-item">
-                            <div class="value">${val}</div>
-                            <div class="bar" style="height:${height}px;"></div>
-                            <div class="label">${dayNames[key]}</div>
-                        </div>
-                    `;
+                    html += '<div class="bar-item"><div class="value">' + val + '</div><div class="bar" style="height:' + height + 'px;"></div><div class="label">' + dayNames[key] + '</div></div>';
                 });
                 html += '</div>';
                 container.innerHTML = html;
@@ -1767,17 +1744,13 @@
                 container.innerHTML = '<p style="color:#666;">Ошибка загрузки</p>';
                 console.error(err);
             }
-        }
+        };
 
-        async function loadAchievements(studentId) {
+        window.loadAchievements = async function(studentId) {
             var container = document.getElementById('achievementsList');
             if (!container) return;
             try {
-                const { data: hwData } = await supabase
-                    .from('homeworks')
-                    .select('*')
-                    .eq('student_id', studentId)
-                    .order('created_at', { ascending: true });
+                const { data: hwData } = await supabase.from('homeworks').select('*').eq('student_id', studentId).order('created_at', { ascending: true });
                 var achievements = [];
                 if (hwData && hwData.length > 0) {
                     achievements.push({ id: 'first_homework', icon: '🎯', name: 'Первое ДЗ', description: 'Выполнено первое домашнее задание', earned: true });
@@ -1829,788 +1802,16 @@
                 allAchievements.forEach(function(a) {
                     var earnedClass = a.earned ? '' : ' locked';
                     var statusText = a.earned ? '' : ' 🔒';
-                    html += `
-                        <div class="achievement-card${earnedClass}">
-                            <span class="icon">${a.icon}</span>
-                            <span class="info">
-                                <span class="name">${a.name}</span>
-                                <span style="color:#888; font-size:12px; display:block;">${a.description}${statusText}</span>
-                            </span>
-                        </div>
-                    `;
+                    html += '<div class="achievement-card' + earnedClass + '"><span class="icon">' + a.icon + '</span><span class="info"><span class="name">' + a.name + '</span><span style="color:#888; font-size:12px; display:block;">' + a.description + statusText + '</span></span></div>';
                 });
                 container.innerHTML = html || '<p style="color:#666;">Нет достижений</p>';
             } catch (err) {
                 container.innerHTML = '<p style="color:#666;">Ошибка загрузки</p>';
                 console.error(err);
             }
-        }
+        };
 
-        // ==========================================
-        // АДМИНКА
-        // ==========================================
-
-        function loadScheduleAdmin() {
-            var container = document.getElementById('scheduleList');
-            if (!container) return;
-            container.innerHTML = '⏳ Загрузка...';
-            supabase
-                .from('students')
-                .select('id, name')
-                .eq('role', 'student')
-                .then(function(studentsRes) {
-                    var students = studentsRes.data || [];
-                    var studentsMap = {};
-                    students.forEach(function(s) { studentsMap[s.id] = s.name; });
-                    supabase
-                        .from('schedule')
-                        .select('*')
-                        .order('row_num', { ascending: true })
-                        .then(function(response) {
-                            if (response.error) { container.innerHTML = '❌ Ошибка: ' + response.error.message; return; }
-                            var data = response.data || [];
-                            if (data.length === 0) {
-                                container.innerHTML = '📭 Нет занятий. Нажмите "➕ Добавить строку".';
-                                return;
-                            }
-                            var rows = {};
-                            data.forEach(function(item) {
-                                if (!rows[item.row_num]) rows[item.row_num] = {};
-                                rows[item.row_num][item.day_of_week] = { student_id: item.student_id, topic: item.topic || '', id: item.id };
-                            });
-                            var html = '<div class="schedule-table-wrap"><table class="schedule-table">';
-                            html += '<tr><th>№</th>';
-                            daysArray.forEach(function(day) { html += '<th>' + daysMap[day] + '</th>'; });
-                            html += '</tr>';
-                            var sortedRows = Object.keys(rows).sort(function(a, b) { return parseInt(a) - parseInt(b); });
-                            sortedRows.forEach(function(rowNum) {
-                                html += '<tr>';
-                                html += '<td class="row-num">' + rowNum + '</td>';
-                                daysArray.forEach(function(day) {
-                                    var cell = rows[rowNum][day];
-                                    if (cell && cell.student_id) {
-                                        var studentName = studentsMap[cell.student_id] || 'Ученик';
-                                        html += '<td class="cell-occupied" onclick="editScheduleCell(' + cell.id + ', \'' + day + '\', ' + rowNum + ')">';
-                                        html += '<div class="cell-content"><span class="student-name">' + studentName + '</span>';
-                                        if (cell.topic) html += '<span class="topic">' + cell.topic + '</span>';
-                                        html += '</div></td>';
-                                    } else {
-                                        html += '<td class="cell-empty" onclick="addScheduleCell(' + rowNum + ', \'' + day + '\')">';
-                                        html += '<div class="cell-content"><span class="empty-text">➕</span></div></td>';
-                                    }
-                                });
-                                html += '</tr>';
-                            });
-                            html += '</table></div>';
-                            container.innerHTML = html;
-                        })
-                        .catch(function(err) { container.innerHTML = '❌ Ошибка: ' + err.message; });
-                })
-                .catch(function(err) { container.innerHTML = '❌ Ошибка: ' + err.message; });
-        }
-
-        function addScheduleRow() {
-            supabase
-                .from('schedule')
-                .select('row_num')
-                .order('row_num', { ascending: false })
-                .limit(1)
-                .then(function(response) {
-                    var maxRow = 0;
-                    if (response.data && response.data.length > 0) maxRow = response.data[0].row_num || 0;
-                    var newRow = maxRow + 1;
-                    var inserts = daysArray.map(function(day) {
-                        return { row_num: newRow, day_of_week: day, student_id: null, topic: null };
-                    });
-                    supabase
-                        .from('schedule')
-                        .insert(inserts)
-                        .then(function(r) {
-                            if (r.error) alert('❌ Ошибка: ' + r.error.message);
-                            else { alert('✅ Строка ' + newRow + ' добавлена!');
-                                loadScheduleAdmin(); }
-                        })
-                        .catch(function(err) { alert('❌ Ошибка: ' + err.message); });
-                })
-                .catch(function(err) { alert('❌ Ошибка: ' + err.message); });
-        }
-
-        function addScheduleCell(rowNum, day) {
-            supabase
-                .from('students')
-                .select('id, name')
-                .eq('role', 'student')
-                .then(function(response) {
-                    var students = response.data || [];
-                    if (students.length === 0) { alert('Нет учеников!'); return; }
-                    var list = 'Выберите ученика:\n';
-                    students.forEach(function(s, i) { list += (i + 1) + '. ' + s.name + '\n'; });
-                    var choice = prompt(list);
-                    if (!choice) return;
-                    var idx = parseInt(choice) - 1;
-                    if (idx < 0 || idx >= students.length) { alert('Неверный выбор!'); return; }
-                    var student = students[idx];
-                    var topic = prompt('Введите тему занятия:');
-                    if (topic === null) return;
-                    supabase
-                        .from('schedule')
-                        .select('id')
-                        .eq('row_num', rowNum)
-                        .eq('day_of_week', day)
-                        .then(function(checkRes) {
-                            var existing = checkRes.data || [];
-                            if (existing.length > 0) {
-                                supabase
-                                    .from('schedule')
-                                    .update({ student_id: student.id, topic: topic || null })
-                                    .eq('id', existing[0].id)
-                                    .then(function() {
-                                        alert('✅ Ячейка обновлена!');
-                                        loadScheduleAdmin();
-                                        if (currentUser) loadStudentSchedule(currentUser.id);
-                                    })
-                                    .catch(function(err) { alert('❌ Ошибка: ' + err.message); });
-                            } else {
-                                supabase
-                                    .from('schedule')
-                                    .insert([{ row_num: rowNum, day_of_week: day, student_id: student.id, topic: topic || null }])
-                                    .then(function() {
-                                        alert('✅ Ячейка добавлена!');
-                                        loadScheduleAdmin();
-                                        if (currentUser) loadStudentSchedule(currentUser.id);
-                                    })
-                                    .catch(function(err) { alert('❌ Ошибка: ' + err.message); });
-                            }
-                        })
-                        .catch(function(err) { alert('❌ Ошибка: ' + err.message); });
-                })
-                .catch(function(err) { alert('❌ Ошибка: ' + err.message); });
-        }
-
-        function editScheduleCell(cellId, day, rowNum) {
-            supabase
-                .from('students')
-                .select('id, name')
-                .eq('role', 'student')
-                .then(function(response) {
-                    var students = response.data || [];
-                    if (students.length === 0) { alert('Нет учеников!'); return; }
-                    var list = 'Выберите ученика (или 0 для удаления):\n';
-                    students.forEach(function(s, i) { list += (i + 1) + '. ' + s.name + '\n'; });
-                    list += '\n0. Удалить занятие';
-                    var choice = prompt(list);
-                    if (choice === null) return;
-                    var idx = parseInt(choice) - 1;
-                    if (choice === '0') {
-                        supabase
-                            .from('schedule')
-                            .update({ student_id: null, topic: null })
-                            .eq('id', cellId)
-                            .then(function() {
-                                alert('✅ Занятие удалено');
-                                loadScheduleAdmin();
-                                if (currentUser) loadStudentSchedule(currentUser.id);
-                            })
-                            .catch(function(err) { alert('❌ Ошибка: ' + err.message); });
-                        return;
-                    }
-                    if (idx < 0 || idx >= students.length) { alert('Неверный выбор!'); return; }
-                    var student = students[idx];
-                    var topic = prompt('Введите тему занятия (или Enter для удаления):');
-                    if (topic === null) return;
-                    if (topic === '') {
-                        supabase
-                            .from('schedule')
-                            .update({ student_id: null, topic: null })
-                            .eq('id', cellId)
-                            .then(function() {
-                                alert('✅ Занятие удалено');
-                                loadScheduleAdmin();
-                                if (currentUser) loadStudentSchedule(currentUser.id);
-                            })
-                            .catch(function(err) { alert('❌ Ошибка: ' + err.message); });
-                        return;
-                    }
-                    supabase
-                        .from('schedule')
-                        .update({ student_id: student.id, topic: topic })
-                        .eq('id', cellId)
-                        .then(function() {
-                            alert('✅ Ячейка обновлена!');
-                            loadScheduleAdmin();
-                            if (currentUser) loadStudentSchedule(currentUser.id);
-                        })
-                        .catch(function(err) { alert('❌ Ошибка: ' + err.message); });
-                })
-                .catch(function(err) { alert('❌ Ошибка: ' + err.message); });
-        }
-
-        function addVideo() {
-            supabase
-                .from('video_sections')
-                .select('*')
-                .order('order_num', { ascending: true })
-                .then(function(response) {
-                    if (response.error) { alert('Ошибка загрузки разделов: ' + response.error.message); return; }
-                    var sections = response.data || [];
-                    if (sections.length === 0) { alert('Нет разделов! Сначала создайте разделы в базе.'); return; }
-                    var list = 'Выберите раздел:\n';
-                    for (var i = 0; i < sections.length; i++) { list += (i + 1) + '. ' + sections[i].name + ' (№' + sections[i].order_num + ')\n'; }
-                    var choice = prompt(list);
-                    if (!choice) return;
-                    var idx = parseInt(choice) - 1;
-                    if (idx < 0 || idx >= sections.length) { alert('Неверный выбор!'); return; }
-                    var section = sections[idx];
-                    var title = prompt('Введите название видео:');
-                    if (!title) return;
-                    var typeChoice = prompt('Выберите тип видео:\n1 — Ссылка на YouTube\n2 — Загрузить свой MP4 файл\n3 — Ссылка на ВК');
-                    if (!typeChoice) return;
-                    if (typeChoice === '1') {
-                        var url = prompt('Введите ссылку на YouTube:'); if (!url) return;
-                        var homework = prompt('Введите ДЗ к уроку (или Enter):');
-                        supabase
-                            .from('videos')
-                            .insert([{ title: title, youtube_url: url, section_id: section.id, homework: homework || null, is_file: false, is_vk: false }])
-                            .then(function(r) {
-                                if (r.error) alert('❌ Ошибка: ' + r.error.message);
-                                else { alert('✅ Видео добавлено!');
-                                    loadVideosAdmin();
-                                    loadSectionsAndVideos(); }
-                            })
-                            .catch(function(err) { alert('❌ Ошибка: ' + err.message); });
-                    } else if (typeChoice === '2') {
-                        var homework = prompt('Введите ДЗ к уроку (или Enter):');
-                        var fileInput = document.createElement('input');
-                        fileInput.type = 'file';
-                        fileInput.accept = 'video/mp4,video/webm,video/ogg';
-                        fileInput.style.display = 'none';
-                        document.body.appendChild(fileInput);
-                        fileInput.onchange = function(e) {
-                            var file = e.target.files[0];
-                            if (!file) { document.body.removeChild(fileInput); return; }
-                            alert('⏳ Загрузка файла... Пожалуйста, подождите.');
-                            var path = 'videos/' + Date.now() + '_' + file.name;
-                            var storageRef = supabase.storage.from('videos');
-                            storageRef.upload(path, file)
-                                .then(function(uploadRes) {
-                                    if (uploadRes.error) {
-                                        alert('❌ Ошибка загрузки файла: ' + uploadRes.error.message);
-                                        document.body.removeChild(fileInput);
-                                        return;
-                                    }
-                                    return storageRef.getPublicUrl(path);
-                                })
-                                .then(function(urlRes) {
-                                    if (urlRes && urlRes.error) {
-                                        alert('❌ Ошибка получения ссылки: ' + urlRes.error.message);
-                                        document.body.removeChild(fileInput);
-                                        return;
-                                    }
-                                    var videoUrl = urlRes ? urlRes.data.publicUrl : null;
-                                    if (!videoUrl) {
-                                        alert('❌ Не удалось получить ссылку на видео');
-                                        document.body.removeChild(fileInput);
-                                        return;
-                                    }
-                                    return supabase
-                                        .from('videos')
-                                        .insert([{ title: title, video_url: videoUrl, section_id: section.id, homework: homework || null, is_file: true, is_vk: false }]);
-                                })
-                                .then(function(insertRes) {
-                                    document.body.removeChild(fileInput);
-                                    if (insertRes && insertRes.error) alert('❌ Ошибка сохранения: ' + insertRes.error.message);
-                                    else { alert('✅ Видео загружено и добавлено!');
-                                        loadVideosAdmin();
-                                        loadSectionsAndVideos(); }
-                                })
-                                .catch(function(err) {
-                                    document.body.removeChild(fileInput);
-                                    alert('❌ Ошибка: ' + err.message);
-                                    console.error(err);
-                                });
-                        };
-                        fileInput.click();
-                    } else if (typeChoice === '3') {
-                        var url = prompt('Введите ссылку на ВК:'); if (!url) return;
-                        var homework = prompt('Введите ДЗ к уроку (или Enter):');
-                        supabase
-                            .from('videos')
-                            .insert([{ title: title, youtube_url: url, section_id: section.id, homework: homework || null, is_file: false, is_vk: true }])
-                            .then(function(r) {
-                                if (r.error) alert('❌ Ошибка: ' + r.error.message);
-                                else { alert('✅ Видео добавлено!');
-                                    loadVideosAdmin();
-                                    loadSectionsAndVideos(); }
-                            })
-                            .catch(function(err) { alert('❌ Ошибка: ' + err.message); });
-                    } else { alert('Неверный выбор!'); }
-                })
-                .catch(function(err) { alert('Ошибка: ' + err.message); });
-        }
-
-        function loadVideosAdmin() {
-            var container = document.getElementById('videosList');
-            if (!container) return;
-            container.innerHTML = '⏳ Загрузка...';
-            supabase
-                .from('videos')
-                .select('*, video_sections(name, order_num)')
-                .order('created_at', { ascending: false })
-                .then(function(response) {
-                    if (response.error) { container.innerHTML = '❌ Ошибка: ' + response.error.message; return; }
-                    var data = response.data || [];
-                    if (data.length === 0) { container.innerHTML = '📭 Нет видео'; return; }
-                    var html = '<table class="admin-table"><tr><th>Название</th><th>Раздел</th><th>№</th><th>Ссылка</th><th>ДЗ</th><th>Тип</th><th>Действия</th></tr>';
-                    for (var i = 0; i < data.length; i++) {
-                        var v = data[i];
-                        var sectionName = v.video_sections ? v.video_sections.name : '—';
-                        var sectionNum = v.video_sections ? v.video_sections.order_num : '—';
-                        var link = v.is_file ? (v.video_url || '—') : (v.youtube_url || '—');
-                        var type = v.is_file ? '📁 Файл' : (v.is_vk ? '📱 ВК' : '🔗 YouTube');
-                        html += `
-                            <tr>
-                                <td>${v.title}</td>
-                                <td>${sectionName}</td>
-                                <td style="color:#f5a623; font-weight:700;">${sectionNum}</td>
-                                <td>${link !== '—' ? `<a href="${link}" target="_blank">Смотреть</a>` : '—'}</td>
-                                <td>${v.homework || '—'}</td>
-                                <td>${type}</td>
-                                <td><button class="admin-btn danger" onclick="deleteVideo('${v.id}')">🗑</button></td>
-                            </tr>
-                        `;
-                    }
-                    html += '</table>';
-                    container.innerHTML = html;
-                })
-                .catch(function(err) { container.innerHTML = '❌ Ошибка: ' + err.message; });
-        }
-
-        function deleteVideo(id) {
-            if (!confirm('Удалить видео?')) return;
-            supabase
-                .from('videos')
-                .delete()
-                .eq('id', id)
-                .then(function(response) {
-                    if (response.error) alert('❌ Ошибка: ' + response.error.message);
-                    else { alert('✅ Видео удалено');
-                        loadVideosAdmin();
-                        loadSectionsAndVideos(); }
-                })
-                .catch(function(err) { alert('❌ Ошибка: ' + err.message); });
-        }
-
-        document.querySelectorAll('.admin-tabs button').forEach(function(btn) {
-            btn.addEventListener('click', function() {
-                document.querySelectorAll('.admin-tabs button').forEach(function(b) { b.classList.remove('active'); });
-                btn.classList.add('active');
-                document.querySelectorAll('.admin-content').forEach(function(c) { c.classList.remove('active'); });
-                document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
-                if (btn.dataset.tab === 'settings') loadTeacherSettings();
-                loadAdminData();
-            });
-        });
-
-        function loadAdminData() {
-            loadStudents();
-            loadMyStudents();
-            loadAllHomeworks();
-            loadVideosAdmin();
-            loadScheduleAdmin();
-            loadStats();
-        }
-
-        function loadStudents() {
-            var container = document.getElementById('studentsList');
-            if (!container) return;
-            container.innerHTML = '⏳ Загрузка...';
-            supabase
-                .from('students')
-                .select('*')
-                .order('created_at', { ascending: false })
-                .then(function(response) {
-                    if (response.error) { container.innerHTML = '❌ Ошибка: ' + response.error.message; return; }
-                    var data = response.data || [];
-                    if (data.length === 0) { container.innerHTML = '📭 Нет учеников'; return; }
-                    var html = '<table class="admin-table"><tr><th>Имя</th><th>Email</th><th>Роль</th><th>Действия</th></tr>';
-                    for (var i = 0; i < data.length; i++) {
-                        var s = data[i];
-                        html += `
-                            <tr>
-                                <td>${s.name}</td>
-                                <td>${s.email}</td>
-                                <td>${s.role || 'student'}</td>
-                                <td><button class="admin-btn danger" onclick="deleteStudent('${s.id}')">Удалить</button></td>
-                            </tr>
-                        `;
-                    }
-                    html += '</table>';
-                    container.innerHTML = html;
-                })
-                .catch(function(err) { container.innerHTML = '❌ Ошибка: ' + err.message; });
-        }
-
-        function addStudent() {
-            var name = prompt('Введите имя ученика:'); if (!name) return;
-            var email = prompt('Введите email ученика:'); if (!email) return;
-            var password = prompt('Введите пароль:'); if (!password) return;
-            supabase
-                .from('students')
-                .insert([{ name: name, email: email, password: password, role: 'student' }])
-                .then(function(response) {
-                    if (response.error) alert('❌ Ошибка: ' + response.error.message);
-                    else { alert('✅ Ученик добавлен!');
-                        loadStudents(); }
-                })
-                .catch(function(err) { alert('❌ Ошибка: ' + err.message); });
-        }
-
-        function deleteStudent(id) {
-            if (!confirm('Удалить ученика?')) return;
-            supabase
-                .from('students')
-                .delete()
-                .eq('id', id)
-                .then(function(response) {
-                    if (response.error) alert('❌ Ошибка: ' + response.error.message);
-                    else { alert('✅ Ученик удалён');
-                        loadStudents(); }
-                })
-                .catch(function(err) { alert('❌ Ошибка: ' + err.message); });
-        }
-
-        function loadMyStudents() {
-            var container = document.getElementById('myStudentsList');
-            if (!container) return;
-            container.innerHTML = '⏳ Загрузка...';
-            supabase
-                .from('my_students')
-                .select('*')
-                .order('created_at', { ascending: false })
-                .then(function(response) {
-                    if (response.error) { container.innerHTML = '❌ Ошибка: ' + response.error.message; return; }
-                    var data = response.data || [];
-                    if (data.length === 0) {
-                        container.innerHTML = '📭 Нет учеников. Добавь первого!';
-                        return;
-                    }
-                    var html = '<table class="admin-table"><tr><th>Имя</th><th>Класс</th><th>Начало занятий</th><th>Статус</th><th>Действия</th></tr>';
-                    for (var i = 0; i < data.length; i++) {
-                        var s = data[i];
-                        var statusText = s.status === 'active' ? '🟢 Активен' : '🔴 Неактивен';
-                        html += `
-                            <tr>
-                                <td>${s.name}</td>
-                                <td>${s.class || '—'}</td>
-                                <td>${s.start_date || '—'}</td>
-                                <td>${statusText}</td>
-                                <td>
-                                    <button class="admin-btn" onclick="toggleMyStudentStatus('${s.id}', '${s.status}')">${s.status === 'active' ? '🔴' : '🟢'}</button>
-                                    <button class="admin-btn danger" onclick="deleteMyStudent('${s.id}')">🗑</button>
-                                </td>
-                            </tr>
-                        `;
-                    }
-                    html += '</table>';
-                    container.innerHTML = html;
-                })
-                .catch(function(err) { container.innerHTML = '❌ Ошибка: ' + err.message; });
-        }
-
-        function addMyStudent() {
-            var name = prompt('Введите имя ученика:'); if (!name) return;
-            var className = prompt('Введите класс (10 или 11):');
-            var startDate = prompt('Введите дату начала (ГГГГ-ММ-ДД):');
-            var status = confirm('Активен?') ? 'active' : 'inactive';
-            supabase
-                .from('my_students')
-                .insert([{ name: name, class: className || null, start_date: startDate || null, status: status }])
-                .then(function(r) {
-                    if (r.error) alert('❌ Ошибка: ' + r.error.message);
-                    else { alert('✅ Ученик добавлен в список!');
-                        loadMyStudents(); }
-                })
-                .catch(function(err) { alert('❌ Ошибка: ' + err.message); });
-        }
-
-        function deleteMyStudent(id) {
-            if (!confirm('Удалить ученика из списка?')) return;
-            supabase
-                .from('my_students')
-                .delete()
-                .eq('id', id)
-                .then(function(response) {
-                    if (response.error) alert('❌ Ошибка: ' + response.error.message);
-                    else { alert('✅ Удалено');
-                        loadMyStudents(); }
-                })
-                .catch(function(err) { alert('❌ Ошибка: ' + err.message); });
-        }
-
-        function toggleMyStudentStatus(id, currentStatus) {
-            var newStatus = currentStatus === 'active' ? 'inactive' : 'active';
-            supabase
-                .from('my_students')
-                .update({ status: newStatus })
-                .eq('id', id)
-                .then(function(response) {
-                    if (response.error) alert('❌ Ошибка: ' + response.error.message);
-                    else loadMyStudents();
-                })
-                .catch(function(err) { alert('❌ Ошибка: ' + err.message); });
-        }
-
-        function loadAllHomeworks() {
-            var container = document.getElementById('homeworksList');
-            if (!container) return;
-            container.innerHTML = '⏳ Загрузка...';
-            supabase
-                .from('homeworks')
-                .select('*, video_sections(name, order_num)')
-                .order('created_at', { ascending: false })
-                .then(function(response) {
-                    if (response.error) { container.innerHTML = '❌ Ошибка: ' + response.error.message; return; }
-                    var data = response.data || [];
-                    if (data.length === 0) { container.innerHTML = '📭 Нет домашних заданий'; return; }
-                    supabase
-                        .from('students')
-                        .select('id, name')
-                        .then(function(studentsRes) {
-                            var studentsMap = {};
-                            if (studentsRes.data) {
-                                studentsRes.data.forEach(function(s) { studentsMap[s.id] = s.name; });
-                            }
-                            var html = `
-                                <table class="admin-table">
-                                    <tr><th>Название</th><th>Ученик</th><th>Раздел</th><th>№</th><th>Статус</th><th>Срок</th><th>PDF</th><th>Действия</th></tr>
-                            `;
-                            for (var i = 0; i < data.length; i++) {
-                                var h = data[i];
-                                var studentName = studentsMap[h.student_id] || 'Неизвестный ученик (ID: ' + h.student_id + ')';
-                                var sectionName = h.video_sections ? h.video_sections.name : '—';
-                                var sectionNum = h.video_sections ? h.video_sections.order_num : '—';
-                                var statusText = h.status === 'done' ? '✅ Выполнено' : '⏳ В процессе';
-                                html += `
-                                    <tr>
-                                        <td>${h.title}</td>
-                                        <td>${studentName}</td>
-                                        <td>${sectionName}</td>
-                                        <td style="color:#f5a623; font-weight:700;">${sectionNum}</td>
-                                        <td>${statusText}</td>
-                                        <td>${h.deadline || 'Без срока'}</td>
-                                        <td>${h.file_url ? `<a href="${h.file_url}" target="_blank" style="color:#88ccff;">📄 PDF</a>` : '—'}</td>
-                                        <td>
-                                            <button class="admin-btn" onclick="toggleHomeworkStatus('${h.id}', '${h.status}')">
-                                                ${h.status === 'done' ? '↩ Вернуть' : '✅ Отметить'}
-                                            </button>
-                                            <button class="admin-btn danger" onclick="deleteHomework('${h.id}')">🗑</button>
-                                        </td>
-                                    </tr>
-                                `;
-                            }
-                            html += '</table>';
-                            container.innerHTML = html;
-                        })
-                        .catch(function(err) { container.innerHTML = '❌ Ошибка загрузки учеников: ' + err.message; });
-                })
-                .catch(function(err) { container.innerHTML = '❌ Ошибка: ' + err.message; });
-        }
-
-        function showAssignmentModal() {
-            document.getElementById('assignmentModal').classList.add('active');
-            loadStudentsForSelect();
-        }
-
-        function closeAssignmentModal() {
-            document.getElementById('assignmentModal').classList.remove('active');
-            document.getElementById('sectionNumber').value = '';
-            document.getElementById('homeworkTitle').value = '';
-            document.getElementById('pdfFile').value = '';
-            document.getElementById('deadline').value = '';
-            document.getElementById('noDeadline').checked = false;
-            document.getElementById('sectionPreview').textContent = 'Введите номер для просмотра раздела';
-            document.getElementById('sectionPreview').style.color = '#666';
-        }
-
-        async function loadStudentsForSelect() {
-            const select = document.getElementById('studentSelect');
-            try {
-                const { data, error } = await supabase
-                    .from('students')
-                    .select('id, name')
-                    .order('name');
-                if (error) throw error;
-                select.innerHTML = '<option value="">Выберите ученика</option>';
-                data.forEach(student => {
-                    select.innerHTML += `<option value="${student.id}">${student.name}</option>`;
-                });
-                toggleStudentSelect();
-            } catch (err) {
-                select.innerHTML = '<option value="">Ошибка загрузки</option>';
-                console.error('Ошибка загрузки учеников:', err);
-            }
-        }
-
-        function toggleStudentSelect() {
-            const target = document.getElementById('assignmentTarget').value;
-            const wrapper = document.getElementById('studentSelectWrapper');
-            wrapper.style.display = target === 'single' ? 'block' : 'none';
-        }
-
-        document.addEventListener('DOMContentLoaded', function() {
-            document.getElementById('assignmentTarget').addEventListener('change', toggleStudentSelect);
-            document.getElementById('sectionNumber').addEventListener('input', function() {
-                const num = parseInt(this.value);
-                const preview = document.getElementById('sectionPreview');
-                if (num && num > 0) {
-                    preview.textContent = '🔍 Поиск раздела №' + num + '...';
-                    preview.style.color = '#666';
-                    previewSection(num);
-                } else {
-                    preview.textContent = 'Введите номер для просмотра раздела';
-                    preview.style.color = '#666';
-                }
-            });
-            loadTeacherSettings();
-        });
-
-        async function previewSection(number) {
-            try {
-                const { data, error } = await supabase
-                    .from('video_sections')
-                    .select('id, name')
-                    .eq('order_num', number)
-                    .single();
-                const preview = document.getElementById('sectionPreview');
-                if (error) {
-                    preview.textContent = '❌ Раздел №' + number + ' не найден';
-                    preview.style.color = '#f1948a';
-                    return;
-                }
-                preview.textContent = '✅ Найден раздел: "' + data.name + '"';
-                preview.style.color = '#2ecc71';
-            } catch (err) {
-                console.error('Ошибка поиска раздела:', err);
-            }
-        }
-
-        async function submitAssignment() {
-            const target = document.getElementById('assignmentTarget').value;
-            const studentId = document.getElementById('studentSelect').value;
-            const sectionNumber = document.getElementById('sectionNumber').value;
-            const title = document.getElementById('homeworkTitle').value.trim();
-            const fileInput = document.getElementById('pdfFile');
-            const deadline = document.getElementById('deadline').value;
-            const noDeadline = document.getElementById('noDeadline').checked;
-            if (!title) { alert('❌ Введите название ДЗ'); return; }
-            if (!sectionNumber) { alert('❌ Введите номер раздела'); return; }
-            if (target === 'single' && !studentId) { alert('❌ Выберите ученика'); return; }
-            let sectionData;
-            try {
-                const { data, error } = await supabase
-                    .from('video_sections')
-                    .select('id, name')
-                    .eq('order_num', parseInt(sectionNumber))
-                    .single();
-                if (error) { alert('❌ Раздел с номером ' + sectionNumber + ' не найден'); return; }
-                sectionData = data;
-            } catch (err) { alert('❌ Ошибка поиска раздела: ' + err.message); return; }
-            let pdfUrl = null;
-            if (fileInput.files.length > 0) {
-                const file = fileInput.files[0];
-                if (file.type !== 'application/pdf') { alert('❌ Загрузите PDF файл'); return; }
-                try {
-                    const path = 'homeworks/' + Date.now() + '_' + file.name;
-                    const { error: uploadError } = await supabase.storage
-                        .from('homework')
-                        .upload(path, file);
-                    if (uploadError) { alert('❌ Ошибка загрузки PDF: ' + uploadError.message); return; }
-                    const { data: urlData } = supabase.storage
-                        .from('homework')
-                        .getPublicUrl(path);
-                    pdfUrl = urlData.publicUrl;
-                } catch (err) { alert('❌ Ошибка загрузки PDF: ' + err.message); return; }
-            }
-            let students = [];
-            if (target === 'all') {
-                const { data, error } = await supabase
-                    .from('students')
-                    .select('id');
-                if (error) { alert('❌ Ошибка загрузки учеников: ' + error.message); return; }
-                students = data;
-            } else {
-                students = [{ id: studentId }];
-            }
-            if (students.length === 0) { alert('❌ Нет учеников для выдачи ДЗ'); return; }
-            const finalDeadline = noDeadline ? null : (deadline || null);
-            const homeworks = students.map(function(s) {
-                return {
-                    title: title,
-                    student_id: s.id,
-                    section_id: sectionData.id,
-                    status: 'pending',
-                    deadline: finalDeadline,
-                    file_url: pdfUrl,
-                    video_link: null
-                };
-            });
-            try {
-                const { error } = await supabase
-                    .from('homeworks')
-                    .insert(homeworks);
-                if (error) throw error;
-                var count = homeworks.length;
-                var deadlineText = noDeadline ? 'без дедлайна' : (deadline || 'не указан');
-                alert('✅ ДЗ "' + title + '" выдано ' + count + ' ученикам в раздел "' + sectionData.name + '"!\n📅 Срок: ' + deadlineText);
-                closeAssignmentModal();
-                loadAllHomeworks();
-                if (currentUser) {
-                    loadHomework(currentUser.id);
-                    loadDashboardOverview(currentUser.id);
-                }
-            } catch (err) { alert('❌ Ошибка сохранения ДЗ: ' + err.message); }
-        }
-
-        function toggleHomeworkStatus(id, currentStatus) {
-            var newStatus = currentStatus === 'done' ? 'pending' : 'done';
-            supabase
-                .from('homeworks')
-                .update({ status: newStatus })
-                .eq('id', id)
-                .then(function(response) {
-                    if (response.error) alert('❌ Ошибка: ' + response.error.message);
-                    else {
-                        loadAllHomeworks();
-                        if (currentUser) {
-                            loadHomework(currentUser.id);
-                            loadDashboardOverview(currentUser.id);
-                        }
-                    }
-                })
-                .catch(function(err) { alert('❌ Ошибка: ' + err.message); });
-        }
-
-        function deleteHomework(id) {
-            if (!confirm('Удалить задание?')) return;
-            supabase
-                .from('homeworks')
-                .delete()
-                .eq('id', id)
-                .then(function(response) {
-                    if (response.error) alert('❌ Ошибка: ' + response.error.message);
-                    else {
-                        alert('✅ Задание удалено');
-                        loadAllHomeworks();
-                        if (currentUser) {
-                            loadHomework(currentUser.id);
-                            loadDashboardOverview(currentUser.id);
-                        }
-                    }
-                })
-                .catch(function(err) { alert('❌ Ошибка: ' + err.message); });
-        }
-
-        function loadStats() {
+        window.loadStats = function() {
             var container = document.getElementById('statsContent');
             if (!container) return;
             container.innerHTML = '⏳ Загрузка...';
@@ -2637,49 +1838,443 @@
                                 .then(function(r3) {
                                     if (r3.error) { container.innerHTML = '❌ Ошибка'; return; }
                                     totalVideos = r3.data ? r3.data.length : 0;
-                                    container.innerHTML = `
-                                        <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:20px;">
-                                            <div style="background:rgba(255,255,255,0.05); padding:20px; border-radius:16px; text-align:center;">
-                                                <div style="font-size:48px;">👨‍🎓</div>
-                                                <div style="font-size:32px; font-weight:900; color:#ffffff;">${totalStudents}</div>
-                                                <div style="color:#666;">Учеников</div>
-                                            </div>
-                                            <div style="background:rgba(255,255,255,0.05); padding:20px; border-radius:16px; text-align:center;">
-                                                <div style="font-size:48px;">📝</div>
-                                                <div style="font-size:32px; font-weight:900; color:#ffffff;">${totalHomeworks}</div>
-                                                <div style="color:#666;">Всего ДЗ</div>
-                                            </div>
-                                            <div style="background:rgba(39,174,96,0.15); padding:20px; border-radius:16px; text-align:center;">
-                                                <div style="font-size:48px;">✅</div>
-                                                <div style="font-size:32px; font-weight:900; color:#2ecc71;">${doneHomeworks}</div>
-                                                <div style="color:#7ddfa0;">Выполнено</div>
-                                            </div>
-                                            <div style="background:rgba(231,76,60,0.15); padding:20px; border-radius:16px; text-align:center;">
-                                                <div style="font-size:48px;">⏳</div>
-                                                <div style="font-size:32px; font-weight:900; color:#f1948a;">${totalHomeworks - doneHomeworks}</div>
-                                                <div style="color:#f1948a;">В процессе</div>
-                                            </div>
-                                            <div style="background:rgba(52,152,219,0.15); padding:20px; border-radius:16px; text-align:center;">
-                                                <div style="font-size:48px;">🎥</div>
-                                                <div style="font-size:32px; font-weight:900; color:#85c1e9;">${totalVideos}</div>
-                                                <div style="color:#85c1e9;">Видео</div>
-                                            </div>
-                                        </div>
-                                    `;
+                                    container.innerHTML = '<div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:20px;"><div style="background:rgba(255,255,255,0.05); padding:20px; border-radius:16px; text-align:center;"><div style="font-size:48px;">👨‍🎓</div><div style="font-size:32px; font-weight:900; color:#ffffff;">' + totalStudents + '</div><div style="color:#666;">Учеников</div></div><div style="background:rgba(255,255,255,0.05); padding:20px; border-radius:16px; text-align:center;"><div style="font-size:48px;">📝</div><div style="font-size:32px; font-weight:900; color:#ffffff;">' + totalHomeworks + '</div><div style="color:#666;">Всего ДЗ</div></div><div style="background:rgba(39,174,96,0.15); padding:20px; border-radius:16px; text-align:center;"><div style="font-size:48px;">✅</div><div style="font-size:32px; font-weight:900; color:#2ecc71;">' + doneHomeworks + '</div><div style="color:#7ddfa0;">Выполнено</div></div><div style="background:rgba(231,76,60,0.15); padding:20px; border-radius:16px; text-align:center;"><div style="font-size:48px;">⏳</div><div style="font-size:32px; font-weight:900; color:#f1948a;">' + (totalHomeworks - doneHomeworks) + '</div><div style="color:#f1948a;">В процессе</div></div><div style="background:rgba(52,152,219,0.15); padding:20px; border-radius:16px; text-align:center;"><div style="font-size:48px;">🎥</div><div style="font-size:32px; font-weight:900; color:#85c1e9;">' + totalVideos + '</div><div style="color:#85c1e9;">Видео</div></div></div>';
                                 })
                                 .catch(function(err) { container.innerHTML = '❌ Ошибка: ' + err.message; });
                         })
                         .catch(function(err) { container.innerHTML = '❌ Ошибка: ' + err.message; });
                 })
                 .catch(function(err) { container.innerHTML = '❌ Ошибка: ' + err.message; });
-        }
+        };
 
-        function loadTopics() { /* Заглушка */ }
+        // ==========================================
+        // 6. ОСТАЛЬНЫЕ ФУНКЦИИ (ДЛЯ СТУДЕНТА)
+        // ==========================================
 
-        loadTaskCatalog();
-        loadTopics();
+        window.loadHomework = function(studentId) {
+            var container = document.getElementById('homeworkList');
+            if (!container) return;
+            container.innerHTML = '⏳ Загрузка...';
+            supabase
+                .from('homeworks')
+                .select('*, video_sections(name, order_num)')
+                .eq('student_id', studentId)
+                .order('deadline', { ascending: true, nulls_last: true })
+                .then(function(response) {
+                    if (response.error) { container.innerHTML = '❌ Ошибка загрузки ДЗ.'; return; }
+                    var data = response.data || [];
+                    if (!data || data.length === 0) {
+                        container.innerHTML = '<div style="color:#666; text-align:center; padding:30px;">📭 Нет заданий. Отдыхайте! 😊</div>';
+                        window.updateProgress(0, 0);
+                        window.updateHomeworkCounts([]);
+                        return;
+                    }
+                    window.updateHomeworkCounts(data);
+                    var filteredData = data.filter(function(hw) {
+                        if (currentHomeworkTab === 'active') return hw.status !== 'done';
+                        else return hw.status === 'done';
+                    });
+                    if (filteredData.length === 0) {
+                        var emptyText = currentHomeworkTab === 'active' ? '🎉 Все задания выполнены!' : '📭 Нет выполненных заданий';
+                        container.innerHTML = '<p style="color:#666; text-align:center; padding:30px;">' + emptyText + '</p>';
+                        var done = data.filter(function(h) { return h.status === 'done'; }).length;
+                        window.updateProgress(data.length, done);
+                        return;
+                    }
+                    var done = data.filter(function(h) { return h.status === 'done'; }).length;
+                    var html = '';
+                    for (var i = 0; i < filteredData.length; i++) {
+                        var hw = filteredData[i];
+                        var statusClass = hw.status === 'done' ? 'done' : 'pending';
+                        var statusText = hw.status === 'done' ? '✅ Выполнено' : '⏳ Ожидает проверки';
+                        var btnHtml = hw.status !== 'done' ? '<button class="btn-start" onclick="window.markDone(\'' + hw.id + '\')">✅ Отметить выполненным</button>' : '';
+                        var sectionInfo = '';
+                        if (hw.video_sections) {
+                            sectionInfo = '<div class="meta">📺 Раздел №' + hw.video_sections.order_num + ': ' + hw.video_sections.name + '</div>';
+                        }
+                        var videoBlock = '';
+                        if (hw.video_link) {
+                            videoBlock = '<div class="video-fallback"><div class="label">⚠️ Если видео не работает, вот ссылка:</div><a href="' + hw.video_link + '" target="_blank">' + hw.video_link + '</a></div>';
+                        }
+                        var tasksHtml = '';
+                        if (hw.tasks && hw.tasks.length > 0) {
+                            tasksHtml = '<div style="margin-top: 10px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.05);">';
+                            for (var j = 0; j < hw.tasks.length; j++) {
+                                var task = hw.tasks[j];
+                                if (task.is_homework) {
+                                    var isDone = task.done || false;
+                                    tasksHtml += '<div class="task-item-inline"><span class="task-num">№' + task.num + '</span><input type="text" placeholder="Введите ответ" ' + (isDone ? 'disabled' : '') + ' value="' + (isDone ? '✅' : '') + '"><button class="check-btn" onclick="window.checkAnswer(this, \'' + task.correct_answer + '\')" ' + (isDone ? 'disabled style="opacity:0.5;"' : '') + '>Проверить</button><span class="answer-result">' + (isDone ? '✅ Верно!' : '') + '</span>' + (task.type === 'second_part' ? '<span style="color:#f39c12; font-size:12px;">(2-я часть)</span>' : '') + '</div>';
+                                }
+                            }
+                            tasksHtml += '</div>';
+                        }
+                        var fileHtml = '';
+                        if (hw.file_url) {
+                            fileHtml = '<div class="meta">📎 <a href="' + hw.file_url + '" target="_blank">Скачать файл</a></div>';
+                        }
+                        var deadlineText = hw.deadline ? '📅 Срок: ' + hw.deadline : '📅 Без срока';
+                        html += '<div class="hw-card"><div class="title">' + hw.title + '</div>' + sectionInfo + '<div class="meta">' + deadlineText + '</div><div class="status ' + statusClass + '">' + statusText + '</div>' + btnHtml + fileHtml + videoBlock + tasksHtml + '</div>';
+                    }
+                    container.innerHTML = html;
+                    window.updateProgress(data.length, done);
+                })
+                .catch(function(err) { container.innerHTML = '❌ Ошибка: ' + err.message; });
+        };
 
-        console.log('Сайт загружен.');
+        window.updateProgress = function(total, done) {
+            var pct = total > 0 ? Math.round((done / total) * 100) : 0;
+            var progressText = document.getElementById('progressText');
+            var progressBar = document.getElementById('progressBar');
+            if (progressText) progressText.textContent = pct + '%';
+            if (progressBar) progressBar.style.width = pct + '%';
+        };
+
+        window.updateHomeworkCounts = function(data) {
+            var active = 0;
+            if (data && data.length > 0) {
+                data.forEach(function(hw) { if (hw.status !== 'done') active++; });
+            }
+            var hwBadgeEl = document.getElementById('hwBadge');
+            if (hwBadgeEl) hwBadgeEl.textContent = active;
+        };
+
+        window.markDone = function(id) {
+            supabase
+                .from('homeworks')
+                .update({ status: 'done' })
+                .eq('id', id)
+                .then(function(response) {
+                    if (response.error) { alert('❌ Ошибка: ' + response.error.message); return; }
+                    if (currentUser) {
+                        window.loadHomework(currentUser.id);
+                        window.loadDashboardOverview(currentUser.id);
+                    }
+                })
+                .catch(function(err) { alert('❌ Ошибка: ' + err.message); });
+        };
+
+        window.checkAnswer = function(button, correctAnswer) {
+            var input = button.previousElementSibling;
+            var resultSpan = button.nextElementSibling;
+            var userAnswer = input.value.trim();
+            if (!userAnswer) {
+                resultSpan.textContent = '❌ Введите ответ';
+                resultSpan.style.color = '#f1948a';
+                return;
+            }
+            var normalizedUser = userAnswer.replace(/,/g, '.').replace(/\s/g, '');
+            var normalizedCorrect = String(correctAnswer).replace(/,/g, '.').replace(/\s/g, '');
+            if (normalizedUser === normalizedCorrect) {
+                resultSpan.textContent = '✅ Верно!';
+                resultSpan.style.color = '#2ecc71';
+                input.disabled = true;
+                button.disabled = true;
+                button.style.opacity = '0.5';
+            } else {
+                resultSpan.textContent = '❌ Ошибка (правильно: ' + correctAnswer + ')';
+                resultSpan.style.color = '#f1948a';
+            }
+        };
+
+        window.loadDashboardOverview = function(studentId) {
+            supabase
+                .from('homeworks')
+                .select('*')
+                .eq('student_id', studentId)
+                .then(function(response) {
+                    if (response.error) return;
+                    var data = response.data || [];
+                    var total = data.length;
+                    var done = data.filter(function(h) { return h.status === 'done'; }).length;
+                    var pending = total - done;
+                    document.getElementById('statTotal').textContent = total;
+                    document.getElementById('statDone').textContent = done;
+                    document.getElementById('statPending').textContent = pending;
+                    var sectionsSet = new Set();
+                    data.forEach(function(h) { if (h.section_id) sectionsSet.add(h.section_id); });
+                    document.getElementById('statSections').textContent = sectionsSet.size;
+                    var pendingHw = data.filter(function(h) { return h.status !== 'done' && h.deadline; });
+                    pendingHw.sort(function(a, b) { return new Date(a.deadline) - new Date(b.deadline); });
+                    if (pendingHw.length > 0) {
+                        var next = pendingHw[0];
+                        document.getElementById('nextDeadlineTitle').textContent = next.title;
+                        var days = Math.ceil((new Date(next.deadline) - new Date()) / (1000 * 60 * 60 * 24));
+                        document.getElementById('nextDeadlineDays').textContent = days + ' дн.';
+                    } else {
+                        document.getElementById('nextDeadlineTitle').textContent = '🎉 Все задания выполнены!';
+                        document.getElementById('nextDeadlineDays').textContent = '✅';
+                    }
+                    var recent = data.slice(-3).reverse();
+                    var html = '';
+                    if (recent.length > 0) {
+                        html = '<div style="margin-top:12px;"><p style="color:#888; font-size:14px; margin-bottom:10px;">📋 Последние ДЗ</p>';
+                        recent.forEach(function(hw) {
+                            var status = hw.status === 'done' ? '✅' : '⏳';
+                            html += '<div style="display:flex; justify-content:space-between; padding:10px 14px; background:rgba(255,255,255,0.03); border-radius:10px; margin-bottom:6px; border:1px solid rgba(255,255,255,0.04);"><span style="color:#b0c4de;">' + hw.title + '</span><span style="color:' + (hw.status === 'done' ? '#2ecc71' : '#f39c12') + ';">' + status + '</span></div>';
+                        });
+                        html += '</div>';
+                    } else {
+                        html = '<p style="color:#666; text-align:center; padding:20px;">📭 Нет ДЗ</p>';
+                    }
+                    document.getElementById('recentHomeworks').innerHTML = html;
+                });
+        };
+
+        window.loadSectionsAndVideos = function() {
+            var tabsContainer1 = document.getElementById('videoTabsPart1');
+            var tabsContainer2 = document.getElementById('videoTabsPart2');
+            tabsContainer1.innerHTML = '⏳ Загрузка...';
+            tabsContainer2.innerHTML = '⏳ Загрузка...';
+            supabase
+                .from('video_sections')
+                .select('*')
+                .order('order_num', { ascending: true })
+                .then(function(response) {
+                    if (response.error) { tabsContainer1.innerHTML = '❌ Ошибка: ' + response.error.message; return; }
+                    sections = response.data || [];
+                    if (sections.length === 0) {
+                        tabsContainer1.innerHTML = '📭 Нет разделов. Добавьте их в базе.';
+                        tabsContainer2.innerHTML = '📭 Нет разделов. Добавьте их в базе.';
+                        return;
+                    }
+                    window.renderVideoTabs();
+                })
+                .catch(function(err) { tabsContainer1.innerHTML = '❌ Ошибка: ' + err.message; });
+        };
+
+        window.renderVideoTabs = function() {
+            var tabsContainer1 = document.getElementById('videoTabsPart1');
+            var tabsContainer2 = document.getElementById('videoTabsPart2');
+            if (!sections || sections.length === 0) {
+                tabsContainer1.innerHTML = '📭 Нет разделов';
+                tabsContainer2.innerHTML = '📭 Нет разделов';
+                return;
+            }
+            var part1 = sections.slice(0, 12);
+            var part2 = sections.slice(12);
+            var tabsHtml1 = '';
+            var tabsHtml2 = '';
+            part1.forEach(function(section, index) {
+                var num = index + 1;
+                tabsHtml1 += '<button onclick="window.openSection(\'' + section.id + '\')"><span class="num">' + num + '</span> ' + section.name + '</button>';
+            });
+            part2.forEach(function(section, index) {
+                var num = index + 13;
+                tabsHtml2 += '<button onclick="window.openSection(\'' + section.id + '\')"><span class="num">' + num + '</span> ' + section.name + '</button>';
+            });
+            tabsContainer1.innerHTML = tabsHtml1 || '📭 Нет разделов в первой части';
+            tabsContainer2.innerHTML = tabsHtml2 || '📭 Нет разделов во второй части';
+        };
+
+        // ==========================================
+        // 7. АВТОРИЗАЦИЯ
+        // ==========================================
+
+        document.getElementById('loginBtn').addEventListener('click', function() {
+            var email = document.getElementById('email').value;
+            var password = document.getElementById('password').value;
+            resultDiv.className = 'result-info';
+            resultDiv.innerHTML = '⏳ Проверяю...';
+            supabase
+                .from('students')
+                .select('*')
+                .eq('email', email)
+                .eq('password', password)
+                .then(function(response) {
+                    if (response.error) {
+                        resultDiv.className = 'result-error';
+                        resultDiv.innerHTML = '❌ Ошибка: ' + response.error.message;
+                        return;
+                    }
+                    if (response.data && response.data.length > 0) {
+                        var user = response.data[0];
+                        currentUser = user;
+                        resultDiv.className = 'result-success';
+                        resultDiv.innerHTML = '✅ Привет, ' + user.name + '!';
+                        document.getElementById('profileBlock').style.display = 'none';
+                        document.getElementById('contactsBlock').style.display = 'none';
+                        document.getElementById('loginSection').style.display = 'none';
+                        document.getElementById('dashboard').style.display = 'block';
+                        welcomeMessage.textContent = '👋 Привет, ' + user.name + '!';
+                        if (user.role === 'admin') {
+                            document.getElementById('adminPanel').style.display = 'block';
+                            window.loadAdminData();
+                            window.loadTeacherSettings();
+                        }
+                        window.loadHomework(user.id);
+                        window.loadDashboardOverview(user.id);
+                        window.loadStudentSchedule(user.id);
+                        window.loadSectionsAndVideos();
+                        window.loadSettings();
+                        if (user.settings) {
+                            window.applyTheme(user.settings.theme || 'dark');
+                        }
+                    } else {
+                        resultDiv.className = 'result-error';
+                        resultDiv.innerHTML = '❌ Неверный логин или пароль.';
+                    }
+                })
+                .catch(function(err) {
+                    resultDiv.className = 'result-error';
+                    resultDiv.innerHTML = '❌ Ошибка: ' + err.message;
+                });
+        });
+
+        document.getElementById('backToDashboard').addEventListener('click', function() {
+            sectionPage.classList.remove('active');
+            mainContent.style.display = 'block';
+            dashboard.style.display = 'block';
+            if (currentUser && currentUser.role === 'admin') adminPanel.style.display = 'block';
+        });
+
+        // ==========================================
+        // 8. МОДАЛЬНОЕ ОКНО ВЫДАЧИ ДЗ
+        // ==========================================
+
+        window.showAssignmentModal = function() {
+            document.getElementById('assignmentModal').classList.add('active');
+            window.loadStudentsForSelect();
+        };
+
+        window.closeAssignmentModal = function() {
+            document.getElementById('assignmentModal').classList.remove('active');
+            document.getElementById('sectionNumber').value = '';
+            document.getElementById('homeworkTitle').value = '';
+            document.getElementById('pdfFile').value = '';
+            document.getElementById('deadline').value = '';
+            document.getElementById('noDeadline').checked = false;
+            document.getElementById('sectionPreview').textContent = 'Введите номер для просмотра раздела';
+            document.getElementById('sectionPreview').style.color = '#666';
+        };
+
+        window.loadStudentsForSelect = async function() {
+            const select = document.getElementById('studentSelect');
+            try {
+                const { data, error } = await supabase.from('students').select('id, name').order('name');
+                if (error) throw error;
+                select.innerHTML = '<option value="">Выберите ученика</option>';
+                data.forEach(function(student) {
+                    select.innerHTML += '<option value="' + student.id + '">' + student.name + '</option>';
+                });
+                window.toggleStudentSelect();
+            } catch (err) {
+                select.innerHTML = '<option value="">Ошибка загрузки</option>';
+                console.error('Ошибка загрузки учеников:', err);
+            }
+        };
+
+        window.toggleStudentSelect = function() {
+            var target = document.getElementById('assignmentTarget').value;
+            var wrapper = document.getElementById('studentSelectWrapper');
+            wrapper.style.display = target === 'single' ? 'block' : 'none';
+        };
+
+        document.getElementById('assignmentTarget').addEventListener('change', window.toggleStudentSelect);
+
+        document.getElementById('sectionNumber').addEventListener('input', function() {
+            var num = parseInt(this.value);
+            var preview = document.getElementById('sectionPreview');
+            if (num && num > 0) {
+                preview.textContent = '🔍 Поиск раздела №' + num + '...';
+                preview.style.color = '#666';
+                window.previewSection(num);
+            } else {
+                preview.textContent = 'Введите номер для просмотра раздела';
+                preview.style.color = '#666';
+            }
+        });
+
+        window.previewSection = async function(number) {
+            try {
+                const { data, error } = await supabase.from('video_sections').select('id, name').eq('order_num', number).single();
+                var preview = document.getElementById('sectionPreview');
+                if (error) {
+                    preview.textContent = '❌ Раздел №' + number + ' не найден';
+                    preview.style.color = '#f1948a';
+                    return;
+                }
+                preview.textContent = '✅ Найден раздел: "' + data.name + '"';
+                preview.style.color = '#2ecc71';
+            } catch (err) {
+                console.error('Ошибка поиска раздела:', err);
+            }
+        };
+
+        window.submitAssignment = async function() {
+            var target = document.getElementById('assignmentTarget').value;
+            var studentId = document.getElementById('studentSelect').value;
+            var sectionNumber = document.getElementById('sectionNumber').value;
+            var title = document.getElementById('homeworkTitle').value.trim();
+            var fileInput = document.getElementById('pdfFile');
+            var deadline = document.getElementById('deadline').value;
+            var noDeadline = document.getElementById('noDeadline').checked;
+            if (!title) { alert('❌ Введите название ДЗ'); return; }
+            if (!sectionNumber) { alert('❌ Введите номер раздела'); return; }
+            if (target === 'single' && !studentId) { alert('❌ Выберите ученика'); return; }
+            var sectionData;
+            try {
+                var result = await supabase.from('video_sections').select('id, name').eq('order_num', parseInt(sectionNumber)).single();
+                if (result.error) { alert('❌ Раздел с номером ' + sectionNumber + ' не найден'); return; }
+                sectionData = result.data;
+            } catch (err) { alert('❌ Ошибка поиска раздела: ' + err.message); return; }
+            var pdfUrl = null;
+            if (fileInput.files.length > 0) {
+                var file = fileInput.files[0];
+                if (file.type !== 'application/pdf') { alert('❌ Загрузите PDF файл'); return; }
+                try {
+                    var path = 'homeworks/' + Date.now() + '_' + file.name;
+                    var uploadResult = await supabase.storage.from('homework').upload(path, file);
+                    if (uploadResult.error) { alert('❌ Ошибка загрузки PDF: ' + uploadResult.error.message); return; }
+                    var urlData = supabase.storage.from('homework').getPublicUrl(path);
+                    pdfUrl = urlData.data.publicUrl;
+                } catch (err) { alert('❌ Ошибка загрузки PDF: ' + err.message); return; }
+            }
+            var students = [];
+            if (target === 'all') {
+                var studentResult = await supabase.from('students').select('id');
+                if (studentResult.error) { alert('❌ Ошибка загрузки учеников: ' + studentResult.error.message); return; }
+                students = studentResult.data;
+            } else {
+                students = [{ id: studentId }];
+            }
+            if (students.length === 0) { alert('❌ Нет учеников для выдачи ДЗ'); return; }
+            var finalDeadline = noDeadline ? null : (deadline || null);
+            var homeworks = students.map(function(s) {
+                return { title: title, student_id: s.id, section_id: sectionData.id, status: 'pending', deadline: finalDeadline, file_url: pdfUrl, video_link: null };
+            });
+            try {
+                var insertResult = await supabase.from('homeworks').insert(homeworks);
+                if (insertResult.error) throw insertResult.error;
+                var count = homeworks.length;
+                var deadlineText = noDeadline ? 'без дедлайна' : (deadline || 'не указан');
+                alert('✅ ДЗ "' + title + '" выдано ' + count + ' ученикам в раздел "' + sectionData.name + '"!\n📅 Срок: ' + deadlineText);
+                window.closeAssignmentModal();
+                window.loadAllHomeworks();
+                if (currentUser) {
+                    window.loadHomework(currentUser.id);
+                    window.loadDashboardOverview(currentUser.id);
+                }
+            } catch (err) { alert('❌ Ошибка сохранения ДЗ: ' + err.message); }
+        };
+
+        // ==========================================
+        // 9. АДМИНКА - ЗАГРУЗКА ВСЕХ ДАННЫХ
+        // ==========================================
+
+        window.loadAdminData = function() {
+            window.loadStudents();
+            window.loadMyStudents();
+            window.loadAllHomeworks();
+            window.loadVideosAdmin();
+            window.loadScheduleAdmin();
+            window.loadStats();
+        };
+
+        document.addEventListener('DOMContentLoaded', function() {
+            window.loadTeacherSettings();
+        });
+
+        console.log('Сайт загружен!');
     </script>
 
 </body>
