@@ -50,45 +50,6 @@
         #dashboard .progress .bar { background: rgba(255,255,255,0.1); border-radius: 10px; height: 10px; overflow: hidden; margin-top: 5px; }
         #dashboard .progress .bar .fill { background: linear-gradient(90deg, #27ae60, #2ecc71); height: 100%; transition: width 0.5s; }
 
-        .homework-tabs {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-            border-bottom: 1px solid rgba(255,255,255,0.05);
-            padding-bottom: 10px;
-        }
-        .homework-tabs button {
-            background: rgba(255,255,255,0.05);
-            border: 1px solid rgba(255,255,255,0.05);
-            padding: 10px 24px;
-            border-radius: 30px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: 0.3s;
-            color: #b0c4de;
-        }
-        .homework-tabs button:hover {
-            background: #302b63;
-            color: white;
-            border-color: #667eea;
-        }
-        .homework-tabs button.active {
-            background: #302b63;
-            color: white;
-            border-color: #667eea;
-        }
-        .homework-tabs button .badge {
-            display: inline-block;
-            background: rgba(255,255,255,0.1);
-            padding: 0 8px;
-            border-radius: 12px;
-            font-size: 12px;
-            margin-left: 6px;
-        }
-        .homework-tabs button.active .badge {
-            background: rgba(255,255,255,0.2);
-        }
-
         .hw-card { padding: 16px; border: 1px solid rgba(255,255,255,0.05); border-radius: 12px; margin-bottom: 12px; background: rgba(255,255,255,0.03); }
         .hw-card .title { font-size: 18px; font-weight: 700; color: #ffffff; }
         .hw-card .meta { color: #888; font-size: 14px; margin: 4px 0; }
@@ -689,62 +650,6 @@
             font-size: 13px;
         }
 
-        /* Фильтр ДЗ */
-        .homework-filter {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-            margin-bottom: 16px;
-        }
-
-        .homework-filter button {
-            background: rgba(255,255,255,0.03);
-            border: 1px solid rgba(255,255,255,0.05);
-            padding: 6px 16px;
-            border-radius: 50px;
-            cursor: pointer;
-            color: #888;
-            font-size: 13px;
-            transition: 0.3s;
-            font-family: Arial, sans-serif;
-        }
-
-        .homework-filter button:hover {
-            background: rgba(255,255,255,0.05);
-            color: #ffffff;
-        }
-
-        .homework-filter button.active {
-            background: rgba(102,126,234,0.15);
-            color: #ffffff;
-            border-color: rgba(102,126,234,0.2);
-        }
-
-        /* Пустые состояния */
-        .empty-state {
-            text-align: center;
-            padding: 40px 20px;
-            color: #666;
-        }
-
-        .empty-state .icon {
-            font-size: 48px;
-            display: block;
-            margin-bottom: 12px;
-        }
-
-        .empty-state .title {
-            font-size: 18px;
-            color: #b0c4de;
-            font-weight: 600;
-        }
-
-        .empty-state .desc {
-            font-size: 14px;
-            color: #666;
-            margin-top: 4px;
-        }
-
         footer { text-align: center; padding: 30px 20px; color: #666; font-size: 14px; border-top: 1px solid rgba(255,255,255,0.05); margin-top: 40px; }
 
         @media (max-width: 700px) {
@@ -911,16 +816,6 @@
 
                     <div id="page-homeworks" class="dashboard-page" style="display:none;">
                         <div class="section-title">📚 Мои домашние задания</div>
-                        
-                        <div class="homework-tabs">
-                            <button class="active" data-tab="active" onclick="switchHomeworkTab('active')">
-                                📝 Активные <span class="badge" id="activeCount">0</span>
-                            </button>
-                            <button data-tab="completed" onclick="switchHomeworkTab('completed')">
-                                ✅ Выполненные <span class="badge" id="completedCount">0</span>
-                            </button>
-                        </div>
-                        
                         <div id="homeworkList"><p>Загрузка...</p></div>
                     </div>
 
@@ -1740,12 +1635,6 @@
 
         function switchHomeworkTab(tab) {
             currentHomeworkTab = tab;
-            document.querySelectorAll('.homework-tabs button').forEach(function(btn) {
-                btn.classList.remove('active');
-                if (btn.dataset.tab === tab) {
-                    btn.classList.add('active');
-                }
-            });
             if (currentUser) {
                 loadHomework(currentUser.id);
             }
@@ -1763,13 +1652,14 @@
                     }
                 });
             }
-            document.getElementById('activeCount').textContent = active;
-            document.getElementById('completedCount').textContent = completed;
-            document.getElementById('hwBadge').textContent = active;
+            // Проверяем существование элементов
+            var hwBadgeEl = document.getElementById('hwBadge');
+            if (hwBadgeEl) hwBadgeEl.textContent = active;
         }
 
         function loadHomework(studentId) {
             var container = document.getElementById('homeworkList');
+            if (!container) return;
             container.innerHTML = '⏳ Загрузка...';
 
             supabase
@@ -1787,7 +1677,7 @@
                     }
 
                     if (!data || data.length === 0) {
-                        container.innerHTML = '<div class="empty-state"><span class="icon">📭</span><div class="title">Нет заданий</div><div class="desc">Отдыхайте! 😊</div></div>';
+                        container.innerHTML = '<div style="color:#666; text-align:center; padding:30px;">📭 Нет заданий. Отдыхайте! 😊</div>';
                         updateProgress(0, 0);
                         updateHomeworkCounts([]);
                         return;
@@ -1805,7 +1695,7 @@
 
                     if (filteredData.length === 0) {
                         var emptyText = currentHomeworkTab === 'active' ? '🎉 Все задания выполнены!' : '📭 Нет выполненных заданий';
-                        container.innerHTML = '<div class="empty-state"><span class="icon">' + (currentHomeworkTab === 'active' ? '🎉' : '📭') + '</span><div class="title">' + emptyText + '</div></div>';
+                        container.innerHTML = '<p style="color:#666; text-align:center; padding:30px;">' + emptyText + '</p>';
                         var done = data.filter(function(h) { return h.status === 'done'; }).length;
                         updateProgress(data.length, done);
                         return;
@@ -1887,8 +1777,10 @@
 
         function updateProgress(total, done) {
             var pct = total > 0 ? Math.round((done / total) * 100) : 0;
-            document.getElementById('progressText').textContent = pct + '%';
-            document.getElementById('progressBar').style.width = pct + '%';
+            var progressText = document.getElementById('progressText');
+            var progressBar = document.getElementById('progressBar');
+            if (progressText) progressText.textContent = pct + '%';
+            if (progressBar) progressBar.style.width = pct + '%';
         }
 
         function markDone(id) {
@@ -1914,6 +1806,7 @@
 
         function loadStudentSchedule(studentId) {
             var container = document.getElementById('studentSchedule');
+            if (!container) return;
             container.innerHTML = '⏳ Загрузка...';
 
             supabase
@@ -1971,6 +1864,7 @@
 
         function loadScheduleAdmin() {
             var container = document.getElementById('scheduleList');
+            if (!container) return;
             container.innerHTML = '⏳ Загрузка...';
 
             supabase
@@ -2441,6 +2335,7 @@
 
         function loadVideosAdmin() {
             var container = document.getElementById('videosList');
+            if (!container) return;
             container.innerHTML = '⏳ Загрузка...';
 
             supabase
@@ -2531,6 +2426,7 @@
 
         function loadStudents() {
             var container = document.getElementById('studentsList');
+            if (!container) return;
             container.innerHTML = '⏳ Загрузка...';
             supabase
                 .from('students')
@@ -2613,6 +2509,7 @@
 
         function loadMyStudents() {
             var container = document.getElementById('myStudentsList');
+            if (!container) return;
             container.innerHTML = '⏳ Загрузка...';
 
             supabase
@@ -2722,6 +2619,7 @@
 
         function loadAllHomeworks() {
             var container = document.getElementById('homeworksList');
+            if (!container) return;
             container.innerHTML = '⏳ Загрузка...';
 
             supabase
@@ -3064,6 +2962,7 @@
 
         function loadTasks() {
             var container = document.getElementById('tasksList');
+            if (!container) return;
             container.innerHTML = '⏳ Загрузка...';
 
             supabase
@@ -3147,6 +3046,7 @@
 
         function loadStats() {
             var container = document.getElementById('statsContent');
+            if (!container) return;
             container.innerHTML = '⏳ Загрузка...';
 
             var totalStudents = 0;
