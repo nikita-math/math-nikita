@@ -559,6 +559,192 @@
             resize: vertical;
         }
 
+        /* ===== ЛИЧНЫЙ КАБИНЕТ ===== */
+        .dashboard-layout {
+            display: flex;
+            gap: 30px;
+            margin-top: 20px;
+        }
+
+        .dashboard-sidebar {
+            width: 220px;
+            flex-shrink: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .dashboard-sidebar button {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.05);
+            padding: 12px 18px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: 0.3s;
+            color: #888;
+            text-align: left;
+            font-family: Arial, sans-serif;
+            font-size: 15px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .dashboard-sidebar button:hover {
+            background: rgba(255,255,255,0.05);
+            color: #ffffff;
+            border-color: rgba(255,255,255,0.1);
+        }
+
+        .dashboard-sidebar button.active {
+            background: rgba(102,126,234,0.15);
+            color: #ffffff;
+            border-color: rgba(102,126,234,0.2);
+        }
+
+        .dashboard-sidebar button .badge {
+            margin-left: auto;
+            background: rgba(231,76,60,0.2);
+            color: #e74c3c;
+            padding: 0 10px;
+            border-radius: 50px;
+            font-size: 12px;
+        }
+
+        .dashboard-content {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .dashboard-content .section-title {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: #ffffff;
+        }
+
+        /* Карточки статистики */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .stats-grid .stat-card {
+            background: rgba(255,255,255,0.03);
+            padding: 20px;
+            border-radius: 16px;
+            border: 1px solid rgba(255,255,255,0.05);
+            text-align: center;
+        }
+
+        .stats-grid .stat-card .number {
+            font-size: 32px;
+            font-weight: 900;
+            color: #ffffff;
+        }
+
+        .stats-grid .stat-card .label {
+            color: #888;
+            font-size: 13px;
+            margin-top: 4px;
+        }
+
+        .stats-grid .stat-card .icon {
+            font-size: 28px;
+            margin-bottom: 8px;
+        }
+
+        /* Ближайший дедлайн */
+        .deadline-card {
+            background: rgba(245,166,35,0.08);
+            border: 1px solid rgba(245,166,35,0.15);
+            border-radius: 16px;
+            padding: 16px 20px;
+            margin-bottom: 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .deadline-card .label {
+            color: #f5a623;
+            font-weight: 600;
+        }
+
+        .deadline-card .title {
+            color: #ffffff;
+            font-weight: 600;
+        }
+
+        .deadline-card .days {
+            background: rgba(245,166,35,0.15);
+            color: #f5a623;
+            padding: 4px 14px;
+            border-radius: 50px;
+            font-size: 13px;
+        }
+
+        /* Фильтр ДЗ */
+        .homework-filter {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+
+        .homework-filter button {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.05);
+            padding: 6px 16px;
+            border-radius: 50px;
+            cursor: pointer;
+            color: #888;
+            font-size: 13px;
+            transition: 0.3s;
+            font-family: Arial, sans-serif;
+        }
+
+        .homework-filter button:hover {
+            background: rgba(255,255,255,0.05);
+            color: #ffffff;
+        }
+
+        .homework-filter button.active {
+            background: rgba(102,126,234,0.15);
+            color: #ffffff;
+            border-color: rgba(102,126,234,0.2);
+        }
+
+        /* Пустые состояния */
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #666;
+        }
+
+        .empty-state .icon {
+            font-size: 48px;
+            display: block;
+            margin-bottom: 12px;
+        }
+
+        .empty-state .title {
+            font-size: 18px;
+            color: #b0c4de;
+            font-weight: 600;
+        }
+
+        .empty-state .desc {
+            font-size: 14px;
+            color: #666;
+            margin-top: 4px;
+        }
+
         footer { text-align: center; padding: 30px 20px; color: #666; font-size: 14px; border-top: 1px solid rgba(255,255,255,0.05); margin-top: 40px; }
 
         @media (max-width: 700px) {
@@ -578,6 +764,31 @@
             .deadline-row { flex-direction: column; align-items: stretch; }
             .deadline-row input[type="date"] { width: 100%; }
             .settings-avatar-container .btn-group .admin-btn { flex: 1; }
+            .dashboard-layout {
+                flex-direction: column;
+            }
+            .dashboard-sidebar {
+                width: 100%;
+                flex-direction: row;
+                flex-wrap: wrap;
+            }
+            .dashboard-sidebar button {
+                flex: 1;
+                min-width: 120px;
+                justify-content: center;
+                font-size: 13px;
+                padding: 10px 14px;
+            }
+            .dashboard-sidebar button .badge {
+                margin-left: 6px;
+            }
+            .deadline-card {
+                flex-direction: column;
+                text-align: center;
+            }
+            .stats-grid {
+                grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            }
         }
     </style>
 </head>
@@ -631,38 +842,110 @@
 
         <div id="dashboard">
             <div class="header">
-                <h3 id="welcomeMessage">📚 Мои домашние задания</h3>
+                <h3 id="welcomeMessage">👋 Привет!</h3>
                 <button class="logout-btn" id="logoutBtn">Выйти</button>
             </div>
-            <div class="progress">
-                <div>📊 Прогресс: <span id="progressText">0%</span></div>
-                <div class="bar"><div class="fill" id="progressBar" style="width:0%;"></div></div>
-            </div>
-            
-            <div class="homework-tabs">
-                <button class="active" data-tab="active" onclick="switchHomeworkTab('active')">
-                    📝 Активные <span class="badge" id="activeCount">0</span>
-                </button>
-                <button data-tab="completed" onclick="switchHomeworkTab('completed')">
-                    ✅ Выполненные <span class="badge" id="completedCount">0</span>
-                </button>
-            </div>
-            
-            <div id="homeworkList"><p>Загрузка...</p></div>
 
-            <div class="schedule-section">
-                <h3>📅 Моё расписание</h3>
-                <div id="studentSchedule"><p>Загрузка...</p></div>
-            </div>
+            <div class="dashboard-layout">
+                <div class="dashboard-sidebar">
+                    <button class="active" data-page="overview" onclick="switchDashboardPage('overview')">
+                        🏠 Обзор
+                    </button>
+                    <button data-page="homeworks" onclick="switchDashboardPage('homeworks')">
+                        📚 Мои ДЗ
+                        <span class="badge" id="hwBadge">0</span>
+                    </button>
+                    <button data-page="stats" onclick="switchDashboardPage('stats')">
+                        📊 Статистика
+                    </button>
+                    <button data-page="messages" onclick="switchDashboardPage('messages')">
+                        💬 Сообщения
+                        <span class="badge" id="msgBadge">0</span>
+                    </button>
+                    <button data-page="settings" onclick="switchDashboardPage('settings')">
+                        ⚙️ Настройки
+                    </button>
+                </div>
 
-            <div class="video-section">
-                <h3>🎥 Видеоуроки по темам</h3>
+                <div class="dashboard-content">
+                    <div id="page-overview" class="dashboard-page">
+                        <div class="section-title">🏠 Обзор</div>
+                        
+                        <div class="stats-grid" id="statsGrid">
+                            <div class="stat-card">
+                                <div class="icon">📝</div>
+                                <div class="number" id="statTotal">0</div>
+                                <div class="label">Всего ДЗ</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="icon">✅</div>
+                                <div class="number" id="statDone">0</div>
+                                <div class="label">Выполнено</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="icon">⏳</div>
+                                <div class="number" id="statPending">0</div>
+                                <div class="label">Ожидает</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="icon">📅</div>
+                                <div class="number" id="statSections">0</div>
+                                <div class="label">Разделов</div>
+                            </div>
+                        </div>
 
-                <div class="part-divider">📘 Первая часть</div>
-                <div class="video-tabs" id="videoTabsPart1"></div>
+                        <div id="nextDeadlineContainer">
+                            <div class="deadline-card">
+                                <div>
+                                    <span class="label">⏰ Ближайший дедлайн</span>
+                                    <div class="title" id="nextDeadlineTitle">Нет активных ДЗ</div>
+                                </div>
+                                <span class="days" id="nextDeadlineDays">—</span>
+                            </div>
+                        </div>
 
-                <div class="part-divider">📗 Вторая часть</div>
-                <div class="video-tabs" id="videoTabsPart2"></div>
+                        <div id="recentHomeworks">
+                            <p style="color:#666;">Загрузка...</p>
+                        </div>
+                    </div>
+
+                    <div id="page-homeworks" class="dashboard-page" style="display:none;">
+                        <div class="section-title">📚 Мои домашние задания</div>
+                        
+                        <div class="homework-filter" id="hwFilter">
+                            <button class="active" data-section="all" onclick="filterHomeworks('all')">Все</button>
+                        </div>
+                        
+                        <div id="homeworkList"><p>Загрузка...</p></div>
+                    </div>
+
+                    <div id="page-stats" class="dashboard-page" style="display:none;">
+                        <div class="section-title">📊 Статистика</div>
+                        <div class="empty-state">
+                            <span class="icon">📈</span>
+                            <div class="title">Статистика в разработке</div>
+                            <div class="desc">Скоро здесь появится подробная аналитика по вашему прогрессу</div>
+                        </div>
+                    </div>
+
+                    <div id="page-messages" class="dashboard-page" style="display:none;">
+                        <div class="section-title">💬 Сообщения</div>
+                        <div class="empty-state">
+                            <span class="icon">💬</span>
+                            <div class="title">Чат с преподавателем</div>
+                            <div class="desc">Здесь будут ваши сообщения с репетитором</div>
+                        </div>
+                    </div>
+
+                    <div id="page-settings" class="dashboard-page" style="display:none;">
+                        <div class="section-title">⚙️ Настройки</div>
+                        <div class="empty-state">
+                            <span class="icon">⚙️</span>
+                            <div class="title">Настройки профиля</div>
+                            <div class="desc">Скоро здесь можно будет изменить личные данные</div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -720,7 +1003,6 @@
             </div>
             <div class="admin-content" id="tab-settings">
                 <div style="display: flex; flex-wrap: wrap; gap: 40px; align-items: flex-start;">
-                    <!-- Левая колонка - Аватар -->
                     <div style="flex: 1; min-width: 250px;">
                         <h4 style="color: #f5a623; margin-bottom: 15px;">📸 Фото профиля</h4>
                         <div class="settings-avatar-container">
@@ -735,7 +1017,6 @@
                             </div>
                         </div>
                     </div>
-                    <!-- Правая колонка - Информация -->
                     <div style="flex: 2; min-width: 300px;">
                         <h4 style="color: #f5a623; margin-bottom: 15px;">📝 Информация</h4>
                         <div class="settings-info">
@@ -843,6 +1124,7 @@
         var currentUser = null;
         var sections = [];
         var currentHomeworkTab = 'active';
+        var currentDashboardPage = 'overview';
 
         var loginSection = document.getElementById('loginSection');
         var dashboard = document.getElementById('dashboard');
@@ -865,11 +1147,96 @@
         var daysArray = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'];
 
         // ==========================================
+        // ЛИЧНЫЙ КАБИНЕТ - НАВИГАЦИЯ
+        // ==========================================
+
+        function switchDashboardPage(page) {
+            currentDashboardPage = page;
+            
+            document.querySelectorAll('.dashboard-sidebar button').forEach(function(btn) {
+                btn.classList.remove('active');
+                if (btn.dataset.page === page) {
+                    btn.classList.add('active');
+                }
+            });
+            
+            document.querySelectorAll('.dashboard-page').forEach(function(p) {
+                p.style.display = 'none';
+            });
+            var target = document.getElementById('page-' + page);
+            if (target) target.style.display = 'block';
+        }
+
+        // ==========================================
+        // ЗАГРУЗКА ДАННЫХ ДЛЯ ОБЗОРА
+        // ==========================================
+
+        function loadDashboardOverview(studentId) {
+            supabase
+                .from('homeworks')
+                .select('*')
+                .eq('student_id', studentId)
+                .then(function(response) {
+                    if (response.error) return;
+                    
+                    var data = response.data || [];
+                    var total = data.length;
+                    var done = data.filter(function(h) { return h.status === 'done'; }).length;
+                    var pending = total - done;
+                    
+                    document.getElementById('statTotal').textContent = total;
+                    document.getElementById('statDone').textContent = done;
+                    document.getElementById('statPending').textContent = pending;
+                    
+                    var sectionsSet = new Set();
+                    data.forEach(function(h) {
+                        if (h.section_id) sectionsSet.add(h.section_id);
+                    });
+                    document.getElementById('statSections').textContent = sectionsSet.size;
+                    
+                    var pendingHw = data.filter(function(h) { 
+                        return h.status !== 'done' && h.deadline; 
+                    });
+                    pendingHw.sort(function(a, b) { 
+                        return new Date(a.deadline) - new Date(b.deadline); 
+                    });
+                    
+                    if (pendingHw.length > 0) {
+                        var next = pendingHw[0];
+                        document.getElementById('nextDeadlineTitle').textContent = next.title;
+                        var days = Math.ceil((new Date(next.deadline) - new Date()) / (1000 * 60 * 60 * 24));
+                        document.getElementById('nextDeadlineDays').textContent = days + ' дн.';
+                    } else {
+                        document.getElementById('nextDeadlineTitle').textContent = '🎉 Все задания выполнены!';
+                        document.getElementById('nextDeadlineDays').textContent = '✅';
+                    }
+                    
+                    var recent = data.slice(-3).reverse();
+                    var html = '';
+                    if (recent.length > 0) {
+                        html = '<div style="margin-top:12px;"><p style="color:#888; font-size:14px; margin-bottom:10px;">📋 Последние ДЗ</p>';
+                        recent.forEach(function(hw) {
+                            var status = hw.status === 'done' ? '✅' : '⏳';
+                            html += `
+                                <div style="display:flex; justify-content:space-between; padding:10px 14px; background:rgba(255,255,255,0.03); border-radius:10px; margin-bottom:6px; border:1px solid rgba(255,255,255,0.04);">
+                                    <span style="color:#b0c4de;">${hw.title}</span>
+                                    <span style="color:${hw.status === 'done' ? '#2ecc71' : '#f39c12'};">${status}</span>
+                                </div>
+                            `;
+                        });
+                        html += '</div>';
+                    } else {
+                        html = '<p style="color:#666; text-align:center; padding:20px;">📭 Нет ДЗ</p>';
+                    }
+                    document.getElementById('recentHomeworks').innerHTML = html;
+                });
+        }
+
+        // ==========================================
         // НАСТРОЙКИ - АВАТАР И ИНФОРМАЦИЯ
         // ==========================================
 
         function updateAvatarDisplay(imageData) {
-            // Обновляем в настройках
             var avatarEmoji = document.getElementById('avatarEmoji');
             var avatarImg = document.getElementById('avatarImage');
             if (avatarEmoji) avatarEmoji.style.display = 'none';
@@ -878,7 +1245,6 @@
                 avatarImg.src = imageData;
             }
             
-            // Обновляем на главной странице
             var profileEmoji = document.getElementById('profileAvatarEmoji');
             var profileImg = document.getElementById('profileAvatarImg');
             if (profileEmoji) profileEmoji.style.display = 'none';
@@ -889,7 +1255,6 @@
         }
 
         function resetAvatarDisplay() {
-            // Сбрасываем в настройках
             var avatarEmoji = document.getElementById('avatarEmoji');
             var avatarImg = document.getElementById('avatarImage');
             if (avatarEmoji) avatarEmoji.style.display = 'block';
@@ -898,7 +1263,6 @@
                 avatarImg.src = '';
             }
             
-            // Сбрасываем на главной
             var profileEmoji = document.getElementById('profileAvatarEmoji');
             var profileImg = document.getElementById('profileAvatarImg');
             if (profileEmoji) profileEmoji.style.display = 'block';
@@ -986,20 +1350,17 @@
             var savedName = localStorage.getItem('teacher_name');
             var savedDesc = localStorage.getItem('teacher_desc');
             
-            // Аватар
             if (savedAvatar && savedAvatar.length > 100) {
                 updateAvatarDisplay(savedAvatar);
             } else {
                 resetAvatarDisplay();
             }
             
-            // Имя
             if (savedName) {
                 document.getElementById('teacherName').value = savedName;
                 document.getElementById('teacherNameDisplay').textContent = savedName;
             }
             
-            // Описание
             if (savedDesc) {
                 document.getElementById('teacherDesc').value = savedDesc;
                 document.getElementById('teacherDescDisplay').textContent = savedDesc;
@@ -1028,7 +1389,7 @@
         // 1. ЗАГРУЗКА КАТАЛОГА ЗАДАЧ
         // ==========================================
         function loadTaskCatalog() {
-            // Функция заглушка, каталог задач скрыт
+            // Заглушка, каталог скрыт
         }
 
         // ==========================================
@@ -1304,6 +1665,7 @@
                         }
 
                         loadHomework(user.id);
+                        loadDashboardOverview(user.id);
                         loadStudentSchedule(user.id);
                         loadSectionsAndVideos();
                     } else {
@@ -1381,6 +1743,11 @@
             }
             document.getElementById('activeCount').textContent = active;
             document.getElementById('completedCount').textContent = completed;
+            document.getElementById('hwBadge').textContent = active;
+        }
+
+        function filterHomeworks(sectionId) {
+            // Заглушка для фильтрации
         }
 
         function loadHomework(studentId) {
@@ -1402,7 +1769,7 @@
                     }
 
                     if (!data || data.length === 0) {
-                        container.innerHTML = '📭 Нет заданий. Отдыхайте! 😊';
+                        container.innerHTML = '<div class="empty-state"><span class="icon">📭</span><div class="title">Нет заданий</div><div class="desc">Отдыхайте! 😊</div></div>';
                         updateProgress(0, 0);
                         updateHomeworkCounts([]);
                         return;
@@ -1420,7 +1787,7 @@
 
                     if (filteredData.length === 0) {
                         var emptyText = currentHomeworkTab === 'active' ? '🎉 Все задания выполнены!' : '📭 Нет выполненных заданий';
-                        container.innerHTML = '<p style="color:#666; text-align:center; padding:30px;">' + emptyText + '</p>';
+                        container.innerHTML = '<div class="empty-state"><span class="icon">' + (currentHomeworkTab === 'active' ? '🎉' : '📭') + '</span><div class="title">' + emptyText + '</div></div>';
                         var done = data.filter(function(h) { return h.status === 'done'; }).length;
                         updateProgress(data.length, done);
                         return;
@@ -1515,7 +1882,10 @@
                     if (response.error) {
                         alert('❌ Ошибка: ' + response.error.message);
                     } else {
-                        if (currentUser) loadHomework(currentUser.id);
+                        if (currentUser) {
+                            loadHomework(currentUser.id);
+                            loadDashboardOverview(currentUser.id);
+                        }
                         if (currentUser && currentUser.role === 'admin') loadAllHomeworks();
                     }
                 })
@@ -2619,7 +2989,10 @@
                 
                 closeAssignmentModal();
                 loadAllHomeworks();
-                if (currentUser) loadHomework(currentUser.id);
+                if (currentUser) {
+                    loadHomework(currentUser.id);
+                    loadDashboardOverview(currentUser.id);
+                }
                 
             } catch (err) {
                 alert('❌ Ошибка сохранения ДЗ: ' + err.message);
@@ -2637,7 +3010,10 @@
                         alert('❌ Ошибка: ' + response.error.message);
                     } else {
                         loadAllHomeworks();
-                        if (currentUser) loadHomework(currentUser.id);
+                        if (currentUser) {
+                            loadHomework(currentUser.id);
+                            loadDashboardOverview(currentUser.id);
+                        }
                     }
                 })
                 .catch(function(err) {
@@ -2657,7 +3033,10 @@
                     } else {
                         alert('✅ Задание удалено');
                         loadAllHomeworks();
-                        if (currentUser) loadHomework(currentUser.id);
+                        if (currentUser) {
+                            loadHomework(currentUser.id);
+                            loadDashboardOverview(currentUser.id);
+                        }
                     }
                 })
                 .catch(function(err) {
