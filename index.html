@@ -20,8 +20,9 @@
         header p { font-size: 20px; opacity: 0.8; margin-top: 8px; color: #b0c4de; }
 
         .profile { background: rgba(255,255,255,0.05); backdrop-filter: blur(10px); border-radius: 24px; padding: 40px; border: 1px solid rgba(255,255,255,0.1); display: flex; flex-wrap: wrap; gap: 40px; align-items: center; margin-bottom: 40px; }
-        .profile-avatar { width: 150px; height: 150px; border-radius: 50%; background: linear-gradient(135deg, #667eea, #764ba2); display: flex; align-items: center; justify-content: center; font-size: 70px; color: white; flex-shrink: 0; overflow: hidden; }
+        .profile-avatar { width: 150px; height: 150px; border-radius: 50%; background: linear-gradient(135deg, #667eea, #764ba2); display: flex; align-items: center; justify-content: center; color: white; flex-shrink: 0; overflow: hidden; position: relative; }
         .profile-avatar img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
+        .profile-avatar .avatar-emoji { font-size: 70px; }
         .profile-info h2 { font-size: 32px; color: #ffffff; }
         .profile-info .badge { display: inline-block; background: linear-gradient(135deg, #f5a623, #f7c948); color: #0b0e1a; padding: 4px 16px; border-radius: 30px; font-weight: 700; font-size: 14px; margin-top: 6px; }
         .profile-info p { margin-top: 12px; font-size: 18px; color: #b0c4de; }
@@ -529,11 +530,17 @@
             cursor: pointer;
             font-family: Arial, sans-serif;
             font-size: 14px;
+            width: 100%;
         }
         .settings-avatar-container .btn-group {
             display: flex;
             gap: 10px;
             flex-wrap: wrap;
+            width: 100%;
+        }
+        .settings-avatar-container .btn-group .admin-btn {
+            flex: 1;
+            text-align: center;
         }
 
         .settings-info {
@@ -572,7 +579,8 @@
         @media (max-width: 700px) {
             header h1 { font-size: 28px; }
             .profile { flex-direction: column; text-align: center; }
-            .profile-avatar { width: 120px; height: 120px; font-size: 50px; }
+            .profile-avatar { width: 120px; height: 120px; }
+            .profile-avatar .avatar-emoji { font-size: 50px; }
             .contacts a { display: block; margin: 8px 0; text-align: center; }
             .admin-tabs { flex-direction: column; } .admin-table { font-size: 14px; }
             .video-tabs { grid-template-columns: 1fr; }
@@ -584,6 +592,7 @@
             .modal-content { padding: 20px; }
             .deadline-row { flex-direction: column; align-items: stretch; }
             .deadline-row input[type="date"] { width: 100%; }
+            .settings-avatar-container .btn-group .admin-btn { flex: 1; }
         }
     </style>
 </head>
@@ -600,7 +609,10 @@
 
         <div id="mainContent">
             <div class="profile" id="profileBlock">
-                <div class="profile-avatar" id="profileAvatar">👨‍🏫</div>
+                <div class="profile-avatar" id="profileAvatar">
+                    <img id="profileAvatarImg" style="display:none; width:100%; height:100%; object-fit:cover; border-radius:50%;" alt="Аватар">
+                    <span class="avatar-emoji" id="profileAvatarEmoji">👨‍🏫</span>
+                </div>
                 <div class="profile-info">
                     <h2 id="teacherNameDisplay">Никита</h2>
                     <span class="badge">⭐ Репетитор со стажем 1.5 года</span>
@@ -736,8 +748,8 @@
                         <h4 style="color: #f5a623; margin-bottom: 15px;">📸 Фото профиля</h4>
                         <div class="settings-avatar-container">
                             <div class="avatar-preview" id="avatarPreview">
-                                <span id="avatarEmoji">👨‍🏫</span>
-                                <img id="avatarImage" style="display: none;" alt="Аватар">
+                                <span id="avatarEmoji" style="font-size:60px;">👨‍🏫</span>
+                                <img id="avatarImage" style="display:none;" alt="Аватар">
                             </div>
                             <input type="file" id="avatarUpload" accept="image/*">
                             <div class="btn-group">
@@ -879,34 +891,43 @@
         // НАСТРОЙКИ - АВАТАР И ИНФОРМАЦИЯ
         // ==========================================
 
-        function loadTeacherSettings() {
-            var savedAvatar = localStorage.getItem('teacher_avatar');
-            var savedName = localStorage.getItem('teacher_name');
-            var savedDesc = localStorage.getItem('teacher_desc');
-            
-            // Аватар
-            if (savedAvatar) {
-                document.getElementById('avatarEmoji').style.display = 'none';
-                var img = document.getElementById('avatarImage');
-                img.style.display = 'block';
-                img.src = savedAvatar;
-                // Обновляем на главной
-                var avatarContainer = document.querySelector('.profile-avatar');
-                if (avatarContainer) {
-                    avatarContainer.innerHTML = '<img src="' + savedAvatar + '" alt="Аватар">';
-                }
+        function updateAvatarDisplay(imageData) {
+            // Обновляем в настройках
+            var avatarEmoji = document.getElementById('avatarEmoji');
+            var avatarImg = document.getElementById('avatarImage');
+            if (avatarEmoji) avatarEmoji.style.display = 'none';
+            if (avatarImg) {
+                avatarImg.style.display = 'block';
+                avatarImg.src = imageData;
             }
             
-            // Имя
-            if (savedName) {
-                document.getElementById('teacherName').value = savedName;
-                document.getElementById('teacherNameDisplay').textContent = savedName;
+            // Обновляем на главной странице
+            var profileEmoji = document.getElementById('profileAvatarEmoji');
+            var profileImg = document.getElementById('profileAvatarImg');
+            if (profileEmoji) profileEmoji.style.display = 'none';
+            if (profileImg) {
+                profileImg.style.display = 'block';
+                profileImg.src = imageData;
+            }
+        }
+
+        function resetAvatarDisplay() {
+            // Сбрасываем в настройках
+            var avatarEmoji = document.getElementById('avatarEmoji');
+            var avatarImg = document.getElementById('avatarImage');
+            if (avatarEmoji) avatarEmoji.style.display = 'block';
+            if (avatarImg) {
+                avatarImg.style.display = 'none';
+                avatarImg.src = '';
             }
             
-            // Описание
-            if (savedDesc) {
-                document.getElementById('teacherDesc').value = savedDesc;
-                document.getElementById('teacherDescDisplay').textContent = savedDesc;
+            // Сбрасываем на главной
+            var profileEmoji = document.getElementById('profileAvatarEmoji');
+            var profileImg = document.getElementById('profileAvatarImg');
+            if (profileEmoji) profileEmoji.style.display = 'block';
+            if (profileImg) {
+                profileImg.style.display = 'none';
+                profileImg.src = '';
             }
         }
 
@@ -924,23 +945,51 @@
                 return;
             }
             
+            if (file.size > 5 * 1024 * 1024) {
+                alert('❌ Файл слишком большой! Максимум 5 МБ');
+                return;
+            }
+            
             var reader = new FileReader();
             reader.onload = function(e) {
-                var imageData = e.target.result;
-                
-                localStorage.setItem('teacher_avatar', imageData);
-                
-                document.getElementById('avatarEmoji').style.display = 'none';
-                var img = document.getElementById('avatarImage');
-                img.style.display = 'block';
-                img.src = imageData;
-                
-                var avatarContainer = document.querySelector('.profile-avatar');
-                if (avatarContainer) {
-                    avatarContainer.innerHTML = '<img src="' + imageData + '" alt="Аватар">';
-                }
-                
-                alert('✅ Фото загружено!');
+                var img = new Image();
+                img.onload = function() {
+                    var canvas = document.createElement('canvas');
+                    var ctx = canvas.getContext('2d');
+                    
+                    var maxSize = 300;
+                    var width = img.width;
+                    var height = img.height;
+                    
+                    if (width > height) {
+                        if (width > maxSize) {
+                            height = Math.round(height * maxSize / width);
+                            width = maxSize;
+                        }
+                    } else {
+                        if (height > maxSize) {
+                            width = Math.round(width * maxSize / height);
+                            height = maxSize;
+                        }
+                    }
+                    
+                    canvas.width = width;
+                    canvas.height = height;
+                    ctx.drawImage(img, 0, 0, width, height);
+                    
+                    var imageData = canvas.toDataURL('image/jpeg', 0.8);
+                    
+                    try {
+                        localStorage.setItem('teacher_avatar', imageData);
+                    } catch (e) {
+                        alert('❌ Не удалось сохранить изображение. Попробуйте файл меньшего размера.');
+                        return;
+                    }
+                    
+                    updateAvatarDisplay(imageData);
+                    alert('✅ Фото загружено!');
+                };
+                img.src = e.target.result;
             };
             reader.readAsDataURL(file);
         }
@@ -949,18 +998,35 @@
             if (!confirm('Удалить фото?')) return;
             
             localStorage.removeItem('teacher_avatar');
-            
-            document.getElementById('avatarEmoji').style.display = 'block';
-            document.getElementById('avatarImage').style.display = 'none';
-            document.getElementById('avatarImage').src = '';
             document.getElementById('avatarUpload').value = '';
-            
-            var avatarContainer = document.querySelector('.profile-avatar');
-            if (avatarContainer) {
-                avatarContainer.innerHTML = '👨‍🏫';
-            }
+            resetAvatarDisplay();
             
             alert('✅ Фото удалено');
+        }
+
+        function loadTeacherSettings() {
+            var savedAvatar = localStorage.getItem('teacher_avatar');
+            var savedName = localStorage.getItem('teacher_name');
+            var savedDesc = localStorage.getItem('teacher_desc');
+            
+            // Аватар
+            if (savedAvatar && savedAvatar.length > 100) {
+                updateAvatarDisplay(savedAvatar);
+            } else {
+                resetAvatarDisplay();
+            }
+            
+            // Имя
+            if (savedName) {
+                document.getElementById('teacherName').value = savedName;
+                document.getElementById('teacherNameDisplay').textContent = savedName;
+            }
+            
+            // Описание
+            if (savedDesc) {
+                document.getElementById('teacherDesc').value = savedDesc;
+                document.getElementById('teacherDescDisplay').textContent = savedDesc;
+            }
         }
 
         function saveTeacherInfo() {
@@ -2434,7 +2500,6 @@
                 }
             });
 
-            // Загружаем настройки при загрузке страницы
             loadTeacherSettings();
         });
 
