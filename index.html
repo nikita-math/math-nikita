@@ -912,8 +912,13 @@
                     <div id="page-homeworks" class="dashboard-page" style="display:none;">
                         <div class="section-title">📚 Мои домашние задания</div>
                         
-                        <div class="homework-filter" id="hwFilter">
-                            <button class="active" data-section="all" onclick="filterHomeworks('all')">Все</button>
+                        <div class="homework-tabs">
+                            <button class="active" data-tab="active" onclick="switchHomeworkTab('active')">
+                                📝 Активные <span class="badge" id="activeCount">0</span>
+                            </button>
+                            <button data-tab="completed" onclick="switchHomeworkTab('completed')">
+                                ✅ Выполненные <span class="badge" id="completedCount">0</span>
+                            </button>
                         </div>
                         
                         <div id="homeworkList"><p>Загрузка...</p></div>
@@ -946,6 +951,23 @@
                         </div>
                     </div>
                 </div>
+            </div>
+
+            <!-- ===== РАСПИСАНИЕ ===== -->
+            <div class="schedule-section" style="margin-top:30px;">
+                <h3>📅 Моё расписание</h3>
+                <div id="studentSchedule"><p>Загрузка...</p></div>
+            </div>
+
+            <!-- ===== ВИДЕОРАЗДЕЛЫ ===== -->
+            <div class="video-section" style="margin-top:40px;">
+                <h3>🎥 Видеоуроки по темам</h3>
+
+                <div class="part-divider">📘 Первая часть</div>
+                <div class="video-tabs" id="videoTabsPart1"></div>
+
+                <div class="part-divider">📗 Вторая часть</div>
+                <div class="video-tabs" id="videoTabsPart2"></div>
             </div>
         </div>
 
@@ -1147,92 +1169,6 @@
         var daysArray = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'];
 
         // ==========================================
-        // ЛИЧНЫЙ КАБИНЕТ - НАВИГАЦИЯ
-        // ==========================================
-
-        function switchDashboardPage(page) {
-            currentDashboardPage = page;
-            
-            document.querySelectorAll('.dashboard-sidebar button').forEach(function(btn) {
-                btn.classList.remove('active');
-                if (btn.dataset.page === page) {
-                    btn.classList.add('active');
-                }
-            });
-            
-            document.querySelectorAll('.dashboard-page').forEach(function(p) {
-                p.style.display = 'none';
-            });
-            var target = document.getElementById('page-' + page);
-            if (target) target.style.display = 'block';
-        }
-
-        // ==========================================
-        // ЗАГРУЗКА ДАННЫХ ДЛЯ ОБЗОРА
-        // ==========================================
-
-        function loadDashboardOverview(studentId) {
-            supabase
-                .from('homeworks')
-                .select('*')
-                .eq('student_id', studentId)
-                .then(function(response) {
-                    if (response.error) return;
-                    
-                    var data = response.data || [];
-                    var total = data.length;
-                    var done = data.filter(function(h) { return h.status === 'done'; }).length;
-                    var pending = total - done;
-                    
-                    document.getElementById('statTotal').textContent = total;
-                    document.getElementById('statDone').textContent = done;
-                    document.getElementById('statPending').textContent = pending;
-                    
-                    var sectionsSet = new Set();
-                    data.forEach(function(h) {
-                        if (h.section_id) sectionsSet.add(h.section_id);
-                    });
-                    document.getElementById('statSections').textContent = sectionsSet.size;
-                    
-                    var pendingHw = data.filter(function(h) { 
-                        return h.status !== 'done' && h.deadline; 
-                    });
-                    pendingHw.sort(function(a, b) { 
-                        return new Date(a.deadline) - new Date(b.deadline); 
-                    });
-                    
-                    if (pendingHw.length > 0) {
-                        var next = pendingHw[0];
-                        document.getElementById('nextDeadlineTitle').textContent = next.title;
-                        var days = Math.ceil((new Date(next.deadline) - new Date()) / (1000 * 60 * 60 * 24));
-                        document.getElementById('nextDeadlineDays').textContent = days + ' дн.';
-                    } else {
-                        document.getElementById('nextDeadlineTitle').textContent = '🎉 Все задания выполнены!';
-                        document.getElementById('nextDeadlineDays').textContent = '✅';
-                    }
-                    
-                    var recent = data.slice(-3).reverse();
-                    var html = '';
-                    if (recent.length > 0) {
-                        html = '<div style="margin-top:12px;"><p style="color:#888; font-size:14px; margin-bottom:10px;">📋 Последние ДЗ</p>';
-                        recent.forEach(function(hw) {
-                            var status = hw.status === 'done' ? '✅' : '⏳';
-                            html += `
-                                <div style="display:flex; justify-content:space-between; padding:10px 14px; background:rgba(255,255,255,0.03); border-radius:10px; margin-bottom:6px; border:1px solid rgba(255,255,255,0.04);">
-                                    <span style="color:#b0c4de;">${hw.title}</span>
-                                    <span style="color:${hw.status === 'done' ? '#2ecc71' : '#f39c12'};">${status}</span>
-                                </div>
-                            `;
-                        });
-                        html += '</div>';
-                    } else {
-                        html = '<p style="color:#666; text-align:center; padding:20px;">📭 Нет ДЗ</p>';
-                    }
-                    document.getElementById('recentHomeworks').innerHTML = html;
-                });
-        }
-
-        // ==========================================
         // НАСТРОЙКИ - АВАТАР И ИНФОРМАЦИЯ
         // ==========================================
 
@@ -1389,11 +1325,97 @@
         // 1. ЗАГРУЗКА КАТАЛОГА ЗАДАЧ
         // ==========================================
         function loadTaskCatalog() {
-            // Заглушка, каталог скрыт
+            // Заглушка
         }
 
         // ==========================================
-        // 2. РАЗДЕЛЫ И ВИДЕО
+        // 2. ЛИЧНЫЙ КАБИНЕТ - НАВИГАЦИЯ
+        // ==========================================
+
+        function switchDashboardPage(page) {
+            currentDashboardPage = page;
+            
+            document.querySelectorAll('.dashboard-sidebar button').forEach(function(btn) {
+                btn.classList.remove('active');
+                if (btn.dataset.page === page) {
+                    btn.classList.add('active');
+                }
+            });
+            
+            document.querySelectorAll('.dashboard-page').forEach(function(p) {
+                p.style.display = 'none';
+            });
+            var target = document.getElementById('page-' + page);
+            if (target) target.style.display = 'block';
+        }
+
+        // ==========================================
+        // 3. ЗАГРУЗКА ДАННЫХ ДЛЯ ОБЗОРА
+        // ==========================================
+
+        function loadDashboardOverview(studentId) {
+            supabase
+                .from('homeworks')
+                .select('*')
+                .eq('student_id', studentId)
+                .then(function(response) {
+                    if (response.error) return;
+                    
+                    var data = response.data || [];
+                    var total = data.length;
+                    var done = data.filter(function(h) { return h.status === 'done'; }).length;
+                    var pending = total - done;
+                    
+                    document.getElementById('statTotal').textContent = total;
+                    document.getElementById('statDone').textContent = done;
+                    document.getElementById('statPending').textContent = pending;
+                    
+                    var sectionsSet = new Set();
+                    data.forEach(function(h) {
+                        if (h.section_id) sectionsSet.add(h.section_id);
+                    });
+                    document.getElementById('statSections').textContent = sectionsSet.size;
+                    
+                    var pendingHw = data.filter(function(h) { 
+                        return h.status !== 'done' && h.deadline; 
+                    });
+                    pendingHw.sort(function(a, b) { 
+                        return new Date(a.deadline) - new Date(b.deadline); 
+                    });
+                    
+                    if (pendingHw.length > 0) {
+                        var next = pendingHw[0];
+                        document.getElementById('nextDeadlineTitle').textContent = next.title;
+                        var days = Math.ceil((new Date(next.deadline) - new Date()) / (1000 * 60 * 60 * 24));
+                        document.getElementById('nextDeadlineDays').textContent = days + ' дн.';
+                    } else {
+                        document.getElementById('nextDeadlineTitle').textContent = '🎉 Все задания выполнены!';
+                        document.getElementById('nextDeadlineDays').textContent = '✅';
+                    }
+                    
+                    var recent = data.slice(-3).reverse();
+                    var html = '';
+                    if (recent.length > 0) {
+                        html = '<div style="margin-top:12px;"><p style="color:#888; font-size:14px; margin-bottom:10px;">📋 Последние ДЗ</p>';
+                        recent.forEach(function(hw) {
+                            var status = hw.status === 'done' ? '✅' : '⏳';
+                            html += `
+                                <div style="display:flex; justify-content:space-between; padding:10px 14px; background:rgba(255,255,255,0.03); border-radius:10px; margin-bottom:6px; border:1px solid rgba(255,255,255,0.04);">
+                                    <span style="color:#b0c4de;">${hw.title}</span>
+                                    <span style="color:${hw.status === 'done' ? '#2ecc71' : '#f39c12'};">${status}</span>
+                                </div>
+                            `;
+                        });
+                        html += '</div>';
+                    } else {
+                        html = '<p style="color:#666; text-align:center; padding:20px;">📭 Нет ДЗ</p>';
+                    }
+                    document.getElementById('recentHomeworks').innerHTML = html;
+                });
+        }
+
+        // ==========================================
+        // 4. РАЗДЕЛЫ И ВИДЕО
         // ==========================================
         function openSection(sectionId) {
             mainContent.style.display = 'none';
@@ -1744,10 +1766,6 @@
             document.getElementById('activeCount').textContent = active;
             document.getElementById('completedCount').textContent = completed;
             document.getElementById('hwBadge').textContent = active;
-        }
-
-        function filterHomeworks(sectionId) {
-            // Заглушка для фильтрации
         }
 
         function loadHomework(studentId) {
