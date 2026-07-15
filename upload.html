@@ -418,6 +418,35 @@
             margin-bottom: 20px;
         }
 
+        .deadline-row {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        .deadline-row input[type="date"] {
+            flex: 1;
+            min-width: 150px;
+            margin-bottom: 0;
+        }
+        .deadline-row .no-deadline-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            color: #b0c4de;
+            font-size: 14px;
+            margin: 0;
+            white-space: nowrap;
+        }
+        .deadline-row .no-deadline-label input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            margin: 0;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
         footer { text-align: center; padding: 30px 20px; color: #666; font-size: 14px; border-top: 1px solid rgba(255,255,255,0.05); margin-top: 40px; }
 
         @media (max-width: 700px) {
@@ -432,6 +461,8 @@
             .hw-card .task-item-inline { flex-direction: column; align-items: stretch; }
             .hw-card .task-item-inline input { width: 100%; }
             .modal-content { padding: 20px; }
+            .deadline-row { flex-direction: column; align-items: stretch; }
+            .deadline-row input[type="date"] { width: 100%; }
         }
     </style>
 </head>
@@ -611,10 +642,16 @@
                 <input type="file" id="pdfFile" accept=".pdf">
             </div>
             
-            <!-- Срок -->
+            <!-- Срок выполнения с чекбоксом "Без дедлайна" -->
             <div>
                 <label>Срок выполнения:</label>
-                <input type="date" id="deadline">
+                <div class="deadline-row">
+                    <input type="date" id="deadline">
+                    <label class="no-deadline-label">
+                        <input type="checkbox" id="noDeadline">
+                        Без дедлайна
+                    </label>
+                </div>
             </div>
             
             <!-- Кнопки -->
@@ -802,7 +839,7 @@
                             `;
                         }
 
-                        // ===== ИСПРАВЛЕННЫЙ БЛОК - ПОКАЗЫВАЕМ ДЗ ПОД ВИДЕО =====
+                        // ===== ПОКАЗЫВАЕМ ДЗ ПОД ВИДЕО =====
                         if (currentUser && currentUser.role === 'student') {
                             var hwForVideo = await supabase
                                 .from('homeworks')
@@ -1027,7 +1064,7 @@
                 .from('homeworks')
                 .select('*, video_sections(name, order_num)')
                 .eq('student_id', studentId)
-                .order('deadline', { ascending: true })
+                .order('deadline', { ascending: true, nulls_last: true })
                 .then(function(response) {
                     var error = response.error;
                     var data = response.data;
@@ -1052,7 +1089,6 @@
                         var statusText = hw.status === 'done' ? '✅ Выполнено' : '⏳ Ожидает проверки';
                         var btnHtml = hw.status !== 'done' ? `<button class="btn-start" onclick="markDone('${hw.id}')">✅ Отметить выполненным</button>` : '';
 
-                        // Показываем номер раздела
                         var sectionInfo = '';
                         if (hw.video_sections) {
                             sectionInfo = `<div class="meta">📺 Раздел №${hw.video_sections.order_num}: ${hw.video_sections.name}</div>`;
@@ -1094,11 +1130,13 @@
                             fileHtml = `<div class="meta">📎 <a href="${hw.file_url}" target="_blank">Скачать файл</a></div>`;
                         }
 
+                        var deadlineText = hw.deadline ? '📅 Срок: ' + hw.deadline : '📅 Без срока';
+
                         html += `
                             <div class="hw-card">
                                 <div class="title">${hw.title}</div>
                                 ${sectionInfo}
-                                <div class="meta">📅 ${hw.deadline ? 'Срок: ' + hw.deadline : 'Без срока'}</div>
+                                <div class="meta">${deadlineText}</div>
                                 <div class="status ${statusClass}">${statusText}</div>
                                 ${btnHtml}
                                 ${fileHtml}
@@ -1960,7 +1998,7 @@
         }
 
         // ==========================================
-        // 10. ДЗ (АДМИН) - НОВАЯ ВЕРСИЯ
+        // 10. ДЗ (АДМИН) - ИСПРАВЛЕННАЯ ВЕРСИЯ
         // ==========================================
         function loadAllHomeworks() {
             var container = document.getElementById('homeworksList');
@@ -1968,7 +2006,7 @@
 
             supabase
                 .from('homeworks')
-                .select('*, video_sections(name, order_num), students(name)')
+                .select('*, video_sections(name, order_num)')
                 .order('created_at', { ascending: false })
                 .then(function(response) {
                     if (response.error) {
@@ -1981,47 +2019,63 @@
                         return;
                     }
 
-                    var html = `
-                        <table class="admin-table">
-                            <tr>
-                                <th>Название</th>
-                                <th>Ученик</th>
-                                <th>Раздел</th>
-                                <th>№</th>
-                                <th>Статус</th>
-                                <th>Срок</th>
-                                <th>PDF</th>
-                                <th>Действия</th>
-                            </tr>
-                    `;
-                    
-                    for (var i = 0; i < data.length; i++) {
-                        var h = data[i];
-                        var studentName = h.students ? h.students.name : 'Неизвестный ученик';
-                        var sectionName = h.video_sections ? h.video_sections.name : '—';
-                        var sectionNum = h.video_sections ? h.video_sections.order_num : '—';
-                        var statusText = h.status === 'done' ? '✅ Выполнено' : '⏳ В процессе';
-                        
-                        html += `
-                            <tr>
-                                <td>${h.title}</td>
-                                <td>${studentName}</td>
-                                <td>${sectionName}</td>
-                                <td style="color:#f5a623; font-weight:700;">${sectionNum}</td>
-                                <td>${statusText}</td>
-                                <td>${h.deadline || '—'}</td>
-                                <td>${h.file_url ? `<a href="${h.file_url}" target="_blank" style="color:#88ccff;">📄 PDF</a>` : '—'}</td>
-                                <td>
-                                    <button class="admin-btn" onclick="toggleHomeworkStatus('${h.id}', '${h.status}')">
-                                        ${h.status === 'done' ? '↩ Вернуть' : '✅ Отметить'}
-                                    </button>
-                                    <button class="admin-btn danger" onclick="deleteHomework('${h.id}')">🗑</button>
-                                </td>
-                            </tr>
-                        `;
-                    }
-                    html += '</table>';
-                    container.innerHTML = html;
+                    // Загружаем учеников отдельно
+                    supabase
+                        .from('students')
+                        .select('id, name')
+                        .then(function(studentsRes) {
+                            var studentsMap = {};
+                            if (studentsRes.data) {
+                                studentsRes.data.forEach(function(s) {
+                                    studentsMap[s.id] = s.name;
+                                });
+                            }
+
+                            var html = `
+                                <table class="admin-table">
+                                    <tr>
+                                        <th>Название</th>
+                                        <th>Ученик</th>
+                                        <th>Раздел</th>
+                                        <th>№</th>
+                                        <th>Статус</th>
+                                        <th>Срок</th>
+                                        <th>PDF</th>
+                                        <th>Действия</th>
+                                    </tr>
+                            `;
+                            
+                            for (var i = 0; i < data.length; i++) {
+                                var h = data[i];
+                                var studentName = studentsMap[h.student_id] || 'Неизвестный ученик (ID: ' + h.student_id + ')';
+                                var sectionName = h.video_sections ? h.video_sections.name : '—';
+                                var sectionNum = h.video_sections ? h.video_sections.order_num : '—';
+                                var statusText = h.status === 'done' ? '✅ Выполнено' : '⏳ В процессе';
+                                
+                                html += `
+                                    <tr>
+                                        <td>${h.title}</td>
+                                        <td>${studentName}</td>
+                                        <td>${sectionName}</td>
+                                        <td style="color:#f5a623; font-weight:700;">${sectionNum}</td>
+                                        <td>${statusText}</td>
+                                        <td>${h.deadline || 'Без срока'}</td>
+                                        <td>${h.file_url ? `<a href="${h.file_url}" target="_blank" style="color:#88ccff;">📄 PDF</a>` : '—'}</td>
+                                        <td>
+                                            <button class="admin-btn" onclick="toggleHomeworkStatus('${h.id}', '${h.status}')">
+                                                ${h.status === 'done' ? '↩ Вернуть' : '✅ Отметить'}
+                                            </button>
+                                            <button class="admin-btn danger" onclick="deleteHomework('${h.id}')">🗑</button>
+                                        </td>
+                                    </tr>
+                                `;
+                            }
+                            html += '</table>';
+                            container.innerHTML = html;
+                        })
+                        .catch(function(err) {
+                            container.innerHTML = '❌ Ошибка загрузки учеников: ' + err.message;
+                        });
                 })
                 .catch(function(err) {
                     container.innerHTML = '❌ Ошибка: ' + err.message;
@@ -2040,6 +2094,7 @@
             document.getElementById('homeworkTitle').value = '';
             document.getElementById('pdfFile').value = '';
             document.getElementById('deadline').value = '';
+            document.getElementById('noDeadline').checked = false;
             document.getElementById('sectionPreview').textContent = 'Введите номер для просмотра раздела';
             document.getElementById('sectionPreview').style.color = '#666';
         }
@@ -2121,6 +2176,7 @@
             const title = document.getElementById('homeworkTitle').value.trim();
             const fileInput = document.getElementById('pdfFile');
             const deadline = document.getElementById('deadline').value;
+            const noDeadline = document.getElementById('noDeadline').checked;
 
             // Валидация
             if (!title) {
@@ -2210,13 +2266,15 @@
             }
 
             // Создаем ДЗ для каждого ученика
+            const finalDeadline = noDeadline ? null : (deadline || null);
+            
             const homeworks = students.map(function(s) {
                 return {
                     title: title,
                     student_id: s.id,
                     section_id: sectionData.id,
                     status: 'pending',
-                    deadline: deadline || null,
+                    deadline: finalDeadline,
                     file_url: pdfUrl,
                     video_link: null
                 };
@@ -2230,7 +2288,8 @@
                 if (error) throw error;
                 
                 var count = homeworks.length;
-                alert('✅ ДЗ "' + title + '" выдано ' + count + ' ученикам в раздел "' + sectionData.name + '"!');
+                var deadlineText = noDeadline ? 'без дедлайна' : (deadline || 'не указан');
+                alert('✅ ДЗ "' + title + '" выдано ' + count + ' ученикам в раздел "' + sectionData.name + '"!\n📅 Срок: ' + deadlineText);
                 
                 closeAssignmentModal();
                 loadAllHomeworks();
