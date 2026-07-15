@@ -73,8 +73,6 @@
         .settings-group input[type="text"], .settings-group input[type="email"] { width: 100%; padding: 10px 14px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; color: #fff; font-size: 15px; transition: background 0.3s, border-color 0.3s; }
         .settings-group input:disabled { opacity: 0.5; cursor: not-allowed; }
         .settings-group input:focus { border-color: #667eea; outline: none; }
-        .settings-checkbox { display: flex; align-items: center; gap: 12px; cursor: pointer; color: #b0c4de; font-size: 15px; padding: 6px 0; }
-        .settings-checkbox input[type="checkbox"] { width: 18px; height: 18px; cursor: pointer; accent-color: #667eea; }
 
         .empty-state { text-align: center; padding: 40px 20px; color: #666; }
         .empty-state .icon { font-size: 48px; display: block; margin-bottom: 12px; }
@@ -803,10 +801,9 @@
             var name = prompt('Введите имя ученика:'); if (!name) return;
             var email = prompt('Введите email ученика:'); if (!email) return;
             var password = prompt('Введите пароль:'); if (!password) return;
-            var classNum = prompt('Введите класс (8А, 8Б, 8В...):') || '';
             supabase
                 .from('students')
-                .insert([{ name: name, email: email, password: password, role: 'student', class: classNum }])
+                .insert([{ name: name, email: email, password: password, role: 'student' }])
                 .then(function(response) {
                     if (response.error) alert('❌ Ошибка: ' + response.error.message);
                     else { alert('✅ Ученик добавлен!'); window.loadStudents(); window.loadChatList(); }
@@ -820,16 +817,16 @@
             container.innerHTML = '⏳ Загрузка...';
             supabase
                 .from('students')
-                .select('id, name, email, class')
+                .select('id, name, email')
                 .eq('role', 'student')
                 .order('name')
                 .then(function(response) {
                     if (response.error) { container.innerHTML = '❌ Ошибка: ' + response.error.message; return; }
                     var data = response.data || [];
                     if (data.length === 0) { container.innerHTML = '📭 Нет учеников. Добавьте первого!'; return; }
-                    var html = '<table class="admin-table"><tr><th>Имя</th><th>Класс</th><th>Email</th><th>Действия</th></tr>';
+                    var html = '<table class="admin-table"><tr><th>Имя</th><th>Email</th><th>Действия</th></tr>';
                     data.forEach(function(s) {
-                        html += '<tr><td>' + s.name + '</td><td>' + (s.class || '—') + '</td><td>' + s.email + '</td><td><button class="admin-btn danger" onclick="window.deleteStudent(\'' + s.id + '\')">Удалить</button></td></tr>';
+                        html += '<tr><td>' + s.name + '</td><td>' + s.email + '</td><td><button class="admin-btn danger" onclick="window.deleteStudent(\'' + s.id + '\')">Удалить</button></td></tr>';
                     });
                     html += '</table>';
                     container.innerHTML = html;
@@ -935,7 +932,7 @@
             if (isAdmin) {
                 supabase
                     .from('students')
-                    .select('id, name, class')
+                    .select('id, name')
                     .eq('role', 'student')
                     .order('name')
                     .then(function(response) {
@@ -956,7 +953,7 @@
             } else {
                 supabase
                     .from('students')
-                    .select('id, name, class')
+                    .select('id, name')
                     .eq('role', 'admin')
                     .limit(1)
                     .then(function(response) {
@@ -977,17 +974,15 @@
             users.forEach(function(user) {
                 var avatarColor = getAvatarColor(user.name);
                 var initials = getInitials(user.name);
-                var classInfo = user.class ? '· ' + user.class : '';
                 var isAdmin = user.role === 'admin';
                 var displayName = isAdmin ? '👨‍🏫 ' + user.name : user.name;
                 
                 html += `
-                    <div class="chat-user-item" onclick="openChat('${user.id}', '${user.name}', '${user.class || ''}')">
+                    <div class="chat-user-item" onclick="openChat('${user.id}', '${user.name}')">
                         <div class="user-info">
                             <div class="user-avatar ${avatarColor}">${initials}</div>
                             <div>
                                 <div class="user-name">${displayName}</div>
-                                <div class="user-class">${classInfo}</div>
                             </div>
                         </div>
                         <div style="display:flex; align-items:center; gap:12px;">
@@ -1079,15 +1074,15 @@
         // ОТКРЫТИЕ ЧАТА
         // ==========================================
 
-        function openChat(userId, userName, userClass) {
+        function openChat(userId, userName) {
             if (chatInterval) clearInterval(chatInterval);
-            currentChatPartner = { id: userId, name: userName, class: userClass };
+            currentChatPartner = { id: userId, name: userName };
 
             var avatarColor = getAvatarColor(userName);
             var initials = getInitials(userName);
 
             document.getElementById('chatPartnerName').textContent = userName;
-            document.getElementById('chatPartnerClass').textContent = userClass || '';
+            document.getElementById('chatPartnerClass').textContent = '';
             document.getElementById('chatPartnerAvatar').className = 'avatar ' + avatarColor;
             document.getElementById('chatPartnerAvatar').textContent = initials;
 
