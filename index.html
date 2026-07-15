@@ -4,673 +4,370 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Математика с Никитой</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800;900&display=swap" rel="stylesheet">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: Arial, sans-serif; background: #0b0e1a; color: #ffffff; line-height: 1.6; min-height: 100vh; position: relative; overflow-x: hidden; }
 
-        body {
-            font-family: 'Inter', sans-serif;
-            background: #0a0e1a;
-            color: #ffffff;
-            line-height: 1.6;
-            min-height: 100vh;
-            overflow-x: hidden;
-        }
+        .stars { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; background: transparent; }
+        .star { position: absolute; background: white; border-radius: 50%; animation: twinkle var(--duration) ease-in-out infinite alternate; }
+        @keyframes twinkle { 0% { opacity: 0.2; transform: scale(1); } 100% { opacity: 1; transform: scale(1.5); } }
 
-        /* ===== АНИМИРОВАННЫЙ ФОН ===== */
-        .bg-animation {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 0;
-            background: radial-gradient(ellipse at 20% 50%, #1a1a3e 0%, transparent 60%),
-                        radial-gradient(ellipse at 80% 50%, #1a2a4a 0%, transparent 60%),
-                        #0a0e1a;
-        }
+        .container { max-width: 1100px; margin: 0 auto; padding: 40px 20px; position: relative; z-index: 1; }
 
-        .bg-animation::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle at 30% 40%, rgba(102, 126, 234, 0.05) 0%, transparent 50%),
-                        radial-gradient(circle at 70% 60%, rgba(118, 75, 162, 0.05) 0%, transparent 50%);
-            animation: rotate 60s linear infinite;
-        }
+        header { background: linear-gradient(135deg, #0d1b2a, #1b2a4a, #0d1b2a); padding: 60px 20px; text-align: center; border-radius: 24px; margin-bottom: 40px; border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 0 60px rgba(48, 43, 99, 0.3); }
+        header h1 { font-size: 48px; font-weight: 900; letter-spacing: 3px; }
+        header h1 span { color: #f5a623; text-shadow: 0 0 30px rgba(245, 166, 35, 0.3); }
+        header p { font-size: 20px; opacity: 0.8; margin-top: 8px; color: #b0c4de; }
 
-        @keyframes rotate {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
+        .profile { background: rgba(255,255,255,0.05); backdrop-filter: blur(10px); border-radius: 24px; padding: 40px; border: 1px solid rgba(255,255,255,0.1); display: flex; flex-wrap: wrap; gap: 40px; align-items: center; margin-bottom: 40px; }
+        .profile-avatar { width: 150px; height: 150px; border-radius: 50%; background: linear-gradient(135deg, #667eea, #764ba2); display: flex; align-items: center; justify-content: center; font-size: 70px; color: white; flex-shrink: 0; }
+        .profile-info h2 { font-size: 32px; color: #ffffff; }
+        .profile-info .badge { display: inline-block; background: linear-gradient(135deg, #f5a623, #f7c948); color: #0b0e1a; padding: 4px 16px; border-radius: 30px; font-weight: 700; font-size: 14px; margin-top: 6px; }
+        .profile-info p { margin-top: 12px; font-size: 18px; color: #b0c4de; }
+        .profile-info ul { list-style: none; margin-top: 14px; }
+        .profile-info ul li { padding: 6px 0; font-size: 16px; color: #c0d0e0; }
+        .profile-info ul li::before { content: "✅ "; }
 
-        .stars {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 0;
-        }
+        .contacts { background: rgba(255,255,255,0.05); backdrop-filter: blur(10px); border-radius: 24px; padding: 30px 40px; border: 1px solid rgba(255,255,255,0.1); margin-bottom: 40px; }
+        .contacts h3 { font-size: 24px; margin-bottom: 16px; color: #ffffff; }
+        .contacts a { display: inline-block; margin-right: 20px; color: #b0c4de; text-decoration: none; font-weight: 600; padding: 8px 20px; border-radius: 30px; background: rgba(255,255,255,0.08); transition: 0.3s; }
+        .contacts a:hover { background: #302b63; color: #ffffff; }
 
-        .star {
-            position: absolute;
-            background: white;
-            border-radius: 50%;
-            animation: twinkle var(--duration) ease-in-out infinite alternate;
-        }
+        .task-catalog { background: rgba(255,255,255,0.05); backdrop-filter: blur(10px); border-radius: 24px; padding: 30px 40px; border: 1px solid rgba(255,255,255,0.1); margin-bottom: 40px; }
+        .task-catalog h3 { font-size: 24px; margin-bottom: 16px; color: #ffffff; }
+        .task-filter { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 20px; }
+        .task-filter button { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.1); padding: 8px 20px; border-radius: 30px; cursor: pointer; color: #b0c4de; transition: 0.3s; }
+        .task-filter button:hover { background: #302b63; color: white; border-color: #667eea; }
+        .task-filter button.active { background: #302b63; color: white; border-color: #667eea; }
+        .task-item { padding: 16px; border-bottom: 1px solid rgba(255,255,255,0.05); color: #c0d0e0; }
+        .task-item:last-child { border-bottom: none; }
+        .task-item .question { font-size: 18px; color: #ffffff; }
+        .task-item .topic { color: #888; font-size: 14px; }
+        .task-item .answer { display: none; margin-top: 10px; padding: 12px; background: rgba(39, 174, 96, 0.2); border-radius: 8px; color: #7ddfa0; border: 1px solid rgba(39, 174, 96, 0.2); }
+        .task-item .answer.show { display: block; }
+        .task-item button { background: #302b63; color: white; border: none; padding: 6px 16px; border-radius: 20px; cursor: pointer; margin-top: 10px; transition: 0.3s; }
+        .task-item button:hover { background: #667eea; }
 
-        @keyframes twinkle {
-            0% { opacity: 0.2; transform: scale(1); }
-            100% { opacity: 1; transform: scale(1.5); }
-        }
+        .login-section { background: rgba(255,255,255,0.05); backdrop-filter: blur(10px); border-radius: 24px; padding: 30px 40px; border: 1px solid rgba(255,255,255,0.1); margin-bottom: 40px; }
+        .login-section h3 { font-size: 24px; margin-bottom: 16px; color: #ffffff; }
+        .login-section input { width: 100%; max-width: 320px; padding: 12px 18px; border: 1px solid rgba(255,255,255,0.1); border-radius: 30px; font-size: 16px; margin-bottom: 12px; display: block; background: rgba(255,255,255,0.05); color: #ffffff; }
+        .login-section input:focus { border-color: #667eea; outline: none; }
+        .login-section button { background: linear-gradient(135deg, #302b63, #667eea); color: white; border: none; padding: 12px 40px; border-radius: 30px; font-size: 18px; font-weight: 700; cursor: pointer; transition: 0.3s; }
+        .login-section button:hover { transform: scale(1.03); box-shadow: 0 0 40px rgba(102, 126, 234, 0.4); }
 
-        /* ===== ОБЩИЕ СТИЛИ ===== */
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 40px 20px;
-            position: relative;
-            z-index: 1;
-        }
+        #dashboard { background: rgba(255,255,255,0.05); backdrop-filter: blur(10px); border-radius: 24px; padding: 30px 40px; border: 1px solid rgba(255,255,255,0.1); display: none; margin-top: 40px; }
+        #dashboard .header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; margin-bottom: 20px; }
+        #dashboard .logout-btn { background: #e74c3c; color: white; border: none; padding: 10px 24px; border-radius: 30px; cursor: pointer; }
+        #dashboard .logout-btn:hover { background: #c0392b; }
+        #dashboard .progress { background: rgba(255,255,255,0.05); padding: 15px; border-radius: 12px; margin-bottom: 20px; }
+        #dashboard .progress .bar { background: rgba(255,255,255,0.1); border-radius: 10px; height: 10px; overflow: hidden; margin-top: 5px; }
+        #dashboard .progress .bar .fill { background: linear-gradient(90deg, #27ae60, #2ecc71); height: 100%; transition: width 0.5s; }
 
-        /* ===== HEADER ===== */
-        header {
-            background: linear-gradient(135deg, rgba(13, 27, 42, 0.8), rgba(27, 42, 74, 0.8));
-            backdrop-filter: blur(20px);
-            padding: 60px 40px;
-            text-align: center;
-            border-radius: 32px;
-            margin-bottom: 40px;
-            border: 1px solid rgba(255, 255, 255, 0.06);
-            box-shadow: 0 25px 80px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.05);
-            position: relative;
-            overflow: hidden;
-        }
-
-        header::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle at 30% 40%, rgba(102, 126, 234, 0.1) 0%, transparent 50%),
-                        radial-gradient(circle at 70% 60%, rgba(245, 166, 35, 0.05) 0%, transparent 50%);
-            animation: pulse 8s ease-in-out infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); opacity: 0.5; }
-            50% { transform: scale(1.1); opacity: 1; }
-        }
-
-        header h1 {
-            font-size: 52px;
-            font-weight: 900;
-            letter-spacing: 2px;
-            position: relative;
-            z-index: 1;
-        }
-
-        header h1 span {
-            background: linear-gradient(135deg, #f5a623, #f7c948, #f5a623);
-            background-size: 200% 200%;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            animation: shimmer 3s ease-in-out infinite;
-            text-shadow: none;
-        }
-
-        @keyframes shimmer {
-            0%, 100% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-        }
-
-        header p {
-            font-size: 20px;
-            opacity: 0.7;
-            margin-top: 8px;
-            color: #b0c4de;
-            position: relative;
-            z-index: 1;
-            font-weight: 300;
-        }
-
-        header .badge-header {
-            display: inline-block;
-            background: rgba(245, 166, 35, 0.15);
-            border: 1px solid rgba(245, 166, 35, 0.2);
-            padding: 6px 20px;
-            border-radius: 50px;
-            font-size: 13px;
-            color: #f5a623;
-            margin-top: 12px;
-            position: relative;
-            z-index: 1;
-            font-weight: 600;
-            letter-spacing: 0.5px;
-        }
-
-        /* ===== КАРТОЧКИ ===== */
-        .glass-card {
-            background: rgba(255, 255, 255, 0.03);
-            backdrop-filter: blur(20px);
-            border-radius: 24px;
-            padding: 35px 40px;
-            border: 1px solid rgba(255, 255, 255, 0.06);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            margin-bottom: 30px;
-        }
-
-        .glass-card:hover {
-            border-color: rgba(255, 255, 255, 0.1);
-            box-shadow: 0 12px 48px rgba(0, 0, 0, 0.3);
-            transform: translateY(-2px);
-        }
-
-        .glass-card h3 {
-            font-size: 22px;
-            font-weight: 700;
-            margin-bottom: 16px;
-            background: linear-gradient(135deg, #ffffff, #b0c4de);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        /* ===== ПРОФИЛЬ ===== */
-        .profile {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 40px;
-            align-items: center;
-        }
-
-        .profile-avatar {
-            width: 140px;
-            height: 140px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 64px;
-            color: white;
-            flex-shrink: 0;
-            box-shadow: 0 8px 32px rgba(102, 126, 234, 0.3);
-            position: relative;
-        }
-
-        .profile-avatar::after {
-            content: '';
-            position: absolute;
-            inset: -3px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #667eea, #764ba2, #f5a623);
-            z-index: -1;
-            opacity: 0.3;
-            animation: spin 4s linear infinite;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        .profile-info h2 {
-            font-size: 34px;
-            font-weight: 800;
-            color: #ffffff;
-        }
-
-        .profile-info .badge {
-            display: inline-block;
-            background: linear-gradient(135deg, #f5a623, #f7c948);
-            color: #0b0e1a;
-            padding: 4px 16px;
-            border-radius: 50px;
-            font-weight: 700;
-            font-size: 13px;
-            margin-top: 6px;
-        }
-
-        .profile-info p {
-            margin-top: 12px;
-            font-size: 17px;
-            color: #b0c4de;
-            font-weight: 300;
-        }
-
-        .profile-info ul {
-            list-style: none;
-            margin-top: 14px;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 12px;
-        }
-
-        .profile-info ul li {
-            padding: 6px 16px;
-            font-size: 14px;
-            color: #c0d0e0;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 50px;
-            border: 1px solid rgba(255, 255, 255, 0.05);
-        }
-
-        .profile-info ul li::before {
-            content: "✨ ";
-        }
-
-        /* ===== КОНТАКТЫ ===== */
-        .contacts {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 12px;
-        }
-
-        .contacts a {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            color: #b0c4de;
-            text-decoration: none;
-            font-weight: 600;
-            padding: 10px 24px;
-            border-radius: 50px;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.06);
-            transition: all 0.3s ease;
-            font-size: 14px;
-        }
-
-        .contacts a:hover {
-            background: linear-gradient(135deg, #302b63, #667eea);
-            color: #ffffff;
-            border-color: #667eea;
-            transform: translateY(-2px);
-            box-shadow: 0 8px 24px rgba(102, 126, 234, 0.2);
-        }
-
-        /* ===== КНОПКИ ===== */
-        .btn {
-            padding: 12px 30px;
-            border: none;
-            border-radius: 50px;
-            font-weight: 700;
-            font-size: 15px;
-            cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            font-family: 'Inter', sans-serif;
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, #302b63, #667eea);
-            color: white;
-            box-shadow: 0 4px 20px rgba(102, 126, 234, 0.3);
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-2px) scale(1.02);
-            box-shadow: 0 8px 40px rgba(102, 126, 234, 0.4);
-        }
-
-        .btn-success {
-            background: linear-gradient(135deg, #1e8449, #27ae60);
-            color: white;
-            box-shadow: 0 4px 20px rgba(39, 174, 96, 0.3);
-        }
-
-        .btn-success:hover {
-            transform: translateY(-2px) scale(1.02);
-            box-shadow: 0 8px 40px rgba(39, 174, 96, 0.4);
-        }
-
-        .btn-danger {
-            background: linear-gradient(135deg, #c0392b, #e74c3c);
-            color: white;
-            box-shadow: 0 4px 20px rgba(231, 76, 60, 0.3);
-        }
-
-        .btn-danger:hover {
-            transform: translateY(-2px) scale(1.02);
-            box-shadow: 0 8px 40px rgba(231, 76, 60, 0.4);
-        }
-
-        .btn-outline {
-            background: transparent;
-            color: #b0c4de;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .btn-outline:hover {
-            background: rgba(255, 255, 255, 0.05);
-            border-color: #667eea;
-            color: #ffffff;
-        }
-
-        /* ===== ВКЛАДКИ ДЗ ===== */
         .homework-tabs {
             display: flex;
-            gap: 8px;
-            margin-bottom: 24px;
-            padding-bottom: 16px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-        }
-
-        .homework-tabs button {
-            padding: 10px 24px;
-            border: none;
-            border-radius: 50px;
-            background: rgba(255, 255, 255, 0.03);
-            color: #888;
-            font-weight: 600;
-            font-size: 14px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-family: 'Inter', sans-serif;
-            border: 1px solid transparent;
-        }
-
-        .homework-tabs button:hover {
-            color: #ffffff;
-            background: rgba(255, 255, 255, 0.05);
-        }
-
-        .homework-tabs button.active {
-            background: linear-gradient(135deg, rgba(48, 43, 99, 0.5), rgba(102, 126, 234, 0.3));
-            color: #ffffff;
-            border-color: rgba(102, 126, 234, 0.2);
-        }
-
-        .homework-tabs button .badge {
-            display: inline-block;
-            background: rgba(255, 255, 255, 0.08);
-            padding: 0 10px;
-            border-radius: 50px;
-            font-size: 12px;
-            margin-left: 6px;
-            font-weight: 600;
-        }
-
-        .homework-tabs button.active .badge {
-            background: rgba(255, 255, 255, 0.15);
-        }
-
-        /* ===== КАРТОЧКА ДЗ ===== */
-        .hw-card {
-            padding: 20px 24px;
-            border-radius: 16px;
-            margin-bottom: 14px;
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            transition: all 0.3s ease;
-        }
-
-        .hw-card:hover {
-            background: rgba(255, 255, 255, 0.05);
-            border-color: rgba(255, 255, 255, 0.08);
-            transform: translateX(4px);
-        }
-
-        .hw-card .title {
-            font-size: 18px;
-            font-weight: 700;
-            color: #ffffff;
-        }
-
-        .hw-card .meta {
-            color: #888;
-            font-size: 13px;
-            margin: 4px 0;
-            font-weight: 300;
-        }
-
-        .hw-card .status {
-            display: inline-block;
-            padding: 2px 14px;
-            border-radius: 50px;
-            font-size: 12px;
-            font-weight: 600;
-            margin-top: 6px;
-        }
-
-        .hw-card .status.done {
-            background: rgba(46, 204, 113, 0.15);
-            color: #2ecc71;
-        }
-
-        .hw-card .status.pending {
-            background: rgba(241, 196, 15, 0.15);
-            color: #f39c12;
-        }
-
-        .hw-card .btn-start {
-            background: linear-gradient(135deg, #27ae60, #2ecc71);
-            color: white;
-            border: none;
-            padding: 6px 20px;
-            border-radius: 50px;
-            cursor: pointer;
-            margin-top: 10px;
-            font-weight: 600;
-            font-size: 13px;
-            transition: all 0.3s ease;
-        }
-
-        .hw-card .btn-start:hover {
-            transform: scale(1.05);
-            box-shadow: 0 4px 20px rgba(39, 174, 96, 0.3);
-        }
-
-        /* ===== ВИДЕО ТАБЫ ===== */
-        .video-tabs {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
             gap: 10px;
             margin-bottom: 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            padding-bottom: 10px;
         }
-
-        .video-tabs button {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.06);
-            padding: 14px 18px;
-            border-radius: 14px;
+        .homework-tabs button {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.05);
+            padding: 10px 24px;
+            border-radius: 30px;
             cursor: pointer;
             font-weight: 600;
-            font-size: 14px;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            gap: 12px;
+            transition: 0.3s;
             color: #b0c4de;
-            text-align: left;
-            font-family: 'Inter', sans-serif;
         }
-
-        .video-tabs button:hover {
-            border-color: #667eea;
-            transform: translateY(-2px);
-            box-shadow: 0 8px 24px rgba(102, 126, 234, 0.15);
-            background: rgba(102, 126, 234, 0.05);
-            color: #ffffff;
-        }
-
-        .video-tabs button .num {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            width: 32px;
-            height: 32px;
-            background: rgba(255, 255, 255, 0.06);
-            color: #888;
-            border-radius: 50%;
-            font-size: 13px;
-            font-weight: 800;
-            flex-shrink: 0;
-            transition: all 0.3s ease;
-        }
-
-        .video-tabs button:hover .num {
-            background: linear-gradient(135deg, #667eea, #764ba2);
+        .homework-tabs button:hover {
+            background: #302b63;
             color: white;
-        }
-
-        /* ===== ВХОД ===== */
-        .login-section input {
-            width: 100%;
-            max-width: 340px;
-            padding: 14px 20px;
-            border: 1px solid rgba(255, 255, 255, 0.06);
-            border-radius: 50px;
-            font-size: 15px;
-            margin-bottom: 14px;
-            display: block;
-            background: rgba(255, 255, 255, 0.03);
-            color: #ffffff;
-            font-family: 'Inter', sans-serif;
-            transition: all 0.3s ease;
-        }
-
-        .login-section input:focus {
             border-color: #667eea;
-            outline: none;
-            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
-            background: rgba(255, 255, 255, 0.05);
         }
-
-        .login-section input::placeholder {
-            color: #555;
-        }
-
-        /* ===== АДМИН-ПАНЕЛЬ ===== */
-        .admin-tabs {
-            display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
-            margin-bottom: 24px;
-            padding-bottom: 16px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-        }
-
-        .admin-tabs button {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            padding: 10px 20px;
-            border-radius: 50px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            color: #888;
-            font-size: 13px;
-            font-family: 'Inter', sans-serif;
-        }
-
-        .admin-tabs button:hover {
-            background: rgba(255, 255, 255, 0.05);
-            color: #ffffff;
-        }
-
-        .admin-tabs button.active {
-            background: linear-gradient(135deg, rgba(48, 43, 99, 0.5), rgba(102, 126, 234, 0.3));
-            color: #ffffff;
-            border-color: rgba(102, 126, 234, 0.2);
-        }
-
-        .admin-btn {
-            padding: 8px 20px;
-            border: none;
-            border-radius: 50px;
-            cursor: pointer;
-            font-weight: 600;
-            font-size: 13px;
-            transition: all 0.3s ease;
-            font-family: 'Inter', sans-serif;
+        .homework-tabs button.active {
+            background: #302b63;
             color: white;
+            border-color: #667eea;
+        }
+        .homework-tabs button .badge {
+            display: inline-block;
+            background: rgba(255,255,255,0.1);
+            padding: 0 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            margin-left: 6px;
+        }
+        .homework-tabs button.active .badge {
+            background: rgba(255,255,255,0.2);
         }
 
-        .admin-btn:hover {
-            transform: translateY(-2px) scale(1.02);
-        }
+        .hw-card { padding: 16px; border: 1px solid rgba(255,255,255,0.05); border-radius: 12px; margin-bottom: 12px; background: rgba(255,255,255,0.03); }
+        .hw-card .title { font-size: 18px; font-weight: 700; color: #ffffff; }
+        .hw-card .meta { color: #888; font-size: 14px; margin: 4px 0; }
+        .hw-card .status.done { color: #2ecc71; }
+        .hw-card .status.pending { color: #f39c12; }
+        .hw-card .btn-start { background: #27ae60; color: white; border: none; padding: 6px 16px; border-radius: 20px; cursor: pointer; margin-top: 8px; }
+        .hw-card .btn-start:hover { background: #1e8449; }
+        .hw-card .video-fallback { margin-top: 10px; padding: 10px 14px; background: rgba(245, 166, 35, 0.1); border-radius: 8px; border-left: 4px solid #f5a623; }
+        .hw-card .video-fallback .label { color: #f5a623; font-weight: 600; }
+        .hw-card .video-fallback a { color: #88ccff; word-break: break-all; text-decoration: none; }
+        .hw-card .video-fallback a:hover { text-decoration: underline; }
+        .hw-card .task-item-inline { padding: 4px 0; border-bottom: 1px solid rgba(255,255,255,0.05); display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+        .hw-card .task-item-inline .task-num { color: #b0c4de; font-weight: 600; min-width: 30px; }
+        .hw-card .task-item-inline input { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); border-radius: 6px; padding: 4px 10px; color: white; width: 120px; }
+        .hw-card .task-item-inline input:focus { border-color: #667eea; outline: none; }
+        .hw-card .task-item-inline .check-btn { background: #302b63; color: white; border: none; padding: 2px 14px; border-radius: 12px; cursor: pointer; font-size: 13px; }
+        .hw-card .task-item-inline .check-btn:hover { background: #667eea; }
+        .hw-card .task-item-inline .answer-result { margin-left: 4px; font-size: 14px; }
 
-        /* ===== ТАБЛИЦЫ ===== */
-        .admin-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 16px;
-            font-size: 14px;
-        }
+        .video-section { margin-top: 30px; }
+        .video-section h3 { font-size: 22px; margin-bottom: 16px; color: #ffffff; }
 
-        .admin-table th,
-        .admin-table td {
-            padding: 12px 16px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
-            text-align: left;
-            color: #c0d0e0;
-        }
+        .part-divider { font-size: 24px; font-weight: 900; color: #f5a623; margin: 30px 0 20px 0; padding: 12px 20px; background: rgba(245, 166, 35, 0.1); border-radius: 12px; border-left: 6px solid #f5a623; text-shadow: 0 0 20px rgba(245, 166, 35, 0.2); }
 
-        .admin-table th {
-            background: rgba(255, 255, 255, 0.03);
-            color: #ffffff;
+        .video-tabs { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 20px; }
+        .video-tabs button {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            padding: 14px 22px;
+            border-radius: 12px;
+            cursor: pointer;
             font-weight: 700;
-            font-size: 13px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
+            font-size: 16px;
+            transition: 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex: 1 1 200px;
+            color: #b0c4de; box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+            width: 100%;
+            text-align: left;
         }
+        .video-tabs button:hover { border-color: #667eea; transform: translateY(-2px); box-shadow: 0 6px 20px rgba(102, 126, 234, 0.2); background: rgba(102, 126, 234, 0.1); color: #ffffff; }
+        .video-tabs button .num { display: inline-flex; align-items: center; justify-content: center; width: 30px; height: 30px; background: rgba(255,255,255,0.1); color: #b0c4de; border-radius: 50%; font-size: 14px; font-weight: 900; flex-shrink: 0; }
+        .video-tabs button:hover .num { background: white; color: #302b63; }
 
-        .admin-table tr:hover td {
-            background: rgba(255, 255, 255, 0.02);
-        }
-
-        /* ===== РАСПИСАНИЕ ===== */
+        .schedule-section { margin-top: 30px; }
+        .schedule-section h3 { font-size: 22px; margin-bottom: 16px; color: #ffffff; }
+        .schedule-table-wrap { overflow-x: auto; }
         .schedule-table {
             width: 100%;
             border-collapse: collapse;
-            background: rgba(255, 255, 255, 0.02);
-            border-radius: 16px;
+            background: rgba(255,255,255,0.03);
+            border-radius: 12px;
             overflow: hidden;
             font-size: 14px;
         }
-
         .schedule-table th,
         .schedule-table td {
-            border: 1px solid rgba(255, 255, 255, 0.04);
-            padding: 12px 10px;
+            border: 1px solid rgba(255,255,255,0.08);
+            padding: 10px 8px;
             text-align: center;
-            min-width: 70px;
+            min-width: 80px;
         }
-
         .schedule-table th {
-            background: rgba(255, 255, 255, 0.04);
+            background: rgba(255,255,255,0.06);
             color: #f5a623;
             font-weight: 700;
-            font-size: 13px;
+            font-size: 15px;
         }
-
         .schedule-table td {
             color: #b0c4de;
+            vertical-align: middle;
         }
-
+        .schedule-table .row-num {
+            color: #666;
+            font-weight: 700;
+            min-width: 40px;
+        }
+        .schedule-table .cell-empty {
+            color: #444;
+        }
         .schedule-table .cell-occupied {
-            background: rgba(39, 174, 96, 0.08);
-            border-color: rgba(39, 174, 96, 0.1);
+            color: #7ddfa0;
+            background: rgba(39, 174, 96, 0.1);
+            border-color: rgba(39, 174, 96, 0.15);
         }
-
         .schedule-table .cell-occupied .student-name {
             color: #ffffff;
+        }
+        .schedule-table .cell-occupied .topic {
+            color: #7ddfa0;
+            font-size: 12px;
+        }
+        .schedule-table td .cell-content {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            cursor: pointer;
+            padding: 4px;
+            border-radius: 6px;
+            transition: 0.2s;
+        }
+        .schedule-table td .cell-content:hover {
+            background: rgba(255,255,255,0.05);
+        }
+        .schedule-table td .cell-content .student-name {
             font-weight: 600;
+            color: #ffffff;
+            font-size: 14px;
+        }
+        .schedule-table td .cell-content .topic {
+            font-size: 12px;
+            color: #888;
+        }
+        .schedule-table td .cell-content .empty-text {
+            color: #444;
+            font-size: 12px;
         }
 
-        /* ===== МОДАЛКА ===== */
+        .schedule-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-top: 20px;
+            align-items: center;
+        }
+        .schedule-actions button {
+            background: #302b63;
+            color: white;
+            border: none;
+            padding: 10px 24px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: 0.3s;
+        }
+        .schedule-actions button:hover {
+            background: #667eea;
+            transform: scale(1.02);
+        }
+
+        #sectionPage {
+            display: none;
+            background: rgba(255,255,255,0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 24px;
+            padding: 30px 40px;
+            border: 1px solid rgba(255,255,255,0.1);
+            margin-top: 40px;
+        }
+        #sectionPage.active { display: block; }
+        #sectionPage .back-btn {
+            background: none;
+            border: none;
+            color: #f5a623;
+            font-size: 18px;
+            cursor: pointer; font-weight: 600;
+            padding: 10px 0;
+            transition: 0.3s;
+            display: block;
+            text-align: left;
+        }
+        #sectionPage .back-btn:hover { color: #ffffff; }
+        #sectionPage .section-title { font-size: 32px; color: #f5a623; margin-bottom: 30px; text-align: center; text-shadow: 0 0 30px rgba(245, 166, 35, 0.2); }
+
+        .video-player-wrapper {
+            position: relative;
+            padding-bottom: 56.25%;
+            height: 0;
+            overflow: hidden;
+            border-radius: 12px;
+            margin-bottom: 12px;
+            background: #000;
+        }
+        .video-player-wrapper video,
+        .video-player-wrapper iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+            border-radius: 12px;
+        }
+        .video-item {
+            padding: 20px;
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 16px;
+            margin-bottom: 16px;
+            background: rgba(255,255,255,0.05);
+            transition: 0.3s;
+        }
+        .video-item:hover {
+            background: rgba(255,255,255,0.08);
+            border-color: rgba(102, 126, 234, 0.3);
+        }
+        .video-item .video-title {
+            color: #b0c4de;
+            font-size: 18px;
+            font-weight: 500;
+            display: block;
+            margin-bottom: 8px;
+        }
+        .video-item .video-title:hover { color: #ffffff; }
+        .video-item .video-homework {
+            margin-top: 16px;
+            padding: 16px 20px;
+            background: rgba(39, 174, 96, 0.1);
+            border-radius: 12px;
+            border-left: 4px solid #27ae60;
+            color: #7ddfa0;
+            font-size: 16px;
+        }
+        .video-item .video-homework strong { color: #ffffff; }
+        .video-item .video-fallback-link {
+            margin-top: 12px;
+            padding: 10px 14px;
+            background: rgba(245, 166, 35, 0.08);
+            border-radius: 8px;
+            border-left: 4px solid #f5a623;
+        }
+        .video-item .video-fallback-link .label {
+            color: #f5a623;
+            font-weight: 600;
+        }
+        .video-item .video-fallback-link a {
+            color: #88ccff;
+            word-break: break-all;
+            text-decoration: none;
+        }
+        .video-item .video-fallback-link a:hover {
+            text-decoration: underline;
+        }
+        .video-item .video-homework-link {
+            margin-top: 12px;
+            display: inline-block;
+            background: #302b63;
+            color: white;
+            padding: 8px 20px;
+            border-radius: 20px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: 0.3s;
+        }
+        .video-item .video-homework-link:hover { background: #667eea; }
+
+        #adminPanel { background: rgba(255,255,255,0.05); backdrop-filter: blur(10px); border-radius: 24px; padding: 30px 40px; border: 1px solid rgba(255,255,255,0.1); display: none; margin-top: 40px; }
+        .admin-tabs { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 15px; }
+        .admin-tabs button { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.05); padding: 10px 20px; border-radius: 30px; cursor: pointer; font-weight: 600; transition: 0.3s; color: #b0c4de; }
+        .admin-tabs button:hover { background: #302b63; color: white; border-color: #667eea; }
+        .admin-tabs button.active { background: #302b63; color: white; border-color: #667eea; }
+        .admin-content { display: none; }
+        .admin-content.active { display: block; }
+        .admin-table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        .admin-table th, .admin-table td { padding: 10px; border-bottom: 1px solid rgba(255,255,255,0.05); text-align: left; color: #c0d0e0; }
+        .admin-table th { background: rgba(255,255,255,0.05); color: #ffffff; }
+        .admin-btn { background: #302b63; color: white; border: none; padding: 8px 16px; border-radius: 20px; cursor: pointer; transition: 0.3s; }
+        .admin-btn:hover { background: #667eea; }
+        .admin-btn.danger { background: #e74c3c; }
+        .admin-btn.danger:hover { background: #c0392b; }
+        .admin-btn.success { background: #27ae60; }
+        .admin-btn.success:hover { background: #1e8449; }
+        .admin-btn.small { padding: 4px 12px; font-size: 12px; }
+
+        /* Стили для модального окна выдачи ДЗ */
         .modal-overlay {
             display: none;
             position: fixed;
@@ -678,125 +375,100 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.7);
-            backdrop-filter: blur(20px);
+            background: rgba(0,0,0,0.8);
             z-index: 1000;
             justify-content: center;
             align-items: center;
         }
-
         .modal-overlay.active {
             display: flex;
         }
-
         .modal-content {
-            background: linear-gradient(145deg, #1a1a2e, #0f0f1f);
+            background: #1a1a2e;
             padding: 40px;
-            border-radius: 32px;
-            max-width: 560px;
-            width: 92%;
+            border-radius: 24px;
+            max-width: 600px;
+            width: 90%;
             max-height: 90vh;
             overflow-y: auto;
-            border: 1px solid rgba(255, 255, 255, 0.06);
-            box-shadow: 0 40px 80px rgba(0, 0, 0, 0.6);
+            border: 1px solid rgba(255,255,255,0.1);
         }
-
         .modal-content h3 {
-            font-size: 28px;
-            font-weight: 800;
-            margin-bottom: 24px;
-            background: linear-gradient(135deg, #f5a623, #f7c948);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            color: #f5a623;
+            margin-bottom: 20px;
         }
-
         .modal-content label {
             color: #b0c4de;
             display: block;
-            margin-bottom: 6px;
-            font-weight: 600;
-            font-size: 14px;
+            margin-bottom: 8px;
         }
-
-        .modal-content input,
-        .modal-content select {
+        .modal-content input, .modal-content select {
             width: 100%;
-            padding: 13px 18px;
-            background: rgba(255, 255, 255, 0.04);
-            border: 1px solid rgba(255, 255, 255, 0.06);
-            border-radius: 12px;
+            padding: 12px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 8px;
             color: #fff;
-            font-size: 15px;
-            margin-bottom: 16px;
-            font-family: 'Inter', sans-serif;
-            transition: all 0.3s ease;
+            font-size: 16px;
+            margin-bottom: 15px;
         }
-
-        .modal-content input:focus,
-        .modal-content select:focus {
+        .modal-content input:focus, .modal-content select:focus {
             border-color: #667eea;
             outline: none;
-            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
-            background: rgba(255, 255, 255, 0.06);
         }
-
         .modal-content .preview-text {
             margin-top: -10px;
-            margin-bottom: 16px;
-            font-size: 13px;
+            margin-bottom: 15px;
+            font-size: 14px;
             color: #666;
         }
-
         .modal-actions {
             display: flex;
-            gap: 12px;
+            gap: 10px;
             justify-content: flex-end;
-            margin-top: 8px;
+            margin-top: 10px;
         }
-
         .modal-actions button {
-            padding: 12px 32px;
+            padding: 12px 30px;
             border: none;
-            border-radius: 50px;
+            border-radius: 12px;
             color: #fff;
             font-weight: 700;
             cursor: pointer;
-            transition: all 0.3s ease;
-            font-family: 'Inter', sans-serif;
-            font-size: 14px;
+            transition: 0.3s;
         }
-
         .modal-actions .cancel-btn {
-            background: rgba(255, 255, 255, 0.06);
+            background: rgba(255,255,255,0.1);
         }
-
         .modal-actions .cancel-btn:hover {
-            background: rgba(255, 255, 255, 0.1);
+            background: rgba(255,255,255,0.2);
         }
-
         .modal-actions .submit-btn {
             background: linear-gradient(135deg, #302b63, #667eea);
-            box-shadow: 0 4px 20px rgba(102, 126, 234, 0.3);
+        }
+        .modal-actions .submit-btn:hover {
+            transform: scale(1.02);
+            box-shadow: 0 0 30px rgba(102, 126, 234, 0.3);
         }
 
-        .modal-actions .submit-btn:hover {
-            transform: translateY(-2px) scale(1.02);
-            box-shadow: 0 8px 40px rgba(102, 126, 234, 0.4);
+        .homework-controls {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
         }
 
         .deadline-row {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 15px;
             flex-wrap: wrap;
         }
-
         .deadline-row input[type="date"] {
             flex: 1;
-            min-width: 140px;
+            min-width: 150px;
             margin-bottom: 0;
         }
-
         .deadline-row .no-deadline-label {
             display: flex;
             align-items: center;
@@ -807,466 +479,35 @@
             margin: 0;
             white-space: nowrap;
         }
-
         .deadline-row .no-deadline-label input[type="checkbox"] {
             width: 18px;
             height: 18px;
             margin: 0;
             cursor: pointer;
             flex-shrink: 0;
-            accent-color: #667eea;
         }
 
-        /* ===== FOOTER ===== */
-        footer {
-            text-align: center;
-            padding: 40px 20px;
-            color: #444;
-            font-size: 14px;
-            border-top: 1px solid rgba(255, 255, 255, 0.03);
-            margin-top: 40px;
-            font-weight: 300;
-        }
-
-        /* ===== АДАПТИВ ===== */
-        @media (max-width: 768px) {
-            .container {
-                padding: 20px 16px;
-            }
-
-            header {
-                padding: 40px 24px;
-            }
-
-            header h1 {
-                font-size: 32px;
-            }
-
-            header p {
-                font-size: 17px;
-            }
-
-            .glass-card {
-                padding: 24px 20px;
-            }
-
-            .profile {
-                flex-direction: column;
-                text-align: center;
-            }
-
-            .profile-avatar {
-                width: 100px;
-                height: 100px;
-                font-size: 44px;
-            }
-
-            .profile-info ul {
-                justify-content: center;
-            }
-
-            .contacts {
-                justify-content: center;
-            }
-
-            .video-tabs {
-                grid-template-columns: 1fr;
-            }
-
-            .admin-tabs {
-                flex-direction: column;
-            }
-
-            .admin-tabs button {
-                width: 100%;
-                text-align: center;
-            }
-
-            .modal-content {
-                padding: 28px 20px;
-            }
-
-            .modal-content h3 {
-                font-size: 22px;
-            }
-
-            .deadline-row {
-                flex-direction: column;
-                align-items: stretch;
-            }
-
-            .deadline-row input[type="date"] {
-                width: 100%;
-            }
-
-            .schedule-table {
-                font-size: 12px;
-            }
-
-            .schedule-table th,
-            .schedule-table td {
-                padding: 6px 4px;
-                min-width: 50px;
-            }
-
-            .admin-table {
-                font-size: 12px;
-            }
-
-            .admin-table th,
-            .admin-table td {
-                padding: 8px 10px;
-            }
-
-            .homework-tabs button {
-                padding: 8px 16px;
-                font-size: 13px;
-            }
-
-            .hw-card {
-                padding: 16px 18px;
-            }
-
-            .hw-card .title {
-                font-size: 16px;
-            }
-        }
-
-        @media (max-width: 480px) {
-            header h1 {
-                font-size: 26px;
-            }
-
-            .glass-card {
-                padding: 18px 16px;
-            }
-
-            .profile-info h2 {
-                font-size: 26px;
-            }
-
-            .modal-actions {
-                flex-direction: column;
-            }
-
-            .modal-actions button {
-                width: 100%;
-                text-align: center;
-            }
-        }
-
-        /* ===== SCROLLBAR ===== */
-        ::-webkit-scrollbar {
-            width: 6px;
-        }
-
-        ::-webkit-scrollbar-track {
-            background: rgba(255, 255, 255, 0.02);
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: rgba(102, 126, 234, 0.3);
-            border-radius: 10px;
-        }
-
-        ::-webkit-scrollbar-thumb:hover {
-            background: rgba(102, 126, 234, 0.5);
-        }
-
-        /* ===== АНИМАЦИЯ ПОЯВЛЕНИЯ ===== */
-        .fade-in {
-            animation: fadeIn 0.6s ease-out forwards;
-        }
-
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .part-divider {
-            font-size: 22px;
-            font-weight: 800;
-            color: #f5a623;
-            margin: 30px 0 20px 0;
-            padding: 14px 24px;
-            background: rgba(245, 166, 35, 0.06);
-            border-radius: 16px;
-            border-left: 4px solid #f5a623;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .part-divider::before {
-            content: '';
-            flex: 1;
-            height: 1px;
-            background: linear-gradient(to right, rgba(245, 166, 35, 0.2), transparent);
-        }
-
-        .video-item {
-            padding: 24px;
-            border-radius: 20px;
-            margin-bottom: 20px;
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.04);
-            transition: all 0.4s ease;
-        }
-
-        .video-item:hover {
-            background: rgba(255, 255, 255, 0.05);
-            border-color: rgba(255, 255, 255, 0.08);
-            transform: translateY(-2px);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
-        }
-
-        .video-item .video-title {
-            color: #b0c4de;
-            font-size: 18px;
-            font-weight: 500;
-            display: block;
-            margin-bottom: 8px;
-        }
-
-        .video-item .video-title:hover {
-            color: #ffffff;
-        }
-
-        .video-player-wrapper {
-            position: relative;
-            padding-bottom: 56.25%;
-            height: 0;
-            overflow: hidden;
-            border-radius: 16px;
-            margin-bottom: 14px;
-            background: #000;
-        }
-
-        .video-player-wrapper video,
-        .video-player-wrapper iframe {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            border: none;
-            border-radius: 16px;
-        }
-
-        .video-item .video-homework {
-            margin-top: 16px;
-            padding: 16px 20px;
-            background: rgba(39, 174, 96, 0.08);
-            border-radius: 14px;
-            border-left: 4px solid #27ae60;
-            color: #7ddfa0;
-            font-size: 15px;
-        }
-
-        .video-item .video-homework strong {
-            color: #ffffff;
-        }
-
-        .video-item .video-homework-link {
-            margin-top: 12px;
-            display: inline-block;
-            background: linear-gradient(135deg, #302b63, #667eea);
-            color: white;
-            padding: 8px 24px;
-            border-radius: 50px;
-            text-decoration: none;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            font-size: 14px;
-        }
-
-        .video-item .video-homework-link:hover {
-            transform: scale(1.05);
-            box-shadow: 0 4px 20px rgba(102, 126, 234, 0.3);
-        }
-
-        .section-title {
-            font-size: 36px;
-            font-weight: 900;
-            color: #f5a623;
-            margin-bottom: 30px;
-            text-align: center;
-        }
-
-        .empty-state {
-            text-align: center;
-            padding: 40px 20px;
-            color: #666;
-            font-size: 16px;
-        }
-
-        .empty-state .icon {
-            font-size: 48px;
-            margin-bottom: 12px;
-            display: block;
-        }
-
-        .progress-text {
-            font-weight: 600;
-            color: #b0c4de;
-        }
-
-        .progress-bar {
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 10px;
-            height: 8px;
-            overflow: hidden;
-            margin-top: 6px;
-        }
-
-        .progress-bar .fill {
-            background: linear-gradient(90deg, #27ae60, #2ecc71);
-            height: 100%;
-            transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-            border-radius: 10px;
-        }
-
-        .dashboard-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 12px;
-            margin-bottom: 20px;
-        }
-
-        .dashboard-header h3 {
-            font-size: 24px;
-            font-weight: 700;
-            color: #ffffff;
-        }
-
-        .logout-btn {
-            background: rgba(231, 76, 60, 0.2);
-            color: #e74c3c;
-            border: 1px solid rgba(231, 76, 60, 0.15);
-            padding: 8px 24px;
-            border-radius: 50px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            font-family: 'Inter', sans-serif;
-            font-size: 14px;
-        }
-
-        .logout-btn:hover {
-            background: rgba(231, 76, 60, 0.3);
-            transform: translateY(-2px);
-        }
-
-        .homework-controls {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-            margin-bottom: 20px;
-        }
-
-        .schedule-actions {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-            margin-top: 16px;
-        }
-
-        .task-item {
-            padding: 16px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
-            color: #c0d0e0;
-        }
-
-        .task-item:last-child {
-            border-bottom: none;
-        }
-
-        .task-item .question {
-            font-size: 17px;
-            color: #ffffff;
-            font-weight: 500;
-        }
-
-        .task-item .topic {
-            color: #888;
-            font-size: 13px;
-        }
-
-        .task-item .answer {
-            display: none;
-            margin-top: 10px;
-            padding: 12px 16px;
-            background: rgba(39, 174, 96, 0.1);
-            border-radius: 10px;
-            color: #7ddfa0;
-            border: 1px solid rgba(39, 174, 96, 0.1);
-        }
-
-        .task-item .answer.show {
-            display: block;
-        }
-
-        .task-item button {
-            background: rgba(255, 255, 255, 0.05);
-            color: #b0c4de;
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            padding: 6px 18px;
-            border-radius: 50px;
-            cursor: pointer;
-            margin-top: 10px;
-            transition: all 0.3s ease;
-            font-family: 'Inter', sans-serif;
-            font-size: 13px;
-        }
-
-        .task-item button:hover {
-            background: rgba(102, 126, 234, 0.2);
-            color: #ffffff;
-            border-color: #667eea;
-        }
-
-        .task-filter {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-            margin-bottom: 16px;
-        }
-
-        .task-filter button {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            padding: 6px 18px;
-            border-radius: 50px;
-            cursor: pointer;
-            color: #888;
-            transition: all 0.3s ease;
-            font-family: 'Inter', sans-serif;
-            font-size: 13px;
-        }
-
-        .task-filter button:hover {
-            background: rgba(255, 255, 255, 0.05);
-            color: #ffffff;
-        }
-
-        .task-filter button.active {
-            background: rgba(102, 126, 234, 0.15);
-            color: #ffffff;
-            border-color: rgba(102, 126, 234, 0.2);
+        footer { text-align: center; padding: 30px 20px; color: #666; font-size: 14px; border-top: 1px solid rgba(255,255,255,0.05); margin-top: 40px; }
+
+        @media (max-width: 700px) {
+            header h1 { font-size: 28px; }
+            .profile { flex-direction: column; text-align: center; }
+            .profile-avatar { width: 120px; height: 120px; font-size: 50px; }
+            .contacts a { display: block; margin: 8px 0; text-align: center; }
+            .admin-tabs { flex-direction: column; } .admin-table { font-size: 14px; }
+            .video-tabs button { font-size: 14px; padding: 10px 14px; flex: 1 1 100%; }
+            .schedule-table { font-size: 12px; }
+            .schedule-table th, .schedule-table td { padding: 6px 4px; min-width: 60px; }
+            .hw-card .task-item-inline { flex-direction: column; align-items: stretch; }
+            .hw-card .task-item-inline input { width: 100%; }
+            .modal-content { padding: 20px; }
+            .deadline-row { flex-direction: column; align-items: stretch; }
+            .deadline-row input[type="date"] { width: 100%; }
         }
     </style>
 </head>
 <body>
 
-    <div class="bg-animation"></div>
     <div class="stars" id="starsContainer"></div>
 
     <div class="container">
@@ -1274,12 +515,10 @@
         <header>
             <h1>📐 Математика с <span>Никитой</span></h1>
             <p>Подготовка к ЕГЭ по профильной математике на 90+ баллов</p>
-            <div class="badge-header">⭐ 3 ученика сдали на 100 баллов</div>
         </header>
 
         <div id="mainContent">
-            <!-- ПРОФИЛЬ -->
-            <div class="glass-card profile" id="profileBlock">
+            <div class="profile" id="profileBlock">
                 <div class="profile-avatar">👨‍🏫</div>
                 <div class="profile-info">
                     <h2>Никита</h2>
@@ -1293,16 +532,14 @@
                 </div>
             </div>
 
-            <!-- КОНТАКТЫ -->
-            <div class="glass-card contacts" id="contactsBlock">
-                <h3 style="width:100%;">📬 Связаться со мной</h3>
+            <div class="contacts" id="contactsBlock">
+                <h3>📬 Связаться со мной</h3>
                 <a href="tel:+79916834922">📞 +7 991 683-49-22</a>
                 <a href="https://t.me/Nikita_Lysikov" target="_blank">💬 Telegram</a>
                 <a href="mailto:nlysi6233@gmail.com">📧 nlysi6233@gmail.com</a>
             </div>
 
-            <!-- ЗАДАЧИ -->
-            <div class="glass-card" id="taskCatalogBlock">
+            <div class="task-catalog" id="taskCatalogBlock">
                 <h3>📚 Каталог задач</h3>
                 <div class="task-filter" id="taskFilter">
                     <button class="active" data-topic="all">Все</button>
@@ -1310,165 +547,160 @@
                 <div id="taskList">Загрузка...</div>
             </div>
 
-            <!-- ВХОД -->
-            <div class="glass-card login-section" id="loginSection">
+            <div class="login-section" id="loginSection">
                 <h3>🔐 Войти в личный кабинет</h3>
-                <input type="email" id="email" placeholder="Email">
-                <input type="password" id="password" placeholder="Пароль">
-                <button class="btn btn-primary" id="loginBtn">Войти</button>
-                <div id="result" style="margin-top:12px;"></div>
-                <p style="margin-top: 14px; font-size: 13px; color: #555;">
+                <input type="email" id="email" placeholder="Email" value="">
+                <input type="password" id="password" placeholder="Пароль" value="">
+                <button id="loginBtn">Войти</button>
+                <div id="result"></div>
+                <p style="margin-top: 14px; font-size: 14px; color: #888;">
                     *Нет аккаунта? Напиши мне в Telegram — я добавлю тебя!
                 </p>
             </div>
         </div>
 
-        <!-- ДАШБОРД -->
-        <div id="dashboard" style="display:none;">
-            <div class="glass-card">
-                <div class="dashboard-header">
-                    <h3 id="welcomeMessage">👋 Привет!</h3>
-                    <button class="logout-btn" id="logoutBtn">Выйти</button>
-                </div>
-                <div class="progress">
-                    <div class="progress-text">📊 Прогресс: <span id="progressText">0%</span></div>
-                    <div class="progress-bar"><div class="fill" id="progressBar" style="width:0%;"></div></div>
-                </div>
-
-                <div class="homework-tabs">
-                    <button class="active" data-tab="active" onclick="switchHomeworkTab('active')">
-                        📝 Активные <span class="badge" id="activeCount">0</span>
-                    </button>
-                    <button data-tab="completed" onclick="switchHomeworkTab('completed')">
-                        ✅ Выполненные <span class="badge" id="completedCount">0</span>
-                    </button>
-                </div>
-
-                <div id="homeworkList"><p>Загрузка...</p></div>
+        <div id="dashboard">
+            <div class="header">
+                <h3 id="welcomeMessage">📚 Мои домашние задания</h3>
+                <button class="logout-btn" id="logoutBtn">Выйти</button>
             </div>
+            <div class="progress">
+                <div>📊 Прогресс: <span id="progressText">0%</span></div>
+                <div class="bar"><div class="fill" id="progressBar" style="width:0%;"></div></div>
+            </div>
+            
+            <div class="homework-tabs">
+                <button class="active" data-tab="active" onclick="switchHomeworkTab('active')">
+                    📝 Активные <span class="badge" id="activeCount">0</span>
+                </button>
+                <button data-tab="completed" onclick="switchHomeworkTab('completed')">
+                    ✅ Выполненные <span class="badge" id="completedCount">0</span>
+                </button>
+            </div>
+            
+            <div id="homeworkList"><p>Загрузка...</p></div>
 
-            <!-- РАСПИСАНИЕ -->
-            <div class="glass-card">
+            <div class="schedule-section">
                 <h3>📅 Моё расписание</h3>
                 <div id="studentSchedule"><p>Загрузка...</p></div>
             </div>
 
-            <!-- ВИДЕО -->
-            <div class="glass-card">
+            <div class="video-section">
                 <h3>🎥 Видеоуроки по темам</h3>
+
                 <div class="part-divider">📘 Первая часть</div>
                 <div class="video-tabs" id="videoTabsPart1"></div>
+
                 <div class="part-divider">📗 Вторая часть</div>
                 <div class="video-tabs" id="videoTabsPart2"></div>
             </div>
         </div>
 
-        <!-- СТРАНИЦА РАЗДЕЛА -->
-        <div id="sectionPage" style="display:none;">
-            <div class="glass-card">
-                <button class="btn btn-outline" id="backToDashboard" style="margin-bottom:20px;">← Назад к списку разделов</button>
-                <div id="sectionContent"></div>
+        <div id="sectionPage">
+            <button class="back-btn" id="backToDashboard">← Назад к списку разделов</button>
+            <div id="sectionContent">
+                <div class="loading">⏳ Загрузка...</div>
             </div>
         </div>
 
-        <!-- АДМИНКА -->
-        <div id="adminPanel" style="display:none;">
-            <div class="glass-card">
-                <h3>🔧 Панель управления</h3>
-                <div class="admin-tabs">
-                    <button class="active" data-tab="students">📋 Ученики</button>
-                    <button data-tab="my-students">📋 Мои ученики</button>
-                    <button data-tab="homeworks">📝 ДЗ</button>
-                    <button data-tab="videos">🎥 Видео</button>
-                    <button data-tab="tasks">📚 Задачи</button>
-                    <button data-tab="schedule">📅 Расписание</button>
-                    <button data-tab="stats">📊 Статистика</button>
+        <div id="adminPanel">
+            <h3>🔧 Панель управления</h3>
+            <div class="admin-tabs">
+                <button class="active" data-tab="students">📋 Ученики (вход)</button>
+                <button data-tab="my-students">📋 Мои ученики</button>
+                <button data-tab="homeworks">📝 ДЗ</button>
+                <button data-tab="videos">🎥 Видео</button>
+                <button data-tab="tasks">📚 Задачи</button>
+                <button data-tab="schedule">📅 Расписание</button>
+                <button data-tab="stats">📊 Статистика</button>
+            </div>
+            <div class="admin-content active" id="tab-students">
+                <button class="admin-btn success" onclick="addStudent()">➕ Добавить ученика</button>
+                <div id="studentsList" style="margin-top:15px;">Загрузка...</div>
+            </div>
+            <div class="admin-content" id="tab-my-students">
+                <button class="admin-btn success" onclick="addMyStudent()">➕ Добавить ученика</button>
+                <div id="myStudentsList" style="margin-top:15px;">Загрузка...</div>
+            </div>
+            <div class="admin-content" id="tab-homeworks">
+                <div class="homework-controls">
+                    <button class="admin-btn success" onclick="showAssignmentModal()">➕ Выдать ДЗ</button>
+                    <button class="admin-btn" onclick="loadAllHomeworks()">🔄 Обновить</button>
                 </div>
-
-                <div class="admin-content active" id="tab-students">
-                    <button class="admin-btn btn-success" onclick="addStudent()">➕ Добавить ученика</button>
-                    <div id="studentsList" style="margin-top:16px;">Загрузка...</div>
+                <div id="homeworksList" style="margin-top:15px;">Загрузка...</div>
+            </div>
+            <div class="admin-content" id="tab-videos">
+                <button class="admin-btn success" onclick="addVideo()">➕ Добавить видео</button>
+                <div id="videosList" style="margin-top:15px;">Загрузка...</div>
+            </div>
+            <div class="admin-content" id="tab-tasks">
+                <button class="admin-btn success" onclick="addTask()">➕ Добавить задачу</button>
+                <div id="tasksList" style="margin-top:15px;">Загрузка...</div>
+            </div>
+            <div class="admin-content" id="tab-schedule">
+                <div class="schedule-actions">
+                    <button class="admin-btn success" onclick="addScheduleRow()">➕ Добавить строку</button>
+                    <button class="admin-btn" onclick="loadScheduleAdmin()">🔄 Обновить</button>
                 </div>
-
-                <div class="admin-content" id="tab-my-students">
-                    <button class="admin-btn btn-success" onclick="addMyStudent()">➕ Добавить ученика</button>
-                    <div id="myStudentsList" style="margin-top:16px;">Загрузка...</div>
-                </div>
-
-                <div class="admin-content" id="tab-homeworks">
-                    <div class="homework-controls">
-                        <button class="admin-btn btn-success" onclick="showAssignmentModal()">➕ Выдать ДЗ</button>
-                        <button class="admin-btn btn-primary" onclick="loadAllHomeworks()">🔄 Обновить</button>
-                    </div>
-                    <div id="homeworksList" style="margin-top:16px;">Загрузка...</div>
-                </div>
-
-                <div class="admin-content" id="tab-videos">
-                    <button class="admin-btn btn-success" onclick="addVideo()">➕ Добавить видео</button>
-                    <div id="videosList" style="margin-top:16px;">Загрузка...</div>
-                </div>
-
-                <div class="admin-content" id="tab-tasks">
-                    <button class="admin-btn btn-success" onclick="addTask()">➕ Добавить задачу</button>
-                    <div id="tasksList" style="margin-top:16px;">Загрузка...</div>
-                </div>
-
-                <div class="admin-content" id="tab-schedule">
-                    <div class="schedule-actions">
-                        <button class="admin-btn btn-success" onclick="addScheduleRow()">➕ Добавить строку</button>
-                        <button class="admin-btn btn-primary" onclick="loadScheduleAdmin()">🔄 Обновить</button>
-                    </div>
-                    <div id="scheduleList" style="margin-top:16px;">Загрузка...</div>
-                </div>
-
-                <div class="admin-content" id="tab-stats">
-                    <div id="statsContent" style="margin-top:16px;">Загрузка...</div>
-                </div>
+                <div id="scheduleList" style="margin-top:15px;">Загрузка...</div>
+            </div>
+            <div class="admin-content" id="tab-stats">
+                <div id="statsContent" style="margin-top:15px;">Загрузка...</div>
             </div>
         </div>
 
     </div>
 
-    <!-- МОДАЛКА -->
+    <!-- ===== МОДАЛЬНОЕ ОКНО ВЫДАЧИ ДЗ ===== -->
     <div class="modal-overlay" id="assignmentModal">
         <div class="modal-content">
-            <h3>📝 Выдать ДЗ</h3>
-
-            <label>Кому выдаем:</label>
-            <select id="assignmentTarget">
-                <option value="single">📌 Конкретному ученику</option>
-                <option value="all">👥 Всем ученикам</option>
-            </select>
-
+            <h3>📝 Выдать домашнее задание</h3>
+            
+            <div>
+                <label>Кому выдаем:</label>
+                <select id="assignmentTarget">
+                    <option value="single">📌 Конкретному ученику</option>
+                    <option value="all">👥 Всем ученикам</option>
+                </select>
+            </div>
+            
             <div id="studentSelectWrapper">
                 <label>Выберите ученика:</label>
                 <select id="studentSelect">
                     <option value="">Загрузка...</option>
                 </select>
             </div>
-
-            <label>Номер раздела:</label>
-            <input type="number" id="sectionNumber" min="1" max="30" placeholder="Например: 1, 2, 3...">
-            <div class="preview-text" id="sectionPreview">Введите номер для просмотра раздела</div>
-
-            <label>Название ДЗ:</label>
-            <input type="text" id="homeworkTitle" placeholder="Например: ДЗ к уроку 1">
-
-            <label>📎 PDF файл:</label>
-            <input type="file" id="pdfFile" accept=".pdf">
-
-            <label>Срок выполнения:</label>
-            <div class="deadline-row">
-                <input type="date" id="deadline">
-                <label class="no-deadline-label">
-                    <input type="checkbox" id="noDeadline">
-                    Без дедлайна
-                </label>
+            
+            <div>
+                <label>Номер раздела (для привязки к видео):</label>
+                <input type="number" id="sectionNumber" min="1" max="30" placeholder="Например: 1, 2, 3...">
+                <div class="preview-text" id="sectionPreview">Введите номер для просмотра раздела</div>
             </div>
-
+            
+            <div>
+                <label>Название ДЗ:</label>
+                <input type="text" id="homeworkTitle" placeholder="Например: ДЗ к уроку 1">
+            </div>
+            
+            <div>
+                <label>📎 PDF файл с ДЗ:</label>
+                <input type="file" id="pdfFile" accept=".pdf">
+            </div>
+            
+            <div>
+                <label>Срок выполнения:</label>
+                <div class="deadline-row">
+                    <input type="date" id="deadline">
+                    <label class="no-deadline-label">
+                        <input type="checkbox" id="noDeadline">
+                        Без дедлайна
+                    </label>
+                </div>
+            </div>
+            
             <div class="modal-actions">
                 <button class="cancel-btn" onclick="closeAssignmentModal()">Отмена</button>
-                <button class="submit-btn" onclick="submitAssignment()">✅ Выдать</button>
+                <button class="submit-btn" onclick="submitAssignment()">✅ Выдать ДЗ</button>
             </div>
         </div>
     </div>
@@ -1478,14 +710,13 @@
     </footer>
 
     <script>
-        // ===== ЗВЁЗДЫ =====
         (function generateStars() {
             var container = document.getElementById('starsContainer');
-            var count = 120;
+            var count = 150;
             for (var i = 0; i < count; i++) {
                 var star = document.createElement('div');
                 star.className = 'star';
-                var size = Math.random() * 2.5 + 1;
+                var size = Math.random() * 3 + 1;
                 star.style.width = size + 'px';
                 star.style.height = size + 'px';
                 star.style.left = Math.random() * 100 + '%';
@@ -1500,7 +731,6 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <script>
-        // ===== НАСТРОЙКИ =====
         var SUPABASE_URL = 'https://liqqdixrtvnrrvgkfvbn.supabase.co';
         var SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxpcXFkaXhydHZucnJ2Z2tmdmJuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODM4NTMzMzksImV4cCI6MjA5OTQyOTMzOX0.Jqrnt5DOKNURe5HERWIhMvc6KChurAg5iHkfMBw4P2A';
         var supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
@@ -1529,28 +759,22 @@
         };
         var daysArray = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'];
 
-        // ==========================================
-        // 1. ЗАГРУЗКА КАТАЛОГА ЗАДАЧ
-        // ==========================================
         function loadTaskCatalog() {
             var container = document.getElementById('taskList');
-            container.innerHTML = '<div class="empty-state"><span class="icon">📭</span>Каталог задач пока пуст. Скоро добавлю!</div>';
+            container.innerHTML = '📭 Каталог задач пока пуст. Скоро добавлю!';
         }
 
-        // ==========================================
-        // 2. РАЗДЕЛЫ И ВИДЕО
-        // ==========================================
         function openSection(sectionId) {
             mainContent.style.display = 'none';
             dashboard.style.display = 'none';
             adminPanel.style.display = 'none';
-            sectionPage.style.display = 'block';
+            sectionPage.classList.add('active');
             loadSectionContent(sectionId);
         }
 
         async function loadSectionContent(sectionId) {
             var content = document.getElementById('sectionContent');
-            content.innerHTML = '<div class="empty-state">⏳ Загрузка...</div>';
+            content.innerHTML = '<div class="loading">⏳ Загрузка...</div>';
 
             try {
                 var sectionResult = await supabase
@@ -1560,7 +784,7 @@
                     .single();
 
                 if (sectionResult.error) {
-                    content.innerHTML = '<div class="empty-state">❌ Раздел не найден</div>';
+                    content.innerHTML = '<div class="empty">❌ Раздел не найден</div>';
                     return;
                 }
 
@@ -1577,7 +801,7 @@
                 var html = '<h1 class="section-title">' + section.name + '</h1>';
 
                 if (videos.length === 0) {
-                    html += '<div class="empty-state"><span class="icon">📭</span>Нет видео в этом разделе</div>';
+                    html += '<div class="empty">📭 Нет видео в этом разделе</div>';
                 } else {
                     for (var vIdx = 0; vIdx < videos.length; vIdx++) {
                         var v = videos[vIdx];
@@ -1586,6 +810,7 @@
                         var videoUrl = v.video_url || v.youtube_url || '#';
                         var title = v.title || 'Видео';
                         var homework = v.homework || '';
+                        var videoId = v.id;
 
                         html += '<div class="video-item">';
 
@@ -1622,8 +847,8 @@
                             `;
                         } else if (videoUrl && videoUrl !== '#') {
                             html += `
-                                <div class="video-player-wrapper" style="display:flex; align-items:center; justify-content:center; background:#0a0e1a; min-height:200px; border-radius:16px;">
-                                    <a href="${videoUrl}" target="_blank" style="color:#f5a623; font-size:18px; text-decoration:none; border:2px solid #f5a623; padding:14px 28px; border-radius:50px; font-weight:600;">
+                                <div class="video-player-wrapper" style="display:flex; align-items:center; justify-content:center; background:#111; min-height:200px;">
+                                    <a href="${videoUrl}" target="_blank" style="color:#f5a623; font-size:20px; text-decoration:none; border:2px solid #f5a623; padding:16px 32px; border-radius:12px;">
                                         ▶️ Смотреть видео
                                     </a>
                                 </div>
@@ -1631,6 +856,15 @@
                         }
 
                         html += `<span class="video-title">🎬 ${title}</span>`;
+
+                        if (videoUrl && videoUrl !== '#') {
+                            html += `
+                                <div class="video-fallback-link">
+                                    <span class="label">⚠️ Если видео не работает, вот ссылка:</span><br>
+                                    <a href="${videoUrl}" target="_blank">${videoUrl}</a>
+                                </div>
+                            `;
+                        }
 
                         if (homework) {
                             html += `
@@ -1640,7 +874,6 @@
                             `;
                         }
 
-                        // ДЗ под видео
                         if (currentUser && currentUser.role === 'student') {
                             var hwForVideo = await supabase
                                 .from('homeworks')
@@ -1655,7 +888,7 @@
                                 var statusText = isDone ? '✅ Выполнено' : '⏳ Ожидает выполнения';
                                 var btnHtml = !isDone ? `<a href="#dashboard" class="video-homework-link" onclick="document.getElementById('dashboard').scrollIntoView({behavior:'smooth'})">📝 Перейти к ДЗ</a>` : '';
                                 html += `
-                                    <div style="margin-top: 14px; padding: 16px 20px; background: rgba(39, 174, 96, 0.08); border-radius: 14px; border-left: 4px solid ${isDone ? '#2ecc71' : '#f39c12'};">
+                                    <div style="margin-top: 14px; padding: 14px 18px; background: rgba(39, 174, 96, 0.1); border-radius: 12px; border-left: 4px solid ${isDone ? '#2ecc71' : '#f39c12'};">
                                         <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
                                             <div>
                                                 <strong style="color: #ffffff;">📚 ДЗ: ${hw.title}</strong>
@@ -1676,13 +909,13 @@
                 content.innerHTML = html;
 
             } catch (err) {
-                content.innerHTML = '<div class="empty-state">❌ Ошибка загрузки</div>';
+                content.innerHTML = '<div class="empty">❌ Ошибка загрузки</div>';
                 console.error(err);
             }
         }
 
         document.getElementById('backToDashboard').addEventListener('click', function() {
-            sectionPage.style.display = 'none';
+            sectionPage.classList.remove('active');
             mainContent.style.display = 'block';
             dashboard.style.display = 'block';
             if (currentUser && currentUser.role === 'admin') {
@@ -1694,8 +927,8 @@
             var tabsContainer1 = document.getElementById('videoTabsPart1');
             var tabsContainer2 = document.getElementById('videoTabsPart2');
 
-            tabsContainer1.innerHTML = '<div class="empty-state">⏳ Загрузка...</div>';
-            tabsContainer2.innerHTML = '<div class="empty-state">⏳ Загрузка...</div>';
+            tabsContainer1.innerHTML = '⏳ Загрузка...';
+            tabsContainer2.innerHTML = '⏳ Загрузка...';
 
             supabase
                 .from('video_sections')
@@ -1709,8 +942,8 @@
 
                     sections = response.data || [];
                     if (sections.length === 0) {
-                        tabsContainer1.innerHTML = '<div class="empty-state"><span class="icon">📭</span>Нет разделов</div>';
-                        tabsContainer2.innerHTML = '<div class="empty-state"><span class="icon">📭</span>Нет разделов</div>';
+                        tabsContainer1.innerHTML = '📭 Нет разделов. Добавьте их в базе.';
+                        tabsContainer2.innerHTML = '📭 Нет разделов. Добавьте их в базе.';
                         return;
                     }
 
@@ -1726,8 +959,8 @@
             var tabsContainer2 = document.getElementById('videoTabsPart2');
 
             if (!sections || sections.length === 0) {
-                tabsContainer1.innerHTML = '<div class="empty-state"><span class="icon">📭</span>Нет разделов</div>';
-                tabsContainer2.innerHTML = '<div class="empty-state"><span class="icon">📭</span>Нет разделов</div>';
+                tabsContainer1.innerHTML = '📭 Нет разделов';
+                tabsContainer2.innerHTML = '📭 Нет разделов';
                 return;
             }
 
@@ -1755,19 +988,16 @@
                 `;
             });
 
-            tabsContainer1.innerHTML = tabsHtml1 || '<div class="empty-state"><span class="icon">📭</span>Нет разделов</div>';
-            tabsContainer2.innerHTML = tabsHtml2 || '<div class="empty-state"><span class="icon">📭</span>Нет разделов</div>';
+            tabsContainer1.innerHTML = tabsHtml1;
+            tabsContainer2.innerHTML = tabsHtml2;
         }
 
-        // ==========================================
-        // 3. АВТОРИЗАЦИЯ
-        // ==========================================
         document.getElementById('loginBtn').addEventListener('click', function() {
             var email = document.getElementById('email').value;
             var password = document.getElementById('password').value;
 
+            resultDiv.className = 'result-info';
             resultDiv.innerHTML = '⏳ Проверяю...';
-            resultDiv.style.color = '#888';
 
             supabase
                 .from('students')
@@ -1779,16 +1009,16 @@
                     var data = response.data;
 
                     if (error) {
+                        resultDiv.className = 'result-error';
                         resultDiv.innerHTML = '❌ Ошибка: ' + error.message;
-                        resultDiv.style.color = '#e74c3c';
                         return;
                     }
 
                     if (data && data.length > 0) {
                         var user = data[0];
                         currentUser = user;
+                        resultDiv.className = 'result-success';
                         resultDiv.innerHTML = '✅ Привет, ' + user.name + '!';
-                        resultDiv.style.color = '#2ecc71';
 
                         document.getElementById('profileBlock').style.display = 'none';
                         document.getElementById('contactsBlock').style.display = 'none';
@@ -1807,13 +1037,13 @@
                         loadStudentSchedule(user.id);
                         loadSectionsAndVideos();
                     } else {
+                        resultDiv.className = 'result-error';
                         resultDiv.innerHTML = '❌ Неверный логин или пароль.';
-                        resultDiv.style.color = '#e74c3c';
                     }
                 })
                 .catch(function(err) {
+                    resultDiv.className = 'result-error';
                     resultDiv.innerHTML = '❌ Ошибка: ' + err.message;
-                    resultDiv.style.color = '#e74c3c';
                 });
         });
 
@@ -1825,12 +1055,10 @@
             document.getElementById('dashboard').style.display = 'none';
             document.getElementById('adminPanel').style.display = 'none';
             resultDiv.innerHTML = '';
+            resultDiv.className = '';
             currentUser = null;
         });
 
-        // ==========================================
-        // 4. ДОМАШНИЕ ЗАДАНИЯ (СТУДЕНТ)
-        // ==========================================
         function checkAnswer(button, correctAnswer) {
             var input = button.previousElementSibling;
             var resultSpan = button.nextElementSibling;
@@ -1888,7 +1116,7 @@
 
         function loadHomework(studentId) {
             var container = document.getElementById('homeworkList');
-            container.innerHTML = '<div class="empty-state">⏳ Загрузка...</div>';
+            container.innerHTML = '⏳ Загрузка...';
 
             supabase
                 .from('homeworks')
@@ -1905,7 +1133,7 @@
                     }
 
                     if (!data || data.length === 0) {
-                        container.innerHTML = '<div class="empty-state"><span class="icon">📭</span>Нет заданий. Отдыхайте! 😊</div>';
+                        container.innerHTML = '📭 Нет заданий. Отдыхайте! 😊';
                         updateProgress(0, 0);
                         updateHomeworkCounts([]);
                         return;
@@ -1923,7 +1151,7 @@
 
                     if (filteredData.length === 0) {
                         var emptyText = currentHomeworkTab === 'active' ? '🎉 Все задания выполнены!' : '📭 Нет выполненных заданий';
-                        container.innerHTML = '<div class="empty-state"><span class="icon">' + (currentHomeworkTab === 'active' ? '🎉' : '📭') + '</span>' + emptyText + '</div>';
+                        container.innerHTML = '<p style="color:#666; text-align:center; padding:30px;">' + emptyText + '</p>';
                         var done = data.filter(function(h) { return h.status === 'done'; }).length;
                         updateProgress(data.length, done);
                         return;
@@ -1931,7 +1159,7 @@
 
                     var done = data.filter(function(h) { return h.status === 'done'; }).length;
                     var html = '';
-
+                    
                     for (var i = 0; i < filteredData.length; i++) {
                         var hw = filteredData[i];
                         var statusClass = hw.status === 'done' ? 'done' : 'pending';
@@ -1943,9 +1171,40 @@
                             sectionInfo = `<div class="meta">📺 Раздел №${hw.video_sections.order_num}: ${hw.video_sections.name}</div>`;
                         }
 
+                        var videoBlock = '';
+                        if (hw.video_link) {
+                            videoBlock = `
+                                <div class="video-fallback">
+                                    <div class="label">⚠️ Если видео не работает, вот ссылка:</div>
+                                    <a href="${hw.video_link}" target="_blank">${hw.video_link}</a>
+                                </div>
+                            `;
+                        }
+
+                        var tasksHtml = '';
+                        if (hw.tasks && hw.tasks.length > 0) {
+                            tasksHtml = '<div style="margin-top: 10px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.05);">';
+                            for (var j = 0; j < hw.tasks.length; j++) {
+                                var task = hw.tasks[j];
+                                if (task.is_homework) {
+                                    var isDone = task.done || false;
+                                    tasksHtml += `
+                                        <div class="task-item-inline">
+                                            <span class="task-num">№${task.num}</span>
+                                            <input type="text" placeholder="Введите ответ" ${isDone ? 'disabled' : ''} value="${isDone ? '✅' : ''}">
+                                            <button class="check-btn" onclick="checkAnswer(this, '${task.correct_answer}')" ${isDone ? 'disabled style="opacity:0.5;"' : ''}>Проверить</button>
+                                            <span class="answer-result">${isDone ? '✅ Верно!' : ''}</span>
+                                            ${task.type === 'second_part' ? '<span style="color:#f39c12; font-size:12px;">(2-я часть)</span>' : ''}
+                                        </div>
+                                    `;
+                                }
+                            }
+                            tasksHtml += '</div>';
+                        }
+
                         var fileHtml = '';
                         if (hw.file_url) {
-                            fileHtml = `<div class="meta">📎 <a href="${hw.file_url}" target="_blank" style="color:#88ccff;">Скачать файл</a></div>`;
+                            fileHtml = `<div class="meta">📎 <a href="${hw.file_url}" target="_blank">Скачать файл</a></div>`;
                         }
 
                         var deadlineText = hw.deadline ? '📅 Срок: ' + hw.deadline : '📅 Без срока';
@@ -1955,13 +1214,15 @@
                                 <div class="title">${hw.title}</div>
                                 ${sectionInfo}
                                 <div class="meta">${deadlineText}</div>
-                                <span class="status ${statusClass}">${statusText}</span>
+                                <div class="status ${statusClass}">${statusText}</div>
                                 ${btnHtml}
                                 ${fileHtml}
+                                ${videoBlock}
+                                ${tasksHtml}
                             </div>
                         `;
                     }
-
+                    
                     container.innerHTML = html;
                     updateProgress(data.length, done);
                 })
@@ -1994,12 +1255,9 @@
                 });
         }
 
-        // ==========================================
-        // 5. РАСПИСАНИЕ
-        // ==========================================
         function loadStudentSchedule(studentId) {
             var container = document.getElementById('studentSchedule');
-            container.innerHTML = '<div class="empty-state">⏳ Загрузка...</div>';
+            container.innerHTML = '⏳ Загрузка...';
 
             supabase
                 .from('schedule')
@@ -2014,7 +1272,7 @@
 
                     var data = response.data || [];
                     if (data.length === 0) {
-                        container.innerHTML = '<div class="empty-state"><span class="icon">📭</span>Нет занятий.</div>';
+                        container.innerHTML = '📭 Нет занятий.';
                         return;
                     }
 
@@ -2040,7 +1298,7 @@
                             if (cell) {
                                 html += '<td class="cell-occupied">' + cell + '</td>';
                             } else {
-                                html += '<td>—</td>';
+                                html += '<td class="cell-empty">—</td>';
                             }
                         });
                         html += '</tr>';
@@ -2056,7 +1314,7 @@
 
         function loadScheduleAdmin() {
             var container = document.getElementById('scheduleList');
-            container.innerHTML = '<div class="empty-state">⏳ Загрузка...</div>';
+            container.innerHTML = '⏳ Загрузка...';
 
             supabase
                 .from('students')
@@ -2081,7 +1339,7 @@
 
                             var data = response.data || [];
                             if (data.length === 0) {
-                                container.innerHTML = '<div class="empty-state"><span class="icon">📭</span>Нет занятий. Нажмите "➕ Добавить строку".</div>';
+                                container.innerHTML = '📭 Нет занятий. Нажмите "➕ Добавить строку".';
                                 return;
                             }
 
@@ -2117,7 +1375,9 @@
                                         html += '</div>';
                                         html += '</td>';
                                     } else {
-                                        html += '<td onclick="addScheduleCell(' + rowNum + ', \'' + day + '\')" style="cursor:pointer; color:#444;">➕</td>';
+                                        html += '<td class="cell-empty" onclick="addScheduleCell(' + rowNum + ', \'' + day + '\')">';
+                                        html += '<div class="cell-content"><span class="empty-text">➕</span></div>';
+                                        html += '</td>';
                                     }
                                 });
                                 html += '</tr>';
@@ -2349,9 +1609,6 @@
                 });
         }
 
-        // ==========================================
-        // 6. ВИДЕО (АДМИН)
-        // ==========================================
         function addVideo() {
             supabase
                 .from('video_sections')
@@ -2527,7 +1784,7 @@
 
         function loadVideosAdmin() {
             var container = document.getElementById('videosList');
-            container.innerHTML = '<div class="empty-state">⏳ Загрузка...</div>';
+            container.innerHTML = '⏳ Загрузка...';
 
             supabase
                 .from('videos')
@@ -2540,7 +1797,7 @@
                     }
                     var data = response.data || [];
                     if (data.length === 0) {
-                        container.innerHTML = '<div class="empty-state"><span class="icon">📭</span>Нет видео</div>';
+                        container.innerHTML = '📭 Нет видео';
                         return;
                     }
                     var html = '<table class="admin-table"><tr><th>Название</th><th>Раздел</th><th>№</th><th>Ссылка</th><th>ДЗ</th><th>Тип</th><th>Действия</th></tr>';
@@ -2555,11 +1812,11 @@
                                 <td>${v.title}</td>
                                 <td>${sectionName}</td>
                                 <td style="color:#f5a623; font-weight:700;">${sectionNum}</td>
-                                <td>${link !== '—' ? `<a href="${link}" target="_blank" style="color:#88ccff;">Смотреть</a>` : '—'}</td>
+                                <td>${link !== '—' ? `<a href="${link}" target="_blank">Смотреть</a>` : '—'}</td>
                                 <td>${v.homework || '—'}</td>
                                 <td>${type}</td>
                                 <td>
-                                    <button class="admin-btn btn-danger" onclick="deleteVideo('${v.id}')">🗑</button>
+                                    <button class="admin-btn danger" onclick="deleteVideo('${v.id}')">🗑</button>
                                 </td>
                             </tr>
                         `;
@@ -2592,9 +1849,6 @@
                 });
         }
 
-        // ==========================================
-        // 7. АДМИН - ВКЛАДКИ
-        // ==========================================
         document.querySelectorAll('.admin-tabs button').forEach(function(btn) {
             btn.addEventListener('click', function() {
                 document.querySelectorAll('.admin-tabs button').forEach(function(b) { b.classList.remove('active'); });
@@ -2615,12 +1869,9 @@
             loadStats();
         }
 
-        // ==========================================
-        // 8. УЧЕНИКИ (ВХОД)
-        // ==========================================
         function loadStudents() {
             var container = document.getElementById('studentsList');
-            container.innerHTML = '<div class="empty-state">⏳ Загрузка...</div>';
+            container.innerHTML = '⏳ Загрузка...';
             supabase
                 .from('students')
                 .select('*')
@@ -2632,7 +1883,7 @@
                     }
                     var data = response.data || [];
                     if (data.length === 0) {
-                        container.innerHTML = '<div class="empty-state"><span class="icon">📭</span>Нет учеников</div>';
+                        container.innerHTML = '📭 Нет учеников';
                         return;
                     }
                     var html = '<table class="admin-table"><tr><th>Имя</th><th>Email</th><th>Роль</th><th>Действия</th></tr>';
@@ -2644,7 +1895,7 @@
                                 <td>${s.email}</td>
                                 <td>${s.role || 'student'}</td>
                                 <td>
-                                    <button class="admin-btn btn-danger" onclick="deleteStudent('${s.id}')">Удалить</button>
+                                    <button class="admin-btn danger" onclick="deleteStudent('${s.id}')">Удалить</button>
                                 </td>
                             </tr>
                         `;
@@ -2700,12 +1951,9 @@
                 });
         }
 
-        // ==========================================
-        // 9. МОИ УЧЕНИКИ (СПРАВОЧНИК)
-        // ==========================================
         function loadMyStudents() {
             var container = document.getElementById('myStudentsList');
-            container.innerHTML = '<div class="empty-state">⏳ Загрузка...</div>';
+            container.innerHTML = '⏳ Загрузка...';
 
             supabase
                 .from('my_students')
@@ -2718,7 +1966,7 @@
                     }
                     var data = response.data || [];
                     if (data.length === 0) {
-                        container.innerHTML = '<div class="empty-state"><span class="icon">📭</span>Нет учеников. Добавь первого!</div>';
+                        container.innerHTML = '📭 Нет учеников. Добавь первого!';
                         return;
                     }
 
@@ -2733,8 +1981,8 @@
                                 <td>${s.start_date || '—'}</td>
                                 <td>${statusText}</td>
                                 <td>
-                                    <button class="admin-btn btn-primary" onclick="toggleMyStudentStatus('${s.id}', '${s.status}')">${s.status === 'active' ? '🔴' : '🟢'}</button>
-                                    <button class="admin-btn btn-danger" onclick="deleteMyStudent('${s.id}')">🗑</button>
+                                    <button class="admin-btn" onclick="toggleMyStudentStatus('${s.id}', '${s.status}')">${s.status === 'active' ? '🔴' : '🟢'}</button>
+                                    <button class="admin-btn danger" onclick="deleteMyStudent('${s.id}')">🗑</button>
                                 </td>
                             </tr>
                         `;
@@ -2812,12 +2060,9 @@
                 });
         }
 
-        // ==========================================
-        // 10. ДЗ (АДМИН)
-        // ==========================================
         function loadAllHomeworks() {
             var container = document.getElementById('homeworksList');
-            container.innerHTML = '<div class="empty-state">⏳ Загрузка...</div>';
+            container.innerHTML = '⏳ Загрузка...';
 
             supabase
                 .from('homeworks')
@@ -2830,7 +2075,7 @@
                     }
                     var data = response.data || [];
                     if (data.length === 0) {
-                        container.innerHTML = '<div class="empty-state"><span class="icon">📭</span>Нет домашних заданий</div>';
+                        container.innerHTML = '📭 Нет домашних заданий';
                         return;
                     }
 
@@ -2858,14 +2103,14 @@
                                         <th>Действия</th>
                                     </tr>
                             `;
-
+                            
                             for (var i = 0; i < data.length; i++) {
                                 var h = data[i];
                                 var studentName = studentsMap[h.student_id] || 'Неизвестный ученик (ID: ' + h.student_id + ')';
                                 var sectionName = h.video_sections ? h.video_sections.name : '—';
                                 var sectionNum = h.video_sections ? h.video_sections.order_num : '—';
                                 var statusText = h.status === 'done' ? '✅ Выполнено' : '⏳ В процессе';
-
+                                
                                 html += `
                                     <tr>
                                         <td>${h.title}</td>
@@ -2876,10 +2121,10 @@
                                         <td>${h.deadline || 'Без срока'}</td>
                                         <td>${h.file_url ? `<a href="${h.file_url}" target="_blank" style="color:#88ccff;">📄 PDF</a>` : '—'}</td>
                                         <td>
-                                            <button class="admin-btn btn-success" onclick="toggleHomeworkStatus('${h.id}', '${h.status}')">
+                                            <button class="admin-btn" onclick="toggleHomeworkStatus('${h.id}', '${h.status}')">
                                                 ${h.status === 'done' ? '↩ Вернуть' : '✅ Отметить'}
                                             </button>
-                                            <button class="admin-btn btn-danger" onclick="deleteHomework('${h.id}')">🗑</button>
+                                            <button class="admin-btn danger" onclick="deleteHomework('${h.id}')">🗑</button>
                                         </td>
                                     </tr>
                                 `;
@@ -2919,16 +2164,16 @@
                     .from('students')
                     .select('id, name')
                     .order('name');
-
+                    
                 if (error) throw error;
-
+                
                 select.innerHTML = '<option value="">Выберите ученика</option>';
                 data.forEach(student => {
                     select.innerHTML += `<option value="${student.id}">${student.name}</option>`;
                 });
-
+                
                 toggleStudentSelect();
-
+                
             } catch (err) {
                 select.innerHTML = '<option value="">Ошибка загрузки</option>';
                 console.error('Ошибка загрузки учеников:', err);
@@ -2943,7 +2188,7 @@
 
         document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('assignmentTarget').addEventListener('change', toggleStudentSelect);
-
+            
             document.getElementById('sectionNumber').addEventListener('input', function() {
                 const num = parseInt(this.value);
                 const preview = document.getElementById('sectionPreview');
@@ -2965,17 +2210,17 @@
                     .select('id, name')
                     .eq('order_num', number)
                     .single();
-
+                    
                 const preview = document.getElementById('sectionPreview');
                 if (error) {
                     preview.textContent = '❌ Раздел №' + number + ' не найден';
                     preview.style.color = '#f1948a';
                     return;
                 }
-
+                
                 preview.textContent = '✅ Найден раздел: "' + data.name + '"';
                 preview.style.color = '#2ecc71';
-
+                
             } catch (err) {
                 console.error('Ошибка поиска раздела:', err);
             }
@@ -2994,12 +2239,12 @@
                 alert('❌ Введите название ДЗ');
                 return;
             }
-
+            
             if (!sectionNumber) {
                 alert('❌ Введите номер раздела');
                 return;
             }
-
+            
             if (target === 'single' && !studentId) {
                 alert('❌ Выберите ученика');
                 return;
@@ -3012,7 +2257,7 @@
                     .select('id, name')
                     .eq('order_num', parseInt(sectionNumber))
                     .single();
-
+                    
                 if (error) {
                     alert('❌ Раздел с номером ' + sectionNumber + ' не найден');
                     return;
@@ -3030,22 +2275,22 @@
                     alert('❌ Загрузите PDF файл');
                     return;
                 }
-
+                
                 try {
                     const path = 'homeworks/' + Date.now() + '_' + file.name;
                     const { error: uploadError } = await supabase.storage
                         .from('homework')
                         .upload(path, file);
-
+                        
                     if (uploadError) {
                         alert('❌ Ошибка загрузки PDF: ' + uploadError.message);
                         return;
                     }
-
+                    
                     const { data: urlData } = supabase.storage
                         .from('homework')
                         .getPublicUrl(path);
-
+                        
                     pdfUrl = urlData.publicUrl;
                 } catch (err) {
                     alert('❌ Ошибка загрузки PDF: ' + err.message);
@@ -3058,7 +2303,7 @@
                 const { data, error } = await supabase
                     .from('students')
                     .select('id');
-
+                    
                 if (error) {
                     alert('❌ Ошибка загрузки учеников: ' + error.message);
                     return;
@@ -3074,7 +2319,7 @@
             }
 
             const finalDeadline = noDeadline ? null : (deadline || null);
-
+            
             const homeworks = students.map(function(s) {
                 return {
                     title: title,
@@ -3091,17 +2336,17 @@
                 const { error } = await supabase
                     .from('homeworks')
                     .insert(homeworks);
-
+                    
                 if (error) throw error;
-
+                
                 var count = homeworks.length;
                 var deadlineText = noDeadline ? 'без дедлайна' : (deadline || 'не указан');
                 alert('✅ ДЗ "' + title + '" выдано ' + count + ' ученикам в раздел "' + sectionData.name + '"!\n📅 Срок: ' + deadlineText);
-
+                
                 closeAssignmentModal();
                 loadAllHomeworks();
                 if (currentUser) loadHomework(currentUser.id);
-
+                
             } catch (err) {
                 alert('❌ Ошибка сохранения ДЗ: ' + err.message);
             }
@@ -3146,12 +2391,9 @@
                 });
         }
 
-        // ==========================================
-        // 11. ЗАДАЧИ
-        // ==========================================
         function loadTasks() {
             var container = document.getElementById('tasksList');
-            container.innerHTML = '<div class="empty-state">⏳ Загрузка...</div>';
+            container.innerHTML = '⏳ Загрузка...';
 
             supabase
                 .from('tasks')
@@ -3164,7 +2406,7 @@
                     }
                     var data = response.data || [];
                     if (data.length === 0) {
-                        container.innerHTML = '<div class="empty-state"><span class="icon">📭</span>Нет задач</div>';
+                        container.innerHTML = '📭 Нет задач';
                         return;
                     }
                     var html = '<table class="admin-table"><tr><th>Тема</th><th>Вопрос</th><th>Ответ</th><th>Действия</th></tr>';
@@ -3176,7 +2418,7 @@
                                 <td>${t.question}</td>
                                 <td>${t.answer}</td>
                                 <td>
-                                    <button class="admin-btn btn-danger" onclick="deleteTask('${t.id}')">🗑</button>
+                                    <button class="admin-btn danger" onclick="deleteTask('${t.id}')">🗑</button>
                                 </td>
                             </tr>
                         `;
@@ -3234,12 +2476,9 @@
                 });
         }
 
-        // ==========================================
-        // 12. СТАТИСТИКА
-        // ==========================================
         function loadStats() {
             var container = document.getElementById('statsContent');
-            container.innerHTML = '<div class="empty-state">⏳ Загрузка...</div>';
+            container.innerHTML = '⏳ Загрузка...';
 
             var totalStudents = 0;
             var totalHomeworks = 0;
@@ -3277,36 +2516,36 @@
                                             totalTasks = r4.data ? r4.data.length : 0;
 
                                             container.innerHTML = `
-                                                <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:20px;">
-                                                    <div style="background:rgba(255,255,255,0.03); padding:24px; border-radius:16px; text-align:center; border:1px solid rgba(255,255,255,0.04);">
-                                                        <div style="font-size:40px;">👨‍🎓</div>
-                                                        <div style="font-size:28px; font-weight:900; color:#ffffff;">${totalStudents}</div>
-                                                        <div style="color:#666; font-size:13px;">Учеников</div>
+                                                <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:20px;">
+                                                    <div style="background:rgba(255,255,255,0.05); padding:20px; border-radius:16px; text-align:center;">
+                                                        <div style="font-size:48px;">👨‍🎓</div>
+                                                        <div style="font-size:32px; font-weight:900; color:#ffffff;">${totalStudents}</div>
+                                                        <div style="color:#666;">Учеников</div>
                                                     </div>
-                                                    <div style="background:rgba(255,255,255,0.03); padding:24px; border-radius:16px; text-align:center; border:1px solid rgba(255,255,255,0.04);">
-                                                        <div style="font-size:40px;">📝</div>
-                                                        <div style="font-size:28px; font-weight:900; color:#ffffff;">${totalHomeworks}</div>
-                                                        <div style="color:#666; font-size:13px;">Всего ДЗ</div>
+                                                    <div style="background:rgba(255,255,255,0.05); padding:20px; border-radius:16px; text-align:center;">
+                                                        <div style="font-size:48px;">📝</div>
+                                                        <div style="font-size:32px; font-weight:900; color:#ffffff;">${totalHomeworks}</div>
+                                                        <div style="color:#666;">Всего ДЗ</div>
                                                     </div>
-                                                    <div style="background:rgba(39,174,96,0.08); padding:24px; border-radius:16px; text-align:center; border:1px solid rgba(39,174,96,0.1);">
-                                                        <div style="font-size:40px;">✅</div>
-                                                        <div style="font-size:28px; font-weight:900; color:#2ecc71;">${doneHomeworks}</div>
-                                                        <div style="color:#7ddfa0; font-size:13px;">Выполнено</div>
+                                                    <div style="background:rgba(39,174,96,0.15); padding:20px; border-radius:16px; text-align:center;">
+                                                        <div style="font-size:48px;">✅</div>
+                                                        <div style="font-size:32px; font-weight:900; color:#2ecc71;">${doneHomeworks}</div>
+                                                        <div style="color:#7ddfa0;">Выполнено</div>
                                                     </div>
-                                                    <div style="background:rgba(231,76,60,0.08); padding:24px; border-radius:16px; text-align:center; border:1px solid rgba(231,76,60,0.1);">
-                                                        <div style="font-size:40px;">⏳</div>
-                                                        <div style="font-size:28px; font-weight:900; color:#f1948a;">${totalHomeworks - doneHomeworks}</div>
-                                                        <div style="color:#f1948a; font-size:13px;">В процессе</div>
+                                                    <div style="background:rgba(231,76,60,0.15); padding:20px; border-radius:16px; text-align:center;">
+                                                        <div style="font-size:48px;">⏳</div>
+                                                        <div style="font-size:32px; font-weight:900; color:#f1948a;">${totalHomeworks - doneHomeworks}</div>
+                                                        <div style="color:#f1948a;">В процессе</div>
                                                     </div>
-                                                    <div style="background:rgba(52,152,219,0.08); padding:24px; border-radius:16px; text-align:center; border:1px solid rgba(52,152,219,0.1);">
-                                                        <div style="font-size:40px;">🎥</div>
-                                                        <div style="font-size:28px; font-weight:900; color:#85c1e9;">${totalVideos}</div>
-                                                        <div style="color:#85c1e9; font-size:13px;">Видео</div>
+                                                    <div style="background:rgba(52,152,219,0.15); padding:20px; border-radius:16px; text-align:center;">
+                                                        <div style="font-size:48px;">🎥</div>
+                                                        <div style="font-size:32px; font-weight:900; color:#85c1e9;">${totalVideos}</div>
+                                                        <div style="color:#85c1e9;">Видео</div>
                                                     </div>
-                                                    <div style="background:rgba(245,166,35,0.08); padding:24px; border-radius:16px; text-align:center; border:1px solid rgba(245,166,35,0.1);">
-                                                        <div style="font-size:40px;">📚</div>
-                                                        <div style="font-size:28px; font-weight:900; color:#f5a623;">${totalTasks}</div>
-                                                        <div style="color:#f5a623; font-size:13px;">Задач</div>
+                                                    <div style="background:rgba(245,166,35,0.15); padding:20px; border-radius:16px; text-align:center;">
+                                                        <div style="font-size:48px;">📚</div>
+                                                        <div style="font-size:32px; font-weight:900; color:#f5a623;">${totalTasks}</div>
+                                                        <div style="color:#f5a623;">Задач</div>
                                                     </div>
                                                 </div>
                                             `;
