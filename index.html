@@ -652,7 +652,6 @@
                 <button data-tab="my-students">📋 Мои ученики</button>
                 <button data-tab="homeworks">📝 ДЗ</button>
                 <button data-tab="videos">🎥 Видео</button>
-                <button data-tab="tasks">📚 Задачи</button>
                 <button data-tab="schedule">📅 Расписание</button>
                 <button data-tab="stats">📊 Статистика</button>
                 <button data-tab="settings">⚙️ Настройки</button>
@@ -675,10 +674,6 @@
             <div class="admin-content" id="tab-videos">
                 <button class="admin-btn success" onclick="addVideo()">➕ Добавить видео</button>
                 <div id="videosList" style="margin-top:15px;">Загрузка...</div>
-            </div>
-            <div class="admin-content" id="tab-tasks">
-                <button class="admin-btn success" onclick="addTask()">➕ Добавить задачу</button>
-                <div id="tasksList" style="margin-top:15px;">Загрузка...</div>
             </div>
             <div class="admin-content" id="tab-schedule">
                 <div class="schedule-actions">
@@ -829,15 +824,41 @@
         var daysArray = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'];
 
         // ==========================================
-        // ДЕЛАЕМ ФУНКЦИИ ГЛОБАЛЬНЫМИ ДЛЯ АДМИНКИ
+        // ДЕЛАЕМ ВСЕ ФУНКЦИИ ГЛОБАЛЬНЫМИ
         // ==========================================
+        
+        // Объявляем функции заранее, чтобы они были доступны
+        function addStudent() {}
+        function addMyStudent() {}
+        function addVideo() {}
+        function addScheduleRow() {}
+        function loadAllHomeworks() {}
+        function loadScheduleAdmin() {}
+        function showAssignmentModal() {}
+        function closeAssignmentModal() {}
+        function submitAssignment() {}
+        function deleteStudent() {}
+        function deleteMyStudent() {}
+        function deleteVideo() {}
+        function toggleMyStudentStatus() {}
+        function toggleHomeworkStatus() {}
+        function deleteHomework() {}
+        function uploadAvatar() {}
+        function deleteAvatar() {}
+        function saveTeacherInfo() {}
+        function openSection() {}
+        function switchDashboardPage() {}
+        function switchHomeworkTab() {}
+        function loadTeacherSettings() {}
+        function loadSettings() {}
+        function saveProfileSettings() {}
+        function changePassword() {}
+        function logout() {}
 
-        // Сохраняем ссылки на функции в window объект
-        // Это нужно чтобы onclick в HTML работал
+        // Теперь присваиваем их в window
         window.addStudent = addStudent;
         window.addMyStudent = addMyStudent;
         window.addVideo = addVideo;
-        window.addTask = addTask;
         window.addScheduleRow = addScheduleRow;
         window.loadAllHomeworks = loadAllHomeworks;
         window.loadScheduleAdmin = loadScheduleAdmin;
@@ -847,7 +868,6 @@
         window.deleteStudent = deleteStudent;
         window.deleteMyStudent = deleteMyStudent;
         window.deleteVideo = deleteVideo;
-        window.deleteTask = deleteTask;
         window.toggleMyStudentStatus = toggleMyStudentStatus;
         window.toggleHomeworkStatus = toggleHomeworkStatus;
         window.deleteHomework = deleteHomework;
@@ -1398,7 +1418,6 @@
                         loadStudentSchedule(user.id);
                         loadSectionsAndVideos();
                         loadSettings();
-                        // Применяем тему
                         if (user.settings) {
                             applyTheme(user.settings.theme || 'dark');
                         }
@@ -2197,7 +2216,6 @@
             loadMyStudents();
             loadAllHomeworks();
             loadVideosAdmin();
-            loadTasks();
             loadScheduleAdmin();
             loadStats();
         }
@@ -2592,65 +2610,6 @@
                 .catch(function(err) { alert('❌ Ошибка: ' + err.message); });
         }
 
-        function loadTasks() {
-            var container = document.getElementById('tasksList');
-            if (!container) return;
-            container.innerHTML = '⏳ Загрузка...';
-            supabase
-                .from('tasks')
-                .select('*')
-                .order('created_at', { ascending: false })
-                .then(function(response) {
-                    if (response.error) { container.innerHTML = '❌ Ошибка: ' + response.error.message; return; }
-                    var data = response.data || [];
-                    if (data.length === 0) { container.innerHTML = '📭 Нет задач'; return; }
-                    var html = '<table class="admin-table"><tr><th>Тема</th><th>Вопрос</th><th>Ответ</th><th>Действия</th></tr>';
-                    for (var i = 0; i < data.length; i++) {
-                        var t = data[i];
-                        html += `
-                            <tr>
-                                <td>${t.topic}</td>
-                                <td>${t.question}</td>
-                                <td>${t.answer}</td>
-                                <td><button class="admin-btn danger" onclick="deleteTask('${t.id}')">🗑</button></td>
-                            </tr>
-                        `;
-                    }
-                    html += '</table>';
-                    container.innerHTML = html;
-                })
-                .catch(function(err) { container.innerHTML = '❌ Ошибка: ' + err.message; });
-        }
-
-        function addTask() {
-            var topic = prompt('Введите тему (Тригонометрия, Логарифмы, и т.д.):'); if (!topic) return;
-            var question = prompt('Введите условие задачи:'); if (!question) return;
-            var answer = prompt('Введите ответ:'); if (!answer) return;
-            supabase
-                .from('tasks')
-                .insert([{ topic: topic, question: question, answer: answer }])
-                .then(function(response) {
-                    if (response.error) alert('❌ Ошибка: ' + response.error.message);
-                    else { alert('✅ Задача добавлена!');
-                        loadTasks(); }
-                })
-                .catch(function(err) { alert('❌ Ошибка: ' + err.message); });
-        }
-
-        function deleteTask(id) {
-            if (!confirm('Удалить задачу?')) return;
-            supabase
-                .from('tasks')
-                .delete()
-                .eq('id', id)
-                .then(function(response) {
-                    if (response.error) alert('❌ Ошибка: ' + response.error.message);
-                    else { alert('✅ Задача удалена');
-                        loadTasks(); }
-                })
-                .catch(function(err) { alert('❌ Ошибка: ' + err.message); });
-        }
-
         function loadStats() {
             var container = document.getElementById('statsContent');
             if (!container) return;
@@ -2658,8 +2617,7 @@
             var totalStudents = 0,
                 totalHomeworks = 0,
                 doneHomeworks = 0,
-                totalVideos = 0,
-                totalTasks = 0;
+                totalVideos = 0;
             supabase
                 .from('students').select('*')
                 .then(function(r1) {
@@ -2679,48 +2637,35 @@
                                 .then(function(r3) {
                                     if (r3.error) { container.innerHTML = '❌ Ошибка'; return; }
                                     totalVideos = r3.data ? r3.data.length : 0;
-                                    supabase
-                                        .from('tasks')
-                                        .select('*')
-                                        .then(function(r4) {
-                                            if (r4.error) { container.innerHTML = '❌ Ошибка'; return; }
-                                            totalTasks = r4.data ? r4.data.length : 0;
-                                            container.innerHTML = `
-                                                <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:20px;">
-                                                    <div style="background:rgba(255,255,255,0.05); padding:20px; border-radius:16px; text-align:center;">
-                                                        <div style="font-size:48px;">👨‍🎓</div>
-                                                        <div style="font-size:32px; font-weight:900; color:#ffffff;">${totalStudents}</div>
-                                                        <div style="color:#666;">Учеников</div>
-                                                    </div>
-                                                    <div style="background:rgba(255,255,255,0.05); padding:20px; border-radius:16px; text-align:center;">
-                                                        <div style="font-size:48px;">📝</div>
-                                                        <div style="font-size:32px; font-weight:900; color:#ffffff;">${totalHomeworks}</div>
-                                                        <div style="color:#666;">Всего ДЗ</div>
-                                                    </div>
-                                                    <div style="background:rgba(39,174,96,0.15); padding:20px; border-radius:16px; text-align:center;">
-                                                        <div style="font-size:48px;">✅</div>
-                                                        <div style="font-size:32px; font-weight:900; color:#2ecc71;">${doneHomeworks}</div>
-                                                        <div style="color:#7ddfa0;">Выполнено</div>
-                                                    </div>
-                                                    <div style="background:rgba(231,76,60,0.15); padding:20px; border-radius:16px; text-align:center;">
-                                                        <div style="font-size:48px;">⏳</div>
-                                                        <div style="font-size:32px; font-weight:900; color:#f1948a;">${totalHomeworks - doneHomeworks}</div>
-                                                        <div style="color:#f1948a;">В процессе</div>
-                                                    </div>
-                                                    <div style="background:rgba(52,152,219,0.15); padding:20px; border-radius:16px; text-align:center;">
-                                                        <div style="font-size:48px;">🎥</div>
-                                                        <div style="font-size:32px; font-weight:900; color:#85c1e9;">${totalVideos}</div>
-                                                        <div style="color:#85c1e9;">Видео</div>
-                                                    </div>
-                                                    <div style="background:rgba(245,166,35,0.15); padding:20px; border-radius:16px; text-align:center;">
-                                                        <div style="font-size:48px;">📚</div>
-                                                        <div style="font-size:32px; font-weight:900; color:#f5a623;">${totalTasks}</div>
-                                                        <div style="color:#f5a623;">Задач</div>
-                                                    </div>
-                                                </div>
-                                            `;
-                                        })
-                                        .catch(function(err) { container.innerHTML = '❌ Ошибка: ' + err.message; });
+                                    container.innerHTML = `
+                                        <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:20px;">
+                                            <div style="background:rgba(255,255,255,0.05); padding:20px; border-radius:16px; text-align:center;">
+                                                <div style="font-size:48px;">👨‍🎓</div>
+                                                <div style="font-size:32px; font-weight:900; color:#ffffff;">${totalStudents}</div>
+                                                <div style="color:#666;">Учеников</div>
+                                            </div>
+                                            <div style="background:rgba(255,255,255,0.05); padding:20px; border-radius:16px; text-align:center;">
+                                                <div style="font-size:48px;">📝</div>
+                                                <div style="font-size:32px; font-weight:900; color:#ffffff;">${totalHomeworks}</div>
+                                                <div style="color:#666;">Всего ДЗ</div>
+                                            </div>
+                                            <div style="background:rgba(39,174,96,0.15); padding:20px; border-radius:16px; text-align:center;">
+                                                <div style="font-size:48px;">✅</div>
+                                                <div style="font-size:32px; font-weight:900; color:#2ecc71;">${doneHomeworks}</div>
+                                                <div style="color:#7ddfa0;">Выполнено</div>
+                                            </div>
+                                            <div style="background:rgba(231,76,60,0.15); padding:20px; border-radius:16px; text-align:center;">
+                                                <div style="font-size:48px;">⏳</div>
+                                                <div style="font-size:32px; font-weight:900; color:#f1948a;">${totalHomeworks - doneHomeworks}</div>
+                                                <div style="color:#f1948a;">В процессе</div>
+                                            </div>
+                                            <div style="background:rgba(52,152,219,0.15); padding:20px; border-radius:16px; text-align:center;">
+                                                <div style="font-size:48px;">🎥</div>
+                                                <div style="font-size:32px; font-weight:900; color:#85c1e9;">${totalVideos}</div>
+                                                <div style="color:#85c1e9;">Видео</div>
+                                            </div>
+                                        </div>
+                                    `;
                                 })
                                 .catch(function(err) { container.innerHTML = '❌ Ошибка: ' + err.message; });
                         })
