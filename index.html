@@ -151,6 +151,11 @@
             font-size: 14px;
             color: white;
         }
+        .chat-window .chat-header .chat-partner .avatar.blue { background: linear-gradient(135deg, #4a7cf7, #6c5ce7); }
+        .chat-window .chat-header .chat-partner .avatar.green { background: linear-gradient(135deg, #00b894, #00cec9); }
+        .chat-window .chat-header .chat-partner .avatar.pink { background: linear-gradient(135deg, #fd79a8, #e17055); }
+        .chat-window .chat-header .chat-partner .avatar.orange { background: linear-gradient(135deg, #fdcb6e, #e17055); }
+        .chat-window .chat-header .chat-partner .avatar.purple { background: linear-gradient(135deg, #a29bfe, #6c5ce7); }
         .chat-window .chat-header .chat-partner .name {
             color: #ffffff;
             font-weight: 600;
@@ -294,6 +299,10 @@
         .settings-info input, .settings-info textarea { width: 100%; padding: 10px 16px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; color: #fff; font-size: 14px; font-family: Arial, sans-serif; }
         .settings-info input:focus, .settings-info textarea:focus { border-color: #667eea; outline: none; }
 
+        .admin-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        .admin-table th, .admin-table td { padding: 10px; border-bottom: 1px solid rgba(255,255,255,0.05); text-align: left; color: #c0d0e0; }
+        .admin-table th { background: rgba(255,255,255,0.05); color: #ffffff; }
+
         footer { text-align: center; padding: 30px 20px; color: #666; font-size: 14px; border-top: 1px solid rgba(255,255,255,0.05); margin-top: 40px; }
 
         @media (max-width: 700px) {
@@ -409,7 +418,7 @@
                     </div>
                 </div>
 
-                <!-- ===== СТРАНИЦА ДЗ (упрощённо) ===== -->
+                <!-- ===== СТРАНИЦА ДЗ ===== -->
                 <div id="page-homeworks" class="dashboard-page" style="display:none;">
                     <div class="section-title">📚 Мои домашние задания</div>
                     <div id="homeworkList"><p style="color:#666;">Загрузка...</p></div>
@@ -541,6 +550,7 @@
                     window.loadChatList();
                     window.loadSettings();
                     window.loadStats();
+                    window.loadHomework(user.id);
                 } else {
                     resultDiv.innerHTML = '❌ Неверный логин или пароль.';
                 }
@@ -580,6 +590,7 @@
         if (page === 'messages' && currentUser) window.loadChatList();
         if (page === 'settings' && currentUser) window.loadSettings();
         if (page === 'stats' && currentUser) window.loadStats();
+        if (page === 'homeworks' && currentUser) window.loadHomework(currentUser.id);
     };
 
     // ==========================================
@@ -627,9 +638,9 @@
                 var data = response.data || [];
                 allStudents = data;
                 if (data.length === 0) { container.innerHTML = '📭 Нет учеников'; return; }
-                var html = '<table style="width:100%; border-collapse:collapse; margin-top:10px;"><tr style="border-bottom:1px solid rgba(255,255,255,0.05);"><th style="text-align:left; padding:8px;">Имя</th><th style="text-align:left; padding:8px;">Класс</th><th style="text-align:left; padding:8px;">Email</th><th style="text-align:left; padding:8px;">Действия</th></tr>';
+                var html = '<table class="admin-table"><tr><th>Имя</th><th>Класс</th><th>Email</th><th>Действия</th></tr>';
                 data.forEach(function(s) {
-                    html += '<tr style="border-bottom:1px solid rgba(255,255,255,0.03);"><td style="padding:8px;">' + s.name + '</td><td style="padding:8px;">' + (s.class || '—') + '</td><td style="padding:8px;">' + s.email + '</td><td style="padding:8px;"><button class="admin-btn danger" onclick="window.deleteStudent(\'' + s.id + '\')">Удалить</button></td></tr>';
+                    html += '<tr><td>' + s.name + '</td><td>' + (s.class || '—') + '</td><td>' + s.email + '</td><td><button class="admin-btn danger" onclick="window.deleteStudent(\'' + s.id + '\')">Удалить</button></td></tr>';
                 });
                 html += '</table>';
                 container.innerHTML = html;
@@ -697,6 +708,62 @@
                 document.getElementById('statsDone').textContent = done;
                 document.getElementById('statsPercent').textContent = pct + '%';
             });
+    };
+
+    // ==========================================
+    // ДОМАШНИЕ ЗАДАНИЯ
+    // ==========================================
+
+    window.loadHomework = function(studentId) {
+        var container = document.getElementById('homeworkList');
+        if (!container) return;
+        container.innerHTML = '⏳ Загрузка...';
+        supabase
+            .from('homeworks')
+            .select('*')
+            .eq('student_id', studentId)
+            .order('created_at', { ascending: false })
+            .limit(20)
+            .then(function(response) {
+                if (response.error) { container.innerHTML = '❌ Ошибка'; return; }
+                var data = response.data || [];
+                if (data.length === 0) {
+                    container.innerHTML = '<div class="empty-state"><span class="icon">📭</span><div class="title">Нет домашних заданий</div></div>';
+                    return;
+                }
+                var html = '';
+                data.forEach(function(hw) {
+                    var statusText = hw.status === 'done' ? '✅ Выполнено' : '⏳ Ожидает';
+                    html += `
+                        <div style="padding:14px 18px; background:rgba(255,255,255,0.03); border-radius:12px; border:1px solid rgba(255,255,255,0.05); margin-bottom:10px;">
+                            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap;">
+                                <span style="font-weight:600; color:#ffffff;">${hw.title}</span>
+                                <span style="color:${hw.status === 'done' ? '#2ecc71' : '#f39c12'};">${statusText}</span>
+                            </div>
+                            ${hw.deadline ? '<div style="color:#888; font-size:13px; margin-top:4px;">📅 Срок: ' + hw.deadline + '</div>' : ''}
+                            ${hw.comment ? '<div style="color:#f5a623; font-size:13px; margin-top:4px;">📝 ' + hw.comment + '</div>' : ''}
+                            ${hw.status !== 'done' ? '<button class="admin-btn success" style="margin-top:8px;" onclick="window.markDone(\'' + hw.id + '\')">✅ Отметить выполненным</button>' : ''}
+                        </div>
+                    `;
+                });
+                container.innerHTML = html;
+                var done = data.filter(function(h) { return h.status === 'done'; }).length;
+                var badge = document.getElementById('hwBadge');
+                if (badge) badge.textContent = data.length - done;
+            })
+            .catch(function(err) { container.innerHTML = '❌ Ошибка: ' + err.message; });
+    };
+
+    window.markDone = function(id) {
+        supabase
+            .from('homeworks')
+            .update({ status: 'done' })
+            .eq('id', id)
+            .then(function(response) {
+                if (response.error) { alert('❌ Ошибка: ' + response.error.message); return; }
+                if (currentUser) window.loadHomework(currentUser.id);
+            })
+            .catch(function(err) { alert('❌ Ошибка: ' + err.message); });
     };
 
     // ==========================================
@@ -1077,66 +1144,11 @@
     };
 
     // ==========================================
-    // ЗАГРУЗКА ДЗ (упрощённо)
-    // ==========================================
-
-    window.loadHomework = function(studentId) {
-        var container = document.getElementById('homeworkList');
-        if (!container) return;
-        container.innerHTML = '⏳ Загрузка...';
-        supabase
-            .from('homeworks')
-            .select('*')
-            .eq('student_id', studentId)
-            .order('created_at', { ascending: false })
-            .limit(20)
-            .then(function(response) {
-                if (response.error) { container.innerHTML = '❌ Ошибка'; return; }
-                var data = response.data || [];
-                if (data.length === 0) {
-                    container.innerHTML = '<div class="empty-state"><span class="icon">📭</span><div class="title">Нет домашних заданий</div></div>';
-                    return;
-                }
-                var html = '';
-                data.forEach(function(hw) {
-                    var statusText = hw.status === 'done' ? '✅ Выполнено' : '⏳ Ожидает';
-                    html += `
-                        <div style="padding:14px 18px; background:rgba(255,255,255,0.03); border-radius:12px; border:1px solid rgba(255,255,255,0.05); margin-bottom:10px;">
-                            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap;">
-                                <span style="font-weight:600; color:#ffffff;">${hw.title}</span>
-                                <span style="color:${hw.status === 'done' ? '#2ecc71' : '#f39c12'};">${statusText}</span>
-                            </div>
-                            ${hw.deadline ? '<div style="color:#888; font-size:13px; margin-top:4px;">📅 Срок: ' + hw.deadline + '</div>' : ''}
-                            ${hw.comment ? '<div style="color:#f5a623; font-size:13px; margin-top:4px;">📝 ' + hw.comment + '</div>' : ''}
-                            ${hw.status !== 'done' ? '<button class="admin-btn success" style="margin-top:8px;" onclick="window.markDone(\'' + hw.id + '\')">✅ Отметить выполненным</button>' : ''}
-                        </div>
-                    `;
-                });
-                container.innerHTML = html;
-                var done = data.filter(function(h) { return h.status === 'done'; }).length;
-                document.getElementById('hwBadge').textContent = data.length - done;
-            })
-            .catch(function(err) { container.innerHTML = '❌ Ошибка: ' + err.message; });
-    };
-
-    window.markDone = function(id) {
-        supabase
-            .from('homeworks')
-            .update({ status: 'done' })
-            .eq('id', id)
-            .then(function(response) {
-                if (response.error) { alert('❌ Ошибка: ' + response.error.message); return; }
-                if (currentUser) window.loadHomework(currentUser.id);
-            })
-            .catch(function(err) { alert('❌ Ошибка: ' + err.message); });
-    };
-
-    // ==========================================
     // СТАРТ
     // ==========================================
 
-    // Показываем страницу сообщений по умолчанию
     document.addEventListener('DOMContentLoaded', function() {
+        // Устанавливаем активную страницу
         document.querySelector('.dashboard-sidebar button[data-page="messages"]').classList.add('active');
         document.getElementById('page-messages').style.display = 'block';
     });
