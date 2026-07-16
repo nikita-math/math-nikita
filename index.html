@@ -65,8 +65,6 @@
         /* ===== ДАШБОРД ===== */
         #dashboard { background: var(--bg-card); backdrop-filter: blur(10px); border-radius: var(--radius); padding: 30px 40px; border: 1px solid rgba(255,255,255,0.1); display: none; margin-top: 40px; }
         #dashboard .header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; margin-bottom: 20px; }
-        #dashboard .logout-btn { background: var(--danger); color: white; border: none; padding: 10px 24px; border-radius: 30px; cursor: pointer; }
-        #dashboard .logout-btn:hover { background: #c0392b; }
 
         .dashboard-layout { display: flex; gap: 30px; margin-top: 20px; }
         .dashboard-sidebar { width: 220px; flex-shrink: 0; display: flex; flex-direction: column; gap: 6px; }
@@ -76,6 +74,12 @@
         .dashboard-sidebar button .badge { margin-left: auto; background: rgba(231,76,60,0.2); color: var(--danger); padding: 0 10px; border-radius: 50px; font-size: 12px; }
         .dashboard-content { flex: 1; min-width: 0; }
         .dashboard-content .section-title { font-size: 24px; font-weight: 700; margin-bottom: 20px; color: var(--text-white); }
+
+        /* ===== ВКЛАДКИ ДЗ ===== */
+        .hw-tabs { display: flex; gap: 10px; margin-bottom: 16px; flex-wrap: wrap; }
+        .hw-tab { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); padding: 10px 24px; border-radius: 30px; cursor: pointer; font-weight: 600; color: var(--text-light); font-family: Arial, sans-serif; font-size: 14px; transition: var(--transition); }
+        .hw-tab:hover { background: rgba(255,255,255,0.1); color: var(--text-white); }
+        .hw-tab.active { background: rgba(102,126,234,0.2) !important; color: var(--text-white) !important; border-color: rgba(102,126,234,0.3) !important; }
 
         /* ===== СТАТИСТИКА ===== */
         .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 16px; margin-bottom: 24px; }
@@ -157,7 +161,6 @@
             box-shadow: 0 0 0 3px rgba(102,126,234,0.15);
             background: rgba(255,255,255,0.12);
         }
-        /* ===== ИСПРАВЛЕНИЕ ДЛЯ SELECT (чтобы было видно текст) ===== */
         .modal-content select {
             background: #2a2a4a !important;
             color: #ffffff !important;
@@ -196,6 +199,7 @@
         .hw-card .meta.comment { color: var(--accent); border-left: 3px solid var(--accent); padding-left: 10px; margin-top: 6px; }
         .hw-card .status.done { color: #2ecc71; }
         .hw-card .status.pending { color: #f39c12; }
+        .hw-card .hw-actions { margin-top: 10px; display: flex; gap: 8px; flex-wrap: wrap; }
 
         .deadline-card { background: rgba(245,166,35,0.08); border: 1px solid rgba(245,166,35,0.15); border-radius: 16px; padding: 16px 20px; margin-bottom: 24px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; }
         .deadline-card .label { color: var(--accent); font-weight: 600; }
@@ -398,6 +402,8 @@
             .whiteboard-admin-item .student-name { min-width: unset; }
             .whiteboard-admin-item input { min-width: unset; }
             .whiteboard-admin-item .whiteboard-link-small { max-width: unset; }
+            .hw-tabs { flex-wrap: wrap; }
+            .hw-tab { flex: 1; min-width: 100px; text-align: center; }
         }
     </style>
 </head>
@@ -452,7 +458,6 @@
         <div id="dashboard">
             <div class="header">
                 <h3 id="welcomeMessage">👋 Привет!</h3>
-                <button class="logout-btn" onclick="window.logout()">Выйти</button>
             </div>
 
             <div class="dashboard-layout">
@@ -519,7 +524,11 @@
                         <div id="recentHomeworks">
                             <p style="color:#666;">Загрузка...</p>
                         </div>
+                        <div style="margin-top:16px;">
+                            <button class="admin-btn" onclick="window.refreshData()">🔄 Обновить данные</button>
+                        </div>
                     </div>
+
                     <!-- ===== ОНЛАЙН-ДОСКА ===== -->
                     <div id="page-whiteboard" class="dashboard-page" style="display:none;">
                         <div class="section-title">🖊️ Онлайн-доска</div>
@@ -528,23 +537,37 @@
                         </div>
                     </div>
 
+                    <!-- ===== ТЕОРИЯ ===== -->
                     <div id="page-theory" class="dashboard-page" style="display:none;">
                         <div class="section-title">📖 Теория</div>
-                        <div id="adminTheoryControls" style="display:none; margin-bottom:20px;">
-                            <button class="admin-btn success" onclick="window.showTheoryModal()">➕ Добавить теорию</button>
+                        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; margin-bottom:16px;">
+                            <div id="adminTheoryControls" style="display:none;">
+                                <button class="admin-btn success" onclick="window.showTheoryModal()">➕ Добавить теорию</button>
+                            </div>
+                            <button class="admin-btn" onclick="window.refreshData()">🔄 Обновить</button>
                         </div>
                         <div id="theoryList">
                             <p style="color:#666;">Загрузка...</p>
                         </div>
                     </div>
 
+                    <!-- ===== МОИ ДЗ ===== -->
                     <div id="page-homeworks" class="dashboard-page" style="display:none;">
                         <div class="section-title">📚 Мои домашние задания</div>
+                        <div class="hw-tabs">
+                            <button class="hw-tab active" data-tab="active" onclick="window.switchHomeworkTab('active')">📌 Активные</button>
+                            <button class="hw-tab" data-tab="done" onclick="window.switchHomeworkTab('done')">✅ Выполненные</button>
+                            <button class="admin-btn" onclick="window.refreshData()" style="margin-left:auto;">🔄 Обновить</button>
+                        </div>
                         <div id="homeworkList"><p>Загрузка...</p></div>
                     </div>
 
+                    <!-- ===== СТАТИСТИКА ===== -->
                     <div id="page-stats" class="dashboard-page" style="display:none;">
                         <div class="section-title">📊 Статистика</div>
+                        <div style="display:flex; justify-content:flex-end; margin-bottom:16px;">
+                            <button class="admin-btn" onclick="window.refreshData()">🔄 Обновить</button>
+                        </div>
                         <div class="stats-grid" id="statsOverview">
                             <div class="stat-card">
                                 <div class="icon">📝</div>
@@ -581,8 +604,12 @@
                         </div>
                     </div>
 
+                    <!-- ===== СООБЩЕНИЯ ===== -->
                     <div id="page-messages" class="dashboard-page" style="display:none;">
                         <div class="section-title">💬 Сообщения</div>
+                        <div style="display:flex; justify-content:flex-end; margin-bottom:16px;">
+                            <button class="admin-btn" onclick="window.refreshData()">🔄 Обновить</button>
+                        </div>
                         <div id="chatList">
                             <p style="color:#666;">Загрузка...</p>
                         </div>
@@ -607,6 +634,7 @@
                         </div>
                     </div>
 
+                    <!-- ===== НАСТРОЙКИ ===== -->
                     <div id="page-settings" class="dashboard-page" style="display:none;">
                         <div class="section-title">⚙️ Настройки</div>
                         <div class="settings-group">
@@ -877,7 +905,11 @@
             </div>
         </div>
     </div>
-    <script>
+
+    <footer>
+        © 2026 Математика с Никитой. Все права защищены.
+    </footer>
+        <script>
         (function generateStars() {
             var container = document.getElementById('starsContainer');
             var count = 150;
@@ -915,7 +947,7 @@
         var currentDashboardPage = 'overview';
         var currentChatPartner = null;
         var chatInterval = null;
-        var cache = {};
+        var refreshInterval = null;
 
         var daysMap = {
             'mon': 'ПН',
@@ -978,6 +1010,109 @@
         }
 
         // ==========================================
+        // АВТООБНОВЛЕНИЕ
+        // ==========================================
+
+        window.refreshData = function() {
+            if (!currentUser) return;
+            clearCache('theory');
+            clearCache('homeworks_' + currentUser.id);
+            clearCache('sections');
+            clearCache('videos');
+            clearCache('messages');
+            clearCache('all_homeworks');
+            
+            window.loadTheory();
+            window.loadHomework(currentUser.id);
+            window.loadDashboardOverview(currentUser.id);
+            window.loadSectionsAndVideos();
+            window.loadWhiteboard();
+            
+            if (currentDashboardPage === 'messages') {
+                loadChatList();
+            }
+            if (currentDashboardPage === 'stats') {
+                window.loadStatistics(currentUser.id);
+            }
+            
+            // Маленькое уведомление
+            var btn = document.querySelector('.admin-btn:contains("Обновить")');
+            if (btn) {
+                var originalText = btn.textContent;
+                btn.textContent = '✅ Обновлено!';
+                setTimeout(function() {
+                    btn.textContent = originalText;
+                }, 1500);
+            }
+            
+            console.log('🔄 Данные обновлены вручную');
+        };
+
+        function startAutoRefresh() {
+            if (refreshInterval) clearInterval(refreshInterval);
+            
+            refreshInterval = setInterval(function() {
+                if (currentUser) {
+                    // Обновляем только если страница активна и пользователь авторизован
+                    var isVisible = !document.hidden;
+                    if (isVisible) {
+                        // Тихое обновление без перезагрузки интерфейса
+                        updateDataSilently();
+                    }
+                }
+            }, 30000); // Каждые 30 секунд
+        }
+
+        function updateDataSilently() {
+            if (!currentUser) return;
+            
+            // Обновляем теорию в фоне
+            supabase
+                .from('theory')
+                .select('*')
+                .order('created_at', { ascending: false })
+                .then(function(response) {
+                    if (!response.error) {
+                        setCache('theory', response.data);
+                        // Если мы на странице теории - перерендерим
+                        if (currentDashboardPage === 'theory') {
+                            renderTheory(response.data, document.getElementById('theoryList'));
+                        }
+                    }
+                });
+            
+            // Обновляем ДЗ в фоне
+            supabase
+                .from('homeworks')
+                .select('*, video_sections(name, order_num)')
+                .eq('student_id', currentUser.id)
+                .order('deadline', { ascending: true, nulls_last: true })
+                .limit(30)
+                .then(function(response) {
+                    if (!response.error) {
+                        setCache('homeworks_' + currentUser.id, response.data);
+                        if (currentDashboardPage === 'homeworks') {
+                            renderHomeworks(response.data, document.getElementById('homeworkList'), currentUser.id);
+                        }
+                        if (currentDashboardPage === 'overview') {
+                            window.loadDashboardOverview(currentUser.id);
+                        }
+                    }
+                });
+            
+            // Обновляем чат если открыт
+            if (currentDashboardPage === 'messages') {
+                loadChatList();
+                if (currentChatPartner) {
+                    loadMessages(currentChatPartner.id, true);
+                }
+            }
+            
+            // Обновляем бейджи
+            updateTotalBadge();
+        }
+
+        // ==========================================
         // ГЛОБАЛЬНЫЕ ФУНКЦИИ
         // ==========================================
 
@@ -1005,6 +1140,7 @@
         window.logout = function() {
             if (confirm('Вы уверены, что хотите выйти?')) {
                 if (chatInterval) clearInterval(chatInterval);
+                if (refreshInterval) clearInterval(refreshInterval);
                 document.getElementById('profileBlock').style.display = 'flex';
                 document.getElementById('contactsBlock').style.display = 'block';
                 document.getElementById('loginSection').style.display = 'block';
@@ -1018,6 +1154,23 @@
         };
 
         // ==========================================
+        // ПЕРЕКЛЮЧЕНИЕ ВКЛАДОК ДЗ
+        // ==========================================
+
+        window.switchHomeworkTab = function(tab) {
+            currentHomeworkTab = tab;
+            document.querySelectorAll('.hw-tab').forEach(function(btn) {
+                btn.classList.remove('active');
+            });
+            var activeBtn = document.querySelector('.hw-tab[data-tab="' + tab + '"]');
+            if (activeBtn) {
+                activeBtn.classList.add('active');
+            }
+            if (currentUser) {
+                window.loadHomework(currentUser.id);
+            }
+        };
+                // ==========================================
         // ===== MY_STUDENTS (ваша личная таблица) =====
         // ==========================================
 
@@ -1480,7 +1633,8 @@
                 alert('❌ Ошибка сохранения: ' + e.message);
             }
         };
-                // ==========================================
+
+        // ==========================================
         // ТЕОРИЯ
         // ==========================================
 
@@ -1800,8 +1954,7 @@
                 })
                 .catch(function(err) { alert('❌ Ошибка: ' + err.message); });
         };
-
-        // ==========================================
+                // ==========================================
         // ВИДЕОРАЗДЕЛЫ (с кешированием)
         // ==========================================
 
@@ -1927,7 +2080,15 @@
                 var hw = filteredData[i];
                 var statusClass = hw.status === 'done' ? 'done' : 'pending';
                 var statusText = hw.status === 'done' ? '✅ Выполнено' : '⏳ Ожидает проверки';
-                var btnHtml = hw.status !== 'done' ? '<button class="admin-btn success" onclick="window.markDone(\'' + hw.id + '\')">✅ Отметить выполненным</button>' : '';
+                
+                // Кнопки для ДЗ
+                var btnHtml = '';
+                if (hw.status !== 'done') {
+                    btnHtml = '<button class="admin-btn success" onclick="window.markDone(\'' + hw.id + '\')">✅ Отметить выполненным</button>';
+                } else {
+                    btnHtml = '<button class="admin-btn" onclick="window.unmarkDone(\'' + hw.id + '\')">↩ Вернуть</button>';
+                }
+                
                 var sectionInfo = '';
                 if (hw.video_sections) {
                     sectionInfo = '<div class="meta">📺 Раздел №' + hw.video_sections.order_num + ': ' + hw.video_sections.name + '</div>';
@@ -1956,7 +2117,7 @@
                     </div>
                 `;
                 
-                html += '<div class="hw-card"><div class="title">' + hw.title + '</div>' + sectionInfo + '<div class="meta">' + deadlineText + '</div>' + commentHtml + '<div class="status ' + statusClass + '">' + statusText + '</div>' + btnHtml + fileHtml + commentsHtml + '</div>';
+                html += '<div class="hw-card"><div class="title">' + hw.title + '</div>' + sectionInfo + '<div class="meta">' + deadlineText + '</div>' + commentHtml + '<div class="status ' + statusClass + '">' + statusText + '</div><div class="hw-actions">' + btnHtml + '</div>' + fileHtml + commentsHtml + '</div>';
                 
                 setTimeout(function() {
                     window.loadHomeworkComments(hw.id, 'comments_' + hw.id);
@@ -1987,6 +2148,23 @@
             supabase
                 .from('homeworks')
                 .update({ status: 'done' })
+                .eq('id', id)
+                .then(function(response) {
+                    if (response.error) { alert('❌ Ошибка: ' + response.error.message); return; }
+                    if (currentUser) {
+                        clearCache('homeworks_' + currentUser.id);
+                        window.loadHomework(currentUser.id);
+                        window.loadDashboardOverview(currentUser.id);
+                    }
+                })
+                .catch(function(err) { alert('❌ Ошибка: ' + err.message); });
+        };
+
+        window.unmarkDone = function(id) {
+            if (!confirm('Вернуть задание в статус "не выполнено"?')) return;
+            supabase
+                .from('homeworks')
+                .update({ status: 'pending' })
                 .eq('id', id)
                 .then(function(response) {
                     if (response.error) { alert('❌ Ошибка: ' + response.error.message); return; }
@@ -2144,7 +2322,8 @@
                 console.error(err);
             }
         };
-                // ==========================================
+
+        // ==========================================
         // АДМИНКА - БЫСТРАЯ ЗАГРУЗКА ДЗ
         // ==========================================
 
@@ -2229,7 +2408,7 @@
                     if (response.error) alert('❌ Ошибка: ' + response.error.message);
                     else { 
                         clearCache('all_homeworks');
-                        clearCache('homeworks_' + (currentUser ? currentUser.id : ''));
+                        if (currentUser) clearCache('homeworks_' + currentUser.id);
                         window.loadAllHomeworks(); 
                         if (currentUser) { 
                             window.loadHomework(currentUser.id); 
@@ -2251,7 +2430,7 @@
                     else { 
                         alert('✅ Задание удалено'); 
                         clearCache('all_homeworks');
-                        clearCache('homeworks_' + (currentUser ? currentUser.id : ''));
+                        if (currentUser) clearCache('homeworks_' + currentUser.id);
                         window.loadAllHomeworks(); 
                         if (currentUser) { 
                             window.loadHomework(currentUser.id); 
@@ -2261,8 +2440,7 @@
                 })
                 .catch(function(err) { alert('❌ Ошибка: ' + err.message); });
         };
-
-        // ==========================================
+                // ==========================================
         // РАСПИСАНИЕ
         // ==========================================
 
@@ -2741,8 +2919,7 @@
         function renderStats(data, container) {
             container.innerHTML = '<div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:20px;"><div style="background:rgba(255,255,255,0.05); padding:20px; border-radius:16px; text-align:center;"><div style="font-size:48px;">👨‍🎓</div><div style="font-size:32px; font-weight:900; color:#ffffff;">' + data.totalStudents + '</div><div style="color:#666;">Учеников с доступом</div></div><div style="background:rgba(255,255,255,0.05); padding:20px; border-radius:16px; text-align:center;"><div style="font-size:48px;">📝</div><div style="font-size:32px; font-weight:900; color:#ffffff;">' + data.totalHomeworks + '</div><div style="color:#666;">Всего ДЗ</div></div><div style="background:rgba(39,174,96,0.15); padding:20px; border-radius:16px; text-align:center;"><div style="font-size:48px;">✅</div><div style="font-size:32px; font-weight:900; color:#2ecc71;">' + data.doneHomeworks + '</div><div style="color:#7ddfa0;">Выполнено</div></div><div style="background:rgba(231,76,60,0.15); padding:20px; border-radius:16px; text-align:center;"><div style="font-size:48px;">⏳</div><div style="font-size:32px; font-weight:900; color:#f1948a;">' + (data.totalHomeworks - data.doneHomeworks) + '</div><div style="color:#f1948a;">В процессе</div></div><div style="background:rgba(52,152,219,0.15); padding:20px; border-radius:16px; text-align:center;"><div style="font-size:48px;">🎥</div><div style="font-size:32px; font-weight:900; color:#85c1e9;">' + data.totalVideos + '</div><div style="color:#85c1e9;">Видео</div></div></div>';
         }
-
-        // ==========================================
+                // ==========================================
         // ЧАТ
         // ==========================================
 
@@ -3249,6 +3426,9 @@
                 if (chatInterval) clearInterval(chatInterval);
                 loadChatList();
             }
+            if (page === 'homeworks' && currentUser) {
+                window.loadHomework(currentUser.id);
+            }
         };
 
         window.openSection = function(sectionId) {
@@ -3463,6 +3643,9 @@
                         window.loadSectionsAndVideos();
                         window.loadSettings();
                         
+                        // Запускаем автообновление
+                        startAutoRefresh();
+                        
                         console.log('✅ Вход выполнен:', user.name);
                     } else {
                         resultDiv.className = 'result-error';
@@ -3561,10 +3744,12 @@
         console.log('✅ PDF из видео УДАЛЁН полностью');
         console.log('✅ Исправлен белый текст в select');
         console.log('✅ Исправлено сохранение фото и информации');
+        console.log('✅ Добавлены вкладки "Активные" и "Выполненные" ДЗ');
+        console.log('✅ Добавлена кнопка "Вернуть" для выполненных ДЗ');
+        console.log('✅ Убрана кнопка "Выйти" из хедера');
+        console.log('✅ Добавлено автообновление каждые 30 секунд');
+        console.log('✅ Добавлена кнопка "Обновить" на всех страницах');
     </script>
 
 </body>
 </html>
-    <footer>
-        © 2026 Математика с Никитой. Все права защищены.
-    </footer>
