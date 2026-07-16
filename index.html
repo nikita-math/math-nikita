@@ -1054,6 +1054,7 @@
             <h3>🔧 Панель управления</h3>
             <div class="admin-tabs">
                 <button class="active" data-tab="students" onclick="window.switchAdminTab('students')">📋 Ученики</button>
+                <button data-tab="my_students" onclick="window.switchAdminTab('my_students')">👥 Мои ученики</button>
                 <button data-tab="whiteboard" onclick="window.switchAdminTab('whiteboard')">🖊️ Доски</button>
                 <button data-tab="theory" onclick="window.switchAdminTab('theory')">📖 Теория</button>
                 <button data-tab="homeworks" onclick="window.switchAdminTab('homeworks')">📝 ДЗ</button>
@@ -1066,6 +1067,12 @@
             <div class="admin-content active" id="tab-students">
                 <button class="admin-btn success" onclick="window.addStudent()">➕ Добавить ученика</button>
                 <div id="studentsList" style="margin-top:15px;">Загрузка...</div>
+            </div>
+            
+            <div class="admin-content" id="tab-my_students">
+                <h4 style="color: #f5a623; margin-bottom: 15px;">👥 Мои ученики (справочник)</h4>
+                <p style="color: #888; font-size: 14px; margin-bottom: 12px;">Управляйте статусом учеников: активен / неактивен</p>
+                <div id="myStudentsList" style="margin-top:15px;">Загрузка...</div>
             </div>
             
             <div class="admin-content" id="tab-whiteboard">
@@ -1304,6 +1311,7 @@
             if (targetContent) targetContent.classList.add('active');
             
             if (tab === 'students') window.loadStudents();
+            else if (tab === 'my_students') window.loadMyStudents();
             else if (tab === 'whiteboard') window.loadWhiteboardAdmin();
             else if (tab === 'theory') window.loadAdminTheory();
             else if (tab === 'homeworks') window.loadAllHomeworks();
@@ -1787,6 +1795,62 @@
                 .then(function(response) {
                     if (response.error) alert('❌ Ошибка: ' + response.error.message);
                     else { alert('✅ Ученик удалён'); window.loadStudents(); }
+                })
+                .catch(function(err) { alert('❌ Ошибка: ' + err.message); });
+        };
+
+        // ==========================================
+        // АДМИНКА - МОИ УЧЕНИКИ (СПРАВОЧНИК)
+        // ==========================================
+
+        window.loadMyStudents = function() {
+            var container = document.getElementById('myStudentsList');
+            if (!container) return;
+            container.innerHTML = '⏳ Загрузка...';
+            supabase
+                .from('students')
+                .select('id, name, email, role, is_active')
+                .eq('role', 'student')
+                .order('name')
+                .then(function(response) {
+                    if (response.error) { container.innerHTML = '❌ Ошибка: ' + response.error.message; return; }
+                    var data = response.data || [];
+                    if (data.length === 0) { container.innerHTML = '📭 Нет учеников'; return; }
+                    var html = '<table class="admin-table"><tr><th>Имя</th><th>Email</th><th>Статус</th><th>Действия</th></tr>';
+                    for (var i = 0; i < data.length; i++) {
+                        var s = data[i];
+                        var isActive = s.is_active !== false;
+                        var statusText = isActive ? '🟢 Активен' : '🔴 Неактивен';
+                        var statusColor = isActive ? '#2ecc71' : '#e74c3c';
+                        html += `
+                            <tr>
+                                <td>${s.name}</td>
+                                <td>${s.email}</td>
+                                <td style="color:${statusColor}; font-weight:600;">${statusText}</td>
+                                <td>
+                                    <button class="admin-btn ${isActive ? 'danger' : 'success'}" onclick="window.toggleStudentStatus('${s.id}', ${!isActive})">
+                                        ${isActive ? '🔴 Деактивировать' : '🟢 Активировать'}
+                                    </button>
+                                </td>
+                            </tr>
+                        `;
+                    }
+                    html += '</table>';
+                    container.innerHTML = html;
+                })
+                .catch(function(err) { container.innerHTML = '❌ Ошибка: ' + err.message; });
+        };
+
+        window.toggleStudentStatus = function(studentId, newStatus) {
+            if (!confirm('Изменить статус ученика?')) return;
+            supabase
+                .from('students')
+                .update({ is_active: newStatus })
+                .eq('id', studentId)
+                .then(function(response) {
+                    if (response.error) { alert('❌ Ошибка: ' + response.error.message); return; }
+                    alert('✅ Статус изменён!');
+                    window.loadMyStudents();
                 })
                 .catch(function(err) { alert('❌ Ошибка: ' + err.message); });
         };
@@ -3463,6 +3527,7 @@
 
         window.loadAdminData = function() {
             window.loadStudents();
+            window.loadMyStudents();
             window.loadWhiteboardAdmin();
             window.loadAdminTheory();
             window.loadAllHomeworks();
