@@ -4,8 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Математика с Никитой</title>
-    <link rel="preconnect" href="https://liqqdixrtvnrrvgkfvbn.supabase.co">
-    <link rel="preconnect" href="https://cdn.jsdelivr.net">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: Arial, sans-serif; background: #0b0e1a; color: #ffffff; line-height: 1.6; min-height: 100vh; position: relative; overflow-x: hidden; transition: background 0.3s, color 0.3s; }
@@ -49,29 +47,118 @@
         #dashboard .logout-btn { background: #e74c3c; color: white; border: none; padding: 10px 24px; border-radius: 30px; cursor: pointer; }
         #dashboard .logout-btn:hover { background: #c0392b; }
 
-        .hw-card { padding: 16px; border: 1px solid rgba(255,255,255,0.05); border-radius: 12px; margin-bottom: 12px; background: rgba(255,255,255,0.03); transition: background 0.3s, border-color 0.3s; }
-        .hw-card .title { font-size: 18px; font-weight: 700; color: #ffffff; }
-        .hw-card .meta { color: #888; font-size: 14px; margin: 4px 0; }
-        .hw-card .meta.comment { color: #f5a623; border-left: 3px solid #f5a623; padding-left: 10px; margin-top: 6px; }
-        .hw-card .status.done { color: #2ecc71; }
-        .hw-card .status.pending { color: #f39c12; }
-        .hw-card .btn-start { background: #27ae60; color: white; border: none; padding: 6px 16px; border-radius: 20px; cursor: pointer; margin-top: 8px; }
-        .hw-card .btn-start:hover { background: #1e8449; }
+        .dashboard-layout { display: flex; gap: 30px; margin-top: 20px; }
+        .dashboard-sidebar { width: 220px; flex-shrink: 0; display: flex; flex-direction: column; gap: 6px; }
+        .dashboard-sidebar button { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05); padding: 12px 18px; border-radius: 12px; cursor: pointer; font-weight: 600; transition: 0.3s; color: #888; text-align: left; font-family: Arial, sans-serif; font-size: 15px; display: flex; align-items: center; gap: 12px; }
+        .dashboard-sidebar button:hover { background: rgba(255,255,255,0.05); color: #ffffff; border-color: rgba(255,255,255,0.1); }
+        .dashboard-sidebar button.active { background: rgba(102,126,234,0.15); color: #ffffff; border-color: rgba(102,126,234,0.2); }
+        .dashboard-sidebar button .badge { margin-left: auto; background: rgba(231,76,60,0.2); color: #e74c3c; padding: 0 10px; border-radius: 50px; font-size: 12px; }
+        .dashboard-content { flex: 1; min-width: 0; }
+        .dashboard-content .section-title { font-size: 24px; font-weight: 700; margin-bottom: 20px; color: #ffffff; }
 
-        .comments-section { margin-top: 14px; padding-top: 14px; border-top: 1px solid rgba(255,255,255,0.05); }
-        .comments-section .comments-title { color: #888; font-size: 14px; font-weight: 600; margin-bottom: 10px; }
-        .comment-item { background: rgba(255,255,255,0.03); border-radius: 10px; padding: 10px 14px; margin-bottom: 8px; border: 1px solid rgba(255,255,255,0.04); }
-        .comment-item .comment-header { display: flex; justify-content: space-between; align-items: center; font-size: 12px; color: #666; margin-bottom: 4px; }
-        .comment-item .comment-header .author { font-weight: 600; color: #b0c4de; }
-        .comment-item .comment-header .author.admin { color: #f5a623; }
-        .comment-item .comment-text { color: #c0d0e0; font-size: 14px; }
-        .comment-item .comment-time { font-size: 11px; color: #555; }
-        .comment-input-wrap { display: flex; gap: 10px; margin-top: 10px; }
-        .comment-input-wrap input { flex: 1; padding: 8px 14px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08); border-radius: 20px; color: #fff; font-size: 14px; outline: none; transition: 0.3s; }
-        .comment-input-wrap input:focus { border-color: #667eea; background: rgba(255,255,255,0.08); }
-        .comment-input-wrap input::placeholder { color: #555; }
-        .comment-input-wrap button { background: linear-gradient(135deg, #302b63, #667eea); color: white; border: none; padding: 8px 20px; border-radius: 20px; cursor: pointer; font-weight: 600; font-size: 13px; transition: 0.3s; white-space: nowrap; }
-        .comment-input-wrap button:hover { transform: scale(1.03); box-shadow: 0 4px 20px rgba(102, 126, 234, 0.3); }
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 16px; margin-bottom: 24px; }
+        .stats-grid .stat-card { background: rgba(255,255,255,0.03); padding: 20px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.05); text-align: center; transition: background 0.3s, border-color 0.3s; }
+        .stats-grid .stat-card .number { font-size: 32px; font-weight: 900; color: #ffffff; }
+        .stats-grid .stat-card .label { color: #888; font-size: 13px; margin-top: 4px; }
+        .stats-grid .stat-card .icon { font-size: 28px; margin-bottom: 8px; }
+
+        .deadline-card { background: rgba(245,166,35,0.08); border: 1px solid rgba(245,166,35,0.15); border-radius: 16px; padding: 16px 20px; margin-bottom: 24px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; transition: background 0.3s, border-color 0.3s; }
+        .deadline-card .label { color: #f5a623; font-weight: 600; }
+        .deadline-card .title { color: #ffffff; font-weight: 600; }
+        .deadline-card .days { background: rgba(245,166,35,0.15); color: #f5a623; padding: 4px 14px; border-radius: 50px; font-size: 13px; }
+
+        .settings-group { background: rgba(255,255,255,0.02); border-radius: 16px; padding: 24px; border: 1px solid rgba(255,255,255,0.05); margin-bottom: 24px; transition: background 0.3s, border-color 0.3s; }
+        .settings-group h4 { color: #f5a623; margin-bottom: 16px; }
+        .settings-group label { color: #888; font-size: 13px; display: block; margin-bottom: 4px; }
+        .settings-group input[type="text"], .settings-group input[type="email"] { width: 100%; padding: 10px 14px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; color: #fff; font-size: 15px; transition: background 0.3s, border-color 0.3s; }
+        .settings-group input:disabled { opacity: 0.5; cursor: not-allowed; }
+        .settings-group input:focus { border-color: #667eea; outline: none; }
+        .settings-checkbox { display: flex; align-items: center; gap: 12px; cursor: pointer; color: #b0c4de; font-size: 15px; padding: 6px 0; }
+        .settings-checkbox input[type="checkbox"] { width: 18px; height: 18px; cursor: pointer; accent-color: #667eea; }
+
+        .empty-state { text-align: center; padding: 40px 20px; color: #666; }
+        .empty-state .icon { font-size: 48px; display: block; margin-bottom: 12px; }
+        .empty-state .title { font-size: 18px; color: #b0c4de; font-weight: 600; }
+        .empty-state .desc { font-size: 14px; color: #666; margin-top: 4px; }
+
+        /* ===== ТЕОРИЯ ===== */
+        .theory-item {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.05);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 16px;
+            transition: 0.3s;
+        }
+        .theory-item:hover {
+            background: rgba(255,255,255,0.06);
+            border-color: rgba(102,126,234,0.2);
+        }
+        .theory-item .theory-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #f5a623;
+            margin-bottom: 8px;
+        }
+        .theory-item .theory-content {
+            color: #b0c4de;
+            line-height: 1.8;
+            margin-bottom: 12px;
+            white-space: pre-wrap;
+        }
+        .theory-item .theory-file {
+            display: inline-block;
+            background: rgba(39,174,96,0.15);
+            color: #7ddfa0;
+            padding: 6px 16px;
+            border-radius: 20px;
+            text-decoration: none;
+            font-size: 14px;
+            transition: 0.3s;
+        }
+        .theory-item .theory-file:hover {
+            background: rgba(39,174,96,0.25);
+        }
+        .theory-item .theory-meta {
+            color: #666;
+            font-size: 13px;
+            margin-top: 8px;
+        }
+        .theory-item .theory-actions {
+            margin-top: 12px;
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        /* ===== ВИДЕО С PDF ===== */
+        .video-pdf-section {
+            margin-top: 14px;
+            padding: 14px 18px;
+            background: rgba(245,166,35,0.05);
+            border-radius: 12px;
+            border: 1px solid rgba(245,166,35,0.1);
+        }
+        .video-pdf-section .pdf-label {
+            color: #f5a623;
+            font-weight: 600;
+            font-size: 14px;
+            display: block;
+            margin-bottom: 6px;
+        }
+        .video-pdf-section .pdf-link {
+            display: inline-block;
+            background: rgba(245,166,35,0.1);
+            color: #f5a623;
+            padding: 6px 16px;
+            border-radius: 20px;
+            text-decoration: none;
+            font-size: 14px;
+            transition: 0.3s;
+        }
+        .video-pdf-section .pdf-link:hover {
+            background: rgba(245,166,35,0.2);
+        }
 
         .video-section { margin-top: 30px; }
         .video-section h3 { font-size: 22px; margin-bottom: 16px; color: #ffffff; }
@@ -238,7 +325,6 @@
         .admin-btn.danger:hover { background: #c0392b; }
         .admin-btn.success { background: #27ae60; }
         .admin-btn.success:hover { background: #1e8449; }
-        .admin-btn.small { padding: 4px 12px; font-size: 12px; }
 
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000; justify-content: center; align-items: center; }
         .modal-overlay.active { display: flex; }
@@ -275,10 +361,7 @@
         }
         .modal-content select { appearance: auto; cursor: pointer; color: #ffffff !important; }
         .modal-content select option { background: #1a1a2e !important; color: #ffffff !important; padding: 10px; }
-        .modal-content select optgroup { background: #0f0f1f !important; color: #b0c4de !important; }
-        .modal-content input::placeholder, .modal-content textarea::placeholder { color: #777 !important; font-weight: 300; }
-        .modal-content input:disabled { opacity: 0.4; cursor: not-allowed; }
-        .modal-content textarea { resize: vertical; min-height: 60px; font-family: Arial, sans-serif; }
+        .modal-content textarea { resize: vertical; min-height: 100px; font-family: Arial, sans-serif; }
         .modal-content .preview-text { margin-top: -10px; margin-bottom: 15px; font-size: 14px; color: #666; }
         .modal-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 10px; }
         .modal-actions button { padding: 12px 30px; border: none; border-radius: 12px; color: #fff; font-weight: 700; cursor: pointer; transition: 0.3s; font-family: Arial, sans-serif; font-size: 14px; }
@@ -303,143 +386,28 @@
         .settings-info label { color: #b0c4de; font-size: 14px; display: block; margin-bottom: 4px; }
         .settings-info input, .settings-info textarea { width: 100%; padding: 10px 16px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; color: #fff; font-size: 14px; font-family: Arial, sans-serif; }
         .settings-info input:focus, .settings-info textarea:focus { border-color: #667eea; outline: none; }
-        .settings-info textarea { resize: vertical; }
 
-        .dashboard-layout { display: flex; gap: 30px; margin-top: 20px; }
-        .dashboard-sidebar { width: 220px; flex-shrink: 0; display: flex; flex-direction: column; gap: 6px; }
-        .dashboard-sidebar button { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05); padding: 12px 18px; border-radius: 12px; cursor: pointer; font-weight: 600; transition: 0.3s; color: #888; text-align: left; font-family: Arial, sans-serif; font-size: 15px; display: flex; align-items: center; gap: 12px; }
-        .dashboard-sidebar button:hover { background: rgba(255,255,255,0.05); color: #ffffff; border-color: rgba(255,255,255,0.1); }
-        .dashboard-sidebar button.active { background: rgba(102,126,234,0.15); color: #ffffff; border-color: rgba(102,126,234,0.2); }
-        .dashboard-sidebar button .badge { margin-left: auto; background: rgba(231,76,60,0.2); color: #e74c3c; padding: 0 10px; border-radius: 50px; font-size: 12px; }
-        .dashboard-content { flex: 1; min-width: 0; }
-        .dashboard-content .section-title { font-size: 24px; font-weight: 700; margin-bottom: 20px; color: #ffffff; }
+        .hw-card { padding: 16px; border: 1px solid rgba(255,255,255,0.05); border-radius: 12px; margin-bottom: 12px; background: rgba(255,255,255,0.03); transition: background 0.3s, border-color 0.3s; }
+        .hw-card .title { font-size: 18px; font-weight: 700; color: #ffffff; }
+        .hw-card .meta { color: #888; font-size: 14px; margin: 4px 0; }
+        .hw-card .meta.comment { color: #f5a623; border-left: 3px solid #f5a623; padding-left: 10px; margin-top: 6px; }
+        .hw-card .status.done { color: #2ecc71; }
+        .hw-card .status.pending { color: #f39c12; }
 
-        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 16px; margin-bottom: 24px; }
-        .stats-grid .stat-card { background: rgba(255,255,255,0.03); padding: 20px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.05); text-align: center; transition: background 0.3s, border-color 0.3s; }
-        .stats-grid .stat-card .number { font-size: 32px; font-weight: 900; color: #ffffff; }
-        .stats-grid .stat-card .label { color: #888; font-size: 13px; margin-top: 4px; }
-        .stats-grid .stat-card .icon { font-size: 28px; margin-bottom: 8px; }
-
-        .deadline-card { background: rgba(245,166,35,0.08); border: 1px solid rgba(245,166,35,0.15); border-radius: 16px; padding: 16px 20px; margin-bottom: 24px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; transition: background 0.3s, border-color 0.3s; }
-        .deadline-card .label { color: #f5a623; font-weight: 600; }
-        .deadline-card .title { color: #ffffff; font-weight: 600; }
-        .deadline-card .days { background: rgba(245,166,35,0.15); color: #f5a623; padding: 4px 14px; border-radius: 50px; font-size: 13px; }
-
-        .section-progress { background: rgba(255,255,255,0.03); border-radius: 12px; padding: 14px 18px; margin-bottom: 10px; border: 1px solid rgba(255,255,255,0.05); display: flex; align-items: center; gap: 14px; flex-wrap: wrap; transition: background 0.3s, border-color 0.3s; }
-        .section-progress .name { min-width: 140px; color: #b0c4de; font-weight: 600; font-size: 14px; }
-        .section-progress .bar-wrap { flex: 1; min-width: 100px; height: 8px; background: rgba(255,255,255,0.05); border-radius: 10px; overflow: hidden; }
-        .section-progress .bar-wrap .fill { height: 100%; border-radius: 10px; transition: width 0.8s ease; }
-        .section-progress .bar-wrap .fill.green { background: linear-gradient(90deg, #27ae60, #2ecc71); }
-        .section-progress .bar-wrap .fill.yellow { background: linear-gradient(90deg, #f39c12, #f1c40f); }
-        .section-progress .bar-wrap .fill.red { background: linear-gradient(90deg, #e74c3c, #c0392b); }
-        .section-progress .percent { min-width: 50px; text-align: right; font-weight: 700; font-size: 14px; color: #b0c4de; }
-        .section-progress .status-icon { font-size: 18px; }
-
-        .achievement-card { display: inline-flex; align-items: center; gap: 12px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05); border-radius: 50px; padding: 8px 20px 8px 12px; margin: 0 8px 8px 0; transition: 0.3s; }
-        .achievement-card:hover { background: rgba(255,255,255,0.06); border-color: rgba(245,166,35,0.2); }
-        .achievement-card .icon { font-size: 24px; }
-        .achievement-card .info { font-size: 13px; color: #b0c4de; }
-        .achievement-card .info .name { font-weight: 600; color: #ffffff; }
-        .achievement-card.locked { opacity: 0.3; filter: grayscale(1); }
-
-        .activity-bars { display: flex; gap: 8px; justify-content: space-around; align-items: flex-end; height: 120px; padding: 10px 0; }
-        .activity-bars .bar-item { display: flex; flex-direction: column; align-items: center; gap: 6px; flex: 1; }
-        .activity-bars .bar-item .bar { width: 24px; border-radius: 6px 6px 0 0; background: linear-gradient(180deg, #667eea, #764ba2); transition: height 0.8s ease; min-height: 4px; }
-        .activity-bars .bar-item .label { font-size: 11px; color: #666; }
-        .activity-bars .bar-item .value { font-size: 11px; color: #b0c4de; font-weight: 600; }
-
-        .settings-group { background: rgba(255,255,255,0.02); border-radius: 16px; padding: 24px; border: 1px solid rgba(255,255,255,0.05); margin-bottom: 24px; transition: background 0.3s, border-color 0.3s; }
-        .settings-group h4 { color: #f5a623; margin-bottom: 16px; }
-        .settings-group label { color: #888; font-size: 13px; display: block; margin-bottom: 4px; }
-        .settings-group input[type="text"], .settings-group input[type="email"], .settings-group input[type="password"] { width: 100%; padding: 10px 14px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; color: #fff; font-size: 15px; transition: background 0.3s, border-color 0.3s; }
-        .settings-group input:disabled { opacity: 0.5; cursor: not-allowed; }
-        .settings-group input:focus { border-color: #667eea; outline: none; }
-        .settings-checkbox { display: flex; align-items: center; gap: 12px; cursor: pointer; color: #b0c4de; font-size: 15px; padding: 6px 0; }
-        .settings-checkbox input[type="checkbox"] { width: 18px; height: 18px; cursor: pointer; accent-color: #667eea; }
-
-        .empty-state { text-align: center; padding: 40px 20px; color: #666; }
-        .empty-state .icon { font-size: 48px; display: block; margin-bottom: 12px; }
-        .empty-state .title { font-size: 18px; color: #b0c4de; font-weight: 600; }
-        .empty-state .desc { font-size: 14px; color: #666; margin-top: 4px; }
-
-        /* ===== ТЕОРИЯ ===== */
-        .theory-item {
-            background: rgba(255,255,255,0.03);
-            border: 1px solid rgba(255,255,255,0.05);
-            border-radius: 16px;
-            padding: 20px;
-            margin-bottom: 16px;
-            transition: 0.3s;
-        }
-        .theory-item:hover {
-            background: rgba(255,255,255,0.06);
-            border-color: rgba(102,126,234,0.2);
-        }
-        .theory-item .theory-title {
-            font-size: 20px;
-            font-weight: 700;
-            color: #f5a623;
-            margin-bottom: 8px;
-        }
-        .theory-item .theory-content {
-            color: #b0c4de;
-            line-height: 1.8;
-            margin-bottom: 12px;
-            white-space: pre-wrap;
-        }
-        .theory-item .theory-file {
-            display: inline-block;
-            background: rgba(39,174,96,0.15);
-            color: #7ddfa0;
-            padding: 6px 16px;
-            border-radius: 20px;
-            text-decoration: none;
-            font-size: 14px;
-            transition: 0.3s;
-        }
-        .theory-item .theory-file:hover {
-            background: rgba(39,174,96,0.25);
-        }
-        .theory-item .theory-meta {
-            color: #666;
-            font-size: 13px;
-            margin-top: 8px;
-        }
-        .theory-item .theory-actions {
-            margin-top: 12px;
-            display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
-        }
-
-        /* ===== ВИДЕО С PDF ===== */
-        .video-pdf-section {
-            margin-top: 14px;
-            padding: 14px 18px;
-            background: rgba(245,166,35,0.05);
-            border-radius: 12px;
-            border: 1px solid rgba(245,166,35,0.1);
-        }
-        .video-pdf-section .pdf-label {
-            color: #f5a623;
-            font-weight: 600;
-            font-size: 14px;
-            display: block;
-            margin-bottom: 6px;
-        }
-        .video-pdf-section .pdf-link {
-            display: inline-block;
-            background: rgba(245,166,35,0.1);
-            color: #f5a623;
-            padding: 6px 16px;
-            border-radius: 20px;
-            text-decoration: none;
-            font-size: 14px;
-            transition: 0.3s;
-        }
-        .video-pdf-section .pdf-link:hover {
-            background: rgba(245,166,35,0.2);
-        }
+        .comments-section { margin-top: 14px; padding-top: 14px; border-top: 1px solid rgba(255,255,255,0.05); }
+        .comments-section .comments-title { color: #888; font-size: 14px; font-weight: 600; margin-bottom: 10px; }
+        .comment-item { background: rgba(255,255,255,0.03); border-radius: 10px; padding: 10px 14px; margin-bottom: 8px; border: 1px solid rgba(255,255,255,0.04); }
+        .comment-item .comment-header { display: flex; justify-content: space-between; align-items: center; font-size: 12px; color: #666; margin-bottom: 4px; }
+        .comment-item .comment-header .author { font-weight: 600; color: #b0c4de; }
+        .comment-item .comment-header .author.admin { color: #f5a623; }
+        .comment-item .comment-text { color: #c0d0e0; font-size: 14px; }
+        .comment-item .comment-time { font-size: 11px; color: #555; }
+        .comment-input-wrap { display: flex; gap: 10px; margin-top: 10px; }
+        .comment-input-wrap input { flex: 1; padding: 8px 14px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08); border-radius: 20px; color: #fff; font-size: 14px; outline: none; transition: 0.3s; }
+        .comment-input-wrap input:focus { border-color: #667eea; background: rgba(255,255,255,0.08); }
+        .comment-input-wrap input::placeholder { color: #555; }
+        .comment-input-wrap button { background: linear-gradient(135deg, #302b63, #667eea); color: white; border: none; padding: 8px 20px; border-radius: 20px; cursor: pointer; font-weight: 600; font-size: 13px; transition: 0.3s; white-space: nowrap; }
+        .comment-input-wrap button:hover { transform: scale(1.03); box-shadow: 0 4px 20px rgba(102, 126, 234, 0.3); }
 
         /* ===== ЧАТ ===== */
         .chat-user-list {
@@ -642,6 +610,91 @@
             box-shadow: 0 4px 20px rgba(102,126,234,0.3);
         }
 
+        /* ===== ОНЛАЙН ДОСКА ===== */
+        .whiteboard-section {
+            margin-top: 30px;
+            background: rgba(255,255,255,0.03);
+            border-radius: 16px;
+            padding: 20px;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+        .whiteboard-section h3 {
+            color: #f5a623;
+            margin-bottom: 12px;
+            font-size: 20px;
+        }
+        .whiteboard-section .whiteboard-link {
+            display: block;
+            padding: 12px 16px;
+            background: rgba(102,126,234,0.1);
+            border-radius: 10px;
+            border: 1px solid rgba(102,126,234,0.2);
+            color: #88ccff;
+            text-decoration: none;
+            font-size: 16px;
+            transition: 0.3s;
+            word-break: break-all;
+        }
+        .whiteboard-section .whiteboard-link:hover {
+            background: rgba(102,126,234,0.2);
+            border-color: rgba(102,126,234,0.4);
+        }
+        .whiteboard-section .whiteboard-empty {
+            color: #666;
+            font-size: 14px;
+            padding: 12px;
+            text-align: center;
+        }
+        .whiteboard-section .whiteboard-label {
+            color: #888;
+            font-size: 13px;
+            margin-bottom: 6px;
+        }
+
+        .whiteboard-admin-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.04);
+        }
+        .whiteboard-admin-item .student-name {
+            min-width: 120px;
+            color: #b0c4de;
+            font-weight: 600;
+        }
+        .whiteboard-admin-item input {
+            flex: 1;
+            min-width: 200px;
+            padding: 6px 12px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 8px;
+            color: #fff;
+            font-size: 13px;
+        }
+        .whiteboard-admin-item input:focus {
+            border-color: #667eea;
+            outline: none;
+        }
+        .whiteboard-admin-item .admin-btn {
+            padding: 4px 14px;
+            font-size: 12px;
+        }
+        .whiteboard-admin-item .whiteboard-link-small {
+            color: #88ccff;
+            text-decoration: none;
+            font-size: 13px;
+            max-width: 200px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .whiteboard-admin-item .whiteboard-link-small:hover {
+            text-decoration: underline;
+        }
+
         footer { text-align: center; padding: 30px 20px; color: #666; font-size: 14px; border-top: 1px solid rgba(255,255,255,0.05); margin-top: 40px; }
 
         @media (max-width: 700px) {
@@ -677,6 +730,10 @@
             .comment-input-wrap button { width: 100%; }
             .chat-message .bubble { max-width: 85%; }
             .chat-user-item .last-msg { max-width: 100px; }
+            .whiteboard-admin-item { flex-direction: column; align-items: stretch; }
+            .whiteboard-admin-item .student-name { min-width: unset; }
+            .whiteboard-admin-item input { min-width: unset; }
+            .whiteboard-admin-item .whiteboard-link-small { max-width: unset; }
         }
     </style>
 </head>
@@ -739,6 +796,9 @@
                     <button class="active" data-page="overview" onclick="window.switchDashboardPage('overview')">
                         🏠 Обзор
                     </button>
+                    <button data-page="whiteboard" onclick="window.switchDashboardPage('whiteboard')">
+                        🖊️ Онлайн-доска
+                    </button>
                     <button data-page="theory" onclick="window.switchDashboardPage('theory')">
                         📖 Теория
                     </button>
@@ -797,7 +857,14 @@
                         </div>
                     </div>
 
-                    <!-- ТЕОРИЯ -->
+                    <!-- ===== ОНЛАЙН-ДОСКА ===== -->
+                    <div id="page-whiteboard" class="dashboard-page" style="display:none;">
+                        <div class="section-title">🖊️ Онлайн-доска</div>
+                        <div id="whiteboardContainer">
+                            <p style="color:#666;">Загрузка...</p>
+                        </div>
+                    </div>
+
                     <div id="page-theory" class="dashboard-page" style="display:none;">
                         <div class="section-title">📖 Теория</div>
                         <div id="adminTheoryControls" style="display:none; margin-bottom:20px;">
@@ -962,8 +1029,8 @@
         <div id="adminPanel">
             <h3>🔧 Панель управления</h3>
             <div class="admin-tabs">
-                <button class="active" data-tab="students" onclick="window.switchAdminTab('students')">📋 Ученики (вход)</button>
-                <button data-tab="my-students" onclick="window.switchAdminTab('my-students')">📋 Мои ученики</button>
+                <button class="active" data-tab="students" onclick="window.switchAdminTab('students')">📋 Ученики</button>
+                <button data-tab="whiteboard" onclick="window.switchAdminTab('whiteboard')">🖊️ Доски</button>
                 <button data-tab="theory" onclick="window.switchAdminTab('theory')">📖 Теория</button>
                 <button data-tab="homeworks" onclick="window.switchAdminTab('homeworks')">📝 ДЗ</button>
                 <button data-tab="videos" onclick="window.switchAdminTab('videos')">🎥 Видео</button>
@@ -971,18 +1038,23 @@
                 <button data-tab="stats" onclick="window.switchAdminTab('stats')">📊 Статистика</button>
                 <button data-tab="settings" onclick="window.switchAdminTab('settings')">⚙️ Настройки</button>
             </div>
+            
             <div class="admin-content active" id="tab-students">
                 <button class="admin-btn success" onclick="window.addStudent()">➕ Добавить ученика</button>
                 <div id="studentsList" style="margin-top:15px;">Загрузка...</div>
             </div>
-            <div class="admin-content" id="tab-my-students">
-                <button class="admin-btn success" onclick="window.addMyStudent()">➕ Добавить ученика</button>
-                <div id="myStudentsList" style="margin-top:15px;">Загрузка...</div>
+            
+            <div class="admin-content" id="tab-whiteboard">
+                <h4 style="color: #f5a623; margin-bottom: 15px;">🖊️ Онлайн-доски учеников</h4>
+                <p style="color: #888; font-size: 14px; margin-bottom: 12px;">Вставьте ссылку на онлайн-доску для каждого ученика (Miro, Figma, IDroo, etc.)</p>
+                <div id="whiteboardAdminList" style="margin-top:15px;">Загрузка...</div>
             </div>
+            
             <div class="admin-content" id="tab-theory">
                 <button class="admin-btn success" onclick="window.showTheoryModal()">➕ Добавить теорию</button>
                 <div id="adminTheoryList" style="margin-top:15px;">Загрузка...</div>
             </div>
+            
             <div class="admin-content" id="tab-homeworks">
                 <div class="homework-controls">
                     <button class="admin-btn success" onclick="window.showAssignmentModal()">➕ Выдать ДЗ</button>
@@ -990,10 +1062,12 @@
                 </div>
                 <div id="homeworksList" style="margin-top:15px;">Загрузка...</div>
             </div>
+            
             <div class="admin-content" id="tab-videos">
                 <button class="admin-btn success" onclick="window.addVideo()">➕ Добавить видео</button>
                 <div id="videosList" style="margin-top:15px;">Загрузка...</div>
             </div>
+            
             <div class="admin-content" id="tab-schedule">
                 <div class="schedule-actions">
                     <button class="admin-btn success" onclick="window.addScheduleRow()">➕ Добавить строку</button>
@@ -1001,9 +1075,11 @@
                 </div>
                 <div id="scheduleList" style="margin-top:15px;">Загрузка...</div>
             </div>
+            
             <div class="admin-content" id="tab-stats">
                 <div id="statsContent" style="margin-top:15px;">Загрузка...</div>
             </div>
+            
             <div class="admin-content" id="tab-settings">
                 <div style="display: flex; flex-wrap: wrap; gap: 40px; align-items: flex-start;">
                     <div style="flex: 1; min-width: 250px;">
@@ -1205,7 +1281,7 @@
             if (targetContent) targetContent.classList.add('active');
             
             if (tab === 'students') window.loadStudents();
-            else if (tab === 'my-students') window.loadMyStudents();
+            else if (tab === 'whiteboard') window.loadWhiteboardAdmin();
             else if (tab === 'theory') window.loadAdminTheory();
             else if (tab === 'homeworks') window.loadAllHomeworks();
             else if (tab === 'videos') window.loadVideosAdmin();
@@ -1227,6 +1303,472 @@
                 currentUser = null;
                 currentChatPartner = null;
             }
+        };
+
+        // ==========================================
+        // ОНЛАЙН-ДОСКА
+        // ==========================================
+
+        window.loadWhiteboard = function() {
+            var container = document.getElementById('whiteboardContainer');
+            if (!container) return;
+            
+            if (!currentUser) {
+                container.innerHTML = '<p style="color:#666;">Загрузка...</p>';
+                return;
+            }
+
+            // Показываем доску для текущего ученика
+            supabase
+                .from('students')
+                .select('whiteboard_url')
+                .eq('id', currentUser.id)
+                .single()
+                .then(function(response) {
+                    if (response.error) {
+                        container.innerHTML = '<p style="color:#666;">Ошибка загрузки доски</p>';
+                        return;
+                    }
+                    var url = response.data.whiteboard_url;
+                    if (url && url.trim() !== '') {
+                        container.innerHTML = `
+                            <div class="whiteboard-section">
+                                <h3>🖊️ Ваша онлайн-доска</h3>
+                                <div class="whiteboard-label">Перейдите по ссылке для работы на доске:</div>
+                                <a href="${url}" target="_blank" class="whiteboard-link">${url}</a>
+                            </div>
+                        `;
+                    } else {
+                        container.innerHTML = `
+                            <div class="whiteboard-section">
+                                <h3>🖊️ Онлайн-доска</h3>
+                                <div class="whiteboard-empty">
+                                    <span style="font-size: 32px; display: block; margin-bottom: 8px;">📭</span>
+                                    Преподаватель ещё не добавил ссылку на доску.<br>
+                                    Обратитесь к нему для получения ссылки.
+                                </div>
+                            </div>
+                        `;
+                    }
+                })
+                .catch(function(err) {
+                    container.innerHTML = '<p style="color:#666;">Ошибка: ' + err.message + '</p>';
+                });
+        };
+
+        window.loadWhiteboardAdmin = function() {
+            var container = document.getElementById('whiteboardAdminList');
+            if (!container) return;
+            container.innerHTML = '⏳ Загрузка...';
+            
+            supabase
+                .from('students')
+                .select('id, name, whiteboard_url')
+                .eq('role', 'student')
+                .order('name')
+                .then(function(response) {
+                    if (response.error) {
+                        container.innerHTML = '❌ Ошибка: ' + response.error.message;
+                        return;
+                    }
+                    var students = response.data || [];
+                    if (students.length === 0) {
+                        container.innerHTML = '📭 Нет учеников. Добавьте первого!';
+                        return;
+                    }
+                    
+                    var html = '';
+                    students.forEach(function(student) {
+                        var url = student.whiteboard_url || '';
+                        html += `
+                            <div class="whiteboard-admin-item">
+                                <span class="student-name">${student.name}</span>
+                                <input type="text" id="wb_${student.id}" value="${url}" placeholder="Вставьте ссылку на доску..." 
+                                    onkeypress="if(event.key==='Enter') window.saveWhiteboardUrl('${student.id}')">
+                                <button class="admin-btn success" onclick="window.saveWhiteboardUrl('${student.id}')">💾 Сохранить</button>
+                                ${url ? `<a href="${url}" target="_blank" class="whiteboard-link-small">🔗 Открыть</a>` : ''}
+                            </div>
+                        `;
+                    });
+                    container.innerHTML = html;
+                })
+                .catch(function(err) {
+                    container.innerHTML = '❌ Ошибка: ' + err.message;
+                });
+        };
+
+        window.saveWhiteboardUrl = function(studentId) {
+            var input = document.getElementById('wb_' + studentId);
+            if (!input) return;
+            var url = input.value.trim();
+            
+            // Простая проверка на URL
+            if (url && !url.startsWith('http://') && !url.startsWith('https://')) {
+                url = 'https://' + url;
+            }
+            
+            supabase
+                .from('students')
+                .update({ whiteboard_url: url || null })
+                .eq('id', studentId)
+                .then(function(response) {
+                    if (response.error) {
+                        alert('❌ Ошибка сохранения: ' + response.error.message);
+                        return;
+                    }
+                    alert('✅ Ссылка сохранена!');
+                    window.loadWhiteboardAdmin();
+                    if (currentUser && currentUser.id === studentId) {
+                        window.loadWhiteboard();
+                    }
+                })
+                .catch(function(err) {
+                    alert('❌ Ошибка: ' + err.message);
+                });
+        };
+
+        // ==========================================
+        // НАСТРОЙКИ
+        // ==========================================
+
+        window.uploadAvatar = function() {
+            var fileInput = document.getElementById('avatarUpload');
+            var file = fileInput.files[0];
+            if (!file) { alert('❌ Выберите файл'); return; }
+            if (!file.type.startsWith('image/')) { alert('❌ Загрузите изображение'); return; }
+            if (file.size > 5 * 1024 * 1024) { alert('❌ Файл слишком большой! Максимум 5 МБ'); return; }
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                var img = new Image();
+                img.onload = function() {
+                    var canvas = document.createElement('canvas');
+                    var ctx = canvas.getContext('2d');
+                    var maxSize = 300;
+                    var width = img.width;
+                    var height = img.height;
+                    if (width > height) {
+                        if (width > maxSize) {
+                            height = Math.round(height * maxSize / width);
+                            width = maxSize;
+                        }
+                    } else {
+                        if (height > maxSize) {
+                            width = Math.round(width * maxSize / height);
+                            height = maxSize;
+                        }
+                    }
+                    canvas.width = width;
+                    canvas.height = height;
+                    ctx.drawImage(img, 0, 0, width, height);
+                    var imageData = canvas.toDataURL('image/jpeg', 0.8);
+                    try {
+                        localStorage.setItem('teacher_avatar', imageData);
+                    } catch (e) {
+                        alert('❌ Не удалось сохранить изображение.');
+                        return;
+                    }
+                    window.updateAvatarDisplay(imageData);
+                    alert('✅ Фото загружено!');
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        };
+
+        window.deleteAvatar = function() {
+            if (!confirm('Удалить фото?')) return;
+            localStorage.removeItem('teacher_avatar');
+            document.getElementById('avatarUpload').value = '';
+            window.resetAvatarDisplay();
+            alert('✅ Фото удалено');
+        };
+
+        window.updateAvatarDisplay = function(imageData) {
+            var avatarEmoji = document.getElementById('avatarEmoji');
+            var avatarImg = document.getElementById('avatarImage');
+            if (avatarEmoji) avatarEmoji.style.display = 'none';
+            if (avatarImg) { avatarImg.style.display = 'block'; avatarImg.src = imageData; }
+            var profileEmoji = document.getElementById('profileAvatarEmoji');
+            var profileImg = document.getElementById('profileAvatarImg');
+            if (profileEmoji) profileEmoji.style.display = 'none';
+            if (profileImg) { profileImg.style.display = 'block'; profileImg.src = imageData; }
+        };
+
+        window.resetAvatarDisplay = function() {
+            var avatarEmoji = document.getElementById('avatarEmoji');
+            var avatarImg = document.getElementById('avatarImage');
+            if (avatarEmoji) avatarEmoji.style.display = 'block';
+            if (avatarImg) { avatarImg.style.display = 'none'; avatarImg.src = ''; }
+            var profileEmoji = document.getElementById('profileAvatarEmoji');
+            var profileImg = document.getElementById('profileAvatarImg');
+            if (profileEmoji) profileEmoji.style.display = 'block';
+            if (profileImg) { profileImg.style.display = 'none'; profileImg.src = ''; }
+        };
+
+        window.loadTeacherSettings = function() {
+            var savedAvatar = localStorage.getItem('teacher_avatar');
+            var savedName = localStorage.getItem('teacher_name');
+            var savedDesc = localStorage.getItem('teacher_desc');
+            if (savedAvatar && savedAvatar.length > 100) {
+                window.updateAvatarDisplay(savedAvatar);
+            } else {
+                window.resetAvatarDisplay();
+            }
+            if (savedName) {
+                document.getElementById('teacherName').value = savedName;
+                document.getElementById('teacherNameDisplay').textContent = savedName;
+            }
+            if (savedDesc) {
+                document.getElementById('teacherDesc').value = savedDesc;
+                document.getElementById('teacherDescDisplay').textContent = savedDesc;
+            }
+        };
+
+        window.saveTeacherInfo = function() {
+            var name = document.getElementById('teacherName').value.trim();
+            var desc = document.getElementById('teacherDesc').value.trim();
+            if (!name) { alert('❌ Введите имя'); return; }
+            localStorage.setItem('teacher_name', name);
+            localStorage.setItem('teacher_desc', desc);
+            document.getElementById('teacherNameDisplay').textContent = name;
+            document.getElementById('teacherDescDisplay').textContent = desc;
+            alert('✅ Информация сохранена!');
+        };
+
+        // ==========================================
+        // НАСТРОЙКИ ПРОФИЛЯ
+        // ==========================================
+
+        window.loadSettings = function() {
+            if (!currentUser) return;
+            supabase
+                .from('students')
+                .select('*')
+                .eq('id', currentUser.id)
+                .single()
+                .then(function(response) {
+                    if (response.error) { console.error('Ошибка загрузки настроек:', response.error); return; }
+                    var user = response.data;
+                    document.getElementById('settingsName').value = user.name || '';
+                    document.getElementById('settingsEmail').value = user.email || '';
+                    if (user.settings) {
+                        var settings = user.settings;
+                        document.getElementById('settingNotifications').checked = settings.notifications !== false;
+                        document.getElementById('settingDeadlineReminders').checked = settings.deadline_reminders !== false;
+                        document.getElementById('settingMessages').checked = settings.messages !== false;
+                    }
+                });
+        };
+
+        window.saveProfileSettings = function() {
+            if (!currentUser) { alert('❌ Вы не авторизованы'); return; }
+            var name = document.getElementById('settingsName').value.trim();
+            if (!name) { alert('❌ Введите имя'); return; }
+            var settings = {
+                notifications: document.getElementById('settingNotifications').checked,
+                deadline_reminders: document.getElementById('settingDeadlineReminders').checked,
+                messages: document.getElementById('settingMessages').checked
+            };
+            supabase
+                .from('students')
+                .update({ name: name, settings: settings })
+                .eq('id', currentUser.id)
+                .then(function(response) {
+                    if (response.error) { alert('❌ Ошибка сохранения: ' + response.error.message); return; }
+                    currentUser.name = name;
+                    currentUser.settings = settings;
+                    document.getElementById('welcomeMessage').textContent = '👋 Привет, ' + name + '!';
+                    alert('✅ Настройки сохранены!');
+                })
+                .catch(function(err) { alert('❌ Ошибка: ' + err.message); });
+        };
+
+        window.changePassword = function() {
+            if (!currentUser) { alert('❌ Вы не авторизованы'); return; }
+            var oldPassword = document.getElementById('settingsOldPassword').value;
+            var newPassword = document.getElementById('settingsNewPassword').value;
+            var confirmPassword = document.getElementById('settingsConfirmPassword').value;
+            if (!oldPassword) { alert('❌ Введите старый пароль'); return; }
+            if (!newPassword) { alert('❌ Введите новый пароль'); return; }
+            if (newPassword.length < 4) { alert('❌ Пароль должен быть не менее 4 символов'); return; }
+            if (newPassword !== confirmPassword) { alert('❌ Пароли не совпадают'); return; }
+            supabase
+                .from('students')
+                .select('*')
+                .eq('id', currentUser.id)
+                .eq('password', oldPassword)
+                .single()
+                .then(function(response) {
+                    if (response.error || !response.data) { alert('❌ Неверный старый пароль'); return; }
+                    supabase
+                        .from('students')
+                        .update({ password: newPassword })
+                        .eq('id', currentUser.id)
+                        .then(function(updateRes) {
+                            if (updateRes.error) { alert('❌ Ошибка смены пароля: ' + updateRes.error.message); return; }
+                            alert('✅ Пароль успешно изменён!');
+                            document.getElementById('settingsOldPassword').value = '';
+                            document.getElementById('settingsNewPassword').value = '';
+                            document.getElementById('settingsConfirmPassword').value = '';
+                        })
+                        .catch(function(err) { alert('❌ Ошибка: ' + err.message); });
+                })
+                .catch(function(err) { alert('❌ Ошибка: ' + err.message); });
+        };
+
+        // ==========================================
+        // НАВИГАЦИЯ
+        // ==========================================
+
+        window.switchDashboardPage = function(page) {
+            currentDashboardPage = page;
+            document.querySelectorAll('.dashboard-sidebar button').forEach(function(btn) {
+                btn.classList.remove('active');
+                if (btn.dataset.page === page) btn.classList.add('active');
+            });
+            document.querySelectorAll('.dashboard-page').forEach(function(p) { p.style.display = 'none'; });
+            var target = document.getElementById('page-' + page);
+            if (target) target.style.display = 'block';
+            if (page === 'whiteboard') window.loadWhiteboard();
+            if (page === 'theory') window.loadTheory();
+            if (page === 'stats' && currentUser) window.loadStatistics(currentUser.id);
+            if (page === 'settings' && currentUser) window.loadSettings();
+            if (page === 'messages' && currentUser) {
+                if (chatInterval) clearInterval(chatInterval);
+                loadChatList();
+            }
+        };
+
+        window.openSection = function(sectionId) {
+            mainContent.style.display = 'none';
+            dashboard.style.display = 'none';
+            adminPanel.style.display = 'none';
+            sectionPage.classList.add('active');
+            window.loadSectionContent(sectionId);
+        };
+
+        window.loadSectionContent = async function(sectionId) {
+            var content = document.getElementById('sectionContent');
+            content.innerHTML = '<div class="loading">⏳ Загрузка...</div>';
+            try {
+                var sectionResult = await supabase.from('video_sections').select('*').eq('id', sectionId).single();
+                if (sectionResult.error) { content.innerHTML = '<div class="empty">❌ Раздел не найден</div>'; return; }
+                var section = sectionResult.data;
+                var videosResult = await supabase.from('videos').select('*').eq('section_id', sectionId).order('created_at', { ascending: false });
+                var videos = videosResult.data || [];
+                var html = '<h1 class="section-title">' + section.name + '</h1>';
+                if (videos.length === 0) {
+                    html += '<div class="empty">📭 Нет видео в этом разделе</div>';
+                } else {
+                    for (var vIdx = 0; vIdx < videos.length; vIdx++) {
+                        var v = videos[vIdx];
+                        var isFile = v.is_file || false;
+                        var isVk = v.is_vk || false;
+                        var videoUrl = v.youtube_url || '#';
+                        var title = v.title || 'Видео';
+                        var homework = v.homework || '';
+                        var pdfUrl = v.pdf_file_url || null;
+                        
+                        html += '<div class="video-item">';
+                        if (isFile && videoUrl && videoUrl !== '#') {
+                            html += '<div class="video-player-wrapper"><video controls><source src="' + videoUrl + '" type="video/mp4">Ваш браузер не поддерживает видео.</video></div>';
+                        } else if (videoUrl && videoUrl !== '#' && videoUrl.includes('youtube.com')) {
+                            var embedUrl = videoUrl.replace('watch?v=', 'embed/').replace('youtu.be/', 'youtube.com/embed/');
+                            html += '<div class="video-player-wrapper"><iframe src="' + embedUrl + '" allowfullscreen></iframe></div>';
+                        } else if (isVk && videoUrl && videoUrl !== '#') {
+                            var vkEmbed = videoUrl;
+                            if (videoUrl.includes('vk.com/video')) {
+                                var parts = videoUrl.split('/');
+                                var videoIdParts = parts[parts.length - 1];
+                                if (videoIdParts && videoIdParts.includes('_')) {
+                                    var ids = videoIdParts.split('_');
+                                    vkEmbed = 'https://vk.com/video_ext.php?oid=' + ids[0] + '&id=' + ids[1] + '&hash=' + Date.now();
+                                }
+                            }
+                            html += '<div class="video-player-wrapper"><iframe src="' + vkEmbed + '" allowfullscreen></iframe></div>';
+                        } else if (videoUrl && videoUrl !== '#') {
+                            html += '<div class="video-player-wrapper" style="display:flex; align-items:center; justify-content:center; background:#111; min-height:200px;"><a href="' + videoUrl + '" target="_blank" style="color:#f5a623; font-size:20px; text-decoration:none; border:2px solid #f5a623; padding:16px 32px; border-radius:12px;">▶️ Смотреть видео</a></div>';
+                        }
+                        html += '<span class="video-title">🎬 ' + title + '</span>';
+                        
+                        if (pdfUrl) {
+                            html += `
+                                <div class="video-pdf-section">
+                                    <span class="pdf-label">📄 Задачи к уроку:</span>
+                                    <a href="${pdfUrl}" target="_blank" class="pdf-link">📥 Скачать PDF с задачами</a>
+                                </div>
+                            `;
+                        }
+                        
+                        if (videoUrl && videoUrl !== '#') {
+                            html += '<div class="video-fallback-link"><span class="label">⚠️ Если видео не работает, вот ссылка:</span><br><a href="' + videoUrl + '" target="_blank">' + videoUrl + '</a></div>';
+                        }
+                        if (homework) {
+                            html += '<div class="video-homework"><strong>📝 ДЗ к уроку:</strong> ' + homework + '</div>';
+                        }
+                        html += '</div>';
+                    }
+                }
+                content.innerHTML = html;
+            } catch (err) {
+                content.innerHTML = '<div class="empty">❌ Ошибка загрузки</div>';
+                console.error(err);
+            }
+        };
+
+        // ==========================================
+        // АДМИНКА
+        // ==========================================
+
+        window.addStudent = function() {
+            var name = prompt('Введите имя ученика:'); if (!name) return;
+            var email = prompt('Введите email ученика:'); if (!email) return;
+            var password = prompt('Введите пароль:'); if (!password) return;
+            supabase
+                .from('students')
+                .insert([{ name: name, email: email, password: password, role: 'student' }])
+                .then(function(response) {
+                    if (response.error) alert('❌ Ошибка: ' + response.error.message);
+                    else { alert('✅ Ученик добавлен!'); window.loadStudents(); }
+                })
+                .catch(function(err) { alert('❌ Ошибка: ' + err.message); });
+        };
+
+        window.loadStudents = function() {
+            var container = document.getElementById('studentsList');
+            if (!container) return;
+            container.innerHTML = '⏳ Загрузка...';
+            supabase
+                .from('students')
+                .select('id, name, email, role')
+                .eq('role', 'student')
+                .order('name')
+                .then(function(response) {
+                    if (response.error) { container.innerHTML = '❌ Ошибка: ' + response.error.message; return; }
+                    var data = response.data || [];
+                    if (data.length === 0) { container.innerHTML = '📭 Нет учеников'; return; }
+                    var html = '<table class="admin-table"><tr><th>Имя</th><th>Email</th><th>Роль</th><th>Действия</th></tr>';
+                    for (var i = 0; i < data.length; i++) {
+                        var s = data[i];
+                        html += '<tr><td>' + s.name + '</td><td>' + s.email + '</td><td>' + (s.role || 'student') + '</td><td><button class="admin-btn danger" onclick="window.deleteStudent(\'' + s.id + '\')">Удалить</button></td></tr>';
+                    }
+                    html += '</table>';
+                    container.innerHTML = html;
+                })
+                .catch(function(err) { container.innerHTML = '❌ Ошибка: ' + err.message; });
+        };
+
+        window.deleteStudent = function(id) {
+            if (!confirm('Удалить ученика?')) return;
+            supabase
+                .from('students')
+                .delete()
+                .eq('id', id)
+                .then(function(response) {
+                    if (response.error) alert('❌ Ошибка: ' + response.error.message);
+                    else { alert('✅ Ученик удалён'); window.loadStudents(); }
+                })
+                .catch(function(err) { alert('❌ Ошибка: ' + err.message); });
         };
 
         // ==========================================
@@ -1533,508 +2075,6 @@
         };
 
         // ==========================================
-        // НАСТРОЙКИ
-        // ==========================================
-
-        window.uploadAvatar = function() {
-            var fileInput = document.getElementById('avatarUpload');
-            var file = fileInput.files[0];
-            if (!file) { alert('❌ Выберите файл'); return; }
-            if (!file.type.startsWith('image/')) { alert('❌ Загрузите изображение'); return; }
-            if (file.size > 5 * 1024 * 1024) { alert('❌ Файл слишком большой! Максимум 5 МБ'); return; }
-            var reader = new FileReader();
-            reader.onload = function(e) {
-                var img = new Image();
-                img.onload = function() {
-                    var canvas = document.createElement('canvas');
-                    var ctx = canvas.getContext('2d');
-                    var maxSize = 300;
-                    var width = img.width;
-                    var height = img.height;
-                    if (width > height) {
-                        if (width > maxSize) {
-                            height = Math.round(height * maxSize / width);
-                            width = maxSize;
-                        }
-                    } else {
-                        if (height > maxSize) {
-                            width = Math.round(width * maxSize / height);
-                            height = maxSize;
-                        }
-                    }
-                    canvas.width = width;
-                    canvas.height = height;
-                    ctx.drawImage(img, 0, 0, width, height);
-                    var imageData = canvas.toDataURL('image/jpeg', 0.8);
-                    try {
-                        localStorage.setItem('teacher_avatar', imageData);
-                    } catch (e) {
-                        alert('❌ Не удалось сохранить изображение.');
-                        return;
-                    }
-                    window.updateAvatarDisplay(imageData);
-                    alert('✅ Фото загружено!');
-                };
-                img.src = e.target.result;
-            };
-            reader.readAsDataURL(file);
-        };
-
-        window.deleteAvatar = function() {
-            if (!confirm('Удалить фото?')) return;
-            localStorage.removeItem('teacher_avatar');
-            document.getElementById('avatarUpload').value = '';
-            window.resetAvatarDisplay();
-            alert('✅ Фото удалено');
-        };
-
-        window.updateAvatarDisplay = function(imageData) {
-            var avatarEmoji = document.getElementById('avatarEmoji');
-            var avatarImg = document.getElementById('avatarImage');
-            if (avatarEmoji) avatarEmoji.style.display = 'none';
-            if (avatarImg) { avatarImg.style.display = 'block'; avatarImg.src = imageData; }
-            var profileEmoji = document.getElementById('profileAvatarEmoji');
-            var profileImg = document.getElementById('profileAvatarImg');
-            if (profileEmoji) profileEmoji.style.display = 'none';
-            if (profileImg) { profileImg.style.display = 'block'; profileImg.src = imageData; }
-        };
-
-        window.resetAvatarDisplay = function() {
-            var avatarEmoji = document.getElementById('avatarEmoji');
-            var avatarImg = document.getElementById('avatarImage');
-            if (avatarEmoji) avatarEmoji.style.display = 'block';
-            if (avatarImg) { avatarImg.style.display = 'none'; avatarImg.src = ''; }
-            var profileEmoji = document.getElementById('profileAvatarEmoji');
-            var profileImg = document.getElementById('profileAvatarImg');
-            if (profileEmoji) profileEmoji.style.display = 'block';
-            if (profileImg) { profileImg.style.display = 'none'; profileImg.src = ''; }
-        };
-
-        window.loadTeacherSettings = function() {
-            var savedAvatar = localStorage.getItem('teacher_avatar');
-            var savedName = localStorage.getItem('teacher_name');
-            var savedDesc = localStorage.getItem('teacher_desc');
-            if (savedAvatar && savedAvatar.length > 100) {
-                window.updateAvatarDisplay(savedAvatar);
-            } else {
-                window.resetAvatarDisplay();
-            }
-            if (savedName) {
-                document.getElementById('teacherName').value = savedName;
-                document.getElementById('teacherNameDisplay').textContent = savedName;
-            }
-            if (savedDesc) {
-                document.getElementById('teacherDesc').value = savedDesc;
-                document.getElementById('teacherDescDisplay').textContent = savedDesc;
-            }
-        };
-
-        window.saveTeacherInfo = function() {
-            var name = document.getElementById('teacherName').value.trim();
-            var desc = document.getElementById('teacherDesc').value.trim();
-            if (!name) { alert('❌ Введите имя'); return; }
-            localStorage.setItem('teacher_name', name);
-            localStorage.setItem('teacher_desc', desc);
-            document.getElementById('teacherNameDisplay').textContent = name;
-            document.getElementById('teacherDescDisplay').textContent = desc;
-            alert('✅ Информация сохранена!');
-        };
-
-        // ==========================================
-        // НАСТРОЙКИ ПРОФИЛЯ
-        // ==========================================
-
-        window.loadSettings = function() {
-            if (!currentUser) return;
-            supabase
-                .from('students')
-                .select('*')
-                .eq('id', currentUser.id)
-                .single()
-                .then(function(response) {
-                    if (response.error) { console.error('Ошибка загрузки настроек:', response.error); return; }
-                    var user = response.data;
-                    document.getElementById('settingsName').value = user.name || '';
-                    document.getElementById('settingsEmail').value = user.email || '';
-                    if (user.settings) {
-                        var settings = user.settings;
-                        document.getElementById('settingNotifications').checked = settings.notifications !== false;
-                        document.getElementById('settingDeadlineReminders').checked = settings.deadline_reminders !== false;
-                        document.getElementById('settingMessages').checked = settings.messages !== false;
-                    }
-                });
-        };
-
-        window.saveProfileSettings = function() {
-            if (!currentUser) { alert('❌ Вы не авторизованы'); return; }
-            var name = document.getElementById('settingsName').value.trim();
-            if (!name) { alert('❌ Введите имя'); return; }
-            var settings = {
-                notifications: document.getElementById('settingNotifications').checked,
-                deadline_reminders: document.getElementById('settingDeadlineReminders').checked,
-                messages: document.getElementById('settingMessages').checked
-            };
-            supabase
-                .from('students')
-                .update({ name: name, settings: settings })
-                .eq('id', currentUser.id)
-                .then(function(response) {
-                    if (response.error) { alert('❌ Ошибка сохранения: ' + response.error.message); return; }
-                    currentUser.name = name;
-                    currentUser.settings = settings;
-                    document.getElementById('welcomeMessage').textContent = '👋 Привет, ' + name + '!';
-                    alert('✅ Настройки сохранены!');
-                })
-                .catch(function(err) { alert('❌ Ошибка: ' + err.message); });
-        };
-
-        window.changePassword = function() {
-            if (!currentUser) { alert('❌ Вы не авторизованы'); return; }
-            var oldPassword = document.getElementById('settingsOldPassword').value;
-            var newPassword = document.getElementById('settingsNewPassword').value;
-            var confirmPassword = document.getElementById('settingsConfirmPassword').value;
-            if (!oldPassword) { alert('❌ Введите старый пароль'); return; }
-            if (!newPassword) { alert('❌ Введите новый пароль'); return; }
-            if (newPassword.length < 4) { alert('❌ Пароль должен быть не менее 4 символов'); return; }
-            if (newPassword !== confirmPassword) { alert('❌ Пароли не совпадают'); return; }
-            supabase
-                .from('students')
-                .select('*')
-                .eq('id', currentUser.id)
-                .eq('password', oldPassword)
-                .single()
-                .then(function(response) {
-                    if (response.error || !response.data) { alert('❌ Неверный старый пароль'); return; }
-                    supabase
-                        .from('students')
-                        .update({ password: newPassword })
-                        .eq('id', currentUser.id)
-                        .then(function(updateRes) {
-                            if (updateRes.error) { alert('❌ Ошибка смены пароля: ' + updateRes.error.message); return; }
-                            alert('✅ Пароль успешно изменён!');
-                            document.getElementById('settingsOldPassword').value = '';
-                            document.getElementById('settingsNewPassword').value = '';
-                            document.getElementById('settingsConfirmPassword').value = '';
-                        })
-                        .catch(function(err) { alert('❌ Ошибка: ' + err.message); });
-                })
-                .catch(function(err) { alert('❌ Ошибка: ' + err.message); });
-        };
-
-        // ==========================================
-        // НАВИГАЦИЯ
-        // ==========================================
-
-        window.switchDashboardPage = function(page) {
-            currentDashboardPage = page;
-            document.querySelectorAll('.dashboard-sidebar button').forEach(function(btn) {
-                btn.classList.remove('active');
-                if (btn.dataset.page === page) btn.classList.add('active');
-            });
-            document.querySelectorAll('.dashboard-page').forEach(function(p) { p.style.display = 'none'; });
-            var target = document.getElementById('page-' + page);
-            if (target) target.style.display = 'block';
-            if (page === 'theory') window.loadTheory();
-            if (page === 'stats' && currentUser) window.loadStatistics(currentUser.id);
-            if (page === 'settings' && currentUser) window.loadSettings();
-            if (page === 'messages' && currentUser) {
-                if (chatInterval) clearInterval(chatInterval);
-                loadChatList();
-            }
-        };
-
-        window.openSection = function(sectionId) {
-            mainContent.style.display = 'none';
-            dashboard.style.display = 'none';
-            adminPanel.style.display = 'none';
-            sectionPage.classList.add('active');
-            window.loadSectionContent(sectionId);
-        };
-
-        window.loadSectionContent = async function(sectionId) {
-            var content = document.getElementById('sectionContent');
-            content.innerHTML = '<div class="loading">⏳ Загрузка...</div>';
-            try {
-                var sectionResult = await supabase.from('video_sections').select('*').eq('id', sectionId).single();
-                if (sectionResult.error) { content.innerHTML = '<div class="empty">❌ Раздел не найден</div>'; return; }
-                var section = sectionResult.data;
-                var videosResult = await supabase.from('videos').select('*').eq('section_id', sectionId).order('created_at', { ascending: false });
-                var videos = videosResult.data || [];
-                var html = '<h1 class="section-title">' + section.name + '</h1>';
-                if (videos.length === 0) {
-                    html += '<div class="empty">📭 Нет видео в этом разделе</div>';
-                } else {
-                    for (var vIdx = 0; vIdx < videos.length; vIdx++) {
-                        var v = videos[vIdx];
-                        var isFile = v.is_file || false;
-                        var isVk = v.is_vk || false;
-                        var videoUrl = v.youtube_url || '#';
-                        var title = v.title || 'Видео';
-                        var homework = v.homework || '';
-                        var pdfUrl = v.pdf_file_url || null;
-                        
-                        html += '<div class="video-item">';
-                        if (isFile && videoUrl && videoUrl !== '#') {
-                            html += '<div class="video-player-wrapper"><video controls><source src="' + videoUrl + '" type="video/mp4">Ваш браузер не поддерживает видео.</video></div>';
-                        } else if (videoUrl && videoUrl !== '#' && videoUrl.includes('youtube.com')) {
-                            var embedUrl = videoUrl.replace('watch?v=', 'embed/').replace('youtu.be/', 'youtube.com/embed/');
-                            html += '<div class="video-player-wrapper"><iframe src="' + embedUrl + '" allowfullscreen></iframe></div>';
-                        } else if (isVk && videoUrl && videoUrl !== '#') {
-                            var vkEmbed = videoUrl;
-                            if (videoUrl.includes('vk.com/video')) {
-                                var parts = videoUrl.split('/');
-                                var videoIdParts = parts[parts.length - 1];
-                                if (videoIdParts && videoIdParts.includes('_')) {
-                                    var ids = videoIdParts.split('_');
-                                    vkEmbed = 'https://vk.com/video_ext.php?oid=' + ids[0] + '&id=' + ids[1] + '&hash=' + Date.now();
-                                }
-                            }
-                            html += '<div class="video-player-wrapper"><iframe src="' + vkEmbed + '" allowfullscreen></iframe></div>';
-                        } else if (videoUrl && videoUrl !== '#') {
-                            html += '<div class="video-player-wrapper" style="display:flex; align-items:center; justify-content:center; background:#111; min-height:200px;"><a href="' + videoUrl + '" target="_blank" style="color:#f5a623; font-size:20px; text-decoration:none; border:2px solid #f5a623; padding:16px 32px; border-radius:12px;">▶️ Смотреть видео</a></div>';
-                        }
-                        html += '<span class="video-title">🎬 ' + title + '</span>';
-                        
-                        if (pdfUrl) {
-                            html += `
-                                <div class="video-pdf-section">
-                                    <span class="pdf-label">📄 Задачи к уроку:</span>
-                                    <a href="${pdfUrl}" target="_blank" class="pdf-link">📥 Скачать PDF с задачами</a>
-                                </div>
-                            `;
-                        }
-                        
-                        if (videoUrl && videoUrl !== '#') {
-                            html += '<div class="video-fallback-link"><span class="label">⚠️ Если видео не работает, вот ссылка:</span><br><a href="' + videoUrl + '" target="_blank">' + videoUrl + '</a></div>';
-                        }
-                        if (homework) {
-                            html += '<div class="video-homework"><strong>📝 ДЗ к уроку:</strong> ' + homework + '</div>';
-                        }
-                        html += '</div>';
-                    }
-                }
-                content.innerHTML = html;
-            } catch (err) {
-                content.innerHTML = '<div class="empty">❌ Ошибка загрузки</div>';
-                console.error(err);
-            }
-        };
-
-        // ==========================================
-        // АДМИНКА - УЧЕНИКИ
-        // ==========================================
-
-        window.addStudent = function() {
-            var name = prompt('Введите имя ученика:'); if (!name) return;
-            var email = prompt('Введите email ученика:'); if (!email) return;
-            var password = prompt('Введите пароль:'); if (!password) return;
-            supabase
-                .from('students')
-                .insert([{ name: name, email: email, password: password, role: 'student' }])
-                .then(function(response) {
-                    if (response.error) alert('❌ Ошибка: ' + response.error.message);
-                    else { alert('✅ Ученик добавлен!'); window.loadStudents(); }
-                })
-                .catch(function(err) { alert('❌ Ошибка: ' + err.message); });
-        };
-
-        window.loadStudents = function() {
-            var container = document.getElementById('studentsList');
-            if (!container) return;
-            container.innerHTML = '⏳ Загрузка...';
-            supabase
-                .from('students')
-                .select('id, name, email, role')
-                .eq('role', 'student')
-                .order('name')
-                .then(function(response) {
-                    if (response.error) { container.innerHTML = '❌ Ошибка: ' + response.error.message; return; }
-                    var data = response.data || [];
-                    if (data.length === 0) { container.innerHTML = '📭 Нет учеников'; return; }
-                    var html = '<table class="admin-table"><tr><th>Имя</th><th>Email</th><th>Роль</th><th>Действия</th></tr>';
-                    for (var i = 0; i < data.length; i++) {
-                        var s = data[i];
-                        html += '<tr><td>' + s.name + '</td><td>' + s.email + '</td><td>' + (s.role || 'student') + '</td><td><button class="admin-btn danger" onclick="window.deleteStudent(\'' + s.id + '\')">Удалить</button></td></tr>';
-                    }
-                    html += '</table>';
-                    container.innerHTML = html;
-                })
-                .catch(function(err) { container.innerHTML = '❌ Ошибка: ' + err.message; });
-        };
-
-        window.deleteStudent = function(id) {
-            if (!confirm('Удалить ученика?')) return;
-            supabase
-                .from('students')
-                .delete()
-                .eq('id', id)
-                .then(function(response) {
-                    if (response.error) alert('❌ Ошибка: ' + response.error.message);
-                    else { alert('✅ Ученик удалён'); window.loadStudents(); }
-                })
-                .catch(function(err) { alert('❌ Ошибка: ' + err.message); });
-        };
-
-        // ==========================================
-        // МОИ УЧЕНИКИ
-        // ==========================================
-
-        window.addMyStudent = function() {
-            var name = prompt('Введите имя ученика:'); if (!name) return;
-            var className = prompt('Введите класс (10 или 11):');
-            var startDate = prompt('Введите дату начала (ГГГГ-ММ-ДД):');
-            var status = confirm('Активен?') ? 'active' : 'inactive';
-            supabase
-                .from('my_students')
-                .insert([{ name: name, class: className || null, start_date: startDate || null, status: status }])
-                .then(function(r) {
-                    if (r.error) alert('❌ Ошибка: ' + r.error.message);
-                    else { alert('✅ Ученик добавлен в список!'); window.loadMyStudents(); }
-                })
-                .catch(function(err) { alert('❌ Ошибка: ' + err.message); });
-        };
-
-        window.loadMyStudents = function() {
-            var container = document.getElementById('myStudentsList');
-            if (!container) return;
-            container.innerHTML = '⏳ Загрузка...';
-            supabase
-                .from('my_students')
-                .select('*')
-                .order('created_at', { ascending: false })
-                .then(function(response) {
-                    if (response.error) { container.innerHTML = '❌ Ошибка: ' + response.error.message; return; }
-                    var data = response.data || [];
-                    if (data.length === 0) { container.innerHTML = '📭 Нет учеников. Добавь первого!'; return; }
-                    var html = '<table class="admin-table"><tr><th>Имя</th><th>Класс</th><th>Начало занятий</th><th>Статус</th><th>Действия</th></tr>';
-                    for (var i = 0; i < data.length; i++) {
-                        var s = data[i];
-                        var statusText = s.status === 'active' ? '🟢 Активен' : '🔴 Неактивен';
-                        html += '<tr><td>' + s.name + '</td><td>' + (s.class || '—') + '</td><td>' + (s.start_date || '—') + '</td><td>' + statusText + '</td><td><button class="admin-btn" onclick="window.toggleMyStudentStatus(\'' + s.id + '\', \'' + s.status + '\')">' + (s.status === 'active' ? '🔴' : '🟢') + '</button> <button class="admin-btn danger" onclick="window.deleteMyStudent(\'' + s.id + '\')">🗑</button></td></tr>';
-                    }
-                    html += '</table>';
-                    container.innerHTML = html;
-                })
-                .catch(function(err) { container.innerHTML = '❌ Ошибка: ' + err.message; });
-        };
-
-        window.deleteMyStudent = function(id) {
-            if (!confirm('Удалить ученика из списка?')) return;
-            supabase
-                .from('my_students')
-                .delete()
-                .eq('id', id)
-                .then(function(response) {
-                    if (response.error) alert('❌ Ошибка: ' + response.error.message);
-                    else { alert('✅ Удалено'); window.loadMyStudents(); }
-                })
-                .catch(function(err) { alert('❌ Ошибка: ' + err.message); });
-        };
-
-        window.toggleMyStudentStatus = function(id, currentStatus) {
-            var newStatus = currentStatus === 'active' ? 'inactive' : 'active';
-            supabase
-                .from('my_students')
-                .update({ status: newStatus })
-                .eq('id', id)
-                .then(function(response) {
-                    if (response.error) alert('❌ Ошибка: ' + response.error.message);
-                    else window.loadMyStudents();
-                })
-                .catch(function(err) { alert('❌ Ошибка: ' + err.message); });
-        };
-
-        // ==========================================
-        // КОММЕНТАРИИ К ДЗ
-        // ==========================================
-
-        window.loadHomeworkComments = async function(homeworkId, containerId) {
-            var container = document.getElementById(containerId);
-            if (!container) return;
-            
-            try {
-                const { data, error } = await supabase
-                    .from('homework_comments')
-                    .select('*, students(name, role)')
-                    .eq('homework_id', homeworkId)
-                    .order('created_at', { ascending: true })
-                    .limit(20);
-                    
-                if (error) throw error;
-                
-                if (!data || data.length === 0) {
-                    container.innerHTML = '<p style="color:#555; font-size:13px; text-align:center; padding:4px 0;">Нет комментариев</p>';
-                    return;
-                }
-                
-                var html = '';
-                data.forEach(function(comment) {
-                    var authorName = comment.students ? comment.students.name : 'Ученик';
-                    var isAdmin = comment.is_admin || false;
-                    var authorClass = isAdmin ? 'admin' : '';
-                    var authorLabel = isAdmin ? '👨‍🏫 ' + authorName : '👤 ' + authorName;
-                    var time = new Date(comment.created_at).toLocaleString('ru-RU', {
-                        day: '2-digit', month: '2-digit', year: 'numeric',
-                        hour: '2-digit', minute: '2-digit'
-                    });
-                    
-                    html += `
-                        <div class="comment-item">
-                            <div class="comment-header">
-                                <span class="author ${authorClass}">${authorLabel}</span>
-                                <span class="comment-time">${time}</span>
-                            </div>
-                            <div class="comment-text">${comment.comment}</div>
-                        </div>
-                    `;
-                });
-                
-                container.innerHTML = html;
-                
-            } catch (err) {
-                console.error('Ошибка загрузки комментариев:', err);
-                container.innerHTML = '<p style="color:#555; font-size:13px;">Ошибка загрузки</p>';
-            }
-        };
-
-        window.sendHomeworkComment = async function(homeworkId, studentId) {
-            var input = document.getElementById('commentInput_' + homeworkId);
-            var comment = input.value.trim();
-            
-            if (!comment) {
-                alert('❌ Введите комментарий');
-                return;
-            }
-            
-            var isAdmin = currentUser && currentUser.role === 'admin';
-            var studentIdToSave = isAdmin ? studentId : currentUser.id;
-            
-            try {
-                const { error } = await supabase
-                    .from('homework_comments')
-                    .insert([{
-                        homework_id: homeworkId,
-                        student_id: studentIdToSave,
-                        comment: comment,
-                        is_admin: isAdmin
-                    }]);
-                    
-                if (error) throw error;
-                
-                input.value = '';
-                await window.loadHomeworkComments(homeworkId, 'comments_' + homeworkId);
-                
-                if (currentUser && currentUser.role === 'admin') {
-                    window.loadAllHomeworks();
-                }
-                
-            } catch (err) {
-                alert('❌ Ошибка отправки комментария: ' + err.message);
-                console.error(err);
-            }
-        };
-
-        // ==========================================
         // ДОМАШНИЕ ЗАДАНИЯ (СТУДЕНТ)
         // ==========================================
 
@@ -2253,6 +2293,96 @@
             tabsContainer2.innerHTML = '';
             tabsContainer1.appendChild(fragment1);
             tabsContainer2.appendChild(fragment2);
+        };
+
+        // ==========================================
+        // КОММЕНТАРИИ К ДЗ
+        // ==========================================
+
+        window.loadHomeworkComments = async function(homeworkId, containerId) {
+            var container = document.getElementById(containerId);
+            if (!container) return;
+            
+            try {
+                const { data, error } = await supabase
+                    .from('homework_comments')
+                    .select('*, students(name, role)')
+                    .eq('homework_id', homeworkId)
+                    .order('created_at', { ascending: true })
+                    .limit(20);
+                    
+                if (error) throw error;
+                
+                if (!data || data.length === 0) {
+                    container.innerHTML = '<p style="color:#555; font-size:13px; text-align:center; padding:4px 0;">Нет комментариев</p>';
+                    return;
+                }
+                
+                var html = '';
+                data.forEach(function(comment) {
+                    var authorName = comment.students ? comment.students.name : 'Ученик';
+                    var isAdmin = comment.is_admin || false;
+                    var authorClass = isAdmin ? 'admin' : '';
+                    var authorLabel = isAdmin ? '👨‍🏫 ' + authorName : '👤 ' + authorName;
+                    var time = new Date(comment.created_at).toLocaleString('ru-RU', {
+                        day: '2-digit', month: '2-digit', year: 'numeric',
+                        hour: '2-digit', minute: '2-digit'
+                    });
+                    
+                    html += `
+                        <div class="comment-item">
+                            <div class="comment-header">
+                                <span class="author ${authorClass}">${authorLabel}</span>
+                                <span class="comment-time">${time}</span>
+                            </div>
+                            <div class="comment-text">${comment.comment}</div>
+                        </div>
+                    `;
+                });
+                
+                container.innerHTML = html;
+                
+            } catch (err) {
+                console.error('Ошибка загрузки комментариев:', err);
+                container.innerHTML = '<p style="color:#555; font-size:13px;">Ошибка загрузки</p>';
+            }
+        };
+
+        window.sendHomeworkComment = async function(homeworkId, studentId) {
+            var input = document.getElementById('commentInput_' + homeworkId);
+            var comment = input.value.trim();
+            
+            if (!comment) {
+                alert('❌ Введите комментарий');
+                return;
+            }
+            
+            var isAdmin = currentUser && currentUser.role === 'admin';
+            var studentIdToSave = isAdmin ? studentId : currentUser.id;
+            
+            try {
+                const { error } = await supabase
+                    .from('homework_comments')
+                    .insert([{
+                        homework_id: homeworkId,
+                        student_id: studentIdToSave,
+                        comment: comment,
+                        is_admin: isAdmin
+                    }]);
+                    
+                if (error) throw error;
+                
+                input.value = '';
+                await window.loadHomeworkComments(homeworkId, 'comments_' + homeworkId);
+                
+                if (currentUser && currentUser.role === 'admin') {
+                    window.loadAllHomeworks();
+                }
+                
+            } catch (err) {
+                alert('❌ Ошибка отправки комментария: ' + err.message);
+                console.error(err);
+            }
         };
 
         // ==========================================
@@ -2631,6 +2761,7 @@
                             document.getElementById('adminTheoryControls').style.display = 'none';
                         }
                         
+                        window.loadWhiteboard();
                         window.loadTheory();
                         window.loadHomework(user.id);
                         window.loadDashboardOverview(user.id);
@@ -3313,7 +3444,7 @@
 
         window.loadAdminData = function() {
             window.loadStudents();
-            window.loadMyStudents();
+            window.loadWhiteboardAdmin();
             window.loadAdminTheory();
             window.loadAllHomeworks();
             window.loadVideosAdmin();
