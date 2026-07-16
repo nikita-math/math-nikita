@@ -91,6 +91,7 @@
         .theory-item .theory-content { color: var(--text-light); line-height: 1.8; margin-bottom: 12px; white-space: pre-wrap; }
         .theory-item .theory-file { display: inline-block; background: rgba(39,174,96,0.15); color: #7ddfa0; padding: 6px 16px; border-radius: 20px; text-decoration: none; font-size: 14px; }
         .theory-item .theory-meta { color: #666; font-size: 13px; margin-top: 8px; }
+        .theory-item .theory-actions { margin-top: 12px; display: flex; gap: 8px; flex-wrap: wrap; }
 
         /* ===== ВИДЕО ===== */
         .video-tabs { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 10px; margin-bottom: 20px; }
@@ -105,7 +106,15 @@
         .video-player-wrapper { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; border-radius: var(--radius-sm); margin-bottom: 12px; background: #000; }
         .video-player-wrapper video, .video-player-wrapper iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; border-radius: var(--radius-sm); }
         .video-item .video-title { color: var(--text-light); font-size: 18px; font-weight: 500; display: block; margin-bottom: 8px; }
+        .video-item .video-title:hover { color: var(--text-white); }
         .video-item .video-homework { margin-top: 16px; padding: 16px 20px; background: rgba(39,174,96,0.1); border-radius: var(--radius-sm); border-left: 4px solid var(--success); color: #7ddfa0; font-size: 16px; }
+        .video-item .video-homework strong { color: var(--text-white); }
+        .video-item .video-fallback-link { margin-top: 12px; padding: 10px 14px; background: rgba(245,166,35,0.08); border-radius: 8px; border-left: 4px solid var(--accent); }
+        .video-item .video-fallback-link .label { color: var(--accent); font-weight: 600; }
+        .video-item .video-fallback-link a { color: #88ccff; word-break: break-all; text-decoration: none; }
+        .video-item .video-fallback-link a:hover { text-decoration: underline; }
+        .video-item .video-homework-link { margin-top: 12px; display: inline-block; background: var(--primary-dark); color: white; padding: 8px 20px; border-radius: 20px; text-decoration: none; font-weight: 600; transition: var(--transition); }
+        .video-item .video-homework-link:hover { background: var(--primary); }
 
         /* ===== АДМИНКА ===== */
         #adminPanel { background: var(--bg-card); backdrop-filter: blur(10px); border-radius: var(--radius); padding: 30px 40px; border: 1px solid rgba(255,255,255,0.1); display: none; margin-top: 40px; }
@@ -125,13 +134,54 @@
         .admin-btn.success { background: var(--success); }
         .admin-btn.success:hover { background: #1e8449; }
 
+        /* ===== МОДАЛКИ ===== */
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000; justify-content: center; align-items: center; }
         .modal-overlay.active { display: flex; }
         .modal-content { background: #1a1a2e; padding: 40px; border-radius: var(--radius); max-width: 600px; width: 90%; max-height: 90vh; overflow-y: auto; border: 1px solid rgba(255,255,255,0.1); }
         .modal-content h3 { color: var(--accent); margin-bottom: 20px; }
         .modal-content label { color: var(--text-light); display: block; margin-bottom: 8px; font-weight: 500; }
-        .modal-content input, .modal-content select, .modal-content textarea { width: 100%; padding: 12px 16px; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); border-radius: 10px; color: #ffffff; font-size: 15px; margin-bottom: 15px; font-family: Arial, sans-serif; }
-        .modal-content input:focus, .modal-content select:focus, .modal-content textarea:focus { border-color: var(--primary); outline: none; }
+        .modal-content input, .modal-content textarea {
+            width: 100%;
+            padding: 12px 16px;
+            background: rgba(255,255,255,0.08);
+            border: 1px solid rgba(255,255,255,0.15);
+            border-radius: 10px;
+            color: #ffffff !important;
+            font-size: 15px;
+            margin-bottom: 15px;
+            font-family: Arial, sans-serif;
+        }
+        .modal-content input:focus, .modal-content textarea:focus {
+            border-color: var(--primary);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(102,126,234,0.15);
+            background: rgba(255,255,255,0.12);
+        }
+        /* ===== ИСПРАВЛЕНИЕ ДЛЯ SELECT (чтобы было видно текст) ===== */
+        .modal-content select {
+            background: #2a2a4a !important;
+            color: #ffffff !important;
+            border: 1px solid rgba(255,255,255,0.15);
+            padding: 12px 16px;
+            border-radius: 10px;
+            font-size: 15px;
+            width: 100%;
+            appearance: auto;
+            cursor: pointer;
+            margin-bottom: 15px;
+            font-family: Arial, sans-serif;
+        }
+        .modal-content select option {
+            background: #1a1a2e !important;
+            color: #ffffff !important;
+            padding: 10px;
+        }
+        .modal-content select:focus {
+            border-color: var(--primary);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(102,126,234,0.15);
+        }
+        .modal-content .preview-text { margin-top: -10px; margin-bottom: 15px; font-size: 14px; color: #666; }
         .modal-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 10px; }
         .modal-actions button { padding: 12px 30px; border: none; border-radius: var(--radius-sm); color: #fff; font-weight: 700; cursor: pointer; transition: var(--transition); font-family: Arial, sans-serif; font-size: 14px; }
         .modal-actions .cancel-btn { background: rgba(255,255,255,0.1); }
@@ -139,7 +189,135 @@
         .modal-actions .submit-btn { background: linear-gradient(135deg, var(--primary-dark), var(--primary)); }
         .modal-actions .submit-btn:hover { transform: scale(1.02); box-shadow: 0 0 30px rgba(102,126,234,0.3); }
 
-        /* ===== ЧАТ ===== */
+        /* ===== ОСТАЛЬНЫЕ СТИЛИ ===== */
+        .hw-card { padding: 16px; border: 1px solid rgba(255,255,255,0.05); border-radius: var(--radius-sm); margin-bottom: 12px; background: rgba(255,255,255,0.03); }
+        .hw-card .title { font-size: 18px; font-weight: 700; color: var(--text-white); }
+        .hw-card .meta { color: #888; font-size: 14px; margin: 4px 0; }
+        .hw-card .meta.comment { color: var(--accent); border-left: 3px solid var(--accent); padding-left: 10px; margin-top: 6px; }
+        .hw-card .status.done { color: #2ecc71; }
+        .hw-card .status.pending { color: #f39c12; }
+
+        .deadline-card { background: rgba(245,166,35,0.08); border: 1px solid rgba(245,166,35,0.15); border-radius: 16px; padding: 16px 20px; margin-bottom: 24px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; }
+        .deadline-card .label { color: var(--accent); font-weight: 600; }
+        .deadline-card .title { color: var(--text-white); font-weight: 600; }
+        .deadline-card .days { background: rgba(245,166,35,0.15); color: var(--accent); padding: 4px 14px; border-radius: 50px; font-size: 13px; }
+
+        .empty-state { text-align: center; padding: 40px 20px; color: #666; }
+        .empty-state .icon { font-size: 48px; display: block; margin-bottom: 12px; }
+        .empty-state .title { font-size: 18px; color: var(--text-light); font-weight: 600; }
+        .empty-state .desc { font-size: 14px; color: #666; margin-top: 4px; }
+
+        .homework-controls { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 20px; }
+        .deadline-row { display: flex; align-items: center; gap: 15px; flex-wrap: wrap; }
+        .deadline-row input[type="date"] { flex: 1; min-width: 150px; margin-bottom: 0; }
+        .deadline-row .no-deadline-label { display: flex; align-items: center; gap: 8px; cursor: pointer; color: var(--text-light); font-size: 14px; margin: 0; white-space: nowrap; }
+        .deadline-row .no-deadline-label input[type="checkbox"] { width: 18px; height: 18px; margin: 0; cursor: pointer; flex-shrink: 0; }
+
+        .settings-group { background: rgba(255,255,255,0.02); border-radius: 16px; padding: 24px; border: 1px solid rgba(255,255,255,0.05); margin-bottom: 24px; }
+        .settings-group h4 { color: var(--accent); margin-bottom: 16px; }
+        .settings-group label { color: #888; font-size: 13px; display: block; margin-bottom: 4px; }
+        .settings-group input[type="text"], .settings-group input[type="email"] { width: 100%; padding: 10px 14px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; color: #fff; font-size: 15px; }
+        .settings-group input:disabled { opacity: 0.5; cursor: not-allowed; }
+        .settings-group input:focus { border-color: var(--primary); outline: none; }
+        .settings-checkbox { display: flex; align-items: center; gap: 12px; cursor: pointer; color: var(--text-light); font-size: 15px; padding: 6px 0; }
+        .settings-checkbox input[type="checkbox"] { width: 18px; height: 18px; cursor: pointer; accent-color: var(--primary); }
+
+        .settings-avatar-container { display: flex; flex-direction: column; align-items: center; gap: 15px; }
+        .settings-avatar-container .avatar-preview { width: 150px; height: 150px; border-radius: 50%; background: linear-gradient(135deg, var(--primary), #764ba2); display: flex; align-items: center; justify-content: center; font-size: 60px; border: 3px solid rgba(255,255,255,0.1); overflow: hidden; }
+        .settings-avatar-container .avatar-preview img { width: 100%; height: 100%; object-fit: cover; }
+        .settings-avatar-container input[type="file"] { padding: 10px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: var(--radius-sm); color: #fff; cursor: pointer; font-family: Arial, sans-serif; font-size: 14px; width: 100%; }
+        .settings-avatar-container .btn-group { display: flex; gap: 10px; flex-wrap: wrap; width: 100%; }
+        .settings-avatar-container .btn-group .admin-btn { flex: 1; text-align: center; }
+        .settings-info { display: flex; flex-direction: column; gap: 12px; }
+        .settings-info label { color: var(--text-light); font-size: 14px; display: block; margin-bottom: 4px; }
+        .settings-info input, .settings-info textarea { width: 100%; padding: 10px 16px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: var(--radius-sm); color: #fff; font-size: 14px; font-family: Arial, sans-serif; }
+        .settings-info input:focus, .settings-info textarea:focus { border-color: var(--primary); outline: none; }
+
+        .my-students-table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 14px; }
+        .my-students-table th, .my-students-table td { padding: 10px 12px; border-bottom: 1px solid rgba(255,255,255,0.05); text-align: left; color: #c0d0e0; }
+        .my-students-table th { background: rgba(255,255,255,0.05); color: var(--accent); font-weight: 700; }
+        .my-students-table .status-badge { padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; }
+        .my-students-table .status-badge.active { background: rgba(46,204,113,0.2); color: #2ecc71; }
+        .my-students-table .status-badge.inactive { background: rgba(231,76,60,0.2); color: #f1948a; }
+
+        .schedule-table-wrap { overflow-x: auto; }
+        .schedule-table { width: 100%; border-collapse: collapse; background: rgba(255,255,255,0.03); border-radius: var(--radius-sm); overflow: hidden; font-size: 14px; }
+        .schedule-table th, .schedule-table td { border: 1px solid rgba(255,255,255,0.08); padding: 10px 8px; text-align: center; min-width: 80px; }
+        .schedule-table th { background: rgba(255,255,255,0.06); color: var(--accent); font-weight: 700; font-size: 15px; }
+        .schedule-table td { color: var(--text-light); vertical-align: middle; }
+        .schedule-table .row-num { color: #666; font-weight: 700; min-width: 40px; }
+        .schedule-table .cell-empty { color: #444; }
+        .schedule-table .cell-occupied { color: #7ddfa0; background: rgba(39,174,96,0.1); border-color: rgba(39,174,96,0.15); }
+        .schedule-table .cell-occupied .student-name { color: var(--text-white); }
+        .schedule-table .cell-occupied .topic { color: #7ddfa0; font-size: 12px; }
+        .schedule-table td .cell-content { display: flex; flex-direction: column; gap: 2px; cursor: pointer; padding: 4px; border-radius: 6px; }
+        .schedule-table td .cell-content:hover { background: rgba(255,255,255,0.05); }
+        .schedule-table td .cell-content .student-name { font-weight: 600; color: var(--text-white); font-size: 14px; }
+        .schedule-table td .cell-content .topic { font-size: 12px; color: #888; }
+        .schedule-table td .cell-content .empty-text { color: #444; font-size: 12px; }
+
+        .schedule-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 20px; align-items: center; }
+        .schedule-actions button { background: var(--primary-dark); color: white; border: none; padding: 10px 24px; border-radius: 30px; cursor: pointer; font-weight: 600; transition: var(--transition); }
+        .schedule-actions button:hover { background: var(--primary); transform: scale(1.02); }
+
+        #sectionPage { display: none; background: var(--bg-card); backdrop-filter: blur(10px); border-radius: var(--radius); padding: 30px 40px; border: 1px solid rgba(255,255,255,0.1); margin-top: 40px; }
+        #sectionPage.active { display: block; }
+        #sectionPage .back-btn { background: none; border: none; color: var(--accent); font-size: 18px; cursor: pointer; font-weight: 600; padding: 10px 0; transition: var(--transition); display: block; text-align: left; }
+        #sectionPage .back-btn:hover { color: var(--text-white); }
+        #sectionPage .section-title { font-size: 32px; color: var(--accent); margin-bottom: 30px; text-align: center; text-shadow: 0 0 30px rgba(245,166,35,0.2); }
+
+        .section-progress { background: rgba(255,255,255,0.03); border-radius: var(--radius-sm); padding: 14px 18px; margin-bottom: 10px; border: 1px solid rgba(255,255,255,0.05); display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+        .section-progress .name { min-width: 140px; color: var(--text-light); font-weight: 600; font-size: 14px; }
+        .section-progress .bar-wrap { flex: 1; min-width: 100px; height: 8px; background: rgba(255,255,255,0.05); border-radius: 10px; overflow: hidden; }
+        .section-progress .bar-wrap .fill { height: 100%; border-radius: 10px; transition: width 0.8s ease; }
+        .section-progress .bar-wrap .fill.green { background: linear-gradient(90deg, var(--success), #2ecc71); }
+        .section-progress .bar-wrap .fill.yellow { background: linear-gradient(90deg, #f39c12, #f1c40f); }
+        .section-progress .bar-wrap .fill.red { background: linear-gradient(90deg, var(--danger), #c0392b); }
+        .section-progress .percent { min-width: 50px; text-align: right; font-weight: 700; font-size: 14px; color: var(--text-light); }
+        .section-progress .status-icon { font-size: 18px; }
+
+        .achievement-card { display: inline-flex; align-items: center; gap: 12px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05); border-radius: 50px; padding: 8px 20px 8px 12px; margin: 0 8px 8px 0; }
+        .achievement-card:hover { background: rgba(255,255,255,0.06); border-color: rgba(245,166,35,0.2); }
+        .achievement-card .icon { font-size: 24px; }
+        .achievement-card .info { font-size: 13px; color: var(--text-light); }
+        .achievement-card .info .name { font-weight: 600; color: var(--text-white); }
+        .achievement-card.locked { opacity: 0.3; filter: grayscale(1); }
+
+        .activity-bars { display: flex; gap: 8px; justify-content: space-around; align-items: flex-end; height: 120px; padding: 10px 0; }
+        .activity-bars .bar-item { display: flex; flex-direction: column; align-items: center; gap: 6px; flex: 1; }
+        .activity-bars .bar-item .bar { width: 24px; border-radius: 6px 6px 0 0; background: linear-gradient(180deg, var(--primary), #764ba2); transition: height 0.8s ease; min-height: 4px; }
+        .activity-bars .bar-item .label { font-size: 11px; color: #666; }
+        .activity-bars .bar-item .value { font-size: 11px; color: var(--text-light); font-weight: 600; }
+
+        .whiteboard-section { margin-top: 30px; background: rgba(255,255,255,0.03); border-radius: 16px; padding: 20px; border: 1px solid rgba(255,255,255,0.05); }
+        .whiteboard-section h3 { color: var(--accent); margin-bottom: 12px; font-size: 20px; }
+        .whiteboard-section .whiteboard-link { display: block; padding: 12px 16px; background: rgba(102,126,234,0.1); border-radius: 10px; border: 1px solid rgba(102,126,234,0.2); color: #88ccff; text-decoration: none; font-size: 16px; transition: var(--transition); word-break: break-all; }
+        .whiteboard-section .whiteboard-link:hover { background: rgba(102,126,234,0.2); border-color: rgba(102,126,234,0.4); }
+        .whiteboard-section .whiteboard-empty { color: #666; font-size: 14px; padding: 12px; text-align: center; }
+
+        .whiteboard-admin-item { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.04); }
+        .whiteboard-admin-item .student-name { min-width: 120px; color: var(--text-light); font-weight: 600; }
+        .whiteboard-admin-item input { flex: 1; min-width: 200px; padding: 6px 12px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; color: #fff; font-size: 13px; }
+        .whiteboard-admin-item input:focus { border-color: var(--primary); outline: none; }
+        .whiteboard-admin-item .admin-btn { padding: 4px 14px; font-size: 12px; }
+        .whiteboard-admin-item .whiteboard-link-small { color: #88ccff; text-decoration: none; font-size: 13px; max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .whiteboard-admin-item .whiteboard-link-small:hover { text-decoration: underline; }
+
+        .comments-section { margin-top: 14px; padding-top: 14px; border-top: 1px solid rgba(255,255,255,0.05); }
+        .comments-section .comments-title { color: #888; font-size: 14px; font-weight: 600; margin-bottom: 10px; }
+        .comment-item { background: rgba(255,255,255,0.03); border-radius: 10px; padding: 10px 14px; margin-bottom: 8px; border: 1px solid rgba(255,255,255,0.04); }
+        .comment-item .comment-header { display: flex; justify-content: space-between; align-items: center; font-size: 12px; color: #666; margin-bottom: 4px; }
+        .comment-item .comment-header .author { font-weight: 600; color: var(--text-light); }
+        .comment-item .comment-header .author.admin { color: var(--accent); }
+        .comment-item .comment-text { color: #c0d0e0; font-size: 14px; }
+        .comment-item .comment-time { font-size: 11px; color: #555; }
+        .comment-input-wrap { display: flex; gap: 10px; margin-top: 10px; }
+        .comment-input-wrap input { flex: 1; padding: 8px 14px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08); border-radius: 20px; color: #fff; font-size: 14px; outline: none; }
+        .comment-input-wrap input:focus { border-color: var(--primary); background: rgba(255,255,255,0.08); }
+        .comment-input-wrap input::placeholder { color: #555; }
+        .comment-input-wrap button { background: linear-gradient(135deg, var(--primary-dark), var(--primary)); color: white; border: none; padding: 8px 20px; border-radius: 20px; cursor: pointer; font-weight: 600; font-size: 13px; transition: var(--transition); white-space: nowrap; }
+        .comment-input-wrap button:hover { transform: scale(1.03); box-shadow: 0 4px 20px rgba(102,126,234,0.3); }
+
         .chat-user-item { padding: 14px 18px; background: rgba(255,255,255,0.03); border-radius: var(--radius-sm); cursor: pointer; border: 1px solid rgba(255,255,255,0.05); transition: var(--transition); display: flex; justify-content: space-between; align-items: center; }
         .chat-user-item:hover { background: rgba(255,255,255,0.06); border-color: rgba(102,126,234,0.3); transform: translateX(4px); }
         .chat-user-item .user-info { display: flex; align-items: center; gap: 12px; }
@@ -182,141 +360,7 @@
         .chat-input-wrap button { background: linear-gradient(135deg, var(--primary-dark), var(--primary)); color: white; border: none; padding: 10px 24px; border-radius: 20px; cursor: pointer; font-weight: 600; font-size: 14px; transition: var(--transition); }
         .chat-input-wrap button:hover { transform: scale(1.03); box-shadow: 0 4px 20px rgba(102,126,234,0.3); }
 
-        /* ===== ОНЛАЙН ДОСКА ===== */
-        .whiteboard-section { margin-top: 30px; background: rgba(255,255,255,0.03); border-radius: 16px; padding: 20px; border: 1px solid rgba(255,255,255,0.05); }
-        .whiteboard-section h3 { color: var(--accent); margin-bottom: 12px; font-size: 20px; }
-        .whiteboard-section .whiteboard-link { display: block; padding: 12px 16px; background: rgba(102,126,234,0.1); border-radius: 10px; border: 1px solid rgba(102,126,234,0.2); color: #88ccff; text-decoration: none; font-size: 16px; transition: var(--transition); word-break: break-all; }
-        .whiteboard-section .whiteboard-link:hover { background: rgba(102,126,234,0.2); border-color: rgba(102,126,234,0.4); }
-        .whiteboard-section .whiteboard-empty { color: #666; font-size: 14px; padding: 12px; text-align: center; }
-
-        .whiteboard-admin-item { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.04); }
-        .whiteboard-admin-item .student-name { min-width: 120px; color: var(--text-light); font-weight: 600; }
-        .whiteboard-admin-item input { flex: 1; min-width: 200px; padding: 6px 12px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; color: #fff; font-size: 13px; }
-        .whiteboard-admin-item input:focus { border-color: var(--primary); outline: none; }
-        .whiteboard-admin-item .admin-btn { padding: 4px 14px; font-size: 12px; }
-        .whiteboard-admin-item .whiteboard-link-small { color: #88ccff; text-decoration: none; font-size: 13px; max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-
-        /* ===== ПРОГРЕСС ===== */
-        .section-progress { background: rgba(255,255,255,0.03); border-radius: var(--radius-sm); padding: 14px 18px; margin-bottom: 10px; border: 1px solid rgba(255,255,255,0.05); display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
-        .section-progress .name { min-width: 140px; color: var(--text-light); font-weight: 600; font-size: 14px; }
-        .section-progress .bar-wrap { flex: 1; min-width: 100px; height: 8px; background: rgba(255,255,255,0.05); border-radius: 10px; overflow: hidden; }
-        .section-progress .bar-wrap .fill { height: 100%; border-radius: 10px; transition: width 0.8s ease; }
-        .section-progress .bar-wrap .fill.green { background: linear-gradient(90deg, var(--success), #2ecc71); }
-        .section-progress .bar-wrap .fill.yellow { background: linear-gradient(90deg, #f39c12, #f1c40f); }
-        .section-progress .bar-wrap .fill.red { background: linear-gradient(90deg, var(--danger), #c0392b); }
-        .section-progress .percent { min-width: 50px; text-align: right; font-weight: 700; font-size: 14px; color: var(--text-light); }
-        .section-progress .status-icon { font-size: 18px; }
-
-        .achievement-card { display: inline-flex; align-items: center; gap: 12px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05); border-radius: 50px; padding: 8px 20px 8px 12px; margin: 0 8px 8px 0; }
-        .achievement-card:hover { background: rgba(255,255,255,0.06); border-color: rgba(245,166,35,0.2); }
-        .achievement-card .icon { font-size: 24px; }
-        .achievement-card .info { font-size: 13px; color: var(--text-light); }
-        .achievement-card .info .name { font-weight: 600; color: var(--text-white); }
-        .achievement-card.locked { opacity: 0.3; filter: grayscale(1); }
-
-        .activity-bars { display: flex; gap: 8px; justify-content: space-around; align-items: flex-end; height: 120px; padding: 10px 0; }
-        .activity-bars .bar-item { display: flex; flex-direction: column; align-items: center; gap: 6px; flex: 1; }
-        .activity-bars .bar-item .bar { width: 24px; border-radius: 6px 6px 0 0; background: linear-gradient(180deg, var(--primary), #764ba2); transition: height 0.8s ease; min-height: 4px; }
-        .activity-bars .bar-item .label { font-size: 11px; color: #666; }
-        .activity-bars .bar-item .value { font-size: 11px; color: var(--text-light); font-weight: 600; }
-
-        .hw-card { padding: 16px; border: 1px solid rgba(255,255,255,0.05); border-radius: var(--radius-sm); margin-bottom: 12px; background: rgba(255,255,255,0.03); }
-        .hw-card .title { font-size: 18px; font-weight: 700; color: var(--text-white); }
-        .hw-card .meta { color: #888; font-size: 14px; margin: 4px 0; }
-        .hw-card .meta.comment { color: var(--accent); border-left: 3px solid var(--accent); padding-left: 10px; margin-top: 6px; }
-        .hw-card .status.done { color: #2ecc71; }
-        .hw-card .status.pending { color: #f39c12; }
-
-        .deadline-card { background: rgba(245,166,35,0.08); border: 1px solid rgba(245,166,35,0.15); border-radius: 16px; padding: 16px 20px; margin-bottom: 24px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; }
-        .deadline-card .label { color: var(--accent); font-weight: 600; }
-        .deadline-card .title { color: var(--text-white); font-weight: 600; }
-        .deadline-card .days { background: rgba(245,166,35,0.15); color: var(--accent); padding: 4px 14px; border-radius: 50px; font-size: 13px; }
-
-        .comments-section { margin-top: 14px; padding-top: 14px; border-top: 1px solid rgba(255,255,255,0.05); }
-        .comments-section .comments-title { color: #888; font-size: 14px; font-weight: 600; margin-bottom: 10px; }
-        .comment-item { background: rgba(255,255,255,0.03); border-radius: 10px; padding: 10px 14px; margin-bottom: 8px; border: 1px solid rgba(255,255,255,0.04); }
-        .comment-item .comment-header { display: flex; justify-content: space-between; align-items: center; font-size: 12px; color: #666; margin-bottom: 4px; }
-        .comment-item .comment-header .author { font-weight: 600; color: var(--text-light); }
-        .comment-item .comment-header .author.admin { color: var(--accent); }
-        .comment-item .comment-text { color: #c0d0e0; font-size: 14px; }
-        .comment-item .comment-time { font-size: 11px; color: #555; }
-        .comment-input-wrap { display: flex; gap: 10px; margin-top: 10px; }
-        .comment-input-wrap input { flex: 1; padding: 8px 14px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08); border-radius: 20px; color: #fff; font-size: 14px; outline: none; }
-        .comment-input-wrap input:focus { border-color: var(--primary); background: rgba(255,255,255,0.08); }
-        .comment-input-wrap input::placeholder { color: #555; }
-        .comment-input-wrap button { background: linear-gradient(135deg, var(--primary-dark), var(--primary)); color: white; border: none; padding: 8px 20px; border-radius: 20px; cursor: pointer; font-weight: 600; font-size: 13px; transition: var(--transition); white-space: nowrap; }
-        .comment-input-wrap button:hover { transform: scale(1.03); box-shadow: 0 4px 20px rgba(102,126,234,0.3); }
-
-        .schedule-table-wrap { overflow-x: auto; }
-        .schedule-table { width: 100%; border-collapse: collapse; background: rgba(255,255,255,0.03); border-radius: var(--radius-sm); overflow: hidden; font-size: 14px; }
-        .schedule-table th, .schedule-table td { border: 1px solid rgba(255,255,255,0.08); padding: 10px 8px; text-align: center; min-width: 80px; }
-        .schedule-table th { background: rgba(255,255,255,0.06); color: var(--accent); font-weight: 700; font-size: 15px; }
-        .schedule-table td { color: var(--text-light); vertical-align: middle; }
-        .schedule-table .row-num { color: #666; font-weight: 700; min-width: 40px; }
-        .schedule-table .cell-empty { color: #444; }
-        .schedule-table .cell-occupied { color: #7ddfa0; background: rgba(39,174,96,0.1); border-color: rgba(39,174,96,0.15); }
-        .schedule-table .cell-occupied .student-name { color: var(--text-white); }
-        .schedule-table .cell-occupied .topic { color: #7ddfa0; font-size: 12px; }
-        .schedule-table td .cell-content { display: flex; flex-direction: column; gap: 2px; cursor: pointer; padding: 4px; border-radius: 6px; }
-        .schedule-table td .cell-content:hover { background: rgba(255,255,255,0.05); }
-        .schedule-table td .cell-content .student-name { font-weight: 600; color: var(--text-white); font-size: 14px; }
-        .schedule-table td .cell-content .topic { font-size: 12px; color: #888; }
-        .schedule-table td .cell-content .empty-text { color: #444; font-size: 12px; }
-
-        .schedule-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 20px; align-items: center; }
-        .schedule-actions button { background: var(--primary-dark); color: white; border: none; padding: 10px 24px; border-radius: 30px; cursor: pointer; font-weight: 600; transition: var(--transition); }
-        .schedule-actions button:hover { background: var(--primary); transform: scale(1.02); }
-
-        .empty-state { text-align: center; padding: 40px 20px; color: #666; }
-        .empty-state .icon { font-size: 48px; display: block; margin-bottom: 12px; }
-        .empty-state .title { font-size: 18px; color: var(--text-light); font-weight: 600; }
-        .empty-state .desc { font-size: 14px; color: #666; margin-top: 4px; }
-
-        .video-pdf-section { margin-top: 14px; padding: 14px 18px; background: rgba(245,166,35,0.05); border-radius: var(--radius-sm); border: 1px solid rgba(245,166,35,0.1); }
-        .video-pdf-section .pdf-label { color: var(--accent); font-weight: 600; font-size: 14px; display: block; margin-bottom: 6px; }
-        .video-pdf-section .pdf-link { display: inline-block; background: rgba(245,166,35,0.1); color: var(--accent); padding: 6px 16px; border-radius: 20px; text-decoration: none; font-size: 14px; }
-        .video-pdf-section .pdf-link:hover { background: rgba(245,166,35,0.2); }
-
-        #sectionPage { display: none; background: var(--bg-card); backdrop-filter: blur(10px); border-radius: var(--radius); padding: 30px 40px; border: 1px solid rgba(255,255,255,0.1); margin-top: 40px; }
-        #sectionPage.active { display: block; }
-        #sectionPage .back-btn { background: none; border: none; color: var(--accent); font-size: 18px; cursor: pointer; font-weight: 600; padding: 10px 0; transition: var(--transition); display: block; text-align: left; }
-        #sectionPage .back-btn:hover { color: var(--text-white); }
-        #sectionPage .section-title { font-size: 32px; color: var(--accent); margin-bottom: 30px; text-align: center; text-shadow: 0 0 30px rgba(245,166,35,0.2); }
-
         footer { text-align: center; padding: 30px 20px; color: #666; font-size: 14px; border-top: 1px solid rgba(255,255,255,0.05); margin-top: 40px; }
-
-        .settings-group { background: rgba(255,255,255,0.02); border-radius: 16px; padding: 24px; border: 1px solid rgba(255,255,255,0.05); margin-bottom: 24px; }
-        .settings-group h4 { color: var(--accent); margin-bottom: 16px; }
-        .settings-group label { color: #888; font-size: 13px; display: block; margin-bottom: 4px; }
-        .settings-group input[type="text"], .settings-group input[type="email"] { width: 100%; padding: 10px 14px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; color: #fff; font-size: 15px; }
-        .settings-group input:disabled { opacity: 0.5; cursor: not-allowed; }
-        .settings-group input:focus { border-color: var(--primary); outline: none; }
-        .settings-checkbox { display: flex; align-items: center; gap: 12px; cursor: pointer; color: var(--text-light); font-size: 15px; padding: 6px 0; }
-        .settings-checkbox input[type="checkbox"] { width: 18px; height: 18px; cursor: pointer; accent-color: var(--primary); }
-
-        .settings-avatar-container { display: flex; flex-direction: column; align-items: center; gap: 15px; }
-        .settings-avatar-container .avatar-preview { width: 150px; height: 150px; border-radius: 50%; background: linear-gradient(135deg, var(--primary), #764ba2); display: flex; align-items: center; justify-content: center; font-size: 60px; border: 3px solid rgba(255,255,255,0.1); overflow: hidden; }
-        .settings-avatar-container .avatar-preview img { width: 100%; height: 100%; object-fit: cover; }
-        .settings-avatar-container input[type="file"] { padding: 10px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: var(--radius-sm); color: #fff; cursor: pointer; font-family: Arial, sans-serif; font-size: 14px; width: 100%; }
-        .settings-avatar-container .btn-group { display: flex; gap: 10px; flex-wrap: wrap; width: 100%; }
-        .settings-avatar-container .btn-group .admin-btn { flex: 1; text-align: center; }
-        .settings-info { display: flex; flex-direction: column; gap: 12px; }
-        .settings-info label { color: var(--text-light); font-size: 14px; display: block; margin-bottom: 4px; }
-        .settings-info input, .settings-info textarea { width: 100%; padding: 10px 16px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: var(--radius-sm); color: #fff; font-size: 14px; font-family: Arial, sans-serif; }
-        .settings-info input:focus, .settings-info textarea:focus { border-color: var(--primary); outline: none; }
-
-        .my-students-table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 14px; }
-        .my-students-table th, .my-students-table td { padding: 10px 12px; border-bottom: 1px solid rgba(255,255,255,0.05); text-align: left; color: #c0d0e0; }
-        .my-students-table th { background: rgba(255,255,255,0.05); color: var(--accent); font-weight: 700; }
-        .my-students-table .status-badge { padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; }
-        .my-students-table .status-badge.active { background: rgba(46,204,113,0.2); color: #2ecc71; }
-        .my-students-table .status-badge.inactive { background: rgba(231,76,60,0.2); color: #f1948a; }
-
-        .homework-controls { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 20px; }
-        .deadline-row { display: flex; align-items: center; gap: 15px; flex-wrap: wrap; }
-        .deadline-row input[type="date"] { flex: 1; min-width: 150px; margin-bottom: 0; }
-        .deadline-row .no-deadline-label { display: flex; align-items: center; gap: 8px; cursor: pointer; color: var(--text-light); font-size: 14px; margin: 0; white-space: nowrap; }
-        .deadline-row .no-deadline-label input[type="checkbox"] { width: 18px; height: 18px; margin: 0; cursor: pointer; flex-shrink: 0; }
 
         @media (max-width: 700px) {
             header h1 { font-size: 28px; }
@@ -833,11 +877,7 @@
             </div>
         </div>
     </div>
-
-    <footer>
-        © 2026 Математика с Никитой. Все права защищены.
-    </footer>
-        <script>
+    <script>
         (function generateStars() {
             var container = document.getElementById('starsContainer');
             var count = 150;
@@ -888,11 +928,19 @@
         };
         var daysArray = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'];
 
+        var loginSection = document.getElementById('loginSection');
+        var dashboard = document.getElementById('dashboard');
+        var adminPanel = document.getElementById('adminPanel');
+        var resultDiv = document.getElementById('result');
+        var welcomeMessage = document.getElementById('welcomeMessage');
+        var mainContent = document.getElementById('mainContent');
+        var sectionPage = document.getElementById('sectionPage');
+
         // ==========================================
         // КЕШИРОВАНИЕ
         // ==========================================
         function getCache(key, ttl) {
-            ttl = ttl || 300000; // 5 минут
+            ttl = ttl || 300000;
             var item = localStorage.getItem('cache_' + key);
             if (!item) return null;
             try {
@@ -920,7 +968,6 @@
             if (key) {
                 localStorage.removeItem('cache_' + key);
             } else {
-                // Очищаем все кеши
                 for (var i = 0; i < localStorage.length; i++) {
                     var k = localStorage.key(i);
                     if (k && k.startsWith('cache_')) {
@@ -1012,7 +1059,6 @@
             var container = document.getElementById('myStudentsList');
             if (!container) return;
             
-            // Проверяем кеш
             var cached = getCache('my_students');
             if (cached) {
                 renderMyStudents(cached, container);
@@ -1316,6 +1362,124 @@
                     alert('❌ Ошибка: ' + err.message);
                 });
         };
+
+        // ==========================================
+        // ===== НАСТРОЙКИ (ФОТО И ИНФОРМАЦИЯ) =====
+        // ==========================================
+
+        window.uploadAvatar = function() {
+            var fileInput = document.getElementById('avatarUpload');
+            var file = fileInput.files[0];
+            if (!file) { alert('❌ Выберите файл'); return; }
+            if (!file.type.startsWith('image/')) { alert('❌ Загрузите изображение'); return; }
+            if (file.size > 5 * 1024 * 1024) { alert('❌ Файл слишком большой! Максимум 5 МБ'); return; }
+            
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                var img = new Image();
+                img.onload = function() {
+                    var canvas = document.createElement('canvas');
+                    var ctx = canvas.getContext('2d');
+                    var maxSize = 300;
+                    var width = img.width;
+                    var height = img.height;
+                    if (width > height) {
+                        if (width > maxSize) {
+                            height = Math.round(height * maxSize / width);
+                            width = maxSize;
+                        }
+                    } else {
+                        if (height > maxSize) {
+                            width = Math.round(width * maxSize / height);
+                            height = maxSize;
+                        }
+                    }
+                    canvas.width = width;
+                    canvas.height = height;
+                    ctx.drawImage(img, 0, 0, width, height);
+                    var imageData = canvas.toDataURL('image/jpeg', 0.8);
+                    try {
+                        localStorage.setItem('teacher_avatar', imageData);
+                        window.updateAvatarDisplay(imageData);
+                        alert('✅ Фото успешно загружено!');
+                    } catch (e) {
+                        alert('❌ Не удалось сохранить изображение. Ошибка: ' + e.message);
+                    }
+                };
+                img.onerror = function() {
+                    alert('❌ Ошибка загрузки изображения');
+                };
+                img.src = e.target.result;
+            };
+            reader.onerror = function() {
+                alert('❌ Ошибка чтения файла');
+            };
+            reader.readAsDataURL(file);
+        };
+
+        window.deleteAvatar = function() {
+            if (!confirm('Удалить фото?')) return;
+            localStorage.removeItem('teacher_avatar');
+            document.getElementById('avatarUpload').value = '';
+            window.resetAvatarDisplay();
+            alert('✅ Фото удалено');
+        };
+
+        window.updateAvatarDisplay = function(imageData) {
+            var avatarEmoji = document.getElementById('avatarEmoji');
+            var avatarImg = document.getElementById('avatarImage');
+            if (avatarEmoji) avatarEmoji.style.display = 'none';
+            if (avatarImg) { avatarImg.style.display = 'block'; avatarImg.src = imageData; }
+            var profileEmoji = document.getElementById('profileAvatarEmoji');
+            var profileImg = document.getElementById('profileAvatarImg');
+            if (profileEmoji) profileEmoji.style.display = 'none';
+            if (profileImg) { profileImg.style.display = 'block'; profileImg.src = imageData; }
+        };
+
+        window.resetAvatarDisplay = function() {
+            var avatarEmoji = document.getElementById('avatarEmoji');
+            var avatarImg = document.getElementById('avatarImage');
+            if (avatarEmoji) avatarEmoji.style.display = 'block';
+            if (avatarImg) { avatarImg.style.display = 'none'; avatarImg.src = ''; }
+            var profileEmoji = document.getElementById('profileAvatarEmoji');
+            var profileImg = document.getElementById('profileAvatarImg');
+            if (profileEmoji) profileEmoji.style.display = 'block';
+            if (profileImg) { profileImg.style.display = 'none'; profileImg.src = ''; }
+        };
+
+        window.loadTeacherSettings = function() {
+            var savedAvatar = localStorage.getItem('teacher_avatar');
+            var savedName = localStorage.getItem('teacher_name');
+            var savedDesc = localStorage.getItem('teacher_desc');
+            if (savedAvatar && savedAvatar.length > 100) {
+                window.updateAvatarDisplay(savedAvatar);
+            } else {
+                window.resetAvatarDisplay();
+            }
+            if (savedName) {
+                document.getElementById('teacherName').value = savedName;
+                document.getElementById('teacherNameDisplay').textContent = savedName;
+            }
+            if (savedDesc) {
+                document.getElementById('teacherDesc').value = savedDesc;
+                document.getElementById('teacherDescDisplay').textContent = savedDesc;
+            }
+        };
+
+        window.saveTeacherInfo = function() {
+            var name = document.getElementById('teacherName').value.trim();
+            var desc = document.getElementById('teacherDesc').value.trim();
+            if (!name) { alert('❌ Введите имя'); return; }
+            try {
+                localStorage.setItem('teacher_name', name);
+                localStorage.setItem('teacher_desc', desc);
+                document.getElementById('teacherNameDisplay').textContent = name;
+                document.getElementById('teacherDescDisplay').textContent = desc;
+                alert('✅ Информация успешно сохранена!');
+            } catch (e) {
+                alert('❌ Ошибка сохранения: ' + e.message);
+            }
+        };
                 // ==========================================
         // ТЕОРИЯ
         // ==========================================
@@ -1520,7 +1684,7 @@
         };
 
         // ==========================================
-        // ВИДЕО С PDF
+        // ВИДЕО (БЕЗ PDF)
         // ==========================================
 
         window.addVideo = function() {
@@ -1560,48 +1724,27 @@
                     
                     var homework = prompt('Введите ДЗ к уроку (или Enter):');
                     
-                    var hasPdf = confirm('Прикрепить PDF файл с задачами?');
-                    var pdfUrl = null;
-                    
-                    if (hasPdf) {
-                        var fileInput = document.createElement('input');
-                        fileInput.type = 'file';
-                        fileInput.accept = '.pdf';
-                        fileInput.onchange = function(e) {
-                            var file = e.target.files[0];
-                            if (!file) { continueUpload(null); return; }
-                            if (file.type !== 'application/pdf') { alert('❌ Загрузите PDF файл'); continueUpload(null); return; }
-                            supabase.storage.from('videos_pdf').upload('pdf_' + Date.now() + '_' + file.name, file)
-                                .then(function(result) {
-                                    if (result.error) { alert('❌ Ошибка загрузки PDF: ' + result.error.message); continueUpload(null); return; }
-                                    var urlData = supabase.storage.from('videos_pdf').getPublicUrl(result.data.path);
-                                    continueUpload(urlData.data.publicUrl);
-                                })
-                                .catch(function(err) { alert('❌ Ошибка: ' + err.message); continueUpload(null); });
-                        };
-                        fileInput.click();
-                    } else {
-                        continueUpload(null);
-                    }
-                    
-                    function continueUpload(pdfUrl) {
-                        supabase
-                            .from('videos')
-                            .insert([{
-                                title: title,
-                                youtube_url: url,
-                                section_id: section.id,
-                                homework: homework || null,
-                                is_file: isFile,
-                                is_vk: isVk,
-                                pdf_file_url: pdfUrl || null
-                            }])
-                            .then(function(r) {
-                                if (r.error) alert('❌ Ошибка: ' + r.error.message);
-                                else { alert('✅ Видео добавлено!'); clearCache('videos'); window.loadVideosAdmin(); window.loadSectionsAndVideos(); }
-                            })
-                            .catch(function(err) { alert('❌ Ошибка: ' + err.message); });
-                    }
+                    supabase
+                        .from('videos')
+                        .insert([{
+                            title: title,
+                            youtube_url: url,
+                            section_id: section.id,
+                            homework: homework || null,
+                            is_file: isFile,
+                            is_vk: isVk,
+                            pdf_file_url: null
+                        }])
+                        .then(function(r) {
+                            if (r.error) alert('❌ Ошибка: ' + r.error.message);
+                            else { 
+                                alert('✅ Видео добавлено!'); 
+                                clearCache('videos'); 
+                                window.loadVideosAdmin(); 
+                                window.loadSectionsAndVideos(); 
+                            }
+                        })
+                        .catch(function(err) { alert('❌ Ошибка: ' + err.message); });
                 })
                 .catch(function(err) { alert('Ошибка: ' + err.message); });
         };
@@ -1619,7 +1762,7 @@
             container.innerHTML = '⏳ Загрузка...';
             supabase
                 .from('videos')
-                .select('id, title, youtube_url, section_id, homework, is_file, is_vk, pdf_file_url, video_sections(name, order_num)')
+                .select('id, title, youtube_url, section_id, homework, is_file, is_vk, video_sections(name, order_num)')
                 .order('created_at', { ascending: false })
                 .then(function(response) {
                     if (response.error) { container.innerHTML = '❌ Ошибка: ' + response.error.message; return; }
@@ -1632,15 +1775,14 @@
 
         function renderVideosAdmin(data, container) {
             if (data.length === 0) { container.innerHTML = '📭 Нет видео'; return; }
-            var html = '<table class="admin-table"><tr><th>Название</th><th>Раздел</th><th>№</th><th>Ссылка</th><th>ДЗ</th><th>PDF</th><th>Тип</th><th>Действия</th></tr>';
+            var html = '<table class="admin-table"><tr><th>Название</th><th>Раздел</th><th>№</th><th>Ссылка</th><th>ДЗ</th><th>Тип</th><th>Действия</th></tr>';
             for (var i = 0; i < data.length; i++) {
                 var v = data[i];
                 var sectionName = v.video_sections ? v.video_sections.name : '—';
                 var sectionNum = v.video_sections ? v.video_sections.order_num : '—';
                 var link = v.youtube_url || '—';
                 var type = v.is_file ? '📁 Файл' : (v.is_vk ? '📱 ВК' : '🔗 YouTube');
-                var pdfStatus = v.pdf_file_url ? '✅' : '—';
-                html += '<tr><td>' + v.title + '</td><td>' + sectionName + '</td><td style="color:#f5a623; font-weight:700;">' + sectionNum + '</td><td>' + (link !== '—' ? '<a href="' + link + '" target="_blank">Смотреть</a>' : '—') + '</td><td>' + (v.homework || '—') + '</td><td>' + pdfStatus + '</td><td>' + type + '</td><td><button class="admin-btn danger" onclick="window.deleteVideo(\'' + v.id + '\')">🗑</button></td></tr>';
+                html += '<tr><td>' + v.title + '</td><td>' + sectionName + '</td><td style="color:#f5a623; font-weight:700;">' + sectionNum + '</td><td>' + (link !== '—' ? '<a href="' + link + '" target="_blank">Смотреть</a>' : '—') + '</td><td>' + (v.homework || '—') + '</td><td>' + type + '</td><td><button class="admin-btn danger" onclick="window.deleteVideo(\'' + v.id + '\')">🗑</button></td></tr>';
             }
             html += '</table>';
             container.innerHTML = html;
@@ -1657,6 +1799,77 @@
                     else { alert('✅ Видео удалено'); clearCache('videos'); window.loadVideosAdmin(); window.loadSectionsAndVideos(); }
                 })
                 .catch(function(err) { alert('❌ Ошибка: ' + err.message); });
+        };
+
+        // ==========================================
+        // ВИДЕОРАЗДЕЛЫ (с кешированием)
+        // ==========================================
+
+        window.loadSectionsAndVideos = function() {
+            var tabsContainer1 = document.getElementById('videoTabsPart1');
+            var tabsContainer2 = document.getElementById('videoTabsPart2');
+            
+            var cached = getCache('sections');
+            if (cached) {
+                sections = cached;
+                renderVideoTabs();
+                return;
+            }
+            
+            tabsContainer1.innerHTML = '⏳ Загрузка...';
+            tabsContainer2.innerHTML = '⏳ Загрузка...';
+            supabase
+                .from('video_sections')
+                .select('id, name, order_num')
+                .order('order_num', { ascending: true })
+                .then(function(response) {
+                    if (response.error) { tabsContainer1.innerHTML = '❌ Ошибка: ' + response.error.message; return; }
+                    sections = response.data || [];
+                    setCache('sections', sections);
+                    if (sections.length === 0) {
+                        tabsContainer1.innerHTML = '📭 Нет разделов. Добавьте их в базе.';
+                        tabsContainer2.innerHTML = '📭 Нет разделов. Добавьте их в базе.';
+                        return;
+                    }
+                    renderVideoTabs();
+                })
+                .catch(function(err) { tabsContainer1.innerHTML = '❌ Ошибка: ' + err.message; });
+        };
+
+        window.renderVideoTabs = function() {
+            var tabsContainer1 = document.getElementById('videoTabsPart1');
+            var tabsContainer2 = document.getElementById('videoTabsPart2');
+            if (!sections || sections.length === 0) {
+                tabsContainer1.innerHTML = '📭 Нет разделов';
+                tabsContainer2.innerHTML = '📭 Нет разделов';
+                return;
+            }
+            var part1 = sections.slice(0, 12);
+            var part2 = sections.slice(12);
+            
+            var fragment1 = document.createDocumentFragment();
+            var fragment2 = document.createDocumentFragment();
+            
+            part1.forEach(function(section, index) {
+                var num = index + 1;
+                var btn = document.createElement('button');
+                btn.innerHTML = '<span class="num">' + num + '</span> ' + section.name;
+                btn.onclick = function() { window.openSection(section.id); };
+                fragment1.appendChild(btn);
+            });
+            
+            part2.forEach(function(section, index) {
+                var num = index + 13;
+                var btn = document.createElement('button');
+                btn.innerHTML = '<span class="num">' + num + '</span> ' + section.name;
+                btn.onclick = function() { window.openSection(section.id); };
+                fragment2.appendChild(btn);
+            });
+            
+            tabsContainer1.innerHTML = '';
+            tabsContainer2.innerHTML = '';
+            tabsContainer1.appendChild(fragment1);
+            tabsContainer2.appendChild(fragment2);
         };
 
         // ==========================================
@@ -1832,78 +2045,6 @@
         };
 
         // ==========================================
-        // ВИДЕОРАЗДЕЛЫ (с кешированием)
-        // ==========================================
-
-        window.loadSectionsAndVideos = function() {
-            var tabsContainer1 = document.getElementById('videoTabsPart1');
-            var tabsContainer2 = document.getElementById('videoTabsPart2');
-            
-            var cached = getCache('sections');
-            if (cached) {
-                sections = cached;
-                renderVideoTabs();
-                return;
-            }
-            
-            tabsContainer1.innerHTML = '⏳ Загрузка...';
-            tabsContainer2.innerHTML = '⏳ Загрузка...';
-            supabase
-                .from('video_sections')
-                .select('id, name, order_num')
-                .order('order_num', { ascending: true })
-                .then(function(response) {
-                    if (response.error) { tabsContainer1.innerHTML = '❌ Ошибка: ' + response.error.message; return; }
-                    sections = response.data || [];
-                    setCache('sections', sections);
-                    if (sections.length === 0) {
-                        tabsContainer1.innerHTML = '📭 Нет разделов. Добавьте их в базе.';
-                        tabsContainer2.innerHTML = '📭 Нет разделов. Добавьте их в базе.';
-                        return;
-                    }
-                    renderVideoTabs();
-                })
-                .catch(function(err) { tabsContainer1.innerHTML = '❌ Ошибка: ' + err.message; });
-        };
-
-        window.renderVideoTabs = function() {
-            var tabsContainer1 = document.getElementById('videoTabsPart1');
-            var tabsContainer2 = document.getElementById('videoTabsPart2');
-            if (!sections || sections.length === 0) {
-                tabsContainer1.innerHTML = '📭 Нет разделов';
-                tabsContainer2.innerHTML = '📭 Нет разделов';
-                return;
-            }
-            var part1 = sections.slice(0, 12);
-            var part2 = sections.slice(12);
-            
-            // Используем DocumentFragment для быстрой вставки
-            var fragment1 = document.createDocumentFragment();
-            var fragment2 = document.createDocumentFragment();
-            
-            part1.forEach(function(section, index) {
-                var num = index + 1;
-                var btn = document.createElement('button');
-                btn.innerHTML = '<span class="num">' + num + '</span> ' + section.name;
-                btn.onclick = function() { window.openSection(section.id); };
-                fragment1.appendChild(btn);
-            });
-            
-            part2.forEach(function(section, index) {
-                var num = index + 13;
-                var btn = document.createElement('button');
-                btn.innerHTML = '<span class="num">' + num + '</span> ' + section.name;
-                btn.onclick = function() { window.openSection(section.id); };
-                fragment2.appendChild(btn);
-            });
-            
-            tabsContainer1.innerHTML = '';
-            tabsContainer2.innerHTML = '';
-            tabsContainer1.appendChild(fragment1);
-            tabsContainer2.appendChild(fragment2);
-        };
-
-        // ==========================================
         // КОММЕНТАРИИ К ДЗ
         // ==========================================
 
@@ -2044,7 +2185,6 @@
                 return; 
             }
             
-            // Загружаем учеников и разделы одним запросом
             Promise.all([
                 supabase.from('students').select('id, name'),
                 supabase.from('video_sections').select('id, name, order_num')
@@ -2089,7 +2229,7 @@
                     if (response.error) alert('❌ Ошибка: ' + response.error.message);
                     else { 
                         clearCache('all_homeworks');
-                        clearCache('homeworks_' + currentUser.id);
+                        clearCache('homeworks_' + (currentUser ? currentUser.id : ''));
                         window.loadAllHomeworks(); 
                         if (currentUser) { 
                             window.loadHomework(currentUser.id); 
@@ -2111,7 +2251,7 @@
                     else { 
                         alert('✅ Задание удалено'); 
                         clearCache('all_homeworks');
-                        clearCache('homeworks_' + currentUser.id);
+                        clearCache('homeworks_' + (currentUser ? currentUser.id : ''));
                         window.loadAllHomeworks(); 
                         if (currentUser) { 
                             window.loadHomework(currentUser.id); 
@@ -2601,7 +2741,8 @@
         function renderStats(data, container) {
             container.innerHTML = '<div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:20px;"><div style="background:rgba(255,255,255,0.05); padding:20px; border-radius:16px; text-align:center;"><div style="font-size:48px;">👨‍🎓</div><div style="font-size:32px; font-weight:900; color:#ffffff;">' + data.totalStudents + '</div><div style="color:#666;">Учеников с доступом</div></div><div style="background:rgba(255,255,255,0.05); padding:20px; border-radius:16px; text-align:center;"><div style="font-size:48px;">📝</div><div style="font-size:32px; font-weight:900; color:#ffffff;">' + data.totalHomeworks + '</div><div style="color:#666;">Всего ДЗ</div></div><div style="background:rgba(39,174,96,0.15); padding:20px; border-radius:16px; text-align:center;"><div style="font-size:48px;">✅</div><div style="font-size:32px; font-weight:900; color:#2ecc71;">' + data.doneHomeworks + '</div><div style="color:#7ddfa0;">Выполнено</div></div><div style="background:rgba(231,76,60,0.15); padding:20px; border-radius:16px; text-align:center;"><div style="font-size:48px;">⏳</div><div style="font-size:32px; font-weight:900; color:#f1948a;">' + (data.totalHomeworks - data.doneHomeworks) + '</div><div style="color:#f1948a;">В процессе</div></div><div style="background:rgba(52,152,219,0.15); padding:20px; border-radius:16px; text-align:center;"><div style="font-size:48px;">🎥</div><div style="font-size:32px; font-weight:900; color:#85c1e9;">' + data.totalVideos + '</div><div style="color:#85c1e9;">Видео</div></div></div>';
         }
-                // ==========================================
+
+        // ==========================================
         // ЧАТ
         // ==========================================
 
@@ -3077,7 +3218,7 @@
                 var deadlineText = noDeadline ? 'без дедлайна' : (deadline || 'не указан');
                 alert('✅ ДЗ "' + title + '" выдано ' + count + ' ученикам в раздел "' + sectionData.name + '"!\n📅 Срок: ' + deadlineText + (comment ? '\n📝 Комментарий: ' + comment : ''));
                 clearCache('all_homeworks');
-                clearCache('homeworks_' + currentUser.id);
+                if (currentUser) clearCache('homeworks_' + currentUser.id);
                 window.closeAssignmentModal();
                 window.loadAllHomeworks();
                 if (currentUser) {
@@ -3138,7 +3279,6 @@
                         var videoUrl = v.youtube_url || '#';
                         var title = v.title || 'Видео';
                         var homework = v.homework || '';
-                        var pdfUrl = v.pdf_file_url || null;
                         
                         html += '<div class="video-item">';
                         if (isFile && videoUrl && videoUrl !== '#') {
@@ -3161,15 +3301,6 @@
                             html += '<div class="video-player-wrapper" style="display:flex; align-items:center; justify-content:center; background:#111; min-height:200px;"><a href="' + videoUrl + '" target="_blank" style="color:#f5a623; font-size:20px; text-decoration:none; border:2px solid #f5a623; padding:16px 32px; border-radius:12px;">▶️ Смотреть видео</a></div>';
                         }
                         html += '<span class="video-title">🎬 ' + title + '</span>';
-                        
-                        if (pdfUrl) {
-                            html += `
-                                <div class="video-pdf-section">
-                                    <span class="pdf-label">📄 Задачи к уроку:</span>
-                                    <a href="${pdfUrl}" target="_blank" class="pdf-link">📥 Скачать PDF с задачами</a>
-                                </div>
-                            `;
-                        }
                         
                         if (videoUrl && videoUrl !== '#') {
                             html += '<div class="video-fallback-link"><span class="label">⚠️ Если видео не работает, вот ссылка:</span><br><a href="' + videoUrl + '" target="_blank">' + videoUrl + '</a></div>';
@@ -3272,7 +3403,6 @@
         // АВТОРИЗАЦИЯ - ИСПРАВЛЕННАЯ
         // ==========================================
 
-        // Функция входа
         function handleLogin() {
             var emailInput = document.getElementById('email');
             var passwordInput = document.getElementById('password');
@@ -3346,23 +3476,18 @@
                 });
         }
 
-        // Делаем функцию глобальной
         window.handleLogin = handleLogin;
 
-        // При загрузке страницы привязываем кнопку
         document.addEventListener('DOMContentLoaded', function() {
             console.log('✅ DOM загружен');
             
-            // Находим кнопку входа
             var loginBtn = document.getElementById('loginBtn');
             console.log('🔍 Кнопка входа найдена?', loginBtn);
             
             if (loginBtn) {
-                // Удаляем все старые обработчики (создаём новую кнопку)
                 var newBtn = loginBtn.cloneNode(true);
                 loginBtn.parentNode.replaceChild(newBtn, loginBtn);
                 
-                // Добавляем обработчик
                 newBtn.addEventListener('click', function(e) {
                     e.preventDefault();
                     console.log('🖱️ Кнопка нажата!');
@@ -3374,7 +3499,6 @@
                 console.error('❌ Кнопка входа не найдена!');
             }
             
-            // Обработка Enter в полях ввода
             var emailInput = document.getElementById('email');
             var passwordInput = document.getElementById('password');
             
@@ -3396,7 +3520,6 @@
                 });
             }
             
-            // Загружаем настройки
             window.loadTeacherSettings();
         });
 
@@ -3435,7 +3558,13 @@
         console.log('  💬 messages - чат (students)');
         console.log('  📅 schedule - расписание (students)');
         console.log('⚡ Оптимизации включены: кеширование, lazy loading, пагинация');
+        console.log('✅ PDF из видео УДАЛЁН полностью');
+        console.log('✅ Исправлен белый текст в select');
+        console.log('✅ Исправлено сохранение фото и информации');
     </script>
 
 </body>
 </html>
+    <footer>
+        © 2026 Математика с Никитой. Все права защищены.
+    </footer>
