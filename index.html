@@ -366,40 +366,60 @@
             margin-top: 20px;
         }
 
-        /* ===== КАЛЕНДАРЬ ДЛЯ УЧЕНИКА ===== */
+        /* ===== КАЛЕНДАРЬ ДЛЯ УЧЕНИКА (ИСПРАВЛЕННЫЙ) ===== */
         .student-calendar-grid {
             display: grid;
             grid-template-columns: repeat(7, 1fr);
-            gap: 4px;
+            gap: 6px;
             background: rgba(255,255,255,0.03);
             border-radius: 12px;
-            padding: 12px;
+            padding: 16px;
             margin-top: 12px;
         }
         .student-calendar-day {
             aspect-ratio: 1;
-            min-height: 50px;
+            min-height: 55px;
             background: rgba(255,255,255,0.03);
-            border-radius: 8px;
-            padding: 4px;
+            border-radius: 10px;
+            padding: 6px;
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: flex-start;
-            border: 1px solid transparent;
-            font-size: 12px;
+            justify-content: center;
+            border: 1px solid rgba(255,255,255,0.05);
+            font-size: 13px;
+            cursor: pointer;
+            transition: 0.3s;
+            position: relative;
         }
-        .student-calendar-day.has-lesson {
-            border-color: rgba(102,126,234,0.3);
-            background: rgba(102,126,234,0.08);
-        }
-        .student-calendar-day.has-lesson-today {
-            border-color: #f5a623;
-            background: rgba(245,166,35,0.15);
+        .student-calendar-day:hover {
+            background: rgba(255,255,255,0.08);
+            border-color: rgba(255,255,255,0.15);
         }
         .student-calendar-day .day-number {
             font-weight: 600;
             color: #b0c4de;
+            font-size: 14px;
+        }
+        .student-calendar-day .lesson-topic-label {
+            font-size: 8px;
+            color: #88ccff;
+            margin-top: 2px;
+            text-align: center;
+            line-height: 1.2;
+            max-width: 100%;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .student-calendar-day.has-lesson {
+            border-color: rgba(102,126,234,0.4);
+            background: rgba(102,126,234,0.12);
+        }
+        .student-calendar-day.has-lesson-today {
+            border-color: #f5a623;
+            background: rgba(245,166,35,0.15);
+            box-shadow: 0 0 20px rgba(245,166,35,0.1);
         }
         .student-calendar-day .lesson-dot {
             width: 6px;
@@ -414,6 +434,11 @@
         .student-calendar-day.empty {
             background: transparent;
             cursor: default;
+            border-color: transparent;
+        }
+        .student-calendar-day.empty:hover {
+            background: transparent;
+            border-color: transparent;
         }
 
         /* ===== ШАБЛОНЫ ===== */
@@ -480,6 +505,100 @@
         .plan-settings input:focus {
             border-color: var(--primary);
             outline: none;
+        }
+
+        /* ===== РАСПИСАНИЕ (ДЛЯ АДМИНА) ===== */
+        .schedule-table-wrap { overflow-x: auto; }
+        .schedule-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: rgba(255,255,255,0.03);
+            border-radius: var(--radius-sm);
+            overflow: hidden;
+            font-size: 14px;
+        }
+        .schedule-table th,
+        .schedule-table td {
+            border: 1px solid rgba(255,255,255,0.08);
+            padding: 10px 8px;
+            text-align: center;
+            min-width: 80px;
+        }
+        .schedule-table th {
+            background: rgba(255,255,255,0.06);
+            color: var(--accent);
+            font-weight: 700;
+            font-size: 15px;
+        }
+        .schedule-table td {
+            color: var(--text-light);
+            vertical-align: middle;
+        }
+        .schedule-table .row-num {
+            color: #666;
+            font-weight: 700;
+            min-width: 40px;
+        }
+        .schedule-table .cell-empty {
+            color: #444;
+        }
+        .schedule-table .cell-occupied {
+            color: #7ddfa0;
+            background: rgba(39,174,96,0.1);
+            border-color: rgba(39,174,96,0.15);
+        }
+        .schedule-table .cell-occupied .student-name {
+            color: var(--text-white);
+        }
+        .schedule-table .cell-occupied .topic {
+            color: #7ddfa0;
+            font-size: 12px;
+        }
+        .schedule-table td .cell-content {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            cursor: pointer;
+            padding: 4px;
+            border-radius: 6px;
+        }
+        .schedule-table td .cell-content:hover {
+            background: rgba(255,255,255,0.05);
+        }
+        .schedule-table td .cell-content .student-name {
+            font-weight: 600;
+            color: var(--text-white);
+            font-size: 14px;
+        }
+        .schedule-table td .cell-content .topic {
+            font-size: 12px;
+            color: #888;
+        }
+        .schedule-table td .cell-content .empty-text {
+            color: #444;
+            font-size: 12px;
+        }
+
+        .schedule-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-top: 20px;
+            align-items: center;
+        }
+        .schedule-actions button {
+            background: var(--primary-dark);
+            color: white;
+            border: none;
+            padding: 10px 24px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: var(--transition);
+        }
+        .schedule-actions button:hover {
+            background: var(--primary);
+            transform: scale(1.02);
         }
 
         /* ===== ОСТАЛЬНЫЕ СТИЛИ ===== */
@@ -682,8 +801,12 @@
             #calendarMonth { font-size: 14px; min-width: 100px; }
             .plan-settings { grid-template-columns: 1fr; }
             .template-card { padding: 16px; }
-            .student-calendar-day { min-height: 35px; font-size: 10px; }
-            .student-calendar-grid { padding: 6px; gap: 2px; }
+            .student-calendar-day { min-height: 40px; font-size: 11px; padding: 4px; }
+            .student-calendar-day .day-number { font-size: 12px; }
+            .student-calendar-day .lesson-topic-label { font-size: 7px; }
+            .student-calendar-grid { padding: 8px; gap: 4px; }
+            .schedule-table { font-size: 12px; }
+            .schedule-table th, .schedule-table td { padding: 6px 4px; min-width: 60px; }
         }
     </style>
 </head>
@@ -917,7 +1040,7 @@
                         </div>
                     </div>
 
-                    <!-- ===== МОЙ КАЛЕНДАРЬ ===== -->
+                    <!-- ===== МОЙ КАЛЕНДАРЬ (ИСПРАВЛЕННЫЙ) ===== -->
                     <div id="page-myplan" class="dashboard-page" style="display:none;">
                         <div class="section-title">📅 Мой календарь занятий</div>
                         
@@ -1029,6 +1152,7 @@
                 <button data-tab="theory" onclick="window.switchAdminTab('theory')">📖 Теория</button>
                 <button data-tab="homeworks" onclick="window.switchAdminTab('homeworks')">📝 ДЗ</button>
                 <button data-tab="videos" onclick="window.switchAdminTab('videos')">🎥 Видео</button>
+                <button data-tab="schedule" onclick="window.switchAdminTab('schedule')">📅 Расписание</button>
                 <button data-tab="calendar" onclick="window.switchAdminTab('calendar')">📅 Календарь</button>
                 <button data-tab="studyplan" onclick="window.switchAdminTab('studyplan')">📚 План подготовки</button>
                 <button data-tab="templates" onclick="window.switchAdminTab('templates')">📚 Шаблоны</button>
@@ -1068,6 +1192,15 @@
             <div class="admin-content" id="tab-videos">
                 <button class="admin-btn success" onclick="window.addVideo()">➕ Добавить видео</button>
                 <div id="videosList" style="margin-top:15px;">Загрузка...</div>
+            </div>
+            
+            <!-- ===== РАСПИСАНИЕ (ДЛЯ АДМИНА) ===== -->
+            <div class="admin-content" id="tab-schedule">
+                <div class="schedule-actions">
+                    <button class="admin-btn success" onclick="window.addScheduleRow()">➕ Добавить строку</button>
+                    <button class="admin-btn" onclick="window.loadScheduleAdmin()">🔄 Обновить</button>
+                </div>
+                <div id="scheduleList" style="margin-top:15px;">Загрузка...</div>
             </div>
             
             <!-- ===== КАЛЕНДАРЬ ===== -->
@@ -1648,6 +1781,7 @@
             else if (tab === 'theory') window.loadAdminTheory();
             else if (tab === 'homeworks') window.loadAllHomeworks();
             else if (tab === 'videos') window.loadVideosAdmin();
+            else if (tab === 'schedule') window.loadScheduleAdmin();
             else if (tab === 'calendar') { 
                 window.loadCalendarStudents(); 
                 window.renderCalendar(currentMonth);
@@ -1714,7 +1848,7 @@
             d.setHours(0, 0, 0, 0);
             return d;
         }
-                        // ==========================================
+                // ==========================================
         // ===== MY_STUDENTS (ваша личная таблица) =====
         // ==========================================
 
@@ -2569,7 +2703,7 @@
             tabsContainer1.appendChild(fragment1);
             tabsContainer2.appendChild(fragment2);
         };
-                        // ==========================================
+                // ==========================================
         // ДОМАШНИЕ ЗАДАНИЯ (СТУДЕНТ) С ПРИКРЕПЛЕНИЕМ ФАЙЛОВ
         // ==========================================
 
@@ -3147,7 +3281,7 @@
                 console.error(err);
             }
         };
-                        // ==========================================
+                // ==========================================
         // КАЛЕНДАРЬ ЗАНЯТИЙ (АДМИН)
         // ==========================================
 
@@ -3620,7 +3754,7 @@
         };
 
         // ==========================================
-        // КАЛЕНДАРЬ ДЛЯ УЧЕНИКА
+        // КАЛЕНДАРЬ ДЛЯ УЧЕНИКА (ИСПРАВЛЕННЫЙ)
         // ==========================================
 
         window.renderStudentCalendar = function(date) {
@@ -3676,19 +3810,26 @@
                         var lesson = lessonsMap[dateStr];
                         var classNames = 'student-calendar-day';
                         var dotClass = 'lesson-dot';
+                        var hasLesson = false;
+                        var topicLabel = '';
                         
                         if (lesson) {
+                            hasLesson = true;
                             classNames += ' has-lesson';
                             if (dateStr === todayStr) {
                                 classNames += ' has-lesson-today';
                                 dotClass += ' today-dot';
+                            }
+                            if (lesson.topic) {
+                                topicLabel = lesson.topic.length > 10 ? lesson.topic.substring(0, 10) + '..' : lesson.topic;
                             }
                         }
                         
                         html += `
                             <div class="${classNames}" onclick="window.showStudentDayLessons('${dateStr}')">
                                 <span class="day-number">${day}</span>
-                                ${lesson ? '<div class="' + dotClass + '"></div>' : ''}
+                                ${hasLesson ? '<div class="' + dotClass + '"></div>' : ''}
+                                ${topicLabel ? '<div class="lesson-topic-label">' + topicLabel + '</div>' : ''}
                             </div>
                         `;
                     }
@@ -3755,7 +3896,237 @@
             studentMonth.setMonth(studentMonth.getMonth() + 1);
             window.renderStudentCalendar(studentMonth);
         };
-                        // ==========================================
+                // ==========================================
+        // РАСПИСАНИЕ (ДЛЯ АДМИНА)
+        // ==========================================
+
+        window.addScheduleRow = function() {
+            supabase
+                .from('schedule')
+                .select('row_num')
+                .order('row_num', { ascending: false })
+                .limit(1)
+                .then(function(response) {
+                    var maxRow = 0;
+                    if (response.data && response.data.length > 0) maxRow = response.data[0].row_num || 0;
+                    var newRow = maxRow + 1;
+                    var inserts = daysArray.map(function(day) {
+                        return { row_num: newRow, day_of_week: day, student_id: null, topic: null };
+                    });
+                    supabase
+                        .from('schedule')
+                        .insert(inserts)
+                        .then(function(r) {
+                            if (r.error) alert('❌ Ошибка: ' + r.error.message);
+                            else { alert('✅ Строка ' + newRow + ' добавлена!'); clearCache('schedule'); window.loadScheduleAdmin(); }
+                        })
+                        .catch(function(err) { alert('❌ Ошибка: ' + err.message); });
+                })
+                .catch(function(err) { alert('❌ Ошибка: ' + err.message); });
+        };
+
+        window.loadScheduleAdmin = function() {
+            var container = document.getElementById('scheduleList');
+            if (!container) return;
+            
+            var cached = getCache('schedule');
+            if (cached) {
+                renderScheduleAdmin(cached, container);
+                return;
+            }
+            
+            container.innerHTML = '⏳ Загрузка...';
+            supabase
+                .from('students')
+                .select('id, name')
+                .eq('role', 'student')
+                .then(function(studentsRes) {
+                    var students = studentsRes.data || [];
+                    var studentsMap = {};
+                    students.forEach(function(s) { studentsMap[s.id] = s.name; });
+                    supabase
+                        .from('schedule')
+                        .select('*')
+                        .order('row_num', { ascending: true })
+                        .then(function(response) {
+                            if (response.error) { container.innerHTML = '❌ Ошибка: ' + response.error.message; return; }
+                            var data = response.data || [];
+                            var result = { data: data, studentsMap: studentsMap };
+                            setCache('schedule', result);
+                            renderScheduleAdmin(result, container);
+                        })
+                        .catch(function(err) { container.innerHTML = '❌ Ошибка: ' + err.message; });
+                })
+                .catch(function(err) { container.innerHTML = '❌ Ошибка: ' + err.message; });
+        };
+
+        function renderScheduleAdmin(cacheData, container) {
+            var data = cacheData.data || cacheData;
+            var studentsMap = cacheData.studentsMap || {};
+            
+            if (data.length === 0) { container.innerHTML = '📭 Нет занятий. Нажмите "➕ Добавить строку".'; return; }
+            var rows = {};
+            data.forEach(function(item) {
+                if (!rows[item.row_num]) rows[item.row_num] = {};
+                rows[item.row_num][item.day_of_week] = { student_id: item.student_id, topic: item.topic || '', id: item.id };
+            });
+            var html = '<div class="schedule-table-wrap"><table class="schedule-table">';
+            html += '<tr><th>№</th>';
+            daysArray.forEach(function(day) { html += '<th>' + daysMap[day] + '</th>'; });
+            html += '</tr>';
+            var sortedRows = Object.keys(rows).sort(function(a, b) { return parseInt(a) - parseInt(b); });
+            sortedRows.forEach(function(rowNum) {
+                html += '<tr>';
+                html += '<td class="row-num">' + rowNum + '</td>';
+                daysArray.forEach(function(day) {
+                    var cell = rows[rowNum][day];
+                    if (cell && cell.student_id) {
+                        var studentName = studentsMap[cell.student_id] || 'Ученик';
+                        html += '<td class="cell-occupied" onclick="window.editScheduleCell(' + cell.id + ', \'' + day + '\', ' + rowNum + ')">';
+                        html += '<div class="cell-content"><span class="student-name">' + studentName + '</span>';
+                        if (cell.topic) html += '<span class="topic">' + cell.topic + '</span>';
+                        html += '</div></td>';
+                    } else {
+                        html += '<td class="cell-empty" onclick="window.addScheduleCell(' + rowNum + ', \'' + day + '\')">';
+                        html += '<div class="cell-content"><span class="empty-text">➕</span></div></td>';
+                    }
+                });
+                html += '</tr>';
+            });
+            html += '</table></div>';
+            container.innerHTML = html;
+        }
+
+        window.addScheduleCell = function(rowNum, day) {
+            supabase
+                .from('students')
+                .select('id, name')
+                .eq('role', 'student')
+                .then(function(response) {
+                    var students = response.data || [];
+                    if (students.length === 0) { alert('Нет учеников с доступом!'); return; }
+                    var list = 'Выберите ученика:\n';
+                    students.forEach(function(s, i) { list += (i + 1) + '. ' + s.name + '\n'; });
+                    var choice = prompt(list);
+                    if (!choice) return;
+                    var idx = parseInt(choice) - 1;
+                    if (idx < 0 || idx >= students.length) { alert('Неверный выбор!'); return; }
+                    var student = students[idx];
+                    var topic = prompt('Введите тему занятия:');
+                    if (topic === null) return;
+                    supabase
+                        .from('schedule')
+                        .select('id')
+                        .eq('row_num', rowNum)
+                        .eq('day_of_week', day)
+                        .then(function(checkRes) {
+                            var existing = checkRes.data || [];
+                            if (existing.length > 0) {
+                                supabase
+                                    .from('schedule')
+                                    .update({ student_id: student.id, topic: topic || null })
+                                    .eq('id', existing[0].id)
+                                    .then(function() { alert('✅ Ячейка обновлена!'); clearCache('schedule'); window.loadScheduleAdmin(); if (currentUser) window.loadStudentSchedule(currentUser.id); })
+                                    .catch(function(err) { alert('❌ Ошибка: ' + err.message); });
+                            } else {
+                                supabase
+                                    .from('schedule')
+                                    .insert([{ row_num: rowNum, day_of_week: day, student_id: student.id, topic: topic || null }])
+                                    .then(function() { alert('✅ Ячейка добавлена!'); clearCache('schedule'); window.loadScheduleAdmin(); if (currentUser) window.loadStudentSchedule(currentUser.id); })
+                                    .catch(function(err) { alert('❌ Ошибка: ' + err.message); });
+                            }
+                        })
+                        .catch(function(err) { alert('❌ Ошибка: ' + err.message); });
+                })
+                .catch(function(err) { alert('❌ Ошибка: ' + err.message); });
+        };
+
+        window.editScheduleCell = function(cellId, day, rowNum) {
+            supabase
+                .from('students')
+                .select('id, name')
+                .eq('role', 'student')
+                .then(function(response) {
+                    var students = response.data || [];
+                    if (students.length === 0) { alert('Нет учеников с доступом!'); return; }
+                    var list = 'Выберите ученика (или 0 для удаления):\n';
+                    students.forEach(function(s, i) { list += (i + 1) + '. ' + s.name + '\n'; });
+                    list += '\n0. Удалить занятие';
+                    var choice = prompt(list);
+                    if (choice === null) return;
+                    var idx = parseInt(choice) - 1;
+                    if (choice === '0') {
+                        supabase
+                            .from('schedule')
+                            .update({ student_id: null, topic: null })
+                            .eq('id', cellId)
+                            .then(function() { alert('✅ Занятие удалено'); clearCache('schedule'); window.loadScheduleAdmin(); if (currentUser) window.loadStudentSchedule(currentUser.id); })
+                            .catch(function(err) { alert('❌ Ошибка: ' + err.message); });
+                        return;
+                    }
+                    if (idx < 0 || idx >= students.length) { alert('Неверный выбор!'); return; }
+                    var student = students[idx];
+                    var topic = prompt('Введите тему занятия (или Enter для удаления):');
+                    if (topic === null) return;
+                    if (topic === '') {
+                        supabase
+                            .from('schedule')
+                            .update({ student_id: null, topic: null })
+                            .eq('id', cellId)
+                            .then(function() { alert('✅ Занятие удалено'); clearCache('schedule'); window.loadScheduleAdmin(); if (currentUser) window.loadStudentSchedule(currentUser.id); })
+                            .catch(function(err) { alert('❌ Ошибка: ' + err.message); });
+                        return;
+                    }
+                    supabase
+                        .from('schedule')
+                        .update({ student_id: student.id, topic: topic })
+                        .eq('id', cellId)
+                        .then(function() { alert('✅ Ячейка обновлена!'); clearCache('schedule'); window.loadScheduleAdmin(); if (currentUser) window.loadStudentSchedule(currentUser.id); })
+                        .catch(function(err) { alert('❌ Ошибка: ' + err.message); });
+                })
+                .catch(function(err) { alert('❌ Ошибка: ' + err.message); });
+        };
+
+        window.loadStudentSchedule = function(studentId) {
+            var container = document.getElementById('studentSchedule');
+            if (!container) return;
+            container.innerHTML = '⏳ Загрузка...';
+            supabase
+                .from('schedule')
+                .select('*')
+                .eq('student_id', studentId)
+                .order('row_num', { ascending: true })
+                .then(function(response) {
+                    if (response.error) { container.innerHTML = '❌ Ошибка загрузки расписания.'; return; }
+                    var data = response.data || [];
+                    if (data.length === 0) { container.innerHTML = '📭 Нет занятий.'; return; }
+                    var rows = {};
+                    data.forEach(function(item) {
+                        if (!rows[item.row_num]) rows[item.row_num] = {};
+                        rows[item.row_num][item.day_of_week] = item.topic || '';
+                    });
+                    var html = '<div class="schedule-table-wrap"><table class="schedule-table">';
+                    html += '<tr><th>№</th>';
+                    daysArray.forEach(function(day) { html += '<th>' + daysMap[day] + '</th>'; });
+                    html += '</tr>';
+                    var sortedRows = Object.keys(rows).sort(function(a, b) { return parseInt(a) - parseInt(b); });
+                    sortedRows.forEach(function(rowNum) {
+                        html += '<tr>';
+                        html += '<td class="row-num">' + rowNum + '</td>';
+                        daysArray.forEach(function(day) {
+                            var cell = rows[rowNum][day] || '';
+                            if (cell) html += '<td class="cell-occupied">' + cell + '</td>';
+                            else html += '<td class="cell-empty">—</td>';
+                        });
+                        html += '</tr>';
+                    });
+                    html += '</table></div>';
+                    container.innerHTML = html;
+                })
+                .catch(function(err) { container.innerHTML = '❌ Ошибка: ' + err.message; });
+        };
+
+        // ==========================================
         // ШАБЛОНЫ ПЛАНОВ
         // ==========================================
 
@@ -3965,8 +4336,7 @@
                 }
             }, 300);
         };
-
-        // ==========================================
+                // ==========================================
         // ИНДИВИДУАЛЬНЫЙ ПЛАН ПОДГОТОВКИ
         // ==========================================
 
@@ -4239,7 +4609,8 @@
                     window.loadStudyPlan();
                 });
         };
-                        // ==========================================
+
+        // ==========================================
         // СТАТИСТИКА
         // ==========================================
 
@@ -4489,8 +4860,7 @@
         function renderStats(data, container) {
             container.innerHTML = '<div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:20px;"><div style="background:rgba(255,255,255,0.05); padding:20px; border-radius:16px; text-align:center;"><div style="font-size:48px;">👨‍🎓</div><div style="font-size:32px; font-weight:900; color:#ffffff;">' + data.totalStudents + '</div><div style="color:#666;">Учеников с доступом</div></div><div style="background:rgba(255,255,255,0.05); padding:20px; border-radius:16px; text-align:center;"><div style="font-size:48px;">📝</div><div style="font-size:32px; font-weight:900; color:#ffffff;">' + data.totalHomeworks + '</div><div style="color:#666;">Всего ДЗ</div></div><div style="background:rgba(39,174,96,0.15); padding:20px; border-radius:16px; text-align:center;"><div style="font-size:48px;">✅</div><div style="font-size:32px; font-weight:900; color:#2ecc71;">' + data.doneHomeworks + '</div><div style="color:#7ddfa0;">Выполнено</div></div><div style="background:rgba(231,76,60,0.15); padding:20px; border-radius:16px; text-align:center;"><div style="font-size:48px;">⏳</div><div style="font-size:32px; font-weight:900; color:#f1948a;">' + (data.totalHomeworks - data.doneHomeworks) + '</div><div style="color:#f1948a;">В процессе</div></div><div style="background:rgba(52,152,219,0.15); padding:20px; border-radius:16px; text-align:center;"><div style="font-size:48px;">🎥</div><div style="font-size:32px; font-weight:900; color:#85c1e9;">' + data.totalVideos + '</div><div style="color:#85c1e9;">Видео</div></div></div>';
         }
-
-        // ==========================================
+                // ==========================================
         // ЧАТ
         // ==========================================
 
@@ -5297,6 +5667,7 @@
             window.loadAdminTheory();
             window.loadAllHomeworks();
             window.loadVideosAdmin();
+            window.loadScheduleAdmin();
             window.loadStats();
             window.loadTemplates();
             window.loadCalendarStudents();
@@ -5314,20 +5685,29 @@
         console.log('  📝 homeworks - ДЗ (привязаны к students)');
         console.log('  📎 attached_file_url - файлы учеников к ДЗ');
         console.log('  💬 messages - чат (students)');
+        console.log('  📅 schedule - расписание (students)');
         console.log('  📅 lesson_calendar - календарь занятий');
         console.log('  🔁 lesson_series - серии занятий');
         console.log('  📚 study_plans - планы подготовки');
         console.log('  📖 study_plan_sections - разделы планов');
         console.log('  📋 plan_templates - шаблоны планов');
-        console.log('⚡ Оптимизации включены: кеширование, lazy loading');
+        console.log('⚡ Оптимизации включены: кеширование, lazy loading, пагинация');
         console.log('✅ PDF из видео УДАЛЁН полностью');
         console.log('✅ Исправлен белый текст в select');
-        console.log('✅ Добавлен календарь занятий с сериями');
+        console.log('✅ Исправлено сохранение фото и информации');
+        console.log('✅ Добавлены вкладки "Активные" и "Выполненные" ДЗ');
+        console.log('✅ Добавлена кнопка "Вернуть" для выполненных ДЗ');
+        console.log('✅ Убрана кнопка "Выйти" из хедера');
+        console.log('✅ Добавлено автообновление каждые 30 секунд');
+        console.log('✅ Добавлена кнопка "Обновить" на всех страницах');
+        console.log('✅ Добавлена возможность прикреплять файлы к ДЗ (PDF, JPG, PNG, GIF, WEBP)');
+        console.log('✅ Админ видит прикреплённые файлы в таблице ДЗ');
+        console.log('✅ Добавлен календарь занятий');
         console.log('✅ Добавлены индивидуальные планы подготовки');
         console.log('✅ Добавлены шаблоны планов');
         console.log('✅ Добавлена страница "Мой календарь" для ученика');
-        console.log('✅ Удалена вкладка "Расписание"');
-        console.log('✅ Добавлено автообновление');
+        console.log('✅ Вернули расписание для админа');
+        console.log('✅ Исправлен календарь ученика (цветные дни, подписи)');
     </script>
 
 </body>
