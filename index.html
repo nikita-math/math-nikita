@@ -722,6 +722,39 @@
 
         footer { text-align: center; padding: 30px 20px; color: #666; font-size: 14px; border-top: 1px solid rgba(255,255,255,0.05); margin-top: 40px; }
 
+        .my-students-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+            font-size: 14px;
+        }
+        .my-students-table th,
+        .my-students-table td {
+            padding: 10px 12px;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            text-align: left;
+            color: #c0d0e0;
+        }
+        .my-students-table th {
+            background: rgba(255,255,255,0.05);
+            color: #f5a623;
+            font-weight: 700;
+        }
+        .my-students-table .status-badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .my-students-table .status-badge.active {
+            background: rgba(46,204,113,0.2);
+            color: #2ecc71;
+        }
+        .my-students-table .status-badge.inactive {
+            background: rgba(231,76,60,0.2);
+            color: #f1948a;
+        }
+
         @media (max-width: 700px) {
             header h1 { font-size: 28px; }
             .profile { flex-direction: column; text-align: center; }
@@ -1064,7 +1097,7 @@
             </div>
             
             <div class="admin-content active" id="tab-students">
-                <button class="admin-btn success" onclick="window.addStudent()">➕ Добавить ученика</button>
+                <button class="admin-btn success" onclick="window.addMyStudent()">➕ Добавить ученика</button>
                 <div id="studentsList" style="margin-top:15px;">Загрузка...</div>
             </div>
             
@@ -1136,130 +1169,11 @@
                     </div>
                 </div>
             </div>
-        </div>
+            <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-    </div>
-        <!-- МОДАЛКА ТЕОРИИ -->
-    <div class="modal-overlay" id="theoryModal">
-        <div class="modal-content">
-            <h3>📖 Добавить теорию</h3>
-            
-            <div>
-                <label>Название:</label>
-                <input type="text" id="theoryTitle" placeholder="Например: Теорема Пифагора">
-            </div>
-            
-            <div>
-                <label>Содержание:</label>
-                <textarea id="theoryContent" rows="6" placeholder="Введите текст теории..."></textarea>
-            </div>
-            
-            <div>
-                <label>Раздел (необязательно):</label>
-                <select id="theorySection">
-                    <option value="">Без раздела</option>
-                </select>
-            </div>
-            
-            <div>
-                <label>📎 PDF файл с теорией:</label>
-                <input type="file" id="theoryFile" accept=".pdf">
-            </div>
-            
-            <div class="modal-actions">
-                <button class="cancel-btn" onclick="window.closeTheoryModal()">Отмена</button>
-                <button class="submit-btn" onclick="window.submitTheory()">✅ Добавить</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- МОДАЛКА ВЫДАЧИ ДЗ -->
-    <div class="modal-overlay" id="assignmentModal">
-        <div class="modal-content">
-            <h3>📝 Выдать домашнее задание</h3>
-            
-            <div>
-                <label>Кому выдаем:</label>
-                <select id="assignmentTarget">
-                    <option value="single">📌 Конкретному ученику</option>
-                    <option value="all">👥 Всем ученикам</option>
-                </select>
-            </div>
-            
-            <div id="studentSelectWrapper">
-                <label>Выберите ученика:</label>
-                <select id="studentSelect">
-                    <option value="">Загрузка...</option>
-                </select>
-            </div>
-            
-            <div>
-                <label>Номер раздела (для привязки к видео):</label>
-                <input type="number" id="sectionNumber" min="1" max="30" placeholder="Например: 1, 2, 3...">
-                <div class="preview-text" id="sectionPreview">Введите номер для просмотра раздела</div>
-            </div>
-            
-            <div>
-                <label>Название ДЗ:</label>
-                <input type="text" id="homeworkTitle" placeholder="Например: ДЗ к уроку 1">
-            </div>
-
-            <div>
-                <label>📝 Комментарий к ДЗ (для ученика):</label>
-                <textarea id="homeworkComment" rows="3" placeholder="Например: сделать номера 1, 3, 5, 7..."></textarea>
-            </div>
-            
-            <div>
-                <label>📎 PDF файл с ДЗ:</label>
-                <input type="file" id="pdfFile" accept=".pdf">
-            </div>
-            
-            <div>
-                <label>Срок выполнения:</label>
-                <div class="deadline-row">
-                    <input type="date" id="deadline">
-                    <label class="no-deadline-label">
-                        <input type="checkbox" id="noDeadline">
-                        Без дедлайна
-                    </label>
-                </div>
-            </div>
-            
-            <div class="modal-actions">
-                <button class="cancel-btn" onclick="window.closeAssignmentModal()">Отмена</button>
-                <button class="submit-btn" onclick="window.submitAssignment()">✅ Выдать ДЗ</button>
-            </div>
-        </div>
-    </div>
-
-    <footer>
-        © 2026 Математика с Никитой. Все права защищены.
-    </footer>
-
-    <script>
-        (function generateStars() {
-            var container = document.getElementById('starsContainer');
-            var count = 150;
-            for (var i = 0; i < count; i++) {
-                var star = document.createElement('div');
-                star.className = 'star';
-                var size = Math.random() * 3 + 1;
-                star.style.width = size + 'px';
-                star.style.height = size + 'px';
-                star.style.left = Math.random() * 100 + '%';
-                star.style.top = Math.random() * 100 + '%';
-                star.style.setProperty('--duration', (Math.random() * 3 + 2) + 's');
-                star.style.animationDelay = (Math.random() * 3) + 's';
-                container.appendChild(star);
-            }
-        })();
-    </script>
-
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-    <script>
+<script>
         var SUPABASE_URL = 'https://liqqdixrtvnrrvgkfvbn.supabase.co';
-        var SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxpcXFkaXhydHZucnJ2Z2tmdmJuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODM4NTMzMzksImV4cCI6MjA5OTQyOTMzOX0.Jqrnt5DOKNURe5HERWIhMvc6KChurAg5iHkfMBw4P2A';
+        var SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxpcXFkaXhydHZucnJ2Z2tmdmJuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODM4NTMzMzksImV4cCI6MjA5OTQyOTMzOX0.Jqrnt5DOKNURe5HERWIhMvc6KChurAg5iHkfMBw4P2A';
         var supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
         var currentUser = null;
@@ -1303,7 +1217,7 @@
             var targetContent = document.getElementById('tab-' + tab);
             if (targetContent) targetContent.classList.add('active');
             
-            if (tab === 'students') window.loadStudents();
+            if (tab === 'students') window.loadMyStudents();
             else if (tab === 'whiteboard') window.loadWhiteboardAdmin();
             else if (tab === 'theory') window.loadAdminTheory();
             else if (tab === 'homeworks') window.loadAllHomeworks();
@@ -1329,7 +1243,138 @@
         };
 
         // ==========================================
-        // ОНЛАЙН-ДОСКА
+        // ===== MY_STUDENTS (ваша личная таблица) =====
+        // ==========================================
+
+        // Добавление ученика в my_students
+        window.addMyStudent = function() {
+            var name = prompt('Введите имя ученика (например: Мачкур 70+):');
+            if (!name) return;
+            
+            var classNum = prompt('Введите класс (например: 11):');
+            if (!classNum) return;
+            
+            var startDate = prompt('Введите дату начала (в формате ГГГГ-ММ-ДД, например: 2026-02-01):');
+            if (!startDate) return;
+            
+            var status = confirm('Ученик активен? (Нажмите ОК - активен, Отмена - неактивен)') ? 'active' : 'inactive';
+            
+            supabase
+                .from('my_students')
+                .insert([{
+                    name: name,
+                    class: classNum,
+                    start_date: startDate,
+                    status: status
+                }])
+                .then(function(response) {
+                    if (response.error) {
+                        alert('❌ Ошибка: ' + response.error.message);
+                        return;
+                    }
+                    alert('✅ Ученик добавлен в ваш список!');
+                    window.loadMyStudents();
+                })
+                .catch(function(err) {
+                    alert('❌ Ошибка: ' + err.message);
+                });
+        };
+
+        // Загрузка списка учеников из my_students
+        window.loadMyStudents = function() {
+            var container = document.getElementById('studentsList');
+            if (!container) return;
+            container.innerHTML = '⏳ Загрузка...';
+            
+            supabase
+                .from('my_students')
+                .select('*')
+                .order('name', { ascending: true })
+                .then(function(response) {
+                    if (response.error) {
+                        container.innerHTML = '❌ Ошибка: ' + response.error.message;
+                        return;
+                    }
+                    var data = response.data || [];
+                    if (data.length === 0) {
+                        container.innerHTML = `
+                            <div class="empty-state">
+                                <span class="icon">📭</span>
+                                <div class="title">Нет учеников</div>
+                                <div class="desc">Нажмите "➕ Добавить ученика" чтобы добавить первого</div>
+                            </div>
+                        `;
+                        return;
+                    }
+                    
+                    var html = '<table class="my-students-table"><tr><th>Имя</th><th>Класс</th><th>Дата начала</th><th>Статус</th><th>Действия</th></tr>';
+                    for (var i = 0; i < data.length; i++) {
+                        var s = data[i];
+                        var statusClass = s.status === 'active' ? 'active' : 'inactive';
+                        var statusText = s.status === 'active' ? '🟢 Активен' : '🔴 Неактивен';
+                        html += `
+                            <tr>
+                                <td>${s.name}</td>
+                                <td>${s.class || '—'}</td>
+                                <td>${s.start_date || '—'}</td>
+                                <td><span class="status-badge ${statusClass}">${statusText}</span></td>
+                                <td>
+                                    <button class="admin-btn success" onclick="window.toggleMyStudentStatus('${s.id}', '${s.status}')">🔄 Сменить статус</button>
+                                    <button class="admin-btn danger" onclick="window.deleteMyStudent('${s.id}')">🗑 Удалить</button>
+                                </td>
+                            </tr>
+                        `;
+                    }
+                    html += '</table>';
+                    container.innerHTML = html;
+                })
+                .catch(function(err) {
+                    container.innerHTML = '❌ Ошибка: ' + err.message;
+                });
+        };
+
+        // Смена статуса ученика в my_students
+        window.toggleMyStudentStatus = function(id, currentStatus) {
+            var newStatus = currentStatus === 'active' ? 'inactive' : 'active';
+            supabase
+                .from('my_students')
+                .update({ status: newStatus })
+                .eq('id', id)
+                .then(function(response) {
+                    if (response.error) {
+                        alert('❌ Ошибка: ' + response.error.message);
+                        return;
+                    }
+                    alert('✅ Статус изменён на ' + (newStatus === 'active' ? 'Активен' : 'Неактивен'));
+                    window.loadMyStudents();
+                })
+                .catch(function(err) {
+                    alert('❌ Ошибка: ' + err.message);
+                });
+        };
+
+        // Удаление ученика из my_students
+        window.deleteMyStudent = function(id) {
+            if (!confirm('Удалить ученика из вашего списка?')) return;
+            supabase
+                .from('my_students')
+                .delete()
+                .eq('id', id)
+                .then(function(response) {
+                    if (response.error) {
+                        alert('❌ Ошибка: ' + response.error.message);
+                        return;
+                    }
+                    alert('✅ Ученик удалён');
+                    window.loadMyStudents();
+                })
+                .catch(function(err) {
+                    alert('❌ Ошибка: ' + err.message);
+                });
+        };
+
+        // ==========================================
+        // ===== ОНЛАЙН-ДОСКИ (students) =====
         // ==========================================
 
         window.loadWhiteboard = function() {
@@ -1378,6 +1423,7 @@
                 });
         };
 
+        // Загрузка досок для админа (из students)
         window.loadWhiteboardAdmin = function() {
             var container = document.getElementById('whiteboardAdminList');
             if (!container) return;
@@ -1395,7 +1441,13 @@
                     }
                     var students = response.data || [];
                     if (students.length === 0) {
-                        container.innerHTML = '📭 Нет учеников. Добавьте первого!';
+                        container.innerHTML = `
+                            <div class="empty-state">
+                                <span class="icon">📭</span>
+                                <div class="title">Нет учеников с доступом</div>
+                                <div class="desc">Добавьте учеников в таблицу students с ролью 'student'</div>
+                            </div>
+                        `;
                         return;
                     }
                     
@@ -1419,6 +1471,7 @@
                 });
         };
 
+        // Сохранение ссылки на доску (students)
         window.saveWhiteboardUrl = function(studentId) {
             var input = document.getElementById('wb_' + studentId);
             if (!input) return;
@@ -1736,62 +1789,7 @@
                 console.error(err);
             }
         };
-        // ==========================================
-        // АДМИНКА - УЧЕНИКИ
-        // ==========================================
-
-        window.addStudent = function() {
-            var name = prompt('Введите имя ученика:'); if (!name) return;
-            var email = prompt('Введите email ученика:'); if (!email) return;
-            var password = prompt('Введите пароль:'); if (!password) return;
-            supabase
-                .from('students')
-                .insert([{ name: name, email: email, password: password, role: 'student' }])
-                .then(function(response) {
-                    if (response.error) alert('❌ Ошибка: ' + response.error.message);
-                    else { alert('✅ Ученик добавлен!'); window.loadStudents(); }
-                })
-                .catch(function(err) { alert('❌ Ошибка: ' + err.message); });
-        };
-
-        window.loadStudents = function() {
-            var container = document.getElementById('studentsList');
-            if (!container) return;
-            container.innerHTML = '⏳ Загрузка...';
-            supabase
-                .from('students')
-                .select('id, name, email, role')
-                .eq('role', 'student')
-                .order('name')
-                .then(function(response) {
-                    if (response.error) { container.innerHTML = '❌ Ошибка: ' + response.error.message; return; }
-                    var data = response.data || [];
-                    if (data.length === 0) { container.innerHTML = '📭 Нет учеников'; return; }
-                    var html = '<table class="admin-table"><tr><th>Имя</th><th>Email</th><th>Роль</th><th>Действия</th></tr>';
-                    for (var i = 0; i < data.length; i++) {
-                        var s = data[i];
-                        html += '<tr><td>' + s.name + '</td><td>' + s.email + '</td><td>' + (s.role || 'student') + '</td><td><button class="admin-btn danger" onclick="window.deleteStudent(\'' + s.id + '\')">Удалить</button></td></tr>';
-                    }
-                    html += '</table>';
-                    container.innerHTML = html;
-                })
-                .catch(function(err) { container.innerHTML = '❌ Ошибка: ' + err.message; });
-        };
-
-        window.deleteStudent = function(id) {
-            if (!confirm('Удалить ученика?')) return;
-            supabase
-                .from('students')
-                .delete()
-                .eq('id', id)
-                .then(function(response) {
-                    if (response.error) alert('❌ Ошибка: ' + response.error.message);
-                    else { alert('✅ Ученик удалён'); window.loadStudents(); }
-                })
-                .catch(function(err) { alert('❌ Ошибка: ' + err.message); });
-        };
-
-        // ==========================================
+            // ==========================================
         // ТЕОРИЯ
         // ==========================================
 
@@ -2093,6 +2091,7 @@
                 })
                 .catch(function(err) { alert('❌ Ошибка: ' + err.message); });
         };
+
         // ==========================================
         // ДОМАШНИЕ ЗАДАНИЯ (СТУДЕНТ)
         // ==========================================
@@ -2134,7 +2133,7 @@
                         var hw = filteredData[i];
                         var statusClass = hw.status === 'done' ? 'done' : 'pending';
                         var statusText = hw.status === 'done' ? '✅ Выполнено' : '⏳ Ожидает проверки';
-                        var btnHtml = hw.status !== 'done' ? '<button class="btn-start" onclick="window.markDone(\'' + hw.id + '\')">✅ Отметить выполненным</button>' : '';
+                        var btnHtml = hw.status !== 'done' ? '<button class="admin-btn success" onclick="window.markDone(\'' + hw.id + '\')">✅ Отметить выполненным</button>' : '';
                         var sectionInfo = '';
                         if (hw.video_sections) {
                             sectionInfo = '<div class="meta">📺 Раздел №' + hw.video_sections.order_num + ': ' + hw.video_sections.name + '</div>';
@@ -2251,8 +2250,7 @@
                     document.getElementById('recentHomeworks').innerHTML = html;
                 });
         };
-
-        // ==========================================
+            // ==========================================
         // ВИДЕОРАЗДЕЛЫ
         // ==========================================
 
@@ -2589,7 +2587,7 @@
                 .eq('role', 'student')
                 .then(function(response) {
                     var students = response.data || [];
-                    if (students.length === 0) { alert('Нет учеников!'); return; }
+                    if (students.length === 0) { alert('Нет учеников с доступом!'); return; }
                     var list = 'Выберите ученика:\n';
                     students.forEach(function(s, i) { list += (i + 1) + '. ' + s.name + '\n'; });
                     var choice = prompt(list);
@@ -2633,7 +2631,7 @@
                 .eq('role', 'student')
                 .then(function(response) {
                     var students = response.data || [];
-                    if (students.length === 0) { alert('Нет учеников!'); return; }
+                    if (students.length === 0) { alert('Нет учеников с доступом!'); return; }
                     var list = 'Выберите ученика (или 0 для удаления):\n';
                     students.forEach(function(s, i) { list += (i + 1) + '. ' + s.name + '\n'; });
                     list += '\n0. Удалить занятие';
@@ -2897,7 +2895,7 @@
                                         .then(function(r4) {
                                             if (r4.error) { container.innerHTML = '❌ Ошибка'; return; }
                                             totalVideos = r4.count || 0;
-                                            container.innerHTML = '<div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:20px;"><div style="background:rgba(255,255,255,0.05); padding:20px; border-radius:16px; text-align:center;"><div style="font-size:48px;">👨‍🎓</div><div style="font-size:32px; font-weight:900; color:#ffffff;">' + totalStudents + '</div><div style="color:#666;">Учеников</div></div><div style="background:rgba(255,255,255,0.05); padding:20px; border-radius:16px; text-align:center;"><div style="font-size:48px;">📝</div><div style="font-size:32px; font-weight:900; color:#ffffff;">' + totalHomeworks + '</div><div style="color:#666;">Всего ДЗ</div></div><div style="background:rgba(39,174,96,0.15); padding:20px; border-radius:16px; text-align:center;"><div style="font-size:48px;">✅</div><div style="font-size:32px; font-weight:900; color:#2ecc71;">' + doneHomeworks + '</div><div style="color:#7ddfa0;">Выполнено</div></div><div style="background:rgba(231,76,60,0.15); padding:20px; border-radius:16px; text-align:center;"><div style="font-size:48px;">⏳</div><div style="font-size:32px; font-weight:900; color:#f1948a;">' + (totalHomeworks - doneHomeworks) + '</div><div style="color:#f1948a;">В процессе</div></div><div style="background:rgba(52,152,219,0.15); padding:20px; border-radius:16px; text-align:center;"><div style="font-size:48px;">🎥</div><div style="font-size:32px; font-weight:900; color:#85c1e9;">' + totalVideos + '</div><div style="color:#85c1e9;">Видео</div></div></div>';
+                                            container.innerHTML = '<div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:20px;"><div style="background:rgba(255,255,255,0.05); padding:20px; border-radius:16px; text-align:center;"><div style="font-size:48px;">👨‍🎓</div><div style="font-size:32px; font-weight:900; color:#ffffff;">' + totalStudents + '</div><div style="color:#666;">Учеников с доступом</div></div><div style="background:rgba(255,255,255,0.05); padding:20px; border-radius:16px; text-align:center;"><div style="font-size:48px;">📝</div><div style="font-size:32px; font-weight:900; color:#ffffff;">' + totalHomeworks + '</div><div style="color:#666;">Всего ДЗ</div></div><div style="background:rgba(39,174,96,0.15); padding:20px; border-radius:16px; text-align:center;"><div style="font-size:48px;">✅</div><div style="font-size:32px; font-weight:900; color:#2ecc71;">' + doneHomeworks + '</div><div style="color:#7ddfa0;">Выполнено</div></div><div style="background:rgba(231,76,60,0.15); padding:20px; border-radius:16px; text-align:center;"><div style="font-size:48px;">⏳</div><div style="font-size:32px; font-weight:900; color:#f1948a;">' + (totalHomeworks - doneHomeworks) + '</div><div style="color:#f1948a;">В процессе</div></div><div style="background:rgba(52,152,219,0.15); padding:20px; border-radius:16px; text-align:center;"><div style="font-size:48px;">🎥</div><div style="font-size:32px; font-weight:900; color:#85c1e9;">' + totalVideos + '</div><div style="color:#85c1e9;">Видео</div></div></div>';
                                         })
                                         .catch(function(err) { container.innerHTML = '❌ Ошибка: ' + err.message; });
                                 })
@@ -2907,8 +2905,7 @@
                 })
                 .catch(function(err) { container.innerHTML = '❌ Ошибка: ' + err.message; });
         };
-
-        // ==========================================
+            // ==========================================
         // ЧАТ
         // ==========================================
 
@@ -2931,7 +2928,7 @@
                         }
                         var students = response.data || [];
                         if (students.length === 0) {
-                            container.innerHTML = '<div class="empty-state"><span class="icon">📭</span><div class="title">Нет учеников</div><div class="desc">Добавьте учеников в панели управления</div></div>';
+                            container.innerHTML = '<div class="empty-state"><span class="icon">📭</span><div class="title">Нет учеников с доступом</div><div class="desc">Добавьте учеников в таблицу students</div></div>';
                             return;
                         }
                         
@@ -3245,70 +3242,11 @@
         window.loadChatList = loadChatList;
 
         // ==========================================
-        // АВТОРИЗАЦИЯ
+        // МОДАЛКА ТЕОРИИ
         // ==========================================
 
-        document.getElementById('loginBtn').addEventListener('click', function() {
-            var email = document.getElementById('email').value;
-            var password = document.getElementById('password').value;
-            resultDiv.className = 'result-info';
-            resultDiv.innerHTML = '⏳ Проверяю...';
-            supabase
-                .from('students')
-                .select('*')
-                .eq('email', email)
-                .eq('password', password)
-                .then(function(response) {
-                    if (response.error) {
-                        resultDiv.className = 'result-error';
-                        resultDiv.innerHTML = '❌ Ошибка: ' + response.error.message;
-                        return;
-                    }
-                    if (response.data && response.data.length > 0) {
-                        var user = response.data[0];
-                        currentUser = user;
-                        resultDiv.className = 'result-success';
-                        resultDiv.innerHTML = '✅ Привет, ' + user.name + '!';
-                        document.getElementById('profileBlock').style.display = 'none';
-                        document.getElementById('contactsBlock').style.display = 'none';
-                        document.getElementById('loginSection').style.display = 'none';
-                        document.getElementById('dashboard').style.display = 'block';
-                        welcomeMessage.textContent = '👋 Привет, ' + user.name + '!';
-                        
-                        if (user.role === 'admin') {
-                            document.getElementById('adminPanel').style.display = 'block';
-                            document.getElementById('adminTheoryControls').style.display = 'block';
-                            window.loadAdminData();
-                            window.loadTeacherSettings();
-                        } else {
-                            document.getElementById('adminTheoryControls').style.display = 'none';
-                        }
-                        
-                        window.loadWhiteboard();
-                        window.loadTheory();
-                        window.loadHomework(user.id);
-                        window.loadDashboardOverview(user.id);
-                        window.loadStudentSchedule(user.id);
-                        window.loadSectionsAndVideos();
-                        window.loadSettings();
-                    } else {
-                        resultDiv.className = 'result-error';
-                        resultDiv.innerHTML = '❌ Неверный логин или пароль.';
-                    }
-                })
-                .catch(function(err) {
-                    resultDiv.className = 'result-error';
-                    resultDiv.innerHTML = '❌ Ошибка: ' + err.message;
-                });
-        });
-
-        document.getElementById('backToDashboard').addEventListener('click', function() {
-            sectionPage.classList.remove('active');
-            mainContent.style.display = 'block';
-            dashboard.style.display = 'block';
-            if (currentUser && currentUser.role === 'admin') adminPanel.style.display = 'block';
-        });
-
+        // Модалка теории уже есть в коде, но дублируем для ясности
+        
         // ==========================================
         // МОДАЛЬНОЕ ОКНО ВЫДАЧИ ДЗ
         // ==========================================
@@ -3333,7 +3271,7 @@
         window.loadStudentsForSelect = async function() {
             const select = document.getElementById('studentSelect');
             try {
-                const { data, error } = await supabase.from('students').select('id, name').order('name');
+                const { data, error } = await supabase.from('students').select('id, name').eq('role', 'student').order('name');
                 if (error) throw error;
                 select.innerHTML = '<option value="">Выберите ученика</option>';
                 data.forEach(function(student) {
@@ -3419,7 +3357,7 @@
             
             var students = [];
             if (target === 'all') {
-                var studentResult = await supabase.from('students').select('id');
+                var studentResult = await supabase.from('students').select('id').eq('role', 'student');
                 if (studentResult.error) { alert('❌ Ошибка загрузки учеников: ' + studentResult.error.message); return; }
                 students = studentResult.data;
             } else {
@@ -3458,11 +3396,76 @@
         };
 
         // ==========================================
+        // АВТОРИЗАЦИЯ
+        // ==========================================
+
+        document.getElementById('loginBtn').addEventListener('click', function() {
+            var email = document.getElementById('email').value;
+            var password = document.getElementById('password').value;
+            resultDiv.className = 'result-info';
+            resultDiv.innerHTML = '⏳ Проверяю...';
+            supabase
+                .from('students')
+                .select('*')
+                .eq('email', email)
+                .eq('password', password)
+                .then(function(response) {
+                    if (response.error) {
+                        resultDiv.className = 'result-error';
+                        resultDiv.innerHTML = '❌ Ошибка: ' + response.error.message;
+                        return;
+                    }
+                    if (response.data && response.data.length > 0) {
+                        var user = response.data[0];
+                        currentUser = user;
+                        resultDiv.className = 'result-success';
+                        resultDiv.innerHTML = '✅ Привет, ' + user.name + '!';
+                        document.getElementById('profileBlock').style.display = 'none';
+                        document.getElementById('contactsBlock').style.display = 'none';
+                        document.getElementById('loginSection').style.display = 'none';
+                        document.getElementById('dashboard').style.display = 'block';
+                        welcomeMessage.textContent = '👋 Привет, ' + user.name + '!';
+                        
+                        if (user.role === 'admin') {
+                            document.getElementById('adminPanel').style.display = 'block';
+                            document.getElementById('adminTheoryControls').style.display = 'block';
+                            window.loadAdminData();
+                            window.loadTeacherSettings();
+                        } else {
+                            document.getElementById('adminTheoryControls').style.display = 'none';
+                        }
+                        
+                        window.loadWhiteboard();
+                        window.loadTheory();
+                        window.loadHomework(user.id);
+                        window.loadDashboardOverview(user.id);
+                        window.loadStudentSchedule(user.id);
+                        window.loadSectionsAndVideos();
+                        window.loadSettings();
+                    } else {
+                        resultDiv.className = 'result-error';
+                        resultDiv.innerHTML = '❌ Неверный логин или пароль.';
+                    }
+                })
+                .catch(function(err) {
+                    resultDiv.className = 'result-error';
+                    resultDiv.innerHTML = '❌ Ошибка: ' + err.message;
+                });
+        });
+
+        document.getElementById('backToDashboard').addEventListener('click', function() {
+            sectionPage.classList.remove('active');
+            mainContent.style.display = 'block';
+            dashboard.style.display = 'block';
+            if (currentUser && currentUser.role === 'admin') adminPanel.style.display = 'block';
+        });
+
+        // ==========================================
         // АДМИНКА - ЗАГРУЗКА ВСЕХ ДАННЫХ
         // ==========================================
 
         window.loadAdminData = function() {
-            window.loadStudents();
+            window.loadMyStudents();
             window.loadWhiteboardAdmin();
             window.loadAdminTheory();
             window.loadAllHomeworks();
@@ -3471,12 +3474,144 @@
             window.loadStats();
         };
 
+        // ==========================================
+        // ЗВЕЗДЫ (фон)
+        // ==========================================
+
+        (function generateStars() {
+            var container = document.getElementById('starsContainer');
+            var count = 150;
+            for (var i = 0; i < count; i++) {
+                var star = document.createElement('div');
+                star.className = 'star';
+                var size = Math.random() * 3 + 1;
+                star.style.width = size + 'px';
+                star.style.height = size + 'px';
+                star.style.left = Math.random() * 100 + '%';
+                star.style.top = Math.random() * 100 + '%';
+                star.style.setProperty('--duration', (Math.random() * 3 + 2) + 's');
+                star.style.animationDelay = (Math.random() * 3) + 's';
+                container.appendChild(star);
+            }
+        })();
+
+        // ==========================================
+        // ЗАГРУЗКА ПРИ СТАРТЕ
+        // ==========================================
+
         document.addEventListener('DOMContentLoaded', function() {
             window.loadTeacherSettings();
         });
 
-        console.log('Сайт загружен!');
+        console.log('✅ Сайт полностью загружен!');
+        console.log('📊 Используемые таблицы:');
+        console.log('  📋 my_students - ваш личный список учеников');
+        console.log('  🔑 students - доступ в систему (login/пароль)');
+        console.log('  🖊️ whiteboard_url - ссылки на доски (в students)');
+        console.log('  📝 homeworks - ДЗ (привязаны к students)');
+        console.log('  💬 messages - чат (students)');
+        console.log('  📅 schedule - расписание (students)');
     </script>
+
+    <!-- МОДАЛКА ТЕОРИИ -->
+    <div class="modal-overlay" id="theoryModal">
+        <div class="modal-content">
+            <h3>📖 Добавить теорию</h3>
+            
+            <div>
+                <label>Название:</label>
+                <input type="text" id="theoryTitle" placeholder="Например: Теорема Пифагора">
+            </div>
+            
+            <div>
+                <label>Содержание:</label>
+                <textarea id="theoryContent" rows="6" placeholder="Введите текст теории..."></textarea>
+            </div>
+            
+            <div>
+                <label>Раздел (необязательно):</label>
+                <select id="theorySection">
+                    <option value="">Без раздела</option>
+                </select>
+            </div>
+            
+            <div>
+                <label>📎 PDF файл с теорией:</label>
+                <input type="file" id="theoryFile" accept=".pdf">
+            </div>
+            
+            <div class="modal-actions">
+                <button class="cancel-btn" onclick="window.closeTheoryModal()">Отмена</button>
+                <button class="submit-btn" onclick="window.submitTheory()">✅ Добавить</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- МОДАЛКА ВЫДАЧИ ДЗ -->
+    <div class="modal-overlay" id="assignmentModal">
+        <div class="modal-content">
+            <h3>📝 Выдать домашнее задание</h3>
+            
+            <div>
+                <label>Кому выдаем:</label>
+                <select id="assignmentTarget">
+                    <option value="single">📌 Конкретному ученику</option>
+                    <option value="all">👥 Всем ученикам</option>
+                </select>
+            </div>
+            
+            <div id="studentSelectWrapper">
+                <label>Выберите ученика:</label>
+                <select id="studentSelect">
+                    <option value="">Загрузка...</option>
+                </select>
+            </div>
+            
+            <div>
+                <label>Номер раздела (для привязки к видео):</label>
+                <input type="number" id="sectionNumber" min="1" max="30" placeholder="Например: 1, 2, 3...">
+                <div class="preview-text" id="sectionPreview">Введите номер для просмотра раздела</div>
+            </div>
+            
+            <div>
+                <label>Название ДЗ:</label>
+                <input type="text" id="homeworkTitle" placeholder="Например: ДЗ к уроку 1">
+            </div>
+
+            <div>
+                <label>📝 Комментарий к ДЗ (для ученика):</label>
+                <textarea id="homeworkComment" rows="3" placeholder="Например: сделать номера 1, 3, 5, 7..."></textarea>
+            </div>
+            
+            <div>
+                <label>📎 PDF файл с ДЗ:</label>
+                <input type="file" id="pdfFile" accept=".pdf">
+            </div>
+            
+            <div>
+                <label>Срок выполнения:</label>
+                <div class="deadline-row">
+                    <input type="date" id="deadline">
+                    <label class="no-deadline-label">
+                        <input type="checkbox" id="noDeadline">
+                        Без дедлайна
+                    </label>
+                </div>
+            </div>
+            
+            <div class="modal-actions">
+                <button class="cancel-btn" onclick="window.closeAssignmentModal()">Отмена</button>
+                <button class="submit-btn" onclick="window.submitAssignment()">✅ Выдать ДЗ</button>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        © 2026 Математика с Никитой. Все права защищены.
+    </footer>
 
 </body>
 </html>
+        </div>
+
+    </div>
