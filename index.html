@@ -1,672 +1,3 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Математика с Никитой</title>
-    <link rel="preconnect" href="https://liqqdixrtvnrrvgkfvbn.supabase.co">
-    <link rel="preconnect" href="https://cdn.jsdelivr.net">
-    <link rel="dns-prefetch" href="https://liqqdixrtvnrrvgkfvbn.supabase.co">
-    <style>
-        /* ===== CSS ПЕРЕМЕННЫЕ ===== */
-        :root {
-            --primary: #667eea;
-            --primary-dark: #302b63;
-            --bg-dark: #0b0e1a;
-            --bg-card: rgba(255,255,255,0.05);
-            --text-light: #b0c4de;
-            --text-white: #ffffff;
-            --accent: #f5a623;
-            --success: #27ae60;
-            --danger: #e74c3c;
-            --radius: 24px;
-            --radius-sm: 12px;
-            --transition: 0.3s ease;
-        }
-
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: Arial, sans-serif; background: var(--bg-dark); color: var(--text-white); line-height: 1.6; min-height: 100vh; position: relative; overflow-x: hidden; }
-
-        .stars { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; background: transparent; }
-        .star { position: absolute; background: white; border-radius: 50%; animation: twinkle var(--duration) ease-in-out infinite alternate; }
-        @keyframes twinkle { 0% { opacity: 0.2; transform: scale(1); } 100% { opacity: 1; transform: scale(1.5); } }
-
-        .container { max-width: 1100px; margin: 0 auto; padding: 40px 20px; position: relative; z-index: 1; }
-
-        /* ===== КОМПОНЕНТЫ ===== */
-        header { background: linear-gradient(135deg, #0d1b2a, #1b2a4a, #0d1b2a); padding: 60px 20px; text-align: center; border-radius: var(--radius); margin-bottom: 40px; border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 0 60px rgba(48,43,99,0.3); }
-        header h1 { font-size: 48px; font-weight: 900; letter-spacing: 3px; }
-        header h1 span { color: var(--accent); text-shadow: 0 0 30px rgba(245,166,35,0.3); }
-        header p { font-size: 20px; opacity: 0.8; margin-top: 8px; color: var(--text-light); }
-
-        .profile { background: var(--bg-card); backdrop-filter: blur(10px); border-radius: var(--radius); padding: 40px; border: 1px solid rgba(255,255,255,0.1); display: flex; flex-wrap: wrap; gap: 40px; align-items: center; margin-bottom: 40px; }
-        .profile-avatar { width: 150px; height: 150px; border-radius: 50%; background: linear-gradient(135deg, var(--primary), #764ba2); display: flex; align-items: center; justify-content: center; flex-shrink: 0; overflow: hidden; }
-        .profile-avatar img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
-        .profile-avatar .avatar-emoji { font-size: 70px; }
-        .profile-info h2 { font-size: 32px; color: var(--text-white); }
-        .profile-info .badge { display: inline-block; background: linear-gradient(135deg, var(--accent), #f7c948); color: var(--bg-dark); padding: 4px 16px; border-radius: 30px; font-weight: 700; font-size: 14px; margin-top: 6px; }
-        .profile-info p { margin-top: 12px; font-size: 18px; color: var(--text-light); }
-        .profile-info ul { list-style: none; margin-top: 14px; }
-        .profile-info ul li { padding: 6px 0; font-size: 16px; color: #c0d0e0; }
-        .profile-info ul li::before { content: "✅ "; }
-
-        .contacts { background: var(--bg-card); backdrop-filter: blur(10px); border-radius: var(--radius); padding: 30px 40px; border: 1px solid rgba(255,255,255,0.1); margin-bottom: 40px; }
-        .contacts h3 { font-size: 24px; margin-bottom: 16px; color: var(--text-white); }
-        .contacts a { display: inline-block; margin-right: 20px; color: var(--text-light); text-decoration: none; font-weight: 600; padding: 8px 20px; border-radius: 30px; background: rgba(255,255,255,0.08); transition: var(--transition); }
-        .contacts a:hover { background: var(--primary-dark); color: var(--text-white); }
-
-        .login-section { background: var(--bg-card); backdrop-filter: blur(10px); border-radius: var(--radius); padding: 30px 40px; border: 1px solid rgba(255,255,255,0.1); margin-bottom: 40px; }
-        .login-section h3 { font-size: 24px; margin-bottom: 16px; color: var(--text-white); }
-        .login-section input { width: 100%; max-width: 320px; padding: 12px 18px; border: 1px solid rgba(255,255,255,0.1); border-radius: 30px; font-size: 16px; margin-bottom: 12px; display: block; background: rgba(255,255,255,0.05); color: var(--text-white); }
-        .login-section input:focus { border-color: var(--primary); outline: none; }
-        .login-section button { background: linear-gradient(135deg, var(--primary-dark), var(--primary)); color: white; border: none; padding: 12px 40px; border-radius: 30px; font-size: 18px; font-weight: 700; cursor: pointer; transition: var(--transition); }
-        .login-section button:hover { transform: scale(1.03); box-shadow: 0 0 40px rgba(102,126,234,0.4); }
-
-        /* ===== ДАШБОРД ===== */
-        #dashboard { background: var(--bg-card); backdrop-filter: blur(10px); border-radius: var(--radius); padding: 30px 40px; border: 1px solid rgba(255,255,255,0.1); display: none; margin-top: 40px; }
-        #dashboard .header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; margin-bottom: 20px; }
-
-        .dashboard-layout { display: flex; gap: 30px; margin-top: 20px; }
-        .dashboard-sidebar { width: 220px; flex-shrink: 0; display: flex; flex-direction: column; gap: 6px; }
-        .dashboard-sidebar button { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05); padding: 12px 18px; border-radius: var(--radius-sm); cursor: pointer; font-weight: 600; transition: var(--transition); color: #888; text-align: left; font-family: Arial, sans-serif; font-size: 15px; display: flex; align-items: center; gap: 12px; }
-        .dashboard-sidebar button:hover { background: rgba(255,255,255,0.05); color: var(--text-white); border-color: rgba(255,255,255,0.1); }
-        .dashboard-sidebar button.active { background: rgba(102,126,234,0.15); color: var(--text-white); border-color: rgba(102,126,234,0.2); }
-        .dashboard-sidebar button .badge { margin-left: auto; background: rgba(231,76,60,0.2); color: var(--danger); padding: 0 10px; border-radius: 50px; font-size: 12px; }
-        .dashboard-content { flex: 1; min-width: 0; }
-        .dashboard-content .section-title { font-size: 24px; font-weight: 700; margin-bottom: 20px; color: var(--text-white); }
-
-        /* ===== ВКЛАДКИ ДЗ ===== */
-        .hw-tabs { display: flex; gap: 10px; margin-bottom: 16px; flex-wrap: wrap; }
-        .hw-tab { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); padding: 10px 24px; border-radius: 30px; cursor: pointer; font-weight: 600; color: var(--text-light); font-family: Arial, sans-serif; font-size: 14px; transition: var(--transition); }
-        .hw-tab:hover { background: rgba(255,255,255,0.1); color: var(--text-white); }
-        .hw-tab.active { background: rgba(102,126,234,0.2) !important; color: var(--text-white) !important; border-color: rgba(102,126,234,0.3) !important; }
-
-        /* ===== СТАТИСТИКА ===== */
-        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 16px; margin-bottom: 24px; }
-        .stats-grid .stat-card { background: rgba(255,255,255,0.03); padding: 20px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.05); text-align: center; }
-        .stats-grid .stat-card .number { font-size: 32px; font-weight: 900; color: var(--text-white); }
-        .stats-grid .stat-card .label { color: #888; font-size: 13px; margin-top: 4px; }
-        .stats-grid .stat-card .icon { font-size: 28px; margin-bottom: 8px; }
-
-        /* ===== ТЕОРИЯ ===== */
-        .theory-item { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05); border-radius: 16px; padding: 20px; margin-bottom: 16px; transition: var(--transition); }
-        .theory-item:hover { background: rgba(255,255,255,0.06); border-color: rgba(102,126,234,0.2); }
-        .theory-item .theory-title { font-size: 20px; font-weight: 700; color: var(--accent); margin-bottom: 8px; }
-        .theory-item .theory-content { color: var(--text-light); line-height: 1.8; margin-bottom: 12px; white-space: pre-wrap; }
-        .theory-item .theory-file { display: inline-block; background: rgba(39,174,96,0.15); color: #7ddfa0; padding: 6px 16px; border-radius: 20px; text-decoration: none; font-size: 14px; }
-        .theory-item .theory-meta { color: #666; font-size: 13px; margin-top: 8px; }
-        .theory-item .theory-actions { margin-top: 12px; display: flex; gap: 8px; flex-wrap: wrap; }
-
-        /* ===== ВИДЕО ===== */
-        .video-tabs { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 10px; margin-bottom: 20px; }
-        .video-tabs button { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); padding: 14px 22px; border-radius: var(--radius-sm); cursor: pointer; font-weight: 700; font-size: 16px; transition: var(--transition); display: flex; align-items: center; gap: 10px; color: var(--text-light); box-shadow: 0 2px 8px rgba(0,0,0,0.2); text-align: left; font-family: Arial, sans-serif; }
-        .video-tabs button:hover { border-color: var(--primary); transform: translateY(-2px); box-shadow: 0 6px 20px rgba(102,126,234,0.2); background: rgba(102,126,234,0.1); color: var(--text-white); }
-        .video-tabs button .num { display: inline-flex; align-items: center; justify-content: center; width: 30px; height: 30px; background: rgba(255,255,255,0.1); color: var(--text-light); border-radius: 50%; font-size: 14px; font-weight: 900; flex-shrink: 0; }
-        .video-tabs button:hover .num { background: white; color: var(--primary-dark); }
-
-        .part-divider { font-size: 24px; font-weight: 900; color: var(--accent); margin: 30px 0 20px 0; padding: 12px 20px; background: rgba(245,166,35,0.1); border-radius: var(--radius-sm); border-left: 6px solid var(--accent); }
-
-        .video-item { padding: 20px; border: 1px solid rgba(255,255,255,0.1); border-radius: 16px; margin-bottom: 16px; background: rgba(255,255,255,0.05); }
-        .video-player-wrapper { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; border-radius: var(--radius-sm); margin-bottom: 12px; background: #000; }
-        .video-player-wrapper video, .video-player-wrapper iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; border-radius: var(--radius-sm); }
-        .video-item .video-title { color: var(--text-light); font-size: 18px; font-weight: 500; display: block; margin-bottom: 8px; }
-        .video-item .video-title:hover { color: var(--text-white); }
-        .video-item .video-homework { margin-top: 16px; padding: 16px 20px; background: rgba(39,174,96,0.1); border-radius: var(--radius-sm); border-left: 4px solid var(--success); color: #7ddfa0; font-size: 16px; }
-        .video-item .video-homework strong { color: var(--text-white); }
-        .video-item .video-fallback-link { margin-top: 12px; padding: 10px 14px; background: rgba(245,166,35,0.08); border-radius: 8px; border-left: 4px solid var(--accent); }
-        .video-item .video-fallback-link .label { color: var(--accent); font-weight: 600; }
-        .video-item .video-fallback-link a { color: #88ccff; word-break: break-all; text-decoration: none; }
-        .video-item .video-fallback-link a:hover { text-decoration: underline; }
-        .video-item .video-homework-link { margin-top: 12px; display: inline-block; background: var(--primary-dark); color: white; padding: 8px 20px; border-radius: 20px; text-decoration: none; font-weight: 600; transition: var(--transition); }
-        .video-item .video-homework-link:hover { background: var(--primary); }
-
-        /* ===== АДМИНКА ===== */
-        #adminPanel { background: var(--bg-card); backdrop-filter: blur(10px); border-radius: var(--radius); padding: 30px 40px; border: 1px solid rgba(255,255,255,0.1); display: none; margin-top: 40px; }
-        .admin-tabs { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 15px; }
-        .admin-tabs button { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.05); padding: 10px 20px; border-radius: 30px; cursor: pointer; font-weight: 600; transition: var(--transition); color: var(--text-light); font-family: Arial, sans-serif; font-size: 14px; }
-        .admin-tabs button:hover { background: var(--primary-dark); color: white; border-color: var(--primary); }
-        .admin-tabs button.active { background: var(--primary-dark); color: white; border-color: var(--primary); }
-        .admin-content { display: none; }
-        .admin-content.active { display: block; }
-        .admin-table { width: 100%; border-collapse: collapse; margin-top: 15px; }
-        .admin-table th, .admin-table td { padding: 10px; border-bottom: 1px solid rgba(255,255,255,0.05); text-align: left; color: #c0d0e0; }
-        .admin-table th { background: rgba(255,255,255,0.05); color: var(--text-white); }
-        .admin-btn { background: var(--primary-dark); color: white; border: none; padding: 8px 16px; border-radius: 20px; cursor: pointer; transition: var(--transition); font-family: Arial, sans-serif; font-size: 14px; }
-        .admin-btn:hover { background: var(--primary); }
-        .admin-btn.danger { background: var(--danger); }
-        .admin-btn.danger:hover { background: #c0392b; }
-        .admin-btn.success { background: var(--success); }
-        .admin-btn.success:hover { background: #1e8449; }
-
-        /* ===== МОДАЛКИ ===== */
-        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000; justify-content: center; align-items: center; }
-        .modal-overlay.active { display: flex; }
-        .modal-content { background: #1a1a2e; padding: 40px; border-radius: var(--radius); max-width: 600px; width: 90%; max-height: 90vh; overflow-y: auto; border: 1px solid rgba(255,255,255,0.1); }
-        .modal-content h3 { color: var(--accent); margin-bottom: 20px; }
-        .modal-content label { color: var(--text-light); display: block; margin-bottom: 8px; font-weight: 500; }
-        .modal-content input, .modal-content textarea {
-            width: 100%;
-            padding: 12px 16px;
-            background: rgba(255,255,255,0.08);
-            border: 1px solid rgba(255,255,255,0.15);
-            border-radius: 10px;
-            color: #ffffff !important;
-            font-size: 15px;
-            margin-bottom: 15px;
-            font-family: Arial, sans-serif;
-        }
-        .modal-content input:focus, .modal-content textarea:focus {
-            border-color: var(--primary);
-            outline: none;
-            box-shadow: 0 0 0 3px rgba(102,126,234,0.15);
-            background: rgba(255,255,255,0.12);
-        }
-        .modal-content select {
-            background: #2a2a4a !important;
-            color: #ffffff !important;
-            border: 1px solid rgba(255,255,255,0.15);
-            padding: 12px 16px;
-            border-radius: 10px;
-            font-size: 15px;
-            width: 100%;
-            appearance: auto;
-            cursor: pointer;
-            margin-bottom: 15px;
-            font-family: Arial, sans-serif;
-        }
-        .modal-content select option {
-            background: #1a1a2e !important;
-            color: #ffffff !important;
-            padding: 10px;
-        }
-        .modal-content select:focus {
-            border-color: var(--primary);
-            outline: none;
-            box-shadow: 0 0 0 3px rgba(102,126,234,0.15);
-        }
-        .modal-content .preview-text { margin-top: -10px; margin-bottom: 15px; font-size: 14px; color: #666; }
-        .modal-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 10px; }
-        .modal-actions button { padding: 12px 30px; border: none; border-radius: var(--radius-sm); color: #fff; font-weight: 700; cursor: pointer; transition: var(--transition); font-family: Arial, sans-serif; font-size: 14px; }
-        .modal-actions .cancel-btn { background: rgba(255,255,255,0.1); }
-        .modal-actions .cancel-btn:hover { background: rgba(255,255,255,0.2); }
-        .modal-actions .submit-btn { background: linear-gradient(135deg, var(--primary-dark), var(--primary)); }
-        .modal-actions .submit-btn:hover { transform: scale(1.02); box-shadow: 0 0 30px rgba(102,126,234,0.3); }
-
-        /* ===== КАЛЕНДАРЬ ===== */
-        .calendar-controls {
-            display: flex;
-            gap: 12px;
-            align-items: center;
-            flex-wrap: wrap;
-            margin-bottom: 20px;
-        }
-        .calendar-controls select {
-            padding: 8px 16px;
-            background: rgba(255,255,255,0.05);
-            border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 10px;
-            color: #fff;
-            font-size: 14px;
-            font-family: Arial, sans-serif;
-        }
-        .calendar-controls button {
-            background: rgba(255,255,255,0.05);
-            border: 1px solid rgba(255,255,255,0.1);
-            padding: 8px 16px;
-            border-radius: 10px;
-            color: #fff;
-            cursor: pointer;
-            transition: 0.3s;
-            font-family: Arial, sans-serif;
-        }
-        .calendar-controls button:hover {
-            background: rgba(255,255,255,0.15);
-        }
-        #calendarMonth {
-            font-size: 18px;
-            font-weight: 700;
-            color: #f5a623;
-            min-width: 150px;
-            text-align: center;
-        }
-        .calendar-grid {
-            background: rgba(255,255,255,0.03);
-            border-radius: 12px;
-            padding: 12px;
-            overflow: hidden;
-        }
-        .calendar-header {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            gap: 4px;
-            margin-bottom: 8px;
-        }
-        .calendar-header div {
-            text-align: center;
-            color: #888;
-            font-weight: 600;
-            font-size: 14px;
-            padding: 8px 0;
-        }
-        #calendarDays {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            gap: 4px;
-        }
-        .calendar-day {
-            aspect-ratio: 1;
-            min-height: 60px;
-            background: rgba(255,255,255,0.03);
-            border-radius: 8px;
-            padding: 4px;
-            cursor: pointer;
-            transition: 0.3s;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: flex-start;
-            position: relative;
-            border: 1px solid transparent;
-        }
-        .calendar-day:hover {
-            background: rgba(255,255,255,0.08);
-            border-color: rgba(102,126,234,0.3);
-        }
-        .calendar-day.empty {
-            background: transparent;
-            cursor: default;
-        }
-        .calendar-day.empty:hover {
-            background: transparent;
-            border-color: transparent;
-        }
-        .calendar-day .day-number {
-            font-size: 14px;
-            font-weight: 600;
-            color: #b0c4de;
-            margin-bottom: 2px;
-        }
-        .calendar-day .lesson-indicator {
-            font-size: 16px;
-        }
-        .calendar-day .lesson-topic {
-            font-size: 9px;
-            color: #666;
-            text-align: center;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-            max-width: 100%;
-            padding: 0 2px;
-        }
-        .calendar-day.completed {
-            border-color: rgba(46,204,113,0.3);
-            background: rgba(46,204,113,0.08);
-        }
-        .calendar-day.planned {
-            border-color: rgba(245,166,35,0.3);
-            background: rgba(245,166,35,0.08);
-        }
-        .calendar-day.cancelled {
-            border-color: rgba(231,76,60,0.3);
-            background: rgba(231,76,60,0.08);
-            opacity: 0.6;
-        }
-        .calendar-day.today {
-            border-color: #667eea;
-            box-shadow: 0 0 20px rgba(102,126,234,0.2);
-        }
-        .lesson-stats {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 16px;
-            margin-top: 20px;
-        }
-
-        /* ===== ШАБЛОНЫ ===== */
-        .template-card {
-            background: rgba(255,255,255,0.03);
-            border: 1px solid rgba(255,255,255,0.05);
-            border-radius: 16px;
-            padding: 20px;
-            transition: 0.3s;
-        }
-        .template-card:hover {
-            background: rgba(255,255,255,0.06);
-            border-color: rgba(102,126,234,0.2);
-        }
-        .template-card .template-name {
-            font-size: 20px;
-            font-weight: 700;
-            color: #ffffff;
-        }
-        .template-card .template-score {
-            color: #f5a623;
-            font-size: 14px;
-            margin-top: 4px;
-        }
-        .template-card .template-meta {
-            color: #888;
-            font-size: 13px;
-            margin-top: 8px;
-        }
-        .template-card .template-actions {
-            margin-top: 12px;
-            display: flex;
-            gap: 8px;
-        }
-
-        /* ===== ПЛАН ПОДГОТОВКИ ===== */
-        .plan-settings {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 16px;
-            margin-bottom: 24px;
-            background: rgba(255,255,255,0.03);
-            padding: 20px;
-            border-radius: 12px;
-        }
-        .plan-settings label {
-            color: #888;
-            font-size: 13px;
-            display: block;
-            margin-bottom: 4px;
-        }
-        .plan-settings select,
-        .plan-settings input {
-            width: 100%;
-            padding: 8px 12px;
-            background: rgba(255,255,255,0.05);
-            border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 8px;
-            color: #fff;
-            font-size: 14px;
-            font-family: Arial, sans-serif;
-        }
-        .plan-settings select:focus,
-        .plan-settings input:focus {
-            border-color: var(--primary);
-            outline: none;
-        }
-
-        /* ===== ОСТАЛЬНЫЕ СТИЛИ ===== */
-        .hw-card { padding: 16px; border: 1px solid rgba(255,255,255,0.05); border-radius: var(--radius-sm); margin-bottom: 12px; background: rgba(255,255,255,0.03); }
-        .hw-card .title { font-size: 18px; font-weight: 700; color: var(--text-white); }
-        .hw-card .meta { color: #888; font-size: 14px; margin: 4px 0; }
-        .hw-card .meta.comment { color: var(--accent); border-left: 3px solid var(--accent); padding-left: 10px; margin-top: 6px; }
-        .hw-card .status.done { color: #2ecc71; }
-        .hw-card .status.pending { color: #f39c12; }
-        .hw-card .hw-actions { margin-top: 10px; display: flex; gap: 8px; flex-wrap: wrap; }
-
-        .deadline-card { background: rgba(245,166,35,0.08); border: 1px solid rgba(245,166,35,0.15); border-radius: 16px; padding: 16px 20px; margin-bottom: 24px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; }
-        .deadline-card .label { color: var(--accent); font-weight: 600; }
-        .deadline-card .title { color: var(--text-white); font-weight: 600; }
-        .deadline-card .days { background: rgba(245,166,35,0.15); color: var(--accent); padding: 4px 14px; border-radius: 50px; font-size: 13px; }
-
-        .empty-state { text-align: center; padding: 40px 20px; color: #666; }
-        .empty-state .icon { font-size: 48px; display: block; margin-bottom: 12px; }
-        .empty-state .title { font-size: 18px; color: var(--text-light); font-weight: 600; }
-        .empty-state .desc { font-size: 14px; color: #666; margin-top: 4px; }
-
-        .homework-controls { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 20px; }
-        .deadline-row { display: flex; align-items: center; gap: 15px; flex-wrap: wrap; }
-        .deadline-row input[type="date"] { flex: 1; min-width: 150px; margin-bottom: 0; }
-        .deadline-row .no-deadline-label { display: flex; align-items: center; gap: 8px; cursor: pointer; color: var(--text-light); font-size: 14px; margin: 0; white-space: nowrap; }
-        .deadline-row .no-deadline-label input[type="checkbox"] { width: 18px; height: 18px; margin: 0; cursor: pointer; flex-shrink: 0; }
-
-        .settings-group { background: rgba(255,255,255,0.02); border-radius: 16px; padding: 24px; border: 1px solid rgba(255,255,255,0.05); margin-bottom: 24px; }
-        .settings-group h4 { color: var(--accent); margin-bottom: 16px; }
-        .settings-group label { color: #888; font-size: 13px; display: block; margin-bottom: 4px; }
-        .settings-group input[type="text"], .settings-group input[type="email"] { width: 100%; padding: 10px 14px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; color: #fff; font-size: 15px; }
-        .settings-group input:disabled { opacity: 0.5; cursor: not-allowed; }
-        .settings-group input:focus { border-color: var(--primary); outline: none; }
-        .settings-checkbox { display: flex; align-items: center; gap: 12px; cursor: pointer; color: var(--text-light); font-size: 15px; padding: 6px 0; }
-        .settings-checkbox input[type="checkbox"] { width: 18px; height: 18px; cursor: pointer; accent-color: var(--primary); }
-
-        .settings-avatar-container { display: flex; flex-direction: column; align-items: center; gap: 15px; }
-        .settings-avatar-container .avatar-preview { width: 150px; height: 150px; border-radius: 50%; background: linear-gradient(135deg, var(--primary), #764ba2); display: flex; align-items: center; justify-content: center; font-size: 60px; border: 3px solid rgba(255,255,255,0.1); overflow: hidden; }
-        .settings-avatar-container .avatar-preview img { width: 100%; height: 100%; object-fit: cover; }
-        .settings-avatar-container input[type="file"] { padding: 10px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: var(--radius-sm); color: #fff; cursor: pointer; font-family: Arial, sans-serif; font-size: 14px; width: 100%; }
-        .settings-avatar-container .btn-group { display: flex; gap: 10px; flex-wrap: wrap; width: 100%; }
-        .settings-avatar-container .btn-group .admin-btn { flex: 1; text-align: center; }
-        .settings-info { display: flex; flex-direction: column; gap: 12px; }
-        .settings-info label { color: var(--text-light); font-size: 14px; display: block; margin-bottom: 4px; }
-        .settings-info input, .settings-info textarea { width: 100%; padding: 10px 16px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: var(--radius-sm); color: #fff; font-size: 14px; font-family: Arial, sans-serif; }
-        .settings-info input:focus, .settings-info textarea:focus { border-color: var(--primary); outline: none; }
-
-        .my-students-table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 14px; }
-        .my-students-table th, .my-students-table td { padding: 10px 12px; border-bottom: 1px solid rgba(255,255,255,0.05); text-align: left; color: #c0d0e0; }
-        .my-students-table th { background: rgba(255,255,255,0.05); color: var(--accent); font-weight: 700; }
-        .my-students-table .status-badge { padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; }
-        .my-students-table .status-badge.active { background: rgba(46,204,113,0.2); color: #2ecc71; }
-        .my-students-table .status-badge.inactive { background: rgba(231,76,60,0.2); color: #f1948a; }
-
-        .schedule-table-wrap { overflow-x: auto; }
-        .schedule-table { width: 100%; border-collapse: collapse; background: rgba(255,255,255,0.03); border-radius: var(--radius-sm); overflow: hidden; font-size: 14px; }
-        .schedule-table th, .schedule-table td { border: 1px solid rgba(255,255,255,0.08); padding: 10px 8px; text-align: center; min-width: 80px; }
-        .schedule-table th { background: rgba(255,255,255,0.06); color: var(--accent); font-weight: 700; font-size: 15px; }
-        .schedule-table td { color: var(--text-light); vertical-align: middle; }
-        .schedule-table .row-num { color: #666; font-weight: 700; min-width: 40px; }
-        .schedule-table .cell-empty { color: #444; }
-        .schedule-table .cell-occupied { color: #7ddfa0; background: rgba(39,174,96,0.1); border-color: rgba(39,174,96,0.15); }
-        .schedule-table .cell-occupied .student-name { color: var(--text-white); }
-        .schedule-table .cell-occupied .topic { color: #7ddfa0; font-size: 12px; }
-        .schedule-table td .cell-content { display: flex; flex-direction: column; gap: 2px; cursor: pointer; padding: 4px; border-radius: 6px; }
-        .schedule-table td .cell-content:hover { background: rgba(255,255,255,0.05); }
-        .schedule-table td .cell-content .student-name { font-weight: 600; color: var(--text-white); font-size: 14px; }
-        .schedule-table td .cell-content .topic { font-size: 12px; color: #888; }
-        .schedule-table td .cell-content .empty-text { color: #444; font-size: 12px; }
-
-        .schedule-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 20px; align-items: center; }
-        .schedule-actions button { background: var(--primary-dark); color: white; border: none; padding: 10px 24px; border-radius: 30px; cursor: pointer; font-weight: 600; transition: var(--transition); }
-        .schedule-actions button:hover { background: var(--primary); transform: scale(1.02); }
-
-        #sectionPage { display: none; background: var(--bg-card); backdrop-filter: blur(10px); border-radius: var(--radius); padding: 30px 40px; border: 1px solid rgba(255,255,255,0.1); margin-top: 40px; }
-        #sectionPage.active { display: block; }
-        #sectionPage .back-btn { background: none; border: none; color: var(--accent); font-size: 18px; cursor: pointer; font-weight: 600; padding: 10px 0; transition: var(--transition); display: block; text-align: left; }
-        #sectionPage .back-btn:hover { color: var(--text-white); }
-        #sectionPage .section-title { font-size: 32px; color: var(--accent); margin-bottom: 30px; text-align: center; text-shadow: 0 0 30px rgba(245,166,35,0.2); }
-
-        .section-progress { background: rgba(255,255,255,0.03); border-radius: var(--radius-sm); padding: 14px 18px; margin-bottom: 10px; border: 1px solid rgba(255,255,255,0.05); display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
-        .section-progress .name { min-width: 140px; color: var(--text-light); font-weight: 600; font-size: 14px; }
-        .section-progress .bar-wrap { flex: 1; min-width: 100px; height: 8px; background: rgba(255,255,255,0.05); border-radius: 10px; overflow: hidden; }
-        .section-progress .bar-wrap .fill { height: 100%; border-radius: 10px; transition: width 0.8s ease; }
-        .section-progress .bar-wrap .fill.green { background: linear-gradient(90deg, var(--success), #2ecc71); }
-        .section-progress .bar-wrap .fill.yellow { background: linear-gradient(90deg, #f39c12, #f1c40f); }
-        .section-progress .bar-wrap .fill.red { background: linear-gradient(90deg, var(--danger), #c0392b); }
-        .section-progress .percent { min-width: 50px; text-align: right; font-weight: 700; font-size: 14px; color: var(--text-light); }
-        .section-progress .status-icon { font-size: 18px; }
-
-        .achievement-card { display: inline-flex; align-items: center; gap: 12px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05); border-radius: 50px; padding: 8px 20px 8px 12px; margin: 0 8px 8px 0; }
-        .achievement-card:hover { background: rgba(255,255,255,0.06); border-color: rgba(245,166,35,0.2); }
-        .achievement-card .icon { font-size: 24px; }
-        .achievement-card .info { font-size: 13px; color: var(--text-light); }
-        .achievement-card .info .name { font-weight: 600; color: var(--text-white); }
-        .achievement-card.locked { opacity: 0.3; filter: grayscale(1); }
-
-        .activity-bars { display: flex; gap: 8px; justify-content: space-around; align-items: flex-end; height: 120px; padding: 10px 0; }
-        .activity-bars .bar-item { display: flex; flex-direction: column; align-items: center; gap: 6px; flex: 1; }
-        .activity-bars .bar-item .bar { width: 24px; border-radius: 6px 6px 0 0; background: linear-gradient(180deg, var(--primary), #764ba2); transition: height 0.8s ease; min-height: 4px; }
-        .activity-bars .bar-item .label { font-size: 11px; color: #666; }
-        .activity-bars .bar-item .value { font-size: 11px; color: var(--text-light); font-weight: 600; }
-
-        .whiteboard-section { margin-top: 30px; background: rgba(255,255,255,0.03); border-radius: 16px; padding: 20px; border: 1px solid rgba(255,255,255,0.05); }
-        .whiteboard-section h3 { color: var(--accent); margin-bottom: 12px; font-size: 20px; }
-        .whiteboard-section .whiteboard-link { display: block; padding: 12px 16px; background: rgba(102,126,234,0.1); border-radius: 10px; border: 1px solid rgba(102,126,234,0.2); color: #88ccff; text-decoration: none; font-size: 16px; transition: var(--transition); word-break: break-all; }
-        .whiteboard-section .whiteboard-link:hover { background: rgba(102,126,234,0.2); border-color: rgba(102,126,234,0.4); }
-        .whiteboard-section .whiteboard-empty { color: #666; font-size: 14px; padding: 12px; text-align: center; }
-
-        .whiteboard-admin-item { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.04); }
-        .whiteboard-admin-item .student-name { min-width: 120px; color: var(--text-light); font-weight: 600; }
-        .whiteboard-admin-item input { flex: 1; min-width: 200px; padding: 6px 12px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; color: #fff; font-size: 13px; }
-        .whiteboard-admin-item input:focus { border-color: var(--primary); outline: none; }
-        .whiteboard-admin-item .admin-btn { padding: 4px 14px; font-size: 12px; }
-        .whiteboard-admin-item .whiteboard-link-small { color: #88ccff; text-decoration: none; font-size: 13px; max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-        .whiteboard-admin-item .whiteboard-link-small:hover { text-decoration: underline; }
-
-        .comments-section { margin-top: 14px; padding-top: 14px; border-top: 1px solid rgba(255,255,255,0.05); }
-        .comments-section .comments-title { color: #888; font-size: 14px; font-weight: 600; margin-bottom: 10px; }
-        .comment-item { background: rgba(255,255,255,0.03); border-radius: 10px; padding: 10px 14px; margin-bottom: 8px; border: 1px solid rgba(255,255,255,0.04); }
-        .comment-item .comment-header { display: flex; justify-content: space-between; align-items: center; font-size: 12px; color: #666; margin-bottom: 4px; }
-        .comment-item .comment-header .author { font-weight: 600; color: var(--text-light); }
-        .comment-item .comment-header .author.admin { color: var(--accent); }
-        .comment-item .comment-text { color: #c0d0e0; font-size: 14px; }
-        .comment-item .comment-time { font-size: 11px; color: #555; }
-        .comment-input-wrap { display: flex; gap: 10px; margin-top: 10px; }
-        .comment-input-wrap input { flex: 1; padding: 8px 14px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08); border-radius: 20px; color: #fff; font-size: 14px; outline: none; }
-        .comment-input-wrap input:focus { border-color: var(--primary); background: rgba(255,255,255,0.08); }
-        .comment-input-wrap input::placeholder { color: #555; }
-        .comment-input-wrap button { background: linear-gradient(135deg, var(--primary-dark), var(--primary)); color: white; border: none; padding: 8px 20px; border-radius: 20px; cursor: pointer; font-weight: 600; font-size: 13px; transition: var(--transition); white-space: nowrap; }
-        .comment-input-wrap button:hover { transform: scale(1.03); box-shadow: 0 4px 20px rgba(102,126,234,0.3); }
-
-        .chat-user-item { padding: 14px 18px; background: rgba(255,255,255,0.03); border-radius: var(--radius-sm); cursor: pointer; border: 1px solid rgba(255,255,255,0.05); transition: var(--transition); display: flex; justify-content: space-between; align-items: center; }
-        .chat-user-item:hover { background: rgba(255,255,255,0.06); border-color: rgba(102,126,234,0.3); transform: translateX(4px); }
-        .chat-user-item .user-info { display: flex; align-items: center; gap: 12px; }
-        .chat-user-item .user-avatar { width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 16px; color: white; flex-shrink: 0; }
-        .chat-user-item .user-avatar.blue { background: linear-gradient(135deg, #4a7cf7, #6c5ce7); }
-        .chat-user-item .user-avatar.green { background: linear-gradient(135deg, #00b894, #00cec9); }
-        .chat-user-item .user-avatar.pink { background: linear-gradient(135deg, #fd79a8, #e17055); }
-        .chat-user-item .user-avatar.orange { background: linear-gradient(135deg, #fdcb6e, #e17055); }
-        .chat-user-item .user-avatar.purple { background: linear-gradient(135deg, #a29bfe, #6c5ce7); }
-        .chat-user-item .user-name { color: var(--text-white); font-weight: 600; }
-        .chat-user-item .unread-count { background: var(--danger); color: white; padding: 2px 10px; border-radius: 30px; font-size: 12px; font-weight: 700; }
-        .chat-user-item .last-msg { color: #666; font-size: 13px; max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-
-        .chat-window { display: none; background: rgba(255,255,255,0.02); border-radius: 16px; border: 1px solid rgba(255,255,255,0.05); overflow: hidden; }
-        .chat-window .chat-header { display: flex; justify-content: space-between; align-items: center; padding: 16px 20px; background: rgba(255,255,255,0.03); border-bottom: 1px solid rgba(255,255,255,0.05); }
-        .chat-window .chat-header .chat-partner { display: flex; align-items: center; gap: 12px; }
-        .chat-window .chat-header .chat-partner .avatar { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 14px; color: white; }
-        .chat-window .chat-header .chat-partner .avatar.blue { background: linear-gradient(135deg, #4a7cf7, #6c5ce7); }
-        .chat-window .chat-header .chat-partner .avatar.green { background: linear-gradient(135deg, #00b894, #00cec9); }
-        .chat-window .chat-header .chat-partner .avatar.pink { background: linear-gradient(135deg, #fd79a8, #e17055); }
-        .chat-window .chat-header .chat-partner .avatar.orange { background: linear-gradient(135deg, #fdcb6e, #e17055); }
-        .chat-window .chat-header .chat-partner .avatar.purple { background: linear-gradient(135deg, #a29bfe, #6c5ce7); }
-        .chat-window .chat-header .chat-partner .name { color: var(--text-white); font-weight: 600; font-size: 16px; }
-        .chat-window .chat-header .close-btn { background: none; border: none; color: #888; font-size: 20px; cursor: pointer; padding: 4px 10px; border-radius: 8px; }
-        .chat-window .chat-header .close-btn:hover { color: var(--text-white); background: rgba(255,255,255,0.05); }
-
-        .chat-messages { max-height: 400px; overflow-y: auto; padding: 16px 20px; min-height: 200px; }
-        .chat-messages .empty { color: #666; text-align: center; padding: 40px 0; }
-        .chat-message { display: flex; margin-bottom: 10px; }
-        .chat-message .bubble { max-width: 75%; padding: 10px 16px; border-radius: 14px; word-wrap: break-word; }
-        .chat-message .bubble .text { font-size: 14px; color: #c0d0e0; line-height: 1.5; }
-        .chat-message .bubble .time { font-size: 10px; color: #555; text-align: right; margin-top: 4px; }
-        .chat-message.mine { justify-content: flex-end; }
-        .chat-message.mine .bubble { background: rgba(102,126,234,0.2); border: 1px solid rgba(102,126,234,0.1); }
-        .chat-message.other .bubble { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.05); }
-        .chat-input-wrap { display: flex; gap: 10px; padding: 12px 20px; border-top: 1px solid rgba(255,255,255,0.05); }
-        .chat-input-wrap input { flex: 1; padding: 10px 16px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08); border-radius: 20px; color: #fff; font-size: 14px; outline: none; }
-        .chat-input-wrap input:focus { border-color: var(--primary); background: rgba(255,255,255,0.08); }
-        .chat-input-wrap input::placeholder { color: #555; }
-        .chat-input-wrap button { background: linear-gradient(135deg, var(--primary-dark), var(--primary)); color: white; border: none; padding: 10px 24px; border-radius: 20px; cursor: pointer; font-weight: 600; font-size: 14px; transition: var(--transition); }
-        .chat-input-wrap button:hover { transform: scale(1.03); box-shadow: 0 4px 20px rgba(102,126,234,0.3); }
-
-        footer { text-align: center; padding: 30px 20px; color: #666; font-size: 14px; border-top: 1px solid rgba(255,255,255,0.05); margin-top: 40px; }
-
-        @media (max-width: 700px) {
-            header h1 { font-size: 28px; }
-            .profile { flex-direction: column; text-align: center; }
-            .profile-avatar { width: 120px; height: 120px; }
-            .profile-avatar .avatar-emoji { font-size: 50px; }
-            .contacts a { display: block; margin: 8px 0; text-align: center; }
-            .admin-tabs { flex-direction: column; }
-            .video-tabs { grid-template-columns: 1fr; }
-            .video-tabs button { font-size: 14px; padding: 10px 14px; }
-            .schedule-table { font-size: 12px; }
-            .schedule-table th, .schedule-table td { padding: 6px 4px; min-width: 60px; }
-            .modal-content { padding: 20px; }
-            .deadline-row { flex-direction: column; align-items: stretch; }
-            .deadline-row input[type="date"] { width: 100%; }
-            .settings-avatar-container .btn-group .admin-btn { flex: 1; }
-            .dashboard-layout { flex-direction: column; }
-            .dashboard-sidebar { width: 100%; flex-direction: row; flex-wrap: wrap; }
-            .dashboard-sidebar button { flex: 1; min-width: 120px; justify-content: center; font-size: 13px; padding: 10px 14px; }
-            .dashboard-sidebar button .badge { margin-left: 6px; }
-            .deadline-card { flex-direction: column; text-align: center; }
-            .stats-grid { grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); }
-            .section-progress { flex-direction: column; align-items: stretch; text-align: center; }
-            .section-progress .bar-wrap { min-width: 60px; }
-            .section-progress .percent { text-align: center; }
-            .activity-bars { height: 80px; }
-            .activity-bars .bar-item .bar { width: 18px; }
-            .achievement-card { font-size: 12px; padding: 6px 14px 6px 10px; }
-            .achievement-card .icon { font-size: 18px; }
-            .comment-input-wrap { flex-direction: column; }
-            .comment-input-wrap button { width: 100%; }
-            .chat-message .bubble { max-width: 85%; }
-            .chat-user-item .last-msg { max-width: 100px; }
-            .whiteboard-admin-item { flex-direction: column; align-items: stretch; }
-            .whiteboard-admin-item .student-name { min-width: unset; }
-            .whiteboard-admin-item input { min-width: unset; }
-            .whiteboard-admin-item .whiteboard-link-small { max-width: unset; }
-            .hw-tabs { flex-wrap: wrap; }
-            .hw-tab { flex: 1; min-width: 100px; text-align: center; }
-            .hw-card .hw-actions { flex-direction: column; }
-            .hw-card .hw-actions button { width: 100%; }
-            .calendar-day { min-height: 40px; font-size: 12px; }
-            .calendar-day .day-number { font-size: 11px; }
-            .calendar-day .lesson-indicator { font-size: 12px; }
-            .calendar-day .lesson-topic { font-size: 7px; }
-            .calendar-controls { gap: 8px; }
-            #calendarMonth { font-size: 14px; min-width: 100px; }
-            .plan-settings { grid-template-columns: 1fr; }
-            .template-card { padding: 16px; }
-        }
-    </style>
-</head>
-<body>
-
-    <div class="stars" id="starsContainer"></div>
-
-    <div class="container">
-
-        <header>
-            <h1>📐 Математика с <span>Никитой</span></h1>
-            <p>Подготовка к ЕГЭ по профильной математике на 90+ баллов</p>
-        </header>
-
-        <div id="mainContent">
-            <div class="profile" id="profileBlock">
-                <div class="profile-avatar" id="profileAvatar">
-                    <img id="profileAvatarImg" style="display:none; width:100%; height:100%; object-fit:cover; border-radius:50%;" alt="Аватар">
-                    <span class="avatar-emoji" id="profileAvatarEmoji">👨‍🏫</span>
-                </div>
-                <div class="profile-info">
-                    <h2 id="teacherNameDisplay">Никита</h2>
-                    <span class="badge">⭐ Репетитор со стажем 1.5 года</span>
-                    <p id="teacherDescDisplay">Учусь в Московском энергетическом институте (МЭИ) на направлении «Ядерная физика». Готовлю учеников к ЕГЭ по профильной математике с 2025 года.</p>
-                    <ul>
-                        <li>10+ выпущенных учеников</li>
-                        <li>3 ученика набрали 100 баллов</li>
-                        <li>Автор собственной методики подготовки</li>
-                    </ul>
-                </div>
-            </div>
-
-            <div class="contacts" id="contactsBlock">
-                <h3>📬 Связаться со мной</h3>
-                <a href="tel:+79916834922">📞 +7 991 683-49-22</a>
-                <a href="https://t.me/Nikita_Lysikov" target="_blank">💬 Telegram</a>
-                <a href="mailto:nlysi6233@gmail.com">📧 nlysi6233@gmail.com</a>
-            </div>
-
-            <div class="login-section" id="loginSection">
-                <h3>🔐 Войти в личный кабинет</h3>
-                <input type="email" id="email" placeholder="Email" value="">
-                <input type="password" id="password" placeholder="Пароль" value="">
-                <button id="loginBtn">Войти</button>
-                <div id="result"></div>
-                <p style="margin-top: 14px; font-size: 14px; color: #888;">
-                    *Нет аккаунта? Напиши мне в Telegram — я добавлю тебя!
-                </p>
-            </div>
-        </div>
-
-        <div id="dashboard">
-            <div class="header">
-                <h3 id="welcomeMessage">👋 Привет!</h3>
-            </div>
-
             <div class="dashboard-layout">
                 <div class="dashboard-sidebar">
                     <button class="active" data-page="overview" onclick="window.switchDashboardPage('overview')">
@@ -690,7 +21,7 @@
                         <span class="badge" id="msgBadge">0</span>
                     </button>
                     <button data-page="myplan" onclick="window.switchDashboardPage('myplan')">
-                        📋 Мой план
+                        📅 Мой календарь
                     </button>
                     <button data-page="settings" onclick="window.switchDashboardPage('settings')">
                         ⚙️ Настройки
@@ -844,11 +175,30 @@
                         </div>
                     </div>
 
-                    <!-- ===== МОЙ ПЛАН ===== -->
+                    <!-- ===== МОЙ КАЛЕНДАРЬ ===== -->
                     <div id="page-myplan" class="dashboard-page" style="display:none;">
-                        <div class="section-title">📋 Мой план подготовки</div>
-                        <div id="studentPlanSummary">
-                            <p style="color:#666;">Загрузка...</p>
+                        <div class="section-title">📅 Мой календарь занятий</div>
+                        
+                        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; margin-bottom:16px;">
+                            <button onclick="window.prevStudentMonth()" style="background:none; border:1px solid rgba(255,255,255,0.1); color:#fff; padding:6px 16px; border-radius:8px; cursor:pointer;">◀</button>
+                            <span id="studentCalendarMonth" style="font-size:18px; font-weight:700; color:#f5a623;">Январь 2026</span>
+                            <button onclick="window.nextStudentMonth()" style="background:none; border:1px solid rgba(255,255,255,0.1); color:#fff; padding:6px 16px; border-radius:8px; cursor:pointer;">▶</button>
+                        </div>
+                        
+                        <div class="student-calendar-grid">
+                            <div style="text-align:center; color:#888; font-weight:600; font-size:13px; padding:4px;">ПН</div>
+                            <div style="text-align:center; color:#888; font-weight:600; font-size:13px; padding:4px;">ВТ</div>
+                            <div style="text-align:center; color:#888; font-weight:600; font-size:13px; padding:4px;">СР</div>
+                            <div style="text-align:center; color:#888; font-weight:600; font-size:13px; padding:4px;">ЧТ</div>
+                            <div style="text-align:center; color:#888; font-weight:600; font-size:13px; padding:4px;">ПТ</div>
+                            <div style="text-align:center; color:#888; font-weight:600; font-size:13px; padding:4px;">СБ</div>
+                            <div style="text-align:center; color:#888; font-weight:600; font-size:13px; padding:4px;">ВС</div>
+                            <div id="studentCalendarDays"></div>
+                        </div>
+                        
+                        <div id="studentDayLessons" style="margin-top:16px; display:none;">
+                            <h4 style="color:#f5a623;">📋 Занятия на день</h4>
+                            <div id="studentDayLessonsList"></div>
                         </div>
                     </div>
 
@@ -910,13 +260,7 @@
                 </div>
             </div>
 
-            <!-- РАСПИСАНИЕ -->
-            <div class="schedule-section" style="margin-top:30px;">
-                <h3>📅 Моё расписание</h3>
-                <div id="studentSchedule"><p>Загрузка...</p></div>
-            </div>
-
-            <!-- ВИДЕОУРОКИ -->
+            <!-- ВИДЕОУРОКИ (остаются для всех) -->
             <div class="video-section" style="margin-top:40px;">
                 <h3>🎥 Видеоуроки по темам</h3>
                 <div class="part-divider">📘 Первая часть</div>
@@ -925,8 +269,7 @@
                 <div class="video-tabs" id="videoTabsPart2"></div>
             </div>
         </div>
-
-        <!-- СТРАНИЦА РАЗДЕЛА -->
+                <!-- СТРАНИЦА РАЗДЕЛА -->
         <div id="sectionPage">
             <button class="back-btn" id="backToDashboard">← Назад к списку разделов</button>
             <div id="sectionContent">
@@ -944,7 +287,6 @@
                 <button data-tab="theory" onclick="window.switchAdminTab('theory')">📖 Теория</button>
                 <button data-tab="homeworks" onclick="window.switchAdminTab('homeworks')">📝 ДЗ</button>
                 <button data-tab="videos" onclick="window.switchAdminTab('videos')">🎥 Видео</button>
-                <button data-tab="schedule" onclick="window.switchAdminTab('schedule')">📅 Расписание</button>
                 <button data-tab="calendar" onclick="window.switchAdminTab('calendar')">📅 Календарь</button>
                 <button data-tab="studyplan" onclick="window.switchAdminTab('studyplan')">📚 План подготовки</button>
                 <button data-tab="templates" onclick="window.switchAdminTab('templates')">📚 Шаблоны</button>
@@ -986,14 +328,6 @@
                 <div id="videosList" style="margin-top:15px;">Загрузка...</div>
             </div>
             
-            <div class="admin-content" id="tab-schedule">
-                <div class="schedule-actions">
-                    <button class="admin-btn success" onclick="window.addScheduleRow()">➕ Добавить строку</button>
-                    <button class="admin-btn" onclick="window.loadScheduleAdmin()">🔄 Обновить</button>
-                </div>
-                <div id="scheduleList" style="margin-top:15px;">Загрузка...</div>
-            </div>
-            
             <div class="admin-content" id="tab-calendar">
                 <h3 style="color: #f5a623; margin-bottom: 20px;">📅 Календарь занятий</h3>
                 
@@ -1004,7 +338,7 @@
                     <button onclick="window.prevMonth()">◀</button>
                     <span id="calendarMonth">Январь 2026</span>
                     <button onclick="window.nextMonth()">▶</button>
-                    <button class="admin-btn success" onclick="window.addLesson()">➕ Добавить занятие</button>
+                    <button class="admin-btn success" onclick="window.showAddLessonModal()">➕ Добавить серию занятий</button>
                 </div>
                 
                 <div class="calendar-grid">
@@ -1273,6 +607,70 @@
         </div>
     </div>
 
+    <!-- МОДАЛКА ДОБАВЛЕНИЯ СЕРИИ ЗАНЯТИЙ -->
+    <div class="modal-overlay" id="addLessonModal">
+        <div class="modal-content">
+            <h3>📅 Добавить серию занятий</h3>
+            
+            <div class="form-group">
+                <label>👤 Ученик:</label>
+                <select id="lessonStudent">
+                    <option value="">Выберите ученика</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label>📚 Раздел (тема) — необязательно:</label>
+                <select id="lessonSection">
+                    <option value="">Без раздела</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label>📅 День недели:</label>
+                <select id="lessonDayOfWeek">
+                    <option value="1">Понедельник</option>
+                    <option value="2">Вторник</option>
+                    <option value="3">Среда</option>
+                    <option value="4">Четверг</option>
+                    <option value="5">Пятница</option>
+                    <option value="6">Суббота</option>
+                    <option value="7">Воскресенье</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label>⏰ Время начала:</label>
+                <input type="time" id="lessonStartTime">
+            </div>
+            
+            <div class="form-group">
+                <label>⏰ Время окончания:</label>
+                <input type="time" id="lessonEndTime">
+            </div>
+            
+            <div class="form-group">
+                <label>📅 Дата первого занятия:</label>
+                <input type="date" id="lessonStartDate">
+            </div>
+            
+            <div class="form-group">
+                <label>📅 Дата последнего занятия:</label>
+                <input type="date" id="lessonEndDate">
+            </div>
+            
+            <div class="form-group">
+                <label>📝 Заметки (необязательно):</label>
+                <input type="text" id="lessonNotes" placeholder="Дополнительные заметки...">
+            </div>
+            
+            <div class="modal-actions">
+                <button class="cancel-btn" onclick="closeAddLessonModal()">Отмена</button>
+                <button class="submit-btn" onclick="saveLessonSeries()">✅ Создать серию</button>
+            </div>
+        </div>
+    </div>
+
     <footer>
         © 2026 Математика с Никитой. Все права защищены.
     </footer>
@@ -1315,6 +713,9 @@
         var currentChatPartner = null;
         var chatInterval = null;
         var refreshInterval = null;
+        var currentMonth = new Date();
+        var selectedStudentId = null;
+        var studentMonth = new Date();
 
         var daysMap = {
             'mon': 'ПН',
@@ -1404,10 +805,9 @@
                 window.loadStatistics(currentUser.id);
             }
             if (currentDashboardPage === 'myplan') {
-                window.loadStudentPlan();
+                window.renderStudentCalendar(studentMonth);
             }
             
-            // Маленькое уведомление
             var btns = document.querySelectorAll('.admin-btn');
             btns.forEach(function(btn) {
                 if (btn.textContent.includes('Обновить')) {
@@ -1438,7 +838,6 @@
         function updateDataSilently() {
             if (!currentUser) return;
             
-            // Обновляем теорию в фоне
             supabase
                 .from('theory')
                 .select('*')
@@ -1452,7 +851,6 @@
                     }
                 });
             
-            // Обновляем ДЗ в фоне
             supabase
                 .from('homeworks')
                 .select('*, video_sections(name, order_num)')
@@ -1471,7 +869,6 @@
                     }
                 });
             
-            // Обновляем чат если открыт
             if (currentDashboardPage === 'messages') {
                 loadChatList();
                 if (currentChatPartner) {
@@ -1479,12 +876,10 @@
                 }
             }
             
-            // Обновляем план если открыт
             if (currentDashboardPage === 'myplan') {
-                window.loadStudentPlan();
+                window.renderStudentCalendar(studentMonth);
             }
             
-            // Обновляем бейджи
             updateTotalBadge();
         }
 
@@ -1508,10 +903,9 @@
             else if (tab === 'theory') window.loadAdminTheory();
             else if (tab === 'homeworks') window.loadAllHomeworks();
             else if (tab === 'videos') window.loadVideosAdmin();
-            else if (tab === 'schedule') window.loadScheduleAdmin();
             else if (tab === 'calendar') { 
                 window.loadCalendarStudents(); 
-                window.renderCalendar(new Date());
+                window.renderCalendar(currentMonth);
             }
             else if (tab === 'studyplan') { 
                 window.loadCalendarStudents();
@@ -1556,6 +950,25 @@
                 window.loadHomework(currentUser.id);
             }
         };
+
+        // ==========================================
+        // ФОРМАТИРОВАНИЕ ДАТЫ
+        // ==========================================
+
+        function formatDateSQL(date) {
+            return date.getFullYear() + '-' + 
+                   String(date.getMonth() + 1).padStart(2, '0') + '-' + 
+                   String(date.getDate()).padStart(2, '0');
+        }
+
+        function getWeekStart(date) {
+            var d = new Date(date);
+            var day = d.getDay();
+            var diff = d.getDate() - day + (day === 0 ? -6 : 1);
+            d.setDate(diff);
+            d.setHours(0, 0, 0, 0);
+            return d;
+        }
                 // ==========================================
         // ===== MY_STUDENTS (ваша личная таблица) =====
         // ==========================================
@@ -2340,7 +1753,8 @@
                 })
                 .catch(function(err) { alert('❌ Ошибка: ' + err.message); });
         };
-                // ==========================================
+
+        // ==========================================
         // ВИДЕОРАЗДЕЛЫ (с кешированием)
         // ==========================================
 
@@ -2410,8 +1824,7 @@
             tabsContainer1.appendChild(fragment1);
             tabsContainer2.appendChild(fragment2);
         };
-
-        // ==========================================
+                // ==========================================
         // ДОМАШНИЕ ЗАДАНИЯ (СТУДЕНТ) С ПРИКРЕПЛЕНИЕМ ФАЙЛОВ
         // ==========================================
 
@@ -2467,7 +1880,6 @@
                 var statusClass = hw.status === 'done' ? 'done' : 'pending';
                 var statusText = hw.status === 'done' ? '✅ Выполнено' : '⏳ Ожидает проверки';
                 
-                // Кнопки для ДЗ
                 var btnHtml = '';
                 if (hw.status !== 'done') {
                     btnHtml = '<button class="admin-btn success" onclick="window.markDone(\'' + hw.id + '\')">✅ Отметить выполненным</button>';
@@ -2475,7 +1887,6 @@
                     btnHtml = '<button class="admin-btn" onclick="window.unmarkDone(\'' + hw.id + '\')">↩ Вернуть</button>';
                 }
                 
-                // Кнопка для прикрепления файла (только для выполненных)
                 var attachBtn = '';
                 if (hw.status === 'done') {
                     attachBtn = `
@@ -2484,7 +1895,6 @@
                     `;
                 }
                 
-                // Отображение прикреплённого файла
                 var attachedFileHtml = '';
                 if (hw.attached_file_url) {
                     var fileExt = hw.attached_file_url.split('.').pop().toLowerCase();
@@ -2804,7 +2214,6 @@
                     var statusText = h.status === 'done' ? '✅ Выполнено' : '⏳ В процессе';
                     var commentPreview = h.comment ? (h.comment.length > 30 ? h.comment.substring(0, 30) + '...' : h.comment) : '—';
                     
-                    // Отображение файла ученика
                     var attachedFileHtml = '—';
                     if (h.attached_file_url) {
                         var ext = h.attached_file_url.split('.').pop().toLowerCase();
@@ -2994,18 +2403,15 @@
             }
         };
                 // ==========================================
-        // КАЛЕНДАРЬ ЗАНЯТИЙ
+        // КАЛЕНДАРЬ ЗАНЯТИЙ (АДМИН)
         // ==========================================
 
-        let currentMonth = new Date();
-        let selectedStudentId = null;
-
         window.loadCalendarStudents = async function() {
-            const select = document.getElementById('calendarStudent');
-            const planSelect = document.getElementById('planStudent');
+            var select = document.getElementById('calendarStudent');
+            var planSelect = document.getElementById('planStudent');
             
             try {
-                const { data, error } = await supabase
+                var { data, error } = await supabase
                     .from('students')
                     .select('id, name')
                     .eq('role', 'student')
@@ -3013,15 +2419,15 @@
                     
                 if (error) throw error;
                 
-                const options = data.map(s => 
-                    `<option value="${s.id}">${s.name}</option>`
-                ).join('');
+                var options = data.map(function(s) {
+                    return '<option value="' + s.id + '">' + s.name + '</option>';
+                }).join('');
                 
                 if (select) {
-                    select.innerHTML = `<option value="">Выберите ученика</option>${options}`;
+                    select.innerHTML = '<option value="">Выберите ученика</option>' + options;
                 }
                 if (planSelect) {
-                    planSelect.innerHTML = `<option value="">Выберите ученика</option>${options}`;
+                    planSelect.innerHTML = '<option value="">Выберите ученика</option>' + options;
                 }
             } catch (err) {
                 console.error('Ошибка загрузки учеников:', err);
@@ -3029,31 +2435,31 @@
         };
 
         window.loadStudentCalendar = async function() {
-            const studentId = document.getElementById('calendarStudent').value;
+            var studentId = document.getElementById('calendarStudent').value;
             if (!studentId) {
                 document.getElementById('calendarDays').innerHTML = '<p style="color:#666; text-align:center; padding:20px;">Выберите ученика</p>';
                 return;
             }
             
             selectedStudentId = studentId;
-            await renderCalendar(currentMonth);
+            await window.renderCalendar(currentMonth);
         };
 
         window.renderCalendar = async function(date) {
             if (!selectedStudentId) return;
             
-            const year = date.getFullYear();
-            const month = date.getMonth();
+            var year = date.getFullYear();
+            var month = date.getMonth();
             
-            const monthNames = ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 
-                                'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'];
+            var monthNames = ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 
+                              'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'];
             document.getElementById('calendarMonth').textContent = monthNames[month] + ' ' + year;
             
-            const startDate = new Date(year, month, 1);
-            const endDate = new Date(year, month + 1, 0);
+            var startDate = new Date(year, month, 1);
+            var endDate = new Date(year, month + 1, 0);
             
             try {
-                const { data: lessons, error } = await supabase
+                var { data: lessons, error } = await supabase
                     .from('lesson_calendar')
                     .select('*')
                     .eq('student_id', selectedStudentId)
@@ -3062,31 +2468,31 @@
                     
                 if (error) throw error;
                 
-                const lessonsMap = {};
+                var lessonsMap = {};
                 if (lessons) {
-                    lessons.forEach(l => {
+                    lessons.forEach(function(l) {
                         lessonsMap[l.lesson_date] = l;
                     });
                 }
                 
-                const firstDay = startDate.getDay();
-                const daysInMonth = endDate.getDate();
-                let startOffset = firstDay === 0 ? 6 : firstDay - 1;
+                var firstDay = startDate.getDay();
+                var daysInMonth = endDate.getDate();
+                var startOffset = firstDay === 0 ? 6 : firstDay - 1;
                 
-                const today = new Date();
-                const todayStr = formatDateSQL(today);
+                var today = new Date();
+                var todayStr = formatDateSQL(today);
                 
-                let html = '';
+                var html = '';
                 
-                for (let i = 0; i < startOffset; i++) {
+                for (var i = 0; i < startOffset; i++) {
                     html += '<div class="calendar-day empty"></div>';
                 }
                 
-                for (let day = 1; day <= daysInMonth; day++) {
-                    const dateStr = year + '-' + String(month + 1).padStart(2, '0') + '-' + String(day).padStart(2, '0');
-                    const lesson = lessonsMap[dateStr];
-                    let statusClass = '';
-                    let statusText = '';
+                for (var day = 1; day <= daysInMonth; day++) {
+                    var dateStr = year + '-' + String(month + 1).padStart(2, '0') + '-' + String(day).padStart(2, '0');
+                    var lesson = lessonsMap[dateStr];
+                    var statusClass = '';
+                    var statusText = '';
                     
                     if (dateStr === todayStr) statusClass += ' today';
                     
@@ -3103,19 +2509,21 @@
                         }
                     }
                     
-                    const topicText = lesson && lesson.topic ? lesson.topic.substring(0, 15) : '';
+                    var topicText = lesson && lesson.topic ? lesson.topic.substring(0, 15) : '';
+                    var seriesBadge = lesson && lesson.series_id ? '<span class="series-badge">🔁</span>' : '';
                     
                     html += `
                         <div class="calendar-day${statusClass}" onclick="window.handleDayClick('${dateStr}')">
                             <span class="day-number">${day}</span>
-                            ${statusText ? `<span class="lesson-indicator">${statusText}</span>` : ''}
-                            ${topicText ? `<span class="lesson-topic">${topicText}</span>` : ''}
+                            ${statusText ? '<span class="lesson-indicator">' + statusText + '</span>' : ''}
+                            ${topicText ? '<span class="lesson-topic">' + topicText + '</span>' : ''}
+                            ${seriesBadge}
                         </div>
                     `;
                 }
                 
                 document.getElementById('calendarDays').innerHTML = html;
-                await updateLessonStats();
+                await window.updateLessonStats();
                 
             } catch (err) {
                 console.error('Ошибка загрузки календаря:', err);
@@ -3123,15 +2531,9 @@
             }
         };
 
-        function formatDateSQL(date) {
-            return date.getFullYear() + '-' + 
-                   String(date.getMonth() + 1).padStart(2, '0') + '-' + 
-                   String(date.getDate()).padStart(2, '0');
-        }
-
         window.handleDayClick = function(dateStr) {
-            const container = document.getElementById('dayLessons');
-            const list = document.getElementById('dayLessonsList');
+            var container = document.getElementById('dayLessons');
+            var list = document.getElementById('dayLessonsList');
             
             if (!selectedStudentId) {
                 alert('❌ Сначала выберите ученика');
@@ -3142,7 +2544,7 @@
             
             supabase
                 .from('lesson_calendar')
-                .select('*')
+                .select('*, lesson_series(id, day_of_week, start_date, end_date)')
                 .eq('student_id', selectedStudentId)
                 .eq('lesson_date', dateStr)
                 .then(function(response) {
@@ -3151,32 +2553,52 @@
                         return;
                     }
                     
-                    const lessons = response.data || [];
+                    var lessons = response.data || [];
                     
                     if (lessons.length === 0) {
                         list.innerHTML = `
                             <div style="background:rgba(255,255,255,0.03); border-radius:8px; padding:16px; text-align:center; color:#666;">
                                 Нет занятий на ${dateStr}
-                                <br>
-                                <button class="admin-btn success" onclick="window.addLesson('${dateStr}')" style="margin-top:8px;">➕ Добавить занятие</button>
                             </div>
                         `;
                         return;
                     }
                     
-                    let html = '';
+                    var html = '';
                     lessons.forEach(function(lesson) {
-                        const statusMap = {
+                        var statusMap = {
                             'planned': '📌 Запланировано',
                             'completed': '✅ Проведено',
                             'cancelled': '❌ Отменено'
                         };
+                        
+                        var seriesInfo = '';
+                        if (lesson.lesson_series) {
+                            var dayNames = ['', 'ПН', 'ВТ', 'СР', 'ЧТ', 'ПТ', 'СБ', 'ВС'];
+                            seriesInfo = `
+                                <div style="font-size:11px; color:#888; margin-top:4px;">
+                                    🔁 Серия: ${dayNames[lesson.lesson_series.day_of_week]} 
+                                    с ${new Date(lesson.lesson_series.start_date).toLocaleDateString('ru-RU')} 
+                                    по ${new Date(lesson.lesson_series.end_date).toLocaleDateString('ru-RU')}
+                                    <button class="admin-btn" onclick="window.editSeries('${lesson.lesson_series.id}')" style="font-size:10px; padding:2px 8px; margin-left:6px;">✏️</button>
+                                    <button class="admin-btn danger" onclick="window.deleteSeries('${lesson.lesson_series.id}')" style="font-size:10px; padding:2px 8px;">🗑</button>
+                                </div>
+                            `;
+                        }
+                        
+                        var sectionInfo = '';
+                        if (lesson.section_id) {
+                            sectionInfo = '<div style="color:#f5a623; font-size:12px;">📚 ' + (lesson.topic || 'Раздел') + '</div>';
+                        }
+                        
                         html += `
                             <div style="display:flex; justify-content:space-between; align-items:center; padding:10px 14px; background:rgba(255,255,255,0.03); border-radius:8px; margin-bottom:6px; border-left:3px solid ${lesson.status === 'completed' ? '#2ecc71' : lesson.status === 'cancelled' ? '#e74c3c' : '#f5a623'};">
                                 <div>
                                     <div style="color:#b0c4de; font-weight:600;">${lesson.topic || 'Занятие'}</div>
+                                    ${sectionInfo}
                                     <div style="color:#666; font-size:12px;">${lesson.start_time || ''} - ${lesson.end_time || ''} • ${statusMap[lesson.status] || lesson.status}</div>
-                                    ${lesson.notes ? `<div style="color:#888; font-size:12px; margin-top:4px;">📝 ${lesson.notes}</div>` : ''}
+                                    ${lesson.notes ? '<div style="color:#888; font-size:12px; margin-top:4px;">📝 ' + lesson.notes + '</div>' : ''}
+                                    ${seriesInfo}
                                 </div>
                                 <div style="display:flex; gap:6px;">
                                     <button class="admin-btn" onclick="window.editLesson('${lesson.id}')">✏️</button>
@@ -3190,86 +2612,6 @@
                 });
         };
 
-        window.addLesson = function(date) {
-            const studentId = document.getElementById('calendarStudent').value;
-            if (!studentId) {
-                alert('❌ Сначала выберите ученика');
-                return;
-            }
-            
-            const topic = prompt('Введите тему занятия:') || 'Занятие';
-            const startTime = prompt('Введите время начала (например: 15:00):') || '';
-            const endTime = prompt('Введите время окончания (например: 16:00):') || '';
-            const notes = prompt('Заметки к занятию (необязательно):') || '';
-            
-            const lessonDate = date || new Date().toISOString().split('T')[0];
-            
-            supabase
-                .from('lesson_calendar')
-                .insert([{
-                    student_id: studentId,
-                    lesson_date: lessonDate,
-                    start_time: startTime || null,
-                    end_time: endTime || null,
-                    topic: topic,
-                    status: 'planned',
-                    notes: notes || null
-                }])
-                .then(function(response) {
-                    if (response.error) {
-                        alert('❌ Ошибка: ' + response.error.message);
-                        return;
-                    }
-                    alert('✅ Занятие добавлено!');
-                    renderCalendar(currentMonth);
-                });
-        };
-
-        window.editLesson = function(lessonId) {
-            const newTopic = prompt('Введите тему занятия:') || 'Занятие';
-            const newStatus = prompt('Статус (planned/completed/cancelled):') || 'planned';
-            const newNotes = prompt('Заметки:') || '';
-            
-            if (!['planned', 'completed', 'cancelled'].includes(newStatus)) {
-                alert('❌ Неверный статус. Используйте: planned, completed, cancelled');
-                return;
-            }
-            
-            supabase
-                .from('lesson_calendar')
-                .update({
-                    topic: newTopic,
-                    status: newStatus,
-                    notes: newNotes || null
-                })
-                .eq('id', lessonId)
-                .then(function(response) {
-                    if (response.error) {
-                        alert('❌ Ошибка: ' + response.error.message);
-                        return;
-                    }
-                    alert('✅ Занятие обновлено!');
-                    renderCalendar(currentMonth);
-                });
-        };
-
-        window.deleteLesson = function(lessonId) {
-            if (!confirm('Удалить занятие?')) return;
-            
-            supabase
-                .from('lesson_calendar')
-                .delete()
-                .eq('id', lessonId)
-                .then(function(response) {
-                    if (response.error) {
-                        alert('❌ Ошибка: ' + response.error.message);
-                        return;
-                    }
-                    alert('✅ Занятие удалено');
-                    renderCalendar(currentMonth);
-                });
-        };
-
         window.updateLessonStats = async function() {
             if (!selectedStudentId) {
                 document.getElementById('totalLessons').textContent = '0';
@@ -3280,17 +2622,17 @@
             }
             
             try {
-                const { data: lessons, error } = await supabase
+                var { data: lessons, error } = await supabase
                     .from('lesson_calendar')
                     .select('*')
                     .eq('student_id', selectedStudentId);
                     
                 if (error) throw error;
                 
-                const total = lessons ? lessons.length : 0;
-                const completed = lessons ? lessons.filter(l => l.status === 'completed').length : 0;
-                const remaining = total - completed;
-                const progress = total > 0 ? Math.round((completed / total) * 100) : 0;
+                var total = lessons ? lessons.length : 0;
+                var completed = lessons ? lessons.filter(function(l) { return l.status === 'completed'; }).length : 0;
+                var remaining = total - completed;
+                var progress = total > 0 ? Math.round((completed / total) * 100) : 0;
                 
                 document.getElementById('totalLessons').textContent = total;
                 document.getElementById('completedLessons').textContent = completed;
@@ -3304,12 +2646,360 @@
 
         window.prevMonth = function() {
             currentMonth.setMonth(currentMonth.getMonth() - 1);
-            renderCalendar(currentMonth);
+            window.renderCalendar(currentMonth);
         };
 
         window.nextMonth = function() {
             currentMonth.setMonth(currentMonth.getMonth() + 1);
-            renderCalendar(currentMonth);
+            window.renderCalendar(currentMonth);
+        };
+
+        // ==========================================
+        // СЕРИИ ЗАНЯТИЙ
+        // ==========================================
+
+        window.showAddLessonModal = function() {
+            supabase
+                .from('students')
+                .select('id, name')
+                .eq('role', 'student')
+                .order('name')
+                .then(function(response) {
+                    if (response.error) return;
+                    var select = document.getElementById('lessonStudent');
+                    select.innerHTML = '<option value="">Выберите ученика</option>';
+                    response.data.forEach(function(s) {
+                        select.innerHTML += '<option value="' + s.id + '">' + s.name + '</option>';
+                    });
+                });
+            
+            supabase
+                .from('video_sections')
+                .select('id, name, order_num')
+                .order('order_num', { ascending: true })
+                .then(function(response) {
+                    if (response.error) return;
+                    var select = document.getElementById('lessonSection');
+                    select.innerHTML = '<option value="">Без раздела</option>';
+                    response.data.forEach(function(s) {
+                        select.innerHTML += '<option value="' + s.id + '">' + s.name + '</option>';
+                    });
+                });
+            
+            document.getElementById('lessonStartTime').value = '';
+            document.getElementById('lessonEndTime').value = '';
+            document.getElementById('lessonStartDate').value = '';
+            document.getElementById('lessonEndDate').value = '';
+            document.getElementById('lessonNotes').value = '';
+            
+            document.getElementById('addLessonModal').classList.add('active');
+        };
+
+        window.closeAddLessonModal = function() {
+            document.getElementById('addLessonModal').classList.remove('active');
+        };
+
+        window.saveLessonSeries = function() {
+            var studentId = document.getElementById('lessonStudent').value;
+            var sectionId = document.getElementById('lessonSection').value || null;
+            var dayOfWeek = parseInt(document.getElementById('lessonDayOfWeek').value);
+            var startTime = document.getElementById('lessonStartTime').value;
+            var endTime = document.getElementById('lessonEndTime').value || null;
+            var startDate = document.getElementById('lessonStartDate').value;
+            var endDate = document.getElementById('lessonEndDate').value;
+            var notes = document.getElementById('lessonNotes').value || null;
+            
+            if (!studentId) { alert('❌ Выберите ученика'); return; }
+            if (!startTime) { alert('❌ Введите время начала'); return; }
+            if (!startDate) { alert('❌ Введите дату первого занятия'); return; }
+            if (!endDate) { alert('❌ Введите дату последнего занятия'); return; }
+            
+            if (new Date(startDate) > new Date(endDate)) {
+                alert('❌ Дата первого занятия не может быть позже даты последнего занятия');
+                return;
+            }
+            
+            var topic = null;
+            if (sectionId) {
+                var sectionSelect = document.getElementById('lessonSection');
+                var option = sectionSelect.querySelector('option[value="' + sectionId + '"]');
+                if (option) topic = option.textContent;
+            }
+            
+            if (!topic) {
+                topic = prompt('Введите тему занятия (или оставьте пустым):') || null;
+            }
+            
+            supabase
+                .from('lesson_series')
+                .insert([{
+                    student_id: studentId,
+                    day_of_week: dayOfWeek,
+                    start_time: startTime,
+                    end_time: endTime,
+                    section_id: sectionId,
+                    topic: topic,
+                    start_date: startDate,
+                    end_date: endDate
+                }])
+                .then(function(response) {
+                    if (response.error) {
+                        alert('❌ Ошибка: ' + response.error.message);
+                        return;
+                    }
+                    alert('✅ Серия занятий создана!');
+                    window.closeAddLessonModal();
+                    window.renderCalendar(currentMonth);
+                })
+                .catch(function(err) {
+                    alert('❌ Ошибка: ' + err.message);
+                });
+        };
+
+        window.editSeries = function(seriesId) {
+            supabase
+                .from('lesson_series')
+                .select('*')
+                .eq('id', seriesId)
+                .single()
+                .then(function(response) {
+                    if (response.error) {
+                        alert('❌ Ошибка: ' + response.error.message);
+                        return;
+                    }
+                    var series = response.data;
+                    
+                    document.getElementById('lessonStudent').value = series.student_id;
+                    document.getElementById('lessonDayOfWeek').value = series.day_of_week;
+                    document.getElementById('lessonStartTime').value = series.start_time;
+                    document.getElementById('lessonEndTime').value = series.end_time || '';
+                    document.getElementById('lessonStartDate').value = series.start_date;
+                    document.getElementById('lessonEndDate').value = series.end_date;
+                    document.getElementById('lessonNotes').value = series.notes || '';
+                    
+                    if (series.section_id) {
+                        document.getElementById('lessonSection').value = series.section_id;
+                    }
+                    
+                    document.querySelector('#addLessonModal h3').textContent = '✏️ Редактировать серию';
+                    document.querySelector('#addLessonModal .submit-btn').textContent = '💾 Сохранить';
+                    document.querySelector('#addLessonModal .submit-btn').onclick = function() {
+                        window.updateLessonSeries(seriesId);
+                    };
+                    
+                    document.getElementById('addLessonModal').classList.add('active');
+                });
+        };
+
+        window.updateLessonSeries = function(seriesId) {
+            var studentId = document.getElementById('lessonStudent').value;
+            var sectionId = document.getElementById('lessonSection').value || null;
+            var dayOfWeek = parseInt(document.getElementById('lessonDayOfWeek').value);
+            var startTime = document.getElementById('lessonStartTime').value;
+            var endTime = document.getElementById('lessonEndTime').value || null;
+            var startDate = document.getElementById('lessonStartDate').value;
+            var endDate = document.getElementById('lessonEndDate').value;
+            var notes = document.getElementById('lessonNotes').value || null;
+            
+            if (!studentId) { alert('❌ Выберите ученика'); return; }
+            if (!startTime) { alert('❌ Введите время начала'); return; }
+            if (!startDate || !endDate) { alert('❌ Введите даты'); return; }
+            
+            var topic = null;
+            if (sectionId) {
+                var sectionSelect = document.getElementById('lessonSection');
+                var option = sectionSelect.querySelector('option[value="' + sectionId + '"]');
+                if (option) topic = option.textContent;
+            }
+            
+            if (!topic) {
+                topic = prompt('Введите тему занятия (или оставьте пустым):') || null;
+            }
+            
+            supabase
+                .from('lesson_series')
+                .update({
+                    student_id: studentId,
+                    day_of_week: dayOfWeek,
+                    start_time: startTime,
+                    end_time: endTime,
+                    section_id: sectionId,
+                    topic: topic,
+                    start_date: startDate,
+                    end_date: endDate
+                })
+                .eq('id', seriesId)
+                .then(function(response) {
+                    if (response.error) {
+                        alert('❌ Ошибка: ' + response.error.message);
+                        return;
+                    }
+                    alert('✅ Серия обновлена!');
+                    window.closeAddLessonModal();
+                    document.querySelector('#addLessonModal h3').textContent = '📅 Добавить серию занятий';
+                    document.querySelector('#addLessonModal .submit-btn').textContent = '✅ Создать серию';
+                    document.querySelector('#addLessonModal .submit-btn').onclick = window.saveLessonSeries;
+                    window.renderCalendar(currentMonth);
+                })
+                .catch(function(err) {
+                    alert('❌ Ошибка: ' + err.message);
+                });
+        };
+
+        window.deleteSeries = function(seriesId) {
+            if (!confirm('Удалить серию занятий? Все занятия в этой серии будут удалены.')) return;
+            
+            supabase
+                .from('lesson_series')
+                .delete()
+                .eq('id', seriesId)
+                .then(function(response) {
+                    if (response.error) {
+                        alert('❌ Ошибка: ' + response.error.message);
+                        return;
+                    }
+                    alert('✅ Серия удалена');
+                    window.renderCalendar(currentMonth);
+                })
+                .catch(function(err) {
+                    alert('❌ Ошибка: ' + err.message);
+                });
+        };
+                // ==========================================
+        // КАЛЕНДАРЬ ДЛЯ УЧЕНИКА
+        // ==========================================
+
+        window.renderStudentCalendar = function(date) {
+            if (!currentUser) return;
+            
+            var container = document.getElementById('studentCalendarDays');
+            if (!container) return;
+            
+            var year = date.getFullYear();
+            var month = date.getMonth();
+            
+            var monthNames = ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 
+                              'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'];
+            var monthEl = document.getElementById('studentCalendarMonth');
+            if (monthEl) monthEl.textContent = monthNames[month] + ' ' + year;
+            
+            var startDate = new Date(year, month, 1);
+            var endDate = new Date(year, month + 1, 0);
+            
+            supabase
+                .from('lesson_calendar')
+                .select('*')
+                .eq('student_id', currentUser.id)
+                .gte('lesson_date', formatDateSQL(startDate))
+                .lte('lesson_date', formatDateSQL(endDate))
+                .then(function(response) {
+                    if (response.error) {
+                        container.innerHTML = '<p style="color:#666;">Ошибка загрузки</p>';
+                        return;
+                    }
+                    
+                    var lessons = response.data || [];
+                    var lessonsMap = {};
+                    lessons.forEach(function(l) {
+                        lessonsMap[l.lesson_date] = l;
+                    });
+                    
+                    var firstDay = startDate.getDay();
+                    var daysInMonth = endDate.getDate();
+                    var startOffset = firstDay === 0 ? 6 : firstDay - 1;
+                    
+                    var today = new Date();
+                    var todayStr = formatDateSQL(today);
+                    
+                    var html = '';
+                    
+                    for (var i = 0; i < startOffset; i++) {
+                        html += '<div class="student-calendar-day empty"></div>';
+                    }
+                    
+                    for (var day = 1; day <= daysInMonth; day++) {
+                        var dateStr = year + '-' + String(month + 1).padStart(2, '0') + '-' + String(day).padStart(2, '0');
+                        var lesson = lessonsMap[dateStr];
+                        var classNames = 'student-calendar-day';
+                        var dotClass = 'lesson-dot';
+                        
+                        if (lesson) {
+                            classNames += ' has-lesson';
+                            if (dateStr === todayStr) {
+                                classNames += ' has-lesson-today';
+                                dotClass += ' today-dot';
+                            }
+                        }
+                        
+                        html += `
+                            <div class="${classNames}" onclick="window.showStudentDayLessons('${dateStr}')">
+                                <span class="day-number">${day}</span>
+                                ${lesson ? '<div class="' + dotClass + '"></div>' : ''}
+                            </div>
+                        `;
+                    }
+                    
+                    container.innerHTML = html;
+                });
+        };
+
+        window.showStudentDayLessons = function(dateStr) {
+            var container = document.getElementById('studentDayLessons');
+            var list = document.getElementById('studentDayLessonsList');
+            
+            if (!currentUser) return;
+            
+            container.style.display = 'block';
+            
+            supabase
+                .from('lesson_calendar')
+                .select('*')
+                .eq('student_id', currentUser.id)
+                .eq('lesson_date', dateStr)
+                .then(function(response) {
+                    if (response.error) {
+                        list.innerHTML = '<p style="color:#666;">Ошибка загрузки</p>';
+                        return;
+                    }
+                    
+                    var lessons = response.data || [];
+                    
+                    if (lessons.length === 0) {
+                        list.innerHTML = '<p style="color:#666; text-align:center; padding:10px;">Нет занятий на этот день</p>';
+                        return;
+                    }
+                    
+                    var html = '';
+                    lessons.forEach(function(lesson) {
+                        var statusMap = {
+                            'planned': '📌 Запланировано',
+                            'completed': '✅ Проведено',
+                            'cancelled': '❌ Отменено'
+                        };
+                        
+                        html += `
+                            <div style="display:flex; justify-content:space-between; padding:10px 14px; background:rgba(255,255,255,0.03); border-radius:8px; margin-bottom:6px; border-left:3px solid ${lesson.status === 'completed' ? '#2ecc71' : lesson.status === 'cancelled' ? '#e74c3c' : '#f5a623'};">
+                                <div>
+                                    <div style="color:#b0c4de; font-weight:600;">${lesson.topic || 'Занятие'}</div>
+                                    <div style="color:#666; font-size:12px;">${lesson.start_time || ''} - ${lesson.end_time || ''} • ${statusMap[lesson.status] || lesson.status}</div>
+                                    ${lesson.notes ? '<div style="color:#888; font-size:12px; margin-top:4px;">📝 ' + lesson.notes + '</div>' : ''}
+                                </div>
+                            </div>
+                        `;
+                    });
+                    
+                    list.innerHTML = html;
+                });
+        };
+
+        window.prevStudentMonth = function() {
+            studentMonth.setMonth(studentMonth.getMonth() - 1);
+            window.renderStudentCalendar(studentMonth);
+        };
+
+        window.nextStudentMonth = function() {
+            studentMonth.setMonth(studentMonth.getMonth() + 1);
+            window.renderStudentCalendar(studentMonth);
         };
 
         // ==========================================
@@ -3317,10 +3007,10 @@
         // ==========================================
 
         window.loadTemplates = function() {
-            const container = document.getElementById('templatesList');
+            var container = document.getElementById('templatesList');
             if (!container) return;
             
-            const cached = getCache('plan_templates');
+            var cached = getCache('plan_templates');
             if (cached) {
                 renderTemplates(cached, container);
                 return;
@@ -3337,7 +3027,7 @@
                         container.innerHTML = '❌ Ошибка: ' + response.error.message;
                         return;
                     }
-                    const data = response.data || [];
+                    var data = response.data || [];
                     setCache('plan_templates', data);
                     renderTemplates(data, container);
                 })
@@ -3358,10 +3048,10 @@
                 return;
             }
             
-            let html = `<div style="display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:16px; margin-top:16px;">`;
+            var html = '<div style="display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:16px; margin-top:16px;">';
             
             data.forEach(function(template) {
-                const scoreEmoji = template.target_score >= 100 ? '💯' : 
+                var scoreEmoji = template.target_score >= 100 ? '💯' : 
                                    template.target_score >= 90 ? '⭐' : 
                                    template.target_score >= 80 ? '📈' : '📊';
                 
@@ -3380,7 +3070,7 @@
                         <div class="template-meta">
                             📅 ${template.duration_months} месяцев • 
                             📚 ${template.lessons_per_week} занятий/нед
-                            ${template.description ? `<br>📝 ${template.description}` : ''}
+                            ${template.description ? '<br>📝 ' + template.description : ''}
                         </div>
                         <div class="template-actions">
                             <button class="admin-btn success" onclick="window.useTemplate('${template.id}')">📋 Использовать</button>
@@ -3394,7 +3084,7 @@
         }
 
         window.loadTemplatesForSelect = function() {
-            const select = document.getElementById('planTemplate');
+            var select = document.getElementById('planTemplate');
             if (!select) return;
             
             supabase
@@ -3403,10 +3093,10 @@
                 .order('target_score', { ascending: false })
                 .then(function(response) {
                     if (response.error) return;
-                    const data = response.data || [];
+                    var data = response.data || [];
                     select.innerHTML = '<option value="">Без шаблона</option>';
                     data.forEach(function(template) {
-                        select.innerHTML += `<option value="${template.id}">${template.name} (${template.target_score}+ баллов)</option>`;
+                        select.innerHTML += '<option value="' + template.id + '">' + template.name + ' (' + template.target_score + '+ баллов)</option>';
                     });
                 });
         };
@@ -3427,19 +3117,16 @@
         };
 
         window.saveTemplate = function() {
-            const name = document.getElementById('templateName').value.trim();
-            const target_score = parseInt(document.getElementById('templateScore').value);
-            const duration_months = parseInt(document.getElementById('templateDuration').value);
-            const lessons_per_week = parseInt(document.getElementById('templateLessonsPerWeek').value);
-            const description = document.getElementById('templateDescription').value.trim();
-            const editId = document.getElementById('templateEditId').value;
+            var name = document.getElementById('templateName').value.trim();
+            var target_score = parseInt(document.getElementById('templateScore').value);
+            var duration_months = parseInt(document.getElementById('templateDuration').value);
+            var lessons_per_week = parseInt(document.getElementById('templateLessonsPerWeek').value);
+            var description = document.getElementById('templateDescription').value.trim();
+            var editId = document.getElementById('templateEditId').value;
             
-            if (!name) {
-                alert('❌ Введите название шаблона');
-                return;
-            }
+            if (!name) { alert('❌ Введите название шаблона'); return; }
             
-            const data = {
+            var data = {
                 name: name,
                 target_score: target_score,
                 duration_months: duration_months,
@@ -3447,7 +3134,7 @@
                 description: description || null
             };
             
-            let promise;
+            var promise;
             if (editId) {
                 promise = supabase
                     .from('plan_templates')
@@ -3483,7 +3170,7 @@
                         alert('❌ Ошибка: ' + response.error.message);
                         return;
                     }
-                    const template = response.data;
+                    var template = response.data;
                     document.getElementById('templateModalTitle').textContent = '✏️ Редактировать шаблон';
                     document.getElementById('templateName').value = template.name;
                     document.getElementById('templateScore').value = template.target_score;
@@ -3515,12 +3202,11 @@
         };
 
         window.useTemplate = function(templateId) {
-            // Переключаемся на вкладку плана и выбираем шаблон
-            const tabBtn = document.querySelector('.admin-tabs button[data-tab="studyplan"]');
+            var tabBtn = document.querySelector('.admin-tabs button[data-tab="studyplan"]');
             if (tabBtn) tabBtn.click();
             
             setTimeout(function() {
-                const select = document.getElementById('planTemplate');
+                var select = document.getElementById('planTemplate');
                 if (select) {
                     select.value = templateId;
                 }
@@ -3532,67 +3218,48 @@
         // ==========================================
 
         window.generatePlan = async function() {
-            const studentId = document.getElementById('planStudent').value;
-            const examDate = document.getElementById('examDate').value;
-            const targetScore = parseInt(document.getElementById('targetScore').value);
-            const templateId = document.getElementById('planTemplate').value;
+            var studentId = document.getElementById('planStudent').value;
+            var examDate = document.getElementById('examDate').value;
+            var targetScore = parseInt(document.getElementById('targetScore').value);
+            var templateId = document.getElementById('planTemplate').value;
             
-            if (!studentId) {
-                alert('❌ Выберите ученика');
-                return;
-            }
-            if (!examDate) {
-                alert('❌ Введите дату экзамена');
-                return;
-            }
+            if (!studentId) { alert('❌ Выберите ученика'); return; }
+            if (!examDate) { alert('❌ Введите дату экзамена'); return; }
             
-            const today = new Date();
-            const exam = new Date(examDate);
-            const daysUntilExam = Math.ceil((exam - today) / (1000 * 60 * 60 * 24));
+            var today = new Date();
+            var exam = new Date(examDate);
+            var daysUntilExam = Math.ceil((exam - today) / (1000 * 60 * 60 * 24));
             
-            if (daysUntilExam < 0) {
-                alert('❌ Дата экзамена должна быть в будущем');
-                return;
-            }
+            if (daysUntilExam < 0) { alert('❌ Дата экзамена должна быть в будущем'); return; }
             
-            // Получаем шаблон если выбран
-            let template = null;
+            var template = null;
             if (templateId) {
-                const { data, error } = await supabase
+                var { data, error } = await supabase
                     .from('plan_templates')
                     .select('*')
                     .eq('id', templateId)
                     .single();
-                if (!error && data) {
-                    template = data;
-                }
+                if (!error && data) template = data;
             }
             
-            const weeksUntilExam = Math.ceil(daysUntilExam / 7);
+            var weeksUntilExam = Math.ceil(daysUntilExam / 7);
             
-            let lessonsPerWeek = template ? template.lessons_per_week : 3;
+            var lessonsPerWeek = template ? template.lessons_per_week : 3;
             if (targetScore >= 90) lessonsPerWeek = 4;
             else if (targetScore >= 80) lessonsPerWeek = 3;
             else lessonsPerWeek = 2;
             
-            const totalLessons = weeksUntilExam * lessonsPerWeek;
+            var totalLessons = weeksUntilExam * lessonsPerWeek;
             
-            const { data: sections, error: sectionsError } = await supabase
+            var { data: sections, error: sectionsError } = await supabase
                 .from('video_sections')
                 .select('*')
                 .order('order_num', { ascending: true });
                 
-            if (sectionsError) {
-                alert('❌ Ошибка загрузки разделов: ' + sectionsError.message);
-                return;
-            }
+            if (sectionsError) { alert('❌ Ошибка загрузки разделов: ' + sectionsError.message); return; }
+            if (!sections || sections.length === 0) { alert('❌ Нет разделов для планирования'); return; }
             
-            if (!sections || sections.length === 0) {
-                alert('❌ Нет разделов для планирования');
-                return;
-            }
-            
-            const planData = {
+            var planData = {
                 student_id: studentId,
                 exam_date: examDate,
                 start_date: today.toISOString().split('T')[0],
@@ -3601,31 +3268,28 @@
                 current_level: targetScore >= 90 ? 'advanced' : (targetScore >= 80 ? 'intermediate' : 'beginner')
             };
             
-            const { data: plan, error: planError } = await supabase
+            var { data: plan, error: planError } = await supabase
                 .from('study_plans')
                 .upsert([planData])
                 .select();
                 
-            if (planError) {
-                alert('❌ Ошибка сохранения плана: ' + planError.message);
-                return;
-            }
+            if (planError) { alert('❌ Ошибка сохранения плана: ' + planError.message); return; }
             
-            const planId = plan[0].id;
+            var planId = plan[0].id;
             
             await supabase
                 .from('study_plan_sections')
                 .delete()
                 .eq('plan_id', planId);
             
-            const totalSections = sections.length;
-            const lessonsPerSection = Math.floor(totalLessons / totalSections);
-            const remainingLessons = totalLessons % totalSections;
+            var totalSections = sections.length;
+            var lessonsPerSection = Math.floor(totalLessons / totalSections);
+            var remainingLessons = totalLessons % totalSections;
             
-            const planSections = sections.map((section, index) => {
-                const lessonsForSection = lessonsPerSection + (index < remainingLessons ? 1 : 0);
-                const weekNumber = Math.floor((index * totalLessons / totalSections) / lessonsPerWeek) + 1;
-                const deadline = new Date(today);
+            var planSections = sections.map(function(section, index) {
+                var lessonsForSection = lessonsPerSection + (index < remainingLessons ? 1 : 0);
+                var weekNumber = Math.floor((index * totalLessons / totalSections) / lessonsPerWeek) + 1;
+                var deadline = new Date(today);
                 deadline.setDate(deadline.getDate() + weekNumber * 7);
                 
                 return {
@@ -3638,22 +3302,19 @@
                 };
             });
             
-            const { error: insertError } = await supabase
+            var { error: insertError } = await supabase
                 .from('study_plan_sections')
                 .insert(planSections);
                 
-            if (insertError) {
-                alert('❌ Ошибка сохранения разделов: ' + insertError.message);
-                return;
-            }
+            if (insertError) { alert('❌ Ошибка сохранения разделов: ' + insertError.message); return; }
             
             alert('✅ План подготовки сгенерирован!\n📚 Всего занятий: ' + totalLessons + '\n📖 Разделов: ' + totalSections);
-            loadStudyPlan();
+            window.loadStudyPlan();
         };
 
         window.loadStudyPlan = async function() {
-            const studentId = document.getElementById('planStudent').value;
-            const container = document.getElementById('planContent');
+            var studentId = document.getElementById('planStudent').value;
+            var container = document.getElementById('planContent');
             
             if (!studentId) {
                 container.innerHTML = '<p style="color:#666;">Выберите ученика</p>';
@@ -3661,7 +3322,7 @@
             }
             
             try {
-                const { data: plan, error: planError } = await supabase
+                var { data: plan, error: planError } = await supabase
                     .from('study_plans')
                     .select('*')
                     .eq('student_id', studentId)
@@ -3680,7 +3341,7 @@
                     return;
                 }
                 
-                const { data: sections, error: sectionsError } = await supabase
+                var { data: sections, error: sectionsError } = await supabase
                     .from('study_plan_sections')
                     .select('*, video_sections(name)')
                     .eq('plan_id', plan.id)
@@ -3688,15 +3349,15 @@
                     
                 if (sectionsError) throw sectionsError;
                 
-                const { data: lessons } = await supabase
+                var { data: lessons } = await supabase
                     .from('lesson_calendar')
                     .select('*')
                     .eq('student_id', studentId)
                     .order('lesson_date', { ascending: true });
                     
-                const completedLessons = lessons ? lessons.filter(l => l.status === 'completed').length : 0;
-                const totalLessons = plan.total_lessons_planned || 0;
-                const progress = totalLessons > 0 ? Math.round((completedLessons / totalLessons) * 100) : 0;
+                var completedLessons = lessons ? lessons.filter(function(l) { return l.status === 'completed'; }).length : 0;
+                var totalLessons = plan.total_lessons_planned || 0;
+                var progress = totalLessons > 0 ? Math.round((completedLessons / totalLessons) * 100) : 0;
                 
                 await supabase
                     .from('study_plans')
@@ -3706,11 +3367,11 @@
                     })
                     .eq('id', plan.id);
                 
-                const examDate = new Date(plan.exam_date);
-                const today = new Date();
-                const daysLeft = Math.ceil((examDate - today) / (1000 * 60 * 60 * 24));
+                var examDate = new Date(plan.exam_date);
+                var today = new Date();
+                var daysLeft = Math.ceil((examDate - today) / (1000 * 60 * 60 * 24));
                 
-                let html = `
+                var html = `
                     <div class="plan-summary" style="display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:16px; margin-bottom:24px;">
                         <div class="stat-card" style="background:rgba(255,255,255,0.03); padding:16px; border-radius:12px; text-align:center;">
                             <div style="font-size:28px; font-weight:900; color:#ffffff;">${plan.target_score}</div>
@@ -3735,10 +3396,10 @@
                 `;
                 
                 if (sections && sections.length > 0) {
-                    sections.forEach((section, index) => {
-                        const isCompleted = section.completed;
-                        const deadline = section.deadline ? new Date(section.deadline).toLocaleDateString('ru-RU') : '—';
-                        const sectionName = section.video_sections ? section.video_sections.name : 'Раздел ' + (index + 1);
+                    sections.forEach(function(section) {
+                        var isCompleted = section.completed;
+                        var deadline = section.deadline ? new Date(section.deadline).toLocaleDateString('ru-RU') : '—';
+                        var sectionName = section.video_sections ? section.video_sections.name : 'Раздел';
                         
                         html += `
                             <div class="section-progress" style="${isCompleted ? 'border-color:rgba(46,204,113,0.3);' : ''}">
@@ -3768,19 +3429,19 @@
                 `;
                 
                 if (lessons && lessons.length > 0) {
-                    const weeks = {};
-                    lessons.forEach(lesson => {
-                        const weekStart = getWeekStart(new Date(lesson.lesson_date));
-                        const key = weekStart.toISOString().split('T')[0];
+                    var weeks = {};
+                    lessons.forEach(function(lesson) {
+                        var weekStart = getWeekStart(new Date(lesson.lesson_date));
+                        var key = weekStart.toISOString().split('T')[0];
                         if (!weeks[key]) weeks[key] = [];
                         weeks[key].push(lesson);
                     });
                     
-                    const sortedWeeks = Object.keys(weeks).sort();
-                    sortedWeeks.forEach(weekKey => {
-                        const weekLessons = weeks[weekKey];
-                        const completed = weekLessons.filter(l => l.status === 'completed').length;
-                        const total = weekLessons.length;
+                    var sortedWeeks = Object.keys(weeks).sort();
+                    sortedWeeks.forEach(function(weekKey) {
+                        var weekLessons = weeks[weekKey];
+                        var completed = weekLessons.filter(function(l) { return l.status === 'completed'; }).length;
+                        var total = weekLessons.length;
                         
                         html += `
                             <div style="background:rgba(255,255,255,0.03); border-radius:12px; padding:12px 16px; margin-bottom:8px; border:1px solid rgba(255,255,255,0.05);">
@@ -3789,9 +3450,9 @@
                                     <span style="color:#888; font-size:13px;">Занятий: ${completed}/${total} ✅</span>
                                 </div>
                                 <div style="margin-top:4px; font-size:13px; color:#666;">
-                                    ${weekLessons.map(l => 
-                                        `${l.lesson_date.split('-').slice(1).join('.')} ${l.start_time || ''} ${l.topic || ''} ${l.status === 'completed' ? '✅' : l.status === 'cancelled' ? '❌' : '📌'}`
-                                    ).join(' • ')}
+                                    ${weekLessons.map(function(l) {
+                                        return (l.lesson_date.split('-').slice(1).join('.') + ' ' + (l.start_time || '') + ' ' + (l.topic || '') + ' ' + (l.status === 'completed' ? '✅' : l.status === 'cancelled' ? '❌' : '📌'));
+                                    }).join(' • ')}
                                 </div>
                             </div>
                         `;
@@ -3810,7 +3471,7 @@
             }
         };
 
-        window.toggleSectionComplete = async function(sectionId, completed) {
+        window.toggleSectionComplete = function(sectionId, completed) {
             supabase
                 .from('study_plan_sections')
                 .update({ 
@@ -3823,20 +3484,10 @@
                         alert('❌ Ошибка: ' + response.error.message);
                         return;
                     }
-                    loadStudyPlan();
+                    window.loadStudyPlan();
                 });
         };
-
-        function getWeekStart(date) {
-            const d = new Date(date);
-            const day = d.getDay();
-            const diff = d.getDate() - day + (day === 0 ? -6 : 1);
-            d.setDate(diff);
-            d.setHours(0, 0, 0, 0);
-            return d;
-        }
-
-        // ==========================================
+                // ==========================================
         // СТАТИСТИКА
         // ==========================================
 
@@ -3849,7 +3500,7 @@
 
         window.loadOverviewStats = async function(studentId) {
             try {
-                const { data, error } = await supabase.from('homeworks').select('id, status').eq('student_id', studentId);
+                var { data, error } = await supabase.from('homeworks').select('id, status').eq('student_id', studentId);
                 if (error) throw error;
                 var total = data.length;
                 var done = data.filter(function(h) { return h.status === 'done'; }).length;
@@ -3872,8 +3523,8 @@
             }
             
             try {
-                const { data: sectionsData } = await supabase.from('video_sections').select('*').order('order_num', { ascending: true });
-                const { data: homeworks } = await supabase.from('homeworks').select('id, section_id, status').eq('student_id', studentId);
+                var { data: sectionsData } = await supabase.from('video_sections').select('*').order('order_num', { ascending: true });
+                var { data: homeworks } = await supabase.from('homeworks').select('id, section_id, status').eq('student_id', studentId);
                 var result = { sectionsData: sectionsData, homeworks: homeworks };
                 setCache('sections_progress_' + studentId, result);
                 renderSectionsProgress(result, container);
@@ -3919,7 +3570,7 @@
             }
             
             try {
-                const { data } = await supabase.from('homeworks').select('created_at').eq('student_id', studentId);
+                var { data } = await supabase.from('homeworks').select('created_at').eq('student_id', studentId);
                 setCache('activity_' + studentId, data);
                 renderActivityChart(data, container);
             } catch (err) {
@@ -3941,7 +3592,8 @@
                     }
                 });
             }
-            var maxVal = Math.max(...Object.values(days), 1);
+            var maxVal = Math.max.apply(null, Object.values(days));
+            maxVal = maxVal || 1;
             var html = '<div class="activity-bars">';
             var dayKeys = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'];
             dayKeys.forEach(function(key) {
@@ -3964,7 +3616,7 @@
             }
             
             try {
-                const { data: hwData } = await supabase.from('homeworks').select('id, status, section_id').eq('student_id', studentId).order('created_at', { ascending: true });
+                var { data: hwData } = await supabase.from('homeworks').select('id, status, section_id').eq('student_id', studentId).order('created_at', { ascending: true });
                 setCache('achievements_' + studentId, hwData);
                 renderAchievements(hwData, container);
             } catch (err) {
@@ -4085,7 +3737,8 @@
         function renderStats(data, container) {
             container.innerHTML = '<div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:20px;"><div style="background:rgba(255,255,255,0.05); padding:20px; border-radius:16px; text-align:center;"><div style="font-size:48px;">👨‍🎓</div><div style="font-size:32px; font-weight:900; color:#ffffff;">' + data.totalStudents + '</div><div style="color:#666;">Учеников с доступом</div></div><div style="background:rgba(255,255,255,0.05); padding:20px; border-radius:16px; text-align:center;"><div style="font-size:48px;">📝</div><div style="font-size:32px; font-weight:900; color:#ffffff;">' + data.totalHomeworks + '</div><div style="color:#666;">Всего ДЗ</div></div><div style="background:rgba(39,174,96,0.15); padding:20px; border-radius:16px; text-align:center;"><div style="font-size:48px;">✅</div><div style="font-size:32px; font-weight:900; color:#2ecc71;">' + data.doneHomeworks + '</div><div style="color:#7ddfa0;">Выполнено</div></div><div style="background:rgba(231,76,60,0.15); padding:20px; border-radius:16px; text-align:center;"><div style="font-size:48px;">⏳</div><div style="font-size:32px; font-weight:900; color:#f1948a;">' + (data.totalHomeworks - data.doneHomeworks) + '</div><div style="color:#f1948a;">В процессе</div></div><div style="background:rgba(52,152,219,0.15); padding:20px; border-radius:16px; text-align:center;"><div style="font-size:48px;">🎥</div><div style="font-size:32px; font-weight:900; color:#85c1e9;">' + data.totalVideos + '</div><div style="color:#85c1e9;">Видео</div></div></div>';
         }
-                // ==========================================
+
+        // ==========================================
         // ЧАТ
         // ==========================================
 
@@ -4443,9 +4096,9 @@
         };
 
         window.loadStudentsForSelect = async function() {
-            const select = document.getElementById('studentSelect');
+            var select = document.getElementById('studentSelect');
             try {
-                const { data, error } = await supabase.from('students').select('id, name').eq('role', 'student').order('name');
+                var { data, error } = await supabase.from('students').select('id, name').eq('role', 'student').order('name');
                 if (error) throw error;
                 select.innerHTML = '<option value="">Выберите ученика</option>';
                 data.forEach(function(student) {
@@ -4481,7 +4134,7 @@
 
         window.previewSection = async function(number) {
             try {
-                const { data, error } = await supabase.from('video_sections').select('id, name').eq('order_num', number).single();
+                var { data, error } = await supabase.from('video_sections').select('id, name').eq('order_num', number).single();
                 var preview = document.getElementById('sectionPreview');
                 if (error) {
                     preview.textContent = '❌ Раздел №' + number + ' не найден';
@@ -4596,7 +4249,7 @@
                 window.loadHomework(currentUser.id);
             }
             if (page === 'myplan' && currentUser) {
-                window.loadStudentPlan();
+                window.renderStudentCalendar(studentMonth);
             }
         };
 
@@ -4664,115 +4317,6 @@
             } catch (err) {
                 content.innerHTML = '<div class="empty">❌ Ошибка загрузки</div>';
                 console.error(err);
-            }
-        };
-
-        // ==========================================
-        // СТРАНИЦА "МОЙ ПЛАН" ДЛЯ УЧЕНИКА
-        // ==========================================
-
-        window.loadStudentPlan = async function() {
-            const container = document.getElementById('studentPlanSummary');
-            if (!container || !currentUser) return;
-            
-            try {
-                const { data: plan, error: planError } = await supabase
-                    .from('study_plans')
-                    .select('*')
-                    .eq('student_id', currentUser.id)
-                    .maybeSingle();
-                    
-                if (planError) throw planError;
-                
-                if (!plan) {
-                    container.innerHTML = `
-                        <div class="empty-state">
-                            <span class="icon">📭</span>
-                            <div class="title">План подготовки не создан</div>
-                            <div class="desc">Преподаватель ещё не создал индивидуальный план</div>
-                        </div>
-                    `;
-                    return;
-                }
-                
-                const { data: sections } = await supabase
-                    .from('study_plan_sections')
-                    .select('*, video_sections(name)')
-                    .eq('plan_id', plan.id)
-                    .order('order_num', { ascending: true });
-                    
-                const { data: lessons } = await supabase
-                    .from('lesson_calendar')
-                    .select('*')
-                    .eq('student_id', currentUser.id)
-                    .order('lesson_date', { ascending: true });
-                    
-                const completedLessons = lessons ? lessons.filter(l => l.status === 'completed').length : 0;
-                const totalLessons = plan.total_lessons_planned || 0;
-                const progress = totalLessons > 0 ? Math.round((completedLessons / totalLessons) * 100) : 0;
-                
-                const examDate = new Date(plan.exam_date);
-                const today = new Date();
-                const daysLeft = Math.ceil((examDate - today) / (1000 * 60 * 60 * 24));
-                
-                let html = `
-                    <div class="exam-countdown" style="text-align:center; margin-bottom:24px;">
-                        <div style="font-size:48px; font-weight:900; color:#f5a623;">${daysLeft > 0 ? daysLeft : '0'}</div>
-                        <div style="color:#888; font-size:16px;">дней до экзамена</div>
-                        <div style="width:100%; max-width:400px; margin:16px auto; height:8px; background:rgba(255,255,255,0.05); border-radius:10px; overflow:hidden;">
-                            <div style="height:100%; width:${progress}%; background:linear-gradient(90deg, #667eea, #764ba2); border-radius:10px; transition:width 0.8s;"></div>
-                        </div>
-                        <div style="color:#b0c4de; font-size:14px;">Прогресс: ${progress}% (${completedLessons}/${totalLessons} занятий)</div>
-                    </div>
-                    
-                    <h4 style="color:#f5a623; margin-bottom:16px;">🎯 Цель: ${plan.target_score}+ баллов</h4>
-                    
-                    <h4 style="color:#f5a623; margin-bottom:16px; margin-top:24px;">📖 План по разделам</h4>
-                `;
-                
-                if (sections && sections.length > 0) {
-                    sections.forEach((section) => {
-                        const isCompleted = section.completed;
-                        const deadline = section.deadline ? new Date(section.deadline).toLocaleDateString('ru-RU') : '—';
-                        const sectionName = section.video_sections ? section.video_sections.name : 'Раздел';
-                        
-                        html += `
-                            <div class="section-progress" style="${isCompleted ? 'border-color:rgba(46,204,113,0.3);' : ''}">
-                                <span class="status-icon">${isCompleted ? '✅' : '📌'}</span>
-                                <span class="name">${sectionName}</span>
-                                <div class="bar-wrap">
-                                    <div class="fill ${isCompleted ? 'green' : 'yellow'}" style="width:${isCompleted ? 100 : 0}%;"></div>
-                                </div>
-                                <span class="percent">${isCompleted ? '✅ Выполнено' : '⏳ Ожидает'}</span>
-                                <span style="color:#888; font-size:12px;">📅 ${deadline}</span>
-                            </div>
-                        `;
-                    });
-                } else {
-                    html += '<p style="color:#666;">Нет разделов в плане</p>';
-                }
-                
-                // Ближайшие занятия
-                const upcomingLessons = lessons ? lessons.filter(l => l.status === 'planned' && new Date(l.lesson_date) >= today).slice(0, 5) : [];
-                if (upcomingLessons.length > 0) {
-                    html += `
-                        <h4 style="color:#f5a623; margin-bottom:16px; margin-top:24px;">📅 Ближайшие занятия</h4>
-                    `;
-                    upcomingLessons.forEach(function(lesson) {
-                        html += `
-                            <div style="background:rgba(255,255,255,0.03); border-radius:8px; padding:10px 14px; margin-bottom:6px; border-left:3px solid #f5a623;">
-                                <div style="color:#b0c4de;">${new Date(lesson.lesson_date).toLocaleDateString('ru-RU')} ${lesson.start_time || ''}</div>
-                                <div style="color:#888; font-size:13px;">${lesson.topic || 'Занятие'}</div>
-                            </div>
-                        `;
-                    });
-                }
-                
-                container.innerHTML = html;
-                
-            } catch (err) {
-                console.error('Ошибка загрузки плана ученика:', err);
-                container.innerHTML = '<p style="color:#666;">Ошибка загрузки плана</p>';
             }
         };
 
@@ -4858,7 +4402,7 @@
         };
 
         // ==========================================
-        // АВТОРИЗАЦИЯ - ИСПРАВЛЕННАЯ
+        // АВТОРИЗАЦИЯ
         // ==========================================
 
         function handleLogin() {
@@ -4917,10 +4461,9 @@
                         window.loadTheory();
                         window.loadHomework(user.id);
                         window.loadDashboardOverview(user.id);
-                        window.loadStudentSchedule(user.id);
                         window.loadSectionsAndVideos();
                         window.loadSettings();
-                        window.loadStudentPlan();
+                        window.renderStudentCalendar(studentMonth);
                         
                         startAutoRefresh();
                         
@@ -5002,7 +4545,6 @@
             window.loadAdminTheory();
             window.loadAllHomeworks();
             window.loadVideosAdmin();
-            window.loadScheduleAdmin();
             window.loadStats();
             window.loadTemplates();
             window.loadCalendarStudents();
@@ -5020,26 +4562,20 @@
         console.log('  📝 homeworks - ДЗ (привязаны к students)');
         console.log('  📎 attached_file_url - файлы учеников к ДЗ');
         console.log('  💬 messages - чат (students)');
-        console.log('  📅 schedule - расписание (students)');
         console.log('  📅 lesson_calendar - календарь занятий');
+        console.log('  🔁 lesson_series - серии занятий');
         console.log('  📚 study_plans - планы подготовки');
         console.log('  📖 study_plan_sections - разделы планов');
         console.log('  📋 plan_templates - шаблоны планов');
-        console.log('⚡ Оптимизации включены: кеширование, lazy loading, пагинация');
+        console.log('⚡ Оптимизации включены: кеширование, lazy loading');
         console.log('✅ PDF из видео УДАЛЁН полностью');
         console.log('✅ Исправлен белый текст в select');
-        console.log('✅ Исправлено сохранение фото и информации');
-        console.log('✅ Добавлены вкладки "Активные" и "Выполненные" ДЗ');
-        console.log('✅ Добавлена кнопка "Вернуть" для выполненных ДЗ');
-        console.log('✅ Убрана кнопка "Выйти" из хедера');
-        console.log('✅ Добавлено автообновление каждые 30 секунд');
-        console.log('✅ Добавлена кнопка "Обновить" на всех страницах');
-        console.log('✅ Добавлена возможность прикреплять файлы к ДЗ (PDF, JPG, PNG, GIF, WEBP)');
-        console.log('✅ Админ видит прикреплённые файлы в таблице ДЗ');
-        console.log('✅ Добавлен календарь занятий');
+        console.log('✅ Добавлен календарь занятий с сериями');
         console.log('✅ Добавлены индивидуальные планы подготовки');
         console.log('✅ Добавлены шаблоны планов');
-        console.log('✅ Добавлена страница "Мой план" для ученика');
+        console.log('✅ Добавлена страница "Мой календарь" для ученика');
+        console.log('✅ Удалена вкладка "Расписание"');
+        console.log('✅ Добавлено автообновление');
     </script>
 
 </body>
