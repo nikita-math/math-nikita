@@ -404,6 +404,8 @@
             .whiteboard-admin-item .whiteboard-link-small { max-width: unset; }
             .hw-tabs { flex-wrap: wrap; }
             .hw-tab { flex: 1; min-width: 100px; text-align: center; }
+            .hw-card .hw-actions { flex-direction: column; }
+            .hw-card .hw-actions button { width: 100%; }
         }
     </style>
 </head>
@@ -1036,14 +1038,16 @@
             }
             
             // Маленькое уведомление
-            var btn = document.querySelector('.admin-btn:contains("Обновить")');
-            if (btn) {
-                var originalText = btn.textContent;
-                btn.textContent = '✅ Обновлено!';
-                setTimeout(function() {
-                    btn.textContent = originalText;
-                }, 1500);
-            }
+            var btns = document.querySelectorAll('.admin-btn');
+            btns.forEach(function(btn) {
+                if (btn.textContent.includes('Обновить')) {
+                    var originalText = btn.textContent;
+                    btn.textContent = '✅ Обновлено!';
+                    setTimeout(function() {
+                        btn.textContent = originalText;
+                    }, 1500);
+                }
+            });
             
             console.log('🔄 Данные обновлены вручную');
         };
@@ -1053,14 +1057,12 @@
             
             refreshInterval = setInterval(function() {
                 if (currentUser) {
-                    // Обновляем только если страница активна и пользователь авторизован
                     var isVisible = !document.hidden;
                     if (isVisible) {
-                        // Тихое обновление без перезагрузки интерфейса
                         updateDataSilently();
                     }
                 }
-            }, 30000); // Каждые 30 секунд
+            }, 30000);
         }
 
         function updateDataSilently() {
@@ -1074,7 +1076,6 @@
                 .then(function(response) {
                     if (!response.error) {
                         setCache('theory', response.data);
-                        // Если мы на странице теории - перерендерим
                         if (currentDashboardPage === 'theory') {
                             renderTheory(response.data, document.getElementById('theoryList'));
                         }
@@ -1168,6 +1169,154 @@
             }
             if (currentUser) {
                 window.loadHomework(currentUser.id);
+            }
+        };
+
+        // ==========================================
+        // ===== ЗАГРУЗКА ФАЙЛОВ К ДЗ =====
+        // ==========================================
+
+        window.uploadHomeworkFile = async function(homeworkId) {
+            var input = document.getElementById('fileInput_' + homeworkId);
+            if (!input) {
+                // Создаём скрытый input если его нет
+                input = document.createElement('input');
+                input.type = 'file';
+                input.id = 'fileInput_' + homeworkId;
+                input.style.display = 'none';
+                input.accept = '.pdf,.jpg,.jpeg,.png,.gif,.webp';
+                input.onchange = function() { window.uploadHomeworkFile(homeworkId); };
+                document.body.appendChild(input);
+                input.click();
+                return;
+            }
+            
+            var file = input.files[0];
+            if (!file) {
+                alert('❌ Выберите файл');
+                return;
+            }
+            
+            // Проверка размера (максимум 10 МБ)
+            if (file.size > 10 * 1024 * 1024) {
+                alert('❌ Файл слишком большой! Максимум 10 МБ');
+                input.value = '';
+                return;
+            }
+            
+            // Проверка типа файла
+            var allowedTypes = ['application/pdf', 'image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+            var ext = file.name.split('.').pop().toLowerCase();
+            var allowedExts = ['pdf', 'jpg', 'jpeg', 'png', 'gif', 'webp'];
+            if (!allowedTypes.includes(file.type) && !allowedExts.includes(ext)) {
+                alert('❌ Разрешены только PDF, JPG, PNG, GIF, WEBP');
+                input.value = '';
+                return;
+            }
+            
+            try {
+                // Находим кнопку и меняем текст
+                var card = input.closest('.hw-card');
+                var btn = card ? card.querySelector('.admin-btn:not(.danger)') : null;
+                if (btn) {
+                    var originalText = btn.textContent;
+                    btn.textContent = '⏳ Загрузка...';
+                    btn.disabled = true;
+                }
+                
+                // Загружаем файл в Supabase Storage
+                var timestamp = Date.now();
+                var path = 'homework_attachments/' + timestamp + '_' + homeworkId + '_' + file.name;
+                var uploadResult = await supabase.storage.from('homework').upload(path, file);
+                
+                if (uploadResult.error) {
+                    throw new Error(uploadResult.error.message);
+                }
+                
+                // Получаем публичную ссылку
+                var urlData = supabase.storage.from('homework').getPublicUrl(path);
+                var fileUrl = urlData.data.publicUrl;
+                
+                // Обновляем запись в БД
+                var updateResult = await supabase
+                    .from('homeworks')
+                    .update({ attached_file_url: fileUrl })
+                    .eq('id', homeworkId);
+                
+                if (updateResult.error) {
+                    throw new Error(updateResult.error.message);
+                }
+                
+                alert('✅ Файл успешно прикреплён!');
+                input.value = '';
+                
+                // Обновляем список ДЗ
+                if (currentUser) {
+                    clearCache('homeworks_' + currentUser.id);
+                    window.loadHomework(currentUser.id);
+                }
+                
+            } catch (err) {
+                alert('❌ Ошибка загрузки: ' + err.message);
+                console.error(err);
+            }
+            
+            // Восстанавливаем кнопку
+            var card = input.closest('.hw-card');
+            var btn = card ? card.querySelector('.admin-btn:not(.danger)') : null;
+            if (btn) {
+                btn.textContent = '📎 Прикрепить файл';
+                btn.disabled = false;
+            }
+        };
+
+        // ==========================================
+        // УДАЛЕНИЕ ПРИКРЕПЛЁННОГО ФАЙЛА
+        // ==========================================
+
+        window.deleteAttachedFile = async function(homeworkId) {
+            if (!confirm('Удалить прикреплённый файл?')) return;
+            
+            try {
+                // Получаем текущую информацию о ДЗ
+                var { data, error } = await supabase
+                    .from('homeworks')
+                    .select('attached_file_url')
+                    .eq('id', homeworkId)
+                    .single();
+                
+                if (error) throw error;
+                
+                // Удаляем файл из Storage
+                if (data.attached_file_url) {
+                    var parts = data.attached_file_url.split('/');
+                    var filename = parts[parts.length - 1];
+                    try {
+                        await supabase.storage.from('homework').remove(['homework_attachments/' + filename]);
+                    } catch (e) {
+                        console.log('Не удалось удалить файл из storage:', e);
+                    }
+                }
+                
+                // Обновляем запись в БД
+                var updateResult = await supabase
+                    .from('homeworks')
+                    .update({ attached_file_url: null })
+                    .eq('id', homeworkId);
+                
+                if (updateResult.error) throw updateResult.error;
+                
+                alert('✅ Файл удалён');
+                
+                // Обновляем список ДЗ
+                if (currentUser) {
+                    clearCache('homeworks_' + currentUser.id);
+                    window.loadHomework(currentUser.id);
+                }
+                
+            } catch (err) {
+                alert('❌ Ошибка удаления: ' + err.message);
+                console.error(err);
             }
         };
                 // ==========================================
@@ -2026,7 +2175,7 @@
         };
 
         // ==========================================
-        // ДОМАШНИЕ ЗАДАНИЯ (СТУДЕНТ)
+        // ДОМАШНИЕ ЗАДАНИЯ (СТУДЕНТ) С ПРИКРЕПЛЕНИЕМ ФАЙЛОВ
         // ==========================================
 
         window.loadHomework = function(studentId) {
@@ -2089,13 +2238,39 @@
                     btnHtml = '<button class="admin-btn" onclick="window.unmarkDone(\'' + hw.id + '\')">↩ Вернуть</button>';
                 }
                 
+                // Кнопка для прикрепления файла (только для выполненных)
+                var attachBtn = '';
+                if (hw.status === 'done') {
+                    attachBtn = `
+                        <button class="admin-btn" onclick="document.getElementById('fileInput_${hw.id}').click()">📎 Прикрепить файл</button>
+                        <input type="file" id="fileInput_${hw.id}" style="display:none;" accept=".pdf,.jpg,.jpeg,.png,.gif,.webp" onchange="window.uploadHomeworkFile('${hw.id}')">
+                    `;
+                }
+                
+                // Отображение прикреплённого файла
+                var attachedFileHtml = '';
+                if (hw.attached_file_url) {
+                    var fileExt = hw.attached_file_url.split('.').pop().toLowerCase();
+                    var fileIcon = '📄';
+                    if (['jpg', 'jpeg', 'png', 'gif', 'webp'].includes(fileExt)) {
+                        fileIcon = '🖼️';
+                    }
+                    attachedFileHtml = `
+                        <div class="meta" style="margin-top:8px; color:#88ccff;">
+                            ${fileIcon} Прикреплённый файл:
+                            <a href="${hw.attached_file_url}" target="_blank" style="color:#88ccff; text-decoration:underline;">Скачать (${fileExt})</a>
+                            <button class="admin-btn danger" onclick="window.deleteAttachedFile('${hw.id}')" style="font-size:11px; padding:2px 10px; margin-left:8px;">✕</button>
+                        </div>
+                    `;
+                }
+                
                 var sectionInfo = '';
                 if (hw.video_sections) {
                     sectionInfo = '<div class="meta">📺 Раздел №' + hw.video_sections.order_num + ': ' + hw.video_sections.name + '</div>';
                 }
                 var fileHtml = '';
                 if (hw.file_url) {
-                    fileHtml = '<div class="meta">📎 <a href="' + hw.file_url + '" target="_blank">Скачать файл</a></div>';
+                    fileHtml = '<div class="meta">📎 <a href="' + hw.file_url + '" target="_blank">Скачать файл от преподавателя</a></div>';
                 }
                 var deadlineText = hw.deadline ? '📅 Срок: ' + hw.deadline : '📅 Без срока';
                 
@@ -2117,7 +2292,7 @@
                     </div>
                 `;
                 
-                html += '<div class="hw-card"><div class="title">' + hw.title + '</div>' + sectionInfo + '<div class="meta">' + deadlineText + '</div>' + commentHtml + '<div class="status ' + statusClass + '">' + statusText + '</div><div class="hw-actions">' + btnHtml + '</div>' + fileHtml + commentsHtml + '</div>';
+                html += '<div class="hw-card"><div class="title">' + hw.title + '</div>' + sectionInfo + '<div class="meta">' + deadlineText + '</div>' + commentHtml + '<div class="status ' + statusClass + '">' + statusText + '</div><div class="hw-actions">' + btnHtml + attachBtn + '</div>' + fileHtml + attachedFileHtml + commentsHtml + '</div>';
                 
                 setTimeout(function() {
                     window.loadHomeworkComments(hw.id, 'comments_' + hw.id);
@@ -2180,7 +2355,7 @@
         window.loadDashboardOverview = function(studentId) {
             supabase
                 .from('homeworks')
-                .select('id, status, section_id, deadline, title')
+                .select('id, status, section_id, deadline, title, attached_file_url')
                 .eq('student_id', studentId)
                 .limit(30)
                 .then(function(response) {
@@ -2212,7 +2387,8 @@
                         html = '<div style="margin-top:12px;"><p style="color:#888; font-size:14px; margin-bottom:10px;">📋 Последние ДЗ</p>';
                         recent.forEach(function(hw) {
                             var status = hw.status === 'done' ? '✅' : '⏳';
-                            html += '<div style="display:flex; justify-content:space-between; padding:10px 14px; background:rgba(255,255,255,0.03); border-radius:10px; margin-bottom:6px; border:1px solid rgba(255,255,255,0.04);"><span style="color:#b0c4de;">' + hw.title + '</span><span style="color:' + (hw.status === 'done' ? '#2ecc71' : '#f39c12') + ';">' + status + '</span></div>';
+                            var fileIcon = hw.attached_file_url ? '📎' : '';
+                            html += '<div style="display:flex; justify-content:space-between; padding:10px 14px; background:rgba(255,255,255,0.03); border-radius:10px; margin-bottom:6px; border:1px solid rgba(255,255,255,0.04);"><span style="color:#b0c4de;">' + hw.title + ' ' + fileIcon + '</span><span style="color:' + (hw.status === 'done' ? '#2ecc71' : '#f39c12') + ';">' + status + '</span></div>';
                         });
                         html += '</div>';
                     } else {
@@ -2324,7 +2500,7 @@
         };
 
         // ==========================================
-        // АДМИНКА - БЫСТРАЯ ЗАГРУЗКА ДЗ
+        // АДМИНКА - БЫСТРАЯ ЗАГРУЗКА ДЗ С ФАЙЛАМИ
         // ==========================================
 
         window.loadAllHomeworks = function() {
@@ -2341,7 +2517,7 @@
             
             supabase
                 .from('homeworks')
-                .select('id, title, student_id, status, deadline, file_url, comment, section_id, created_at')
+                .select('id, title, student_id, status, deadline, file_url, attached_file_url, comment, section_id, created_at')
                 .order('created_at', { ascending: false })
                 .limit(30)
                 .then(function(response) {
@@ -2380,7 +2556,7 @@
                     });
                 }
                 
-                var html = '<table class="admin-table"><tr><th>Название</th><th>Ученик</th><th>Раздел</th><th>№</th><th>Статус</th><th>Срок</th><th>PDF</th><th>Комментарий</th><th>Действия</th></tr>';
+                var html = '<table class="admin-table"><tr><th>Название</th><th>Ученик</th><th>Раздел</th><th>№</th><th>Статус</th><th>Срок</th><th>PDF от учителя</th><th>Файл ученика</th><th>Комментарий</th><th>Действия</th></tr>';
                 
                 for (var i = 0; i < data.length; i++) {
                     var h = data[i];
@@ -2391,7 +2567,16 @@
                     var statusText = h.status === 'done' ? '✅ Выполнено' : '⏳ В процессе';
                     var commentPreview = h.comment ? (h.comment.length > 30 ? h.comment.substring(0, 30) + '...' : h.comment) : '—';
                     
-                    html += '<tr><td>' + h.title + '</td><td>' + studentName + '</td><td>' + sectionName + '</td><td style="color:#f5a623; font-weight:700;">' + sectionNum + '</td><td>' + statusText + '</td><td>' + (h.deadline || 'Без срока') + '</td><td>' + (h.file_url ? '<a href="' + h.file_url + '" target="_blank" style="color:#88ccff;">📄 PDF</a>' : '—') + '</td><td style="color:#f5a623; font-size:13px;">' + commentPreview + '</td><td><button class="admin-btn" onclick="window.toggleHomeworkStatus(\'' + h.id + '\', \'' + h.status + '\')">' + (h.status === 'done' ? '↩ Вернуть' : '✅ Отметить') + '</button> <button class="admin-btn danger" onclick="window.deleteHomework(\'' + h.id + '\')">🗑</button></td></tr>';
+                    // Отображение файла ученика
+                    var attachedFileHtml = '—';
+                    if (h.attached_file_url) {
+                        var ext = h.attached_file_url.split('.').pop().toLowerCase();
+                        var icon = '📄';
+                        if (['jpg', 'jpeg', 'png', 'gif', 'webp'].includes(ext)) icon = '🖼️';
+                        attachedFileHtml = '<a href="' + h.attached_file_url + '" target="_blank" style="color:#88ccff;">' + icon + ' Скачать</a>';
+                    }
+                    
+                    html += '<tr><td>' + h.title + '</td><td>' + studentName + '</td><td>' + sectionName + '</td><td style="color:#f5a623; font-weight:700;">' + sectionNum + '</td><td>' + statusText + '</td><td>' + (h.deadline || 'Без срока') + '</td><td>' + (h.file_url ? '<a href="' + h.file_url + '" target="_blank" style="color:#88ccff;">📄 PDF</a>' : '—') + '</td><td>' + attachedFileHtml + '</td><td style="color:#f5a623; font-size:13px;">' + commentPreview + '</td><td><button class="admin-btn" onclick="window.toggleHomeworkStatus(\'' + h.id + '\', \'' + h.status + '\')">' + (h.status === 'done' ? '↩ Вернуть' : '✅ Отметить') + '</button> <button class="admin-btn danger" onclick="window.deleteHomework(\'' + h.id + '\')">🗑</button></td></tr>';
                 }
                 html += '</table>';
                 container.innerHTML = html;
@@ -3643,7 +3828,6 @@
                         window.loadSectionsAndVideos();
                         window.loadSettings();
                         
-                        // Запускаем автообновление
                         startAutoRefresh();
                         
                         console.log('✅ Вход выполнен:', user.name);
@@ -3738,6 +3922,7 @@
         console.log('  🔑 students - доступ в систему (login/пароль)');
         console.log('  🖊️ whiteboard_url - ссылки на доски (в students)');
         console.log('  📝 homeworks - ДЗ (привязаны к students)');
+        console.log('  📎 attached_file_url - файлы учеников к ДЗ');
         console.log('  💬 messages - чат (students)');
         console.log('  📅 schedule - расписание (students)');
         console.log('⚡ Оптимизации включены: кеширование, lazy loading, пагинация');
@@ -3749,6 +3934,8 @@
         console.log('✅ Убрана кнопка "Выйти" из хедера');
         console.log('✅ Добавлено автообновление каждые 30 секунд');
         console.log('✅ Добавлена кнопка "Обновить" на всех страницах');
+        console.log('✅ Добавлена возможность прикреплять файлы к ДЗ (PDF, JPG, PNG, GIF, WEBP)');
+        console.log('✅ Админ видит прикреплённые файлы в таблице ДЗ');
     </script>
 
 </body>
