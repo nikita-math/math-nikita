@@ -1270,3 +1270,642 @@
     <footer>
         © 2026 Математика с Никитой. Все права защищены.
     </footer>
+    <script>
+        (function generateStars() {
+            var container = document.getElementById('starsContainer');
+            var count = 150;
+            for (var i = 0; i < count; i++) {
+                var star = document.createElement('div');
+                star.className = 'star';
+                var size = Math.random() * 3 + 1;
+                star.style.width = size + 'px';
+                star.style.height = size + 'px';
+                star.style.left = Math.random() * 100 + '%';
+                star.style.top = Math.random() * 100 + '%';
+                star.style.setProperty('--duration', (Math.random() * 3 + 2) + 's');
+                star.style.animationDelay = (Math.random() * 3) + 's';
+                container.appendChild(star);
+            }
+        })();
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <script>
+        var SUPABASE_URL = 'https://liqqdixrtvnrrvgkfvbn.supabase.co';
+        var SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxpcXFkaXhydHZucnJ2Z2tmdmJuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODM4NTMzMzksImV4cCI6MjA5OTQyOTMzOX0.Jqrnt5DOKNURe5HERWIhMvc6KChurAg5iHkfMBw4P2A';
+        var supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        var currentUser = null;
+        var sections = [];
+        var currentHomeworkTab = 'active';
+        var currentDashboardPage = 'overview';
+        var currentChatPartner = null;
+        var chatInterval = null;
+
+        var loginSection = document.getElementById('loginSection');
+        var dashboard = document.getElementById('dashboard');
+        var adminPanel = document.getElementById('adminPanel');
+        var resultDiv = document.getElementById('result');
+        var homeworkList = document.getElementById('homeworkList');
+        var welcomeMessage = document.getElementById('welcomeMessage');
+        var mainContent = document.getElementById('mainContent');
+        var sectionPage = document.getElementById('sectionPage');
+
+        var daysMap = {
+            'mon': 'ПН',
+            'tue': 'ВТ',
+            'wed': 'СР',
+            'thu': 'ЧТ',
+            'fri': 'ПТ',
+            'sat': 'СБ',
+            'sun': 'ВС'
+        };
+        var daysArray = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'];
+
+        // ==========================================
+        // ГЛОБАЛЬНЫЕ ФУНКЦИИ
+        // ==========================================
+
+        window.switchAdminTab = function(tab) {
+            document.querySelectorAll('.admin-tabs button').forEach(function(btn) {
+                btn.classList.remove('active');
+            });
+            var targetBtn = document.querySelector('.admin-tabs button[data-tab="' + tab + '"]');
+            if (targetBtn) targetBtn.classList.add('active');
+            document.querySelectorAll('.admin-content').forEach(function(c) { c.classList.remove('active'); });
+            var targetContent = document.getElementById('tab-' + tab);
+            if (targetContent) targetContent.classList.add('active');
+            
+            if (tab === 'students') window.loadMyStudents();
+            else if (tab === 'whiteboard') window.loadWhiteboardAdmin();
+            else if (tab === 'theory') window.loadAdminTheory();
+            else if (tab === 'homeworks') window.loadAllHomeworks();
+            else if (tab === 'videos') window.loadVideosAdmin();
+            else if (tab === 'schedule') window.loadScheduleAdmin();
+            else if (tab === 'stats') window.loadStats();
+            else if (tab === 'settings') window.loadTeacherSettings();
+        };
+
+        window.logout = function() {
+            if (confirm('Вы уверены, что хотите выйти?')) {
+                if (chatInterval) clearInterval(chatInterval);
+                document.getElementById('profileBlock').style.display = 'flex';
+                document.getElementById('contactsBlock').style.display = 'block';
+                document.getElementById('loginSection').style.display = 'block';
+                document.getElementById('dashboard').style.display = 'none';
+                document.getElementById('adminPanel').style.display = 'none';
+                resultDiv.innerHTML = '';
+                resultDiv.className = '';
+                currentUser = null;
+                currentChatPartner = null;
+            }
+        };
+
+        // ==========================================
+        // ===== MY_STUDENTS (ваша личная таблица) =====
+        // ==========================================
+
+        // Добавление ученика в my_students
+        window.addMyStudent = function() {
+            var name = prompt('Введите имя ученика (например: Мачкур 70+):');
+            if (!name) return;
+            
+            var classNum = prompt('Введите класс (например: 11):');
+            if (!classNum) return;
+            
+            var startDate = prompt('Введите дату начала (в формате ГГГГ-ММ-ДД, например: 2026-02-01):');
+            if (!startDate) return;
+            
+            var status = confirm('Ученик активен? (Нажмите ОК - активен, Отмена - неактивен)') ? 'active' : 'inactive';
+            
+            supabase
+                .from('my_students')
+                .insert([{
+                    name: name,
+                    class: classNum,
+                    start_date: startDate,
+                    status: status
+                }])
+                .then(function(response) {
+                    if (response.error) {
+                        alert('❌ Ошибка: ' + response.error.message);
+                        return;
+                    }
+                    alert('✅ Ученик добавлен в ваш список!');
+                    window.loadMyStudents();
+                })
+                .catch(function(err) {
+                    alert('❌ Ошибка: ' + err.message);
+                });
+        };
+
+        // Загрузка списка учеников из my_students
+        window.loadMyStudents = function() {
+            var container = document.getElementById('studentsList');
+            if (!container) return;
+            container.innerHTML = '⏳ Загрузка...';
+            
+            supabase
+                .from('my_students')
+                .select('*')
+                .order('name', { ascending: true })
+                .then(function(response) {
+                    if (response.error) {
+                        container.innerHTML = '❌ Ошибка: ' + response.error.message;
+                        return;
+                    }
+                    var data = response.data || [];
+                    if (data.length === 0) {
+                        container.innerHTML = `
+                            <div class="empty-state">
+                                <span class="icon">📭</span>
+                                <div class="title">Нет учеников</div>
+                                <div class="desc">Нажмите "➕ Добавить ученика" чтобы добавить первого</div>
+                            </div>
+                        `;
+                        return;
+                    }
+                    
+                    var html = '<table class="my-students-table"><tr><th>Имя</th><th>Класс</th><th>Дата начала</th><th>Статус</th><th>Действия</th></tr>';
+                    for (var i = 0; i < data.length; i++) {
+                        var s = data[i];
+                        var statusClass = s.status === 'active' ? 'active' : 'inactive';
+                        var statusText = s.status === 'active' ? '🟢 Активен' : '🔴 Неактивен';
+                        html += `
+                            <tr>
+                                <td>${s.name}</td>
+                                <td>${s.class || '—'}</td>
+                                <td>${s.start_date || '—'}</td>
+                                <td><span class="status-badge ${statusClass}">${statusText}</span></td>
+                                <td>
+                                    <button class="admin-btn success" onclick="window.toggleMyStudentStatus('${s.id}', '${s.status}')">🔄 Сменить статус</button>
+                                    <button class="admin-btn danger" onclick="window.deleteMyStudent('${s.id}')">🗑 Удалить</button>
+                                </td>
+                            </tr>
+                        `;
+                    }
+                    html += '</table>';
+                    container.innerHTML = html;
+                })
+                .catch(function(err) {
+                    container.innerHTML = '❌ Ошибка: ' + err.message;
+                });
+        };
+
+        // Смена статуса ученика в my_students
+        window.toggleMyStudentStatus = function(id, currentStatus) {
+            var newStatus = currentStatus === 'active' ? 'inactive' : 'active';
+            supabase
+                .from('my_students')
+                .update({ status: newStatus })
+                .eq('id', id)
+                .then(function(response) {
+                    if (response.error) {
+                        alert('❌ Ошибка: ' + response.error.message);
+                        return;
+                    }
+                    alert('✅ Статус изменён на ' + (newStatus === 'active' ? 'Активен' : 'Неактивен'));
+                    window.loadMyStudents();
+                })
+                .catch(function(err) {
+                    alert('❌ Ошибка: ' + err.message);
+                });
+        };
+
+        // Удаление ученика из my_students
+        window.deleteMyStudent = function(id) {
+            if (!confirm('Удалить ученика из вашего списка?')) return;
+            supabase
+                .from('my_students')
+                .delete()
+                .eq('id', id)
+                .then(function(response) {
+                    if (response.error) {
+                        alert('❌ Ошибка: ' + response.error.message);
+                        return;
+                    }
+                    alert('✅ Ученик удалён');
+                    window.loadMyStudents();
+                })
+                .catch(function(err) {
+                    alert('❌ Ошибка: ' + err.message);
+                });
+        };
+
+        // ==========================================
+        // ===== ОНЛАЙН-ДОСКИ (students) =====
+        // ==========================================
+
+        window.loadWhiteboard = function() {
+            var container = document.getElementById('whiteboardContainer');
+            if (!container) return;
+            
+            if (!currentUser) {
+                container.innerHTML = '<p style="color:#666;">Загрузка...</p>';
+                return;
+            }
+
+            supabase
+                .from('students')
+                .select('whiteboard_url')
+                .eq('id', currentUser.id)
+                .single()
+                .then(function(response) {
+                    if (response.error) {
+                        container.innerHTML = '<p style="color:#666;">Ошибка загрузки доски</p>';
+                        return;
+                    }
+                    var url = response.data.whiteboard_url;
+                    if (url && url.trim() !== '') {
+                        container.innerHTML = `
+                            <div class="whiteboard-section">
+                                <h3>🖊️ Ваша онлайн-доска</h3>
+                                <div class="whiteboard-label">Перейдите по ссылке для работы на доске:</div>
+                                <a href="${url}" target="_blank" class="whiteboard-link">${url}</a>
+                            </div>
+                        `;
+                    } else {
+                        container.innerHTML = `
+                            <div class="whiteboard-section">
+                                <h3>🖊️ Онлайн-доска</h3>
+                                <div class="whiteboard-empty">
+                                    <span style="font-size: 32px; display: block; margin-bottom: 8px;">📭</span>
+                                    Преподаватель ещё не добавил ссылку на доску.<br>
+                                    Обратитесь к нему для получения ссылки.
+                                </div>
+                            </div>
+                        `;
+                    }
+                })
+                .catch(function(err) {
+                    container.innerHTML = '<p style="color:#666;">Ошибка: ' + err.message + '</p>';
+                });
+        };
+
+        // Загрузка досок для админа (из students)
+        window.loadWhiteboardAdmin = function() {
+            var container = document.getElementById('whiteboardAdminList');
+            if (!container) return;
+            container.innerHTML = '⏳ Загрузка...';
+            
+            supabase
+                .from('students')
+                .select('id, name, whiteboard_url')
+                .eq('role', 'student')
+                .order('name')
+                .then(function(response) {
+                    if (response.error) {
+                        container.innerHTML = '❌ Ошибка: ' + response.error.message;
+                        return;
+                    }
+                    var students = response.data || [];
+                    if (students.length === 0) {
+                        container.innerHTML = `
+                            <div class="empty-state">
+                                <span class="icon">📭</span>
+                                <div class="title">Нет учеников с доступом</div>
+                                <div class="desc">Добавьте учеников в таблицу students с ролью 'student'</div>
+                            </div>
+                        `;
+                        return;
+                    }
+                    
+                    var html = '';
+                    students.forEach(function(student) {
+                        var url = student.whiteboard_url || '';
+                        html += `
+                            <div class="whiteboard-admin-item">
+                                <span class="student-name">${student.name}</span>
+                                <input type="text" id="wb_${student.id}" value="${url}" placeholder="Вставьте ссылку на доску..." 
+                                    onkeypress="if(event.key==='Enter') window.saveWhiteboardUrl('${student.id}')">
+                                <button class="admin-btn success" onclick="window.saveWhiteboardUrl('${student.id}')">💾 Сохранить</button>
+                                ${url ? `<a href="${url}" target="_blank" class="whiteboard-link-small">🔗 Открыть</a>` : ''}
+                            </div>
+                        `;
+                    });
+                    container.innerHTML = html;
+                })
+                .catch(function(err) {
+                    container.innerHTML = '❌ Ошибка: ' + err.message;
+                });
+        };
+
+        // Сохранение ссылки на доску (students)
+        window.saveWhiteboardUrl = function(studentId) {
+            var input = document.getElementById('wb_' + studentId);
+            if (!input) return;
+            var url = input.value.trim();
+            
+            if (url && !url.startsWith('http://') && !url.startsWith('https://')) {
+                url = 'https://' + url;
+            }
+            
+            supabase
+                .from('students')
+                .update({ whiteboard_url: url || null })
+                .eq('id', studentId)
+                .then(function(response) {
+                    if (response.error) {
+                        alert('❌ Ошибка сохранения: ' + response.error.message);
+                        return;
+                    }
+                    alert('✅ Ссылка сохранена!');
+                    window.loadWhiteboardAdmin();
+                    if (currentUser && currentUser.id === studentId) {
+                        window.loadWhiteboard();
+                    }
+                })
+                .catch(function(err) {
+                    alert('❌ Ошибка: ' + err.message);
+                });
+        };
+
+        // ==========================================
+        // НАСТРОЙКИ
+        // ==========================================
+
+        window.uploadAvatar = function() {
+            var fileInput = document.getElementById('avatarUpload');
+            var file = fileInput.files[0];
+            if (!file) { alert('❌ Выберите файл'); return; }
+            if (!file.type.startsWith('image/')) { alert('❌ Загрузите изображение'); return; }
+            if (file.size > 5 * 1024 * 1024) { alert('❌ Файл слишком большой! Максимум 5 МБ'); return; }
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                var img = new Image();
+                img.onload = function() {
+                    var canvas = document.createElement('canvas');
+                    var ctx = canvas.getContext('2d');
+                    var maxSize = 300;
+                    var width = img.width;
+                    var height = img.height;
+                    if (width > height) {
+                        if (width > maxSize) {
+                            height = Math.round(height * maxSize / width);
+                            width = maxSize;
+                        }
+                    } else {
+                        if (height > maxSize) {
+                            width = Math.round(width * maxSize / height);
+                            height = maxSize;
+                        }
+                    }
+                    canvas.width = width;
+                    canvas.height = height;
+                    ctx.drawImage(img, 0, 0, width, height);
+                    var imageData = canvas.toDataURL('image/jpeg', 0.8);
+                    try {
+                        localStorage.setItem('teacher_avatar', imageData);
+                    } catch (e) {
+                        alert('❌ Не удалось сохранить изображение.');
+                        return;
+                    }
+                    window.updateAvatarDisplay(imageData);
+                    alert('✅ Фото загружено!');
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        };
+
+        window.deleteAvatar = function() {
+            if (!confirm('Удалить фото?')) return;
+            localStorage.removeItem('teacher_avatar');
+            document.getElementById('avatarUpload').value = '';
+            window.resetAvatarDisplay();
+            alert('✅ Фото удалено');
+        };
+
+        window.updateAvatarDisplay = function(imageData) {
+            var avatarEmoji = document.getElementById('avatarEmoji');
+            var avatarImg = document.getElementById('avatarImage');
+            if (avatarEmoji) avatarEmoji.style.display = 'none';
+            if (avatarImg) { avatarImg.style.display = 'block'; avatarImg.src = imageData; }
+            var profileEmoji = document.getElementById('profileAvatarEmoji');
+            var profileImg = document.getElementById('profileAvatarImg');
+            if (profileEmoji) profileEmoji.style.display = 'none';
+            if (profileImg) { profileImg.style.display = 'block'; profileImg.src = imageData; }
+        };
+
+        window.resetAvatarDisplay = function() {
+            var avatarEmoji = document.getElementById('avatarEmoji');
+            var avatarImg = document.getElementById('avatarImage');
+            if (avatarEmoji) avatarEmoji.style.display = 'block';
+            if (avatarImg) { avatarImg.style.display = 'none'; avatarImg.src = ''; }
+            var profileEmoji = document.getElementById('profileAvatarEmoji');
+            var profileImg = document.getElementById('profileAvatarImg');
+            if (profileEmoji) profileEmoji.style.display = 'block';
+            if (profileImg) { profileImg.style.display = 'none'; profileImg.src = ''; }
+        };
+
+        window.loadTeacherSettings = function() {
+            var savedAvatar = localStorage.getItem('teacher_avatar');
+            var savedName = localStorage.getItem('teacher_name');
+            var savedDesc = localStorage.getItem('teacher_desc');
+            if (savedAvatar && savedAvatar.length > 100) {
+                window.updateAvatarDisplay(savedAvatar);
+            } else {
+                window.resetAvatarDisplay();
+            }
+            if (savedName) {
+                document.getElementById('teacherName').value = savedName;
+                document.getElementById('teacherNameDisplay').textContent = savedName;
+            }
+            if (savedDesc) {
+                document.getElementById('teacherDesc').value = savedDesc;
+                document.getElementById('teacherDescDisplay').textContent = savedDesc;
+            }
+        };
+
+        window.saveTeacherInfo = function() {
+            var name = document.getElementById('teacherName').value.trim();
+            var desc = document.getElementById('teacherDesc').value.trim();
+            if (!name) { alert('❌ Введите имя'); return; }
+            localStorage.setItem('teacher_name', name);
+            localStorage.setItem('teacher_desc', desc);
+            document.getElementById('teacherNameDisplay').textContent = name;
+            document.getElementById('teacherDescDisplay').textContent = desc;
+            alert('✅ Информация сохранена!');
+        };
+
+        // ==========================================
+        // НАСТРОЙКИ ПРОФИЛЯ
+        // ==========================================
+
+        window.loadSettings = function() {
+            if (!currentUser) return;
+            supabase
+                .from('students')
+                .select('*')
+                .eq('id', currentUser.id)
+                .single()
+                .then(function(response) {
+                    if (response.error) { console.error('Ошибка загрузки настроек:', response.error); return; }
+                    var user = response.data;
+                    document.getElementById('settingsName').value = user.name || '';
+                    document.getElementById('settingsEmail').value = user.email || '';
+                    if (user.settings) {
+                        var settings = user.settings;
+                        document.getElementById('settingNotifications').checked = settings.notifications !== false;
+                        document.getElementById('settingDeadlineReminders').checked = settings.deadline_reminders !== false;
+                        document.getElementById('settingMessages').checked = settings.messages !== false;
+                    }
+                });
+        };
+
+        window.saveProfileSettings = function() {
+            if (!currentUser) { alert('❌ Вы не авторизованы'); return; }
+            var name = document.getElementById('settingsName').value.trim();
+            if (!name) { alert('❌ Введите имя'); return; }
+            var settings = {
+                notifications: document.getElementById('settingNotifications').checked,
+                deadline_reminders: document.getElementById('settingDeadlineReminders').checked,
+                messages: document.getElementById('settingMessages').checked
+            };
+            supabase
+                .from('students')
+                .update({ name: name, settings: settings })
+                .eq('id', currentUser.id)
+                .then(function(response) {
+                    if (response.error) { alert('❌ Ошибка сохранения: ' + response.error.message); return; }
+                    currentUser.name = name;
+                    currentUser.settings = settings;
+                    document.getElementById('welcomeMessage').textContent = '👋 Привет, ' + name + '!';
+                    alert('✅ Настройки сохранены!');
+                })
+                .catch(function(err) { alert('❌ Ошибка: ' + err.message); });
+        };
+
+        window.changePassword = function() {
+            if (!currentUser) { alert('❌ Вы не авторизованы'); return; }
+            var oldPassword = document.getElementById('settingsOldPassword').value;
+            var newPassword = document.getElementById('settingsNewPassword').value;
+            var confirmPassword = document.getElementById('settingsConfirmPassword').value;
+            if (!oldPassword) { alert('❌ Введите старый пароль'); return; }
+            if (!newPassword) { alert('❌ Введите новый пароль'); return; }
+            if (newPassword.length < 4) { alert('❌ Пароль должен быть не менее 4 символов'); return; }
+            if (newPassword !== confirmPassword) { alert('❌ Пароли не совпадают'); return; }
+            supabase
+                .from('students')
+                .select('*')
+                .eq('id', currentUser.id)
+                .eq('password', oldPassword)
+                .single()
+                .then(function(response) {
+                    if (response.error || !response.data) { alert('❌ Неверный старый пароль'); return; }
+                    supabase
+                        .from('students')
+                        .update({ password: newPassword })
+                        .eq('id', currentUser.id)
+                        .then(function(updateRes) {
+                            if (updateRes.error) { alert('❌ Ошибка смены пароля: ' + updateRes.error.message); return; }
+                            alert('✅ Пароль успешно изменён!');
+                            document.getElementById('settingsOldPassword').value = '';
+                            document.getElementById('settingsNewPassword').value = '';
+                            document.getElementById('settingsConfirmPassword').value = '';
+                        })
+                        .catch(function(err) { alert('❌ Ошибка: ' + err.message); });
+                })
+                .catch(function(err) { alert('❌ Ошибка: ' + err.message); });
+        };
+
+        // ==========================================
+        // НАВИГАЦИЯ
+        // ==========================================
+
+        window.switchDashboardPage = function(page) {
+            currentDashboardPage = page;
+            document.querySelectorAll('.dashboard-sidebar button').forEach(function(btn) {
+                btn.classList.remove('active');
+                if (btn.dataset.page === page) btn.classList.add('active');
+            });
+            document.querySelectorAll('.dashboard-page').forEach(function(p) { p.style.display = 'none'; });
+            var target = document.getElementById('page-' + page);
+            if (target) target.style.display = 'block';
+            if (page === 'whiteboard') window.loadWhiteboard();
+            if (page === 'theory') window.loadTheory();
+            if (page === 'stats' && currentUser) window.loadStatistics(currentUser.id);
+            if (page === 'settings' && currentUser) window.loadSettings();
+            if (page === 'messages' && currentUser) {
+                if (chatInterval) clearInterval(chatInterval);
+                loadChatList();
+            }
+        };
+
+        window.openSection = function(sectionId) {
+            mainContent.style.display = 'none';
+            dashboard.style.display = 'none';
+            adminPanel.style.display = 'none';
+            sectionPage.classList.add('active');
+            window.loadSectionContent(sectionId);
+        };
+
+        window.loadSectionContent = async function(sectionId) {
+            var content = document.getElementById('sectionContent');
+            content.innerHTML = '<div class="loading">⏳ Загрузка...</div>';
+            try {
+                var sectionResult = await supabase.from('video_sections').select('*').eq('id', sectionId).single();
+                if (sectionResult.error) { content.innerHTML = '<div class="empty">❌ Раздел не найден</div>'; return; }
+                var section = sectionResult.data;
+                var videosResult = await supabase.from('videos').select('*').eq('section_id', sectionId).order('created_at', { ascending: false });
+                var videos = videosResult.data || [];
+                var html = '<h1 class="section-title">' + section.name + '</h1>';
+                if (videos.length === 0) {
+                    html += '<div class="empty">📭 Нет видео в этом разделе</div>';
+                } else {
+                    for (var vIdx = 0; vIdx < videos.length; vIdx++) {
+                        var v = videos[vIdx];
+                        var isFile = v.is_file || false;
+                        var isVk = v.is_vk || false;
+                        var videoUrl = v.youtube_url || '#';
+                        var title = v.title || 'Видео';
+                        var homework = v.homework || '';
+                        var pdfUrl = v.pdf_file_url || null;
+                        
+                        html += '<div class="video-item">';
+                        if (isFile && videoUrl && videoUrl !== '#') {
+                            html += '<div class="video-player-wrapper"><video controls><source src="' + videoUrl + '" type="video/mp4">Ваш браузер не поддерживает видео.</video></div>';
+                        } else if (videoUrl && videoUrl !== '#' && videoUrl.includes('youtube.com')) {
+                            var embedUrl = videoUrl.replace('watch?v=', 'embed/').replace('youtu.be/', 'youtube.com/embed/');
+                            html += '<div class="video-player-wrapper"><iframe src="' + embedUrl + '" allowfullscreen></iframe></div>';
+                        } else if (isVk && videoUrl && videoUrl !== '#') {
+                            var vkEmbed = videoUrl;
+                            if (videoUrl.includes('vk.com/video')) {
+                                var parts = videoUrl.split('/');
+                                var videoIdParts = parts[parts.length - 1];
+                                if (videoIdParts && videoIdParts.includes('_')) {
+                                    var ids = videoIdParts.split('_');
+                                    vkEmbed = 'https://vk.com/video_ext.php?oid=' + ids[0] + '&id=' + ids[1] + '&hash=' + Date.now();
+                                }
+                            }
+                            html += '<div class="video-player-wrapper"><iframe src="' + vkEmbed + '" allowfullscreen></iframe></div>';
+                        } else if (videoUrl && videoUrl !== '#') {
+                            html += '<div class="video-player-wrapper" style="display:flex; align-items:center; justify-content:center; background:#111; min-height:200px;"><a href="' + videoUrl + '" target="_blank" style="color:#f5a623; font-size:20px; text-decoration:none; border:2px solid #f5a623; padding:16px 32px; border-radius:12px;">▶️ Смотреть видео</a></div>';
+                        }
+                        html += '<span class="video-title">🎬 ' + title + '</span>';
+                        
+                        if (pdfUrl) {
+                            html += `
+                                <div class="video-pdf-section">
+                                    <span class="pdf-label">📄 Задачи к уроку:</span>
+                                    <a href="${pdfUrl}" target="_blank" class="pdf-link">📥 Скачать PDF с задачами</a>
+                                </div>
+                            `;
+                        }
+                        
+                        if (videoUrl && videoUrl !== '#') {
+                            html += '<div class="video-fallback-link"><span class="label">⚠️ Если видео не работает, вот ссылка:</span><br><a href="' + videoUrl + '" target="_blank">' + videoUrl + '</a></div>';
+                        }
+                        if (homework) {
+                            html += '<div class="video-homework"><strong>📝 ДЗ к уроку:</strong> ' + homework + '</div>';
+                        }
+                        html += '</div>';
+                    }
+                }
+                content.innerHTML = html;
+            } catch (err) {
+                content.innerHTML = '<div class="empty">❌ Ошибка загрузки</div>';
+                console.error(err);
+            }
+        };
