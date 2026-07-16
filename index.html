@@ -192,6 +192,203 @@
         .modal-actions .submit-btn { background: linear-gradient(135deg, var(--primary-dark), var(--primary)); }
         .modal-actions .submit-btn:hover { transform: scale(1.02); box-shadow: 0 0 30px rgba(102,126,234,0.3); }
 
+        /* ===== КАЛЕНДАРЬ ===== */
+        .calendar-controls {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+        .calendar-controls select {
+            padding: 8px 16px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 10px;
+            color: #fff;
+            font-size: 14px;
+            font-family: Arial, sans-serif;
+        }
+        .calendar-controls button {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            padding: 8px 16px;
+            border-radius: 10px;
+            color: #fff;
+            cursor: pointer;
+            transition: 0.3s;
+            font-family: Arial, sans-serif;
+        }
+        .calendar-controls button:hover {
+            background: rgba(255,255,255,0.15);
+        }
+        #calendarMonth {
+            font-size: 18px;
+            font-weight: 700;
+            color: #f5a623;
+            min-width: 150px;
+            text-align: center;
+        }
+        .calendar-grid {
+            background: rgba(255,255,255,0.03);
+            border-radius: 12px;
+            padding: 12px;
+            overflow: hidden;
+        }
+        .calendar-header {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 4px;
+            margin-bottom: 8px;
+        }
+        .calendar-header div {
+            text-align: center;
+            color: #888;
+            font-weight: 600;
+            font-size: 14px;
+            padding: 8px 0;
+        }
+        #calendarDays {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 4px;
+        }
+        .calendar-day {
+            aspect-ratio: 1;
+            min-height: 60px;
+            background: rgba(255,255,255,0.03);
+            border-radius: 8px;
+            padding: 4px;
+            cursor: pointer;
+            transition: 0.3s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            position: relative;
+            border: 1px solid transparent;
+        }
+        .calendar-day:hover {
+            background: rgba(255,255,255,0.08);
+            border-color: rgba(102,126,234,0.3);
+        }
+        .calendar-day.empty {
+            background: transparent;
+            cursor: default;
+        }
+        .calendar-day.empty:hover {
+            background: transparent;
+            border-color: transparent;
+        }
+        .calendar-day .day-number {
+            font-size: 14px;
+            font-weight: 600;
+            color: #b0c4de;
+            margin-bottom: 2px;
+        }
+        .calendar-day .lesson-indicator {
+            font-size: 16px;
+        }
+        .calendar-day .lesson-topic {
+            font-size: 9px;
+            color: #666;
+            text-align: center;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            max-width: 100%;
+            padding: 0 2px;
+        }
+        .calendar-day.completed {
+            border-color: rgba(46,204,113,0.3);
+            background: rgba(46,204,113,0.08);
+        }
+        .calendar-day.planned {
+            border-color: rgba(245,166,35,0.3);
+            background: rgba(245,166,35,0.08);
+        }
+        .calendar-day.cancelled {
+            border-color: rgba(231,76,60,0.3);
+            background: rgba(231,76,60,0.08);
+            opacity: 0.6;
+        }
+        .calendar-day.today {
+            border-color: #667eea;
+            box-shadow: 0 0 20px rgba(102,126,234,0.2);
+        }
+        .lesson-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 16px;
+            margin-top: 20px;
+        }
+
+        /* ===== ШАБЛОНЫ ===== */
+        .template-card {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.05);
+            border-radius: 16px;
+            padding: 20px;
+            transition: 0.3s;
+        }
+        .template-card:hover {
+            background: rgba(255,255,255,0.06);
+            border-color: rgba(102,126,234,0.2);
+        }
+        .template-card .template-name {
+            font-size: 20px;
+            font-weight: 700;
+            color: #ffffff;
+        }
+        .template-card .template-score {
+            color: #f5a623;
+            font-size: 14px;
+            margin-top: 4px;
+        }
+        .template-card .template-meta {
+            color: #888;
+            font-size: 13px;
+            margin-top: 8px;
+        }
+        .template-card .template-actions {
+            margin-top: 12px;
+            display: flex;
+            gap: 8px;
+        }
+
+        /* ===== ПЛАН ПОДГОТОВКИ ===== */
+        .plan-settings {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+            background: rgba(255,255,255,0.03);
+            padding: 20px;
+            border-radius: 12px;
+        }
+        .plan-settings label {
+            color: #888;
+            font-size: 13px;
+            display: block;
+            margin-bottom: 4px;
+        }
+        .plan-settings select,
+        .plan-settings input {
+            width: 100%;
+            padding: 8px 12px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 8px;
+            color: #fff;
+            font-size: 14px;
+            font-family: Arial, sans-serif;
+        }
+        .plan-settings select:focus,
+        .plan-settings input:focus {
+            border-color: var(--primary);
+            outline: none;
+        }
+
         /* ===== ОСТАЛЬНЫЕ СТИЛИ ===== */
         .hw-card { padding: 16px; border: 1px solid rgba(255,255,255,0.05); border-radius: var(--radius-sm); margin-bottom: 12px; background: rgba(255,255,255,0.03); }
         .hw-card .title { font-size: 18px; font-weight: 700; color: var(--text-white); }
@@ -406,6 +603,14 @@
             .hw-tab { flex: 1; min-width: 100px; text-align: center; }
             .hw-card .hw-actions { flex-direction: column; }
             .hw-card .hw-actions button { width: 100%; }
+            .calendar-day { min-height: 40px; font-size: 12px; }
+            .calendar-day .day-number { font-size: 11px; }
+            .calendar-day .lesson-indicator { font-size: 12px; }
+            .calendar-day .lesson-topic { font-size: 7px; }
+            .calendar-controls { gap: 8px; }
+            #calendarMonth { font-size: 14px; min-width: 100px; }
+            .plan-settings { grid-template-columns: 1fr; }
+            .template-card { padding: 16px; }
         }
     </style>
 </head>
@@ -483,6 +688,9 @@
                     <button data-page="messages" onclick="window.switchDashboardPage('messages')" id="messagesSidebarBtn">
                         💬 Сообщения
                         <span class="badge" id="msgBadge">0</span>
+                    </button>
+                    <button data-page="myplan" onclick="window.switchDashboardPage('myplan')">
+                        📋 Мой план
                     </button>
                     <button data-page="settings" onclick="window.switchDashboardPage('settings')">
                         ⚙️ Настройки
@@ -636,6 +844,14 @@
                         </div>
                     </div>
 
+                    <!-- ===== МОЙ ПЛАН ===== -->
+                    <div id="page-myplan" class="dashboard-page" style="display:none;">
+                        <div class="section-title">📋 Мой план подготовки</div>
+                        <div id="studentPlanSummary">
+                            <p style="color:#666;">Загрузка...</p>
+                        </div>
+                    </div>
+
                     <!-- ===== НАСТРОЙКИ ===== -->
                     <div id="page-settings" class="dashboard-page" style="display:none;">
                         <div class="section-title">⚙️ Настройки</div>
@@ -729,6 +945,9 @@
                 <button data-tab="homeworks" onclick="window.switchAdminTab('homeworks')">📝 ДЗ</button>
                 <button data-tab="videos" onclick="window.switchAdminTab('videos')">🎥 Видео</button>
                 <button data-tab="schedule" onclick="window.switchAdminTab('schedule')">📅 Расписание</button>
+                <button data-tab="calendar" onclick="window.switchAdminTab('calendar')">📅 Календарь</button>
+                <button data-tab="studyplan" onclick="window.switchAdminTab('studyplan')">📚 План подготовки</button>
+                <button data-tab="templates" onclick="window.switchAdminTab('templates')">📚 Шаблоны</button>
                 <button data-tab="stats" onclick="window.switchAdminTab('stats')">📊 Статистика</button>
                 <button data-tab="settings" onclick="window.switchAdminTab('settings')">⚙️ Настройки</button>
             </div>
@@ -773,6 +992,106 @@
                     <button class="admin-btn" onclick="window.loadScheduleAdmin()">🔄 Обновить</button>
                 </div>
                 <div id="scheduleList" style="margin-top:15px;">Загрузка...</div>
+            </div>
+            
+            <div class="admin-content" id="tab-calendar">
+                <h3 style="color: #f5a623; margin-bottom: 20px;">📅 Календарь занятий</h3>
+                
+                <div class="calendar-controls">
+                    <select id="calendarStudent" onchange="window.loadStudentCalendar()">
+                        <option value="">Выберите ученика</option>
+                    </select>
+                    <button onclick="window.prevMonth()">◀</button>
+                    <span id="calendarMonth">Январь 2026</span>
+                    <button onclick="window.nextMonth()">▶</button>
+                    <button class="admin-btn success" onclick="window.addLesson()">➕ Добавить занятие</button>
+                </div>
+                
+                <div class="calendar-grid">
+                    <div class="calendar-header">
+                        <div>ПН</div><div>ВТ</div><div>СР</div>
+                        <div>ЧТ</div><div>ПТ</div><div>СБ</div><div>ВС</div>
+                    </div>
+                    <div id="calendarDays"></div>
+                </div>
+                
+                <div class="lesson-stats">
+                    <div class="stat-card">
+                        <div class="number" id="totalLessons">0</div>
+                        <div class="label">Всего занятий</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="number" id="completedLessons">0</div>
+                        <div class="label">Проведено</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="number" id="remainingLessons">0</div>
+                        <div class="label">Осталось</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="number" id="lessonProgress">0%</div>
+                        <div class="label">Прогресс</div>
+                    </div>
+                </div>
+                
+                <div id="dayLessons" style="margin-top:20px; display:none;">
+                    <h4 style="color: #f5a623;">📋 Занятия на день</h4>
+                    <div id="dayLessonsList"></div>
+                </div>
+            </div>
+            
+            <div class="admin-content" id="tab-studyplan">
+                <h3 style="color: #f5a623; margin-bottom: 20px;">📚 Индивидуальный план подготовки</h3>
+                
+                <div class="plan-settings">
+                    <div>
+                        <label>👤 Ученик</label>
+                        <select id="planStudent" onchange="window.loadStudyPlan()">
+                            <option value="">Выберите ученика</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label>📅 Дата экзамена</label>
+                        <input type="date" id="examDate">
+                    </div>
+                    <div>
+                        <label>🎯 Целевой балл</label>
+                        <select id="targetScore">
+                            <option value="100">💯 100 баллов</option>
+                            <option value="90" selected>⭐ 90+ баллов</option>
+                            <option value="80">📈 80+ баллов</option>
+                            <option value="70">📊 70+ баллов</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label>📚 Шаблон</label>
+                        <select id="planTemplate">
+                            <option value="">Без шаблона</option>
+                        </select>
+                    </div>
+                    <div style="display:flex; align-items:flex-end;">
+                        <button class="admin-btn success" onclick="window.generatePlan()" style="width:100%; padding:10px;">🎯 Сгенерировать план</button>
+                    </div>
+                </div>
+                
+                <div id="planContent">
+                    <p style="color:#666;">Выберите ученика и настройте параметры плана</p>
+                </div>
+            </div>
+            
+            <div class="admin-content" id="tab-templates">
+                <h3 style="color: #f5a623; margin-bottom: 20px;">📚 Шаблоны планов подготовки</h3>
+                
+                <p style="color: #888; font-size: 14px; margin-bottom: 16px;">
+                    Шаблоны помогают быстро создавать индивидуальные планы для учеников. 
+                    Выберите готовый шаблон или создайте свой.
+                </p>
+                
+                <button class="admin-btn success" onclick="window.showTemplateModal()">➕ Добавить шаблон</button>
+                
+                <div id="templatesList" style="margin-top:15px;">
+                    ⏳ Загрузка...
+                </div>
             </div>
             
             <div class="admin-content" id="tab-stats">
@@ -908,6 +1227,52 @@
         </div>
     </div>
 
+    <!-- МОДАЛКА ШАБЛОНА -->
+    <div class="modal-overlay" id="templateModal">
+        <div class="modal-content">
+            <h3 id="templateModalTitle">📚 Добавить шаблон</h3>
+            
+            <div>
+                <label>Название шаблона:</label>
+                <input type="text" id="templateName" placeholder="Например: Интенсив 90+">
+            </div>
+            
+            <div>
+                <label>Целевой балл:</label>
+                <select id="templateScore">
+                    <option value="100">💯 100 баллов</option>
+                    <option value="90" selected>⭐ 90+ баллов</option>
+                    <option value="80">📈 80+ баллов</option>
+                    <option value="70">📊 70+ баллов</option>
+                </select>
+            </div>
+            
+            <div>
+                <label>Длительность (месяцев):</label>
+                <input type="number" id="templateDuration" value="6" min="1" max="24">
+            </div>
+            
+            <div>
+                <label>Занятий в неделю:</label>
+                <input type="number" id="templateLessonsPerWeek" value="3" min="1" max="7">
+            </div>
+            
+            <div>
+                <label>Описание (необязательно):</label>
+                <textarea id="templateDescription" rows="2" placeholder="Для каких учеников подходит этот шаблон..."></textarea>
+            </div>
+            
+            <div style="display:none;" id="templateIdField">
+                <input type="hidden" id="templateEditId">
+            </div>
+            
+            <div class="modal-actions">
+                <button class="cancel-btn" onclick="window.closeTemplateModal()">Отмена</button>
+                <button class="submit-btn" onclick="window.saveTemplate()">✅ Сохранить</button>
+            </div>
+        </div>
+    </div>
+
     <footer>
         © 2026 Математика с Никитой. Все права защищены.
     </footer>
@@ -1023,18 +1388,23 @@
             clearCache('videos');
             clearCache('messages');
             clearCache('all_homeworks');
+            clearCache('plan_templates');
             
             window.loadTheory();
             window.loadHomework(currentUser.id);
             window.loadDashboardOverview(currentUser.id);
             window.loadSectionsAndVideos();
             window.loadWhiteboard();
+            window.loadTemplates();
             
             if (currentDashboardPage === 'messages') {
                 loadChatList();
             }
             if (currentDashboardPage === 'stats') {
                 window.loadStatistics(currentUser.id);
+            }
+            if (currentDashboardPage === 'myplan') {
+                window.loadStudentPlan();
             }
             
             // Маленькое уведомление
@@ -1109,6 +1479,11 @@
                 }
             }
             
+            // Обновляем план если открыт
+            if (currentDashboardPage === 'myplan') {
+                window.loadStudentPlan();
+            }
+            
             // Обновляем бейджи
             updateTotalBadge();
         }
@@ -1134,6 +1509,16 @@
             else if (tab === 'homeworks') window.loadAllHomeworks();
             else if (tab === 'videos') window.loadVideosAdmin();
             else if (tab === 'schedule') window.loadScheduleAdmin();
+            else if (tab === 'calendar') { 
+                window.loadCalendarStudents(); 
+                window.renderCalendar(new Date());
+            }
+            else if (tab === 'studyplan') { 
+                window.loadCalendarStudents();
+                window.loadStudyPlan();
+                window.loadTemplatesForSelect();
+            }
+            else if (tab === 'templates') window.loadTemplates();
             else if (tab === 'stats') window.loadStats();
             else if (tab === 'settings') window.loadTeacherSettings();
         };
@@ -1169,154 +1554,6 @@
             }
             if (currentUser) {
                 window.loadHomework(currentUser.id);
-            }
-        };
-
-        // ==========================================
-        // ===== ЗАГРУЗКА ФАЙЛОВ К ДЗ =====
-        // ==========================================
-
-        window.uploadHomeworkFile = async function(homeworkId) {
-            var input = document.getElementById('fileInput_' + homeworkId);
-            if (!input) {
-                // Создаём скрытый input если его нет
-                input = document.createElement('input');
-                input.type = 'file';
-                input.id = 'fileInput_' + homeworkId;
-                input.style.display = 'none';
-                input.accept = '.pdf,.jpg,.jpeg,.png,.gif,.webp';
-                input.onchange = function() { window.uploadHomeworkFile(homeworkId); };
-                document.body.appendChild(input);
-                input.click();
-                return;
-            }
-            
-            var file = input.files[0];
-            if (!file) {
-                alert('❌ Выберите файл');
-                return;
-            }
-            
-            // Проверка размера (максимум 10 МБ)
-            if (file.size > 10 * 1024 * 1024) {
-                alert('❌ Файл слишком большой! Максимум 10 МБ');
-                input.value = '';
-                return;
-            }
-            
-            // Проверка типа файла
-            var allowedTypes = ['application/pdf', 'image/jpeg', 'image/png', 'image/gif', 'image/webp'];
-            var ext = file.name.split('.').pop().toLowerCase();
-            var allowedExts = ['pdf', 'jpg', 'jpeg', 'png', 'gif', 'webp'];
-            if (!allowedTypes.includes(file.type) && !allowedExts.includes(ext)) {
-                alert('❌ Разрешены только PDF, JPG, PNG, GIF, WEBP');
-                input.value = '';
-                return;
-            }
-            
-            try {
-                // Находим кнопку и меняем текст
-                var card = input.closest('.hw-card');
-                var btn = card ? card.querySelector('.admin-btn:not(.danger)') : null;
-                if (btn) {
-                    var originalText = btn.textContent;
-                    btn.textContent = '⏳ Загрузка...';
-                    btn.disabled = true;
-                }
-                
-                // Загружаем файл в Supabase Storage
-                var timestamp = Date.now();
-                var path = 'homework_attachments/' + timestamp + '_' + homeworkId + '_' + file.name;
-                var uploadResult = await supabase.storage.from('homework').upload(path, file);
-                
-                if (uploadResult.error) {
-                    throw new Error(uploadResult.error.message);
-                }
-                
-                // Получаем публичную ссылку
-                var urlData = supabase.storage.from('homework').getPublicUrl(path);
-                var fileUrl = urlData.data.publicUrl;
-                
-                // Обновляем запись в БД
-                var updateResult = await supabase
-                    .from('homeworks')
-                    .update({ attached_file_url: fileUrl })
-                    .eq('id', homeworkId);
-                
-                if (updateResult.error) {
-                    throw new Error(updateResult.error.message);
-                }
-                
-                alert('✅ Файл успешно прикреплён!');
-                input.value = '';
-                
-                // Обновляем список ДЗ
-                if (currentUser) {
-                    clearCache('homeworks_' + currentUser.id);
-                    window.loadHomework(currentUser.id);
-                }
-                
-            } catch (err) {
-                alert('❌ Ошибка загрузки: ' + err.message);
-                console.error(err);
-            }
-            
-            // Восстанавливаем кнопку
-            var card = input.closest('.hw-card');
-            var btn = card ? card.querySelector('.admin-btn:not(.danger)') : null;
-            if (btn) {
-                btn.textContent = '📎 Прикрепить файл';
-                btn.disabled = false;
-            }
-        };
-
-        // ==========================================
-        // УДАЛЕНИЕ ПРИКРЕПЛЁННОГО ФАЙЛА
-        // ==========================================
-
-        window.deleteAttachedFile = async function(homeworkId) {
-            if (!confirm('Удалить прикреплённый файл?')) return;
-            
-            try {
-                // Получаем текущую информацию о ДЗ
-                var { data, error } = await supabase
-                    .from('homeworks')
-                    .select('attached_file_url')
-                    .eq('id', homeworkId)
-                    .single();
-                
-                if (error) throw error;
-                
-                // Удаляем файл из Storage
-                if (data.attached_file_url) {
-                    var parts = data.attached_file_url.split('/');
-                    var filename = parts[parts.length - 1];
-                    try {
-                        await supabase.storage.from('homework').remove(['homework_attachments/' + filename]);
-                    } catch (e) {
-                        console.log('Не удалось удалить файл из storage:', e);
-                    }
-                }
-                
-                // Обновляем запись в БД
-                var updateResult = await supabase
-                    .from('homeworks')
-                    .update({ attached_file_url: null })
-                    .eq('id', homeworkId);
-                
-                if (updateResult.error) throw updateResult.error;
-                
-                alert('✅ Файл удалён');
-                
-                // Обновляем список ДЗ
-                if (currentUser) {
-                    clearCache('homeworks_' + currentUser.id);
-                    window.loadHomework(currentUser.id);
-                }
-                
-            } catch (err) {
-                alert('❌ Ошибка удаления: ' + err.message);
-                console.error(err);
             }
         };
                 // ==========================================
@@ -2625,235 +2862,979 @@
                 })
                 .catch(function(err) { alert('❌ Ошибка: ' + err.message); });
         };
-                // ==========================================
-        // РАСПИСАНИЕ
+
+        // ==========================================
+        // ЗАГРУЗКА ФАЙЛОВ К ДЗ
         // ==========================================
 
-        window.addScheduleRow = function() {
-            supabase
-                .from('schedule')
-                .select('row_num')
-                .order('row_num', { ascending: false })
-                .limit(1)
-                .then(function(response) {
-                    var maxRow = 0;
-                    if (response.data && response.data.length > 0) maxRow = response.data[0].row_num || 0;
-                    var newRow = maxRow + 1;
-                    var inserts = daysArray.map(function(day) {
-                        return { row_num: newRow, day_of_week: day, student_id: null, topic: null };
-                    });
-                    supabase
-                        .from('schedule')
-                        .insert(inserts)
-                        .then(function(r) {
-                            if (r.error) alert('❌ Ошибка: ' + r.error.message);
-                            else { alert('✅ Строка ' + newRow + ' добавлена!'); clearCache('schedule'); window.loadScheduleAdmin(); }
-                        })
-                        .catch(function(err) { alert('❌ Ошибка: ' + err.message); });
-                })
-                .catch(function(err) { alert('❌ Ошибка: ' + err.message); });
+        window.uploadHomeworkFile = async function(homeworkId) {
+            var input = document.getElementById('fileInput_' + homeworkId);
+            if (!input) {
+                input = document.createElement('input');
+                input.type = 'file';
+                input.id = 'fileInput_' + homeworkId;
+                input.style.display = 'none';
+                input.accept = '.pdf,.jpg,.jpeg,.png,.gif,.webp';
+                input.onchange = function() { window.uploadHomeworkFile(homeworkId); };
+                document.body.appendChild(input);
+                input.click();
+                return;
+            }
+            
+            var file = input.files[0];
+            if (!file) {
+                alert('❌ Выберите файл');
+                return;
+            }
+            
+            if (file.size > 10 * 1024 * 1024) {
+                alert('❌ Файл слишком большой! Максимум 10 МБ');
+                input.value = '';
+                return;
+            }
+            
+            var allowedTypes = ['application/pdf', 'image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+            var ext = file.name.split('.').pop().toLowerCase();
+            var allowedExts = ['pdf', 'jpg', 'jpeg', 'png', 'gif', 'webp'];
+            if (!allowedTypes.includes(file.type) && !allowedExts.includes(ext)) {
+                alert('❌ Разрешены только PDF, JPG, PNG, GIF, WEBP');
+                input.value = '';
+                return;
+            }
+            
+            try {
+                var card = input.closest('.hw-card');
+                var btn = card ? card.querySelector('.admin-btn:not(.danger)') : null;
+                if (btn) {
+                    var originalText = btn.textContent;
+                    btn.textContent = '⏳ Загрузка...';
+                    btn.disabled = true;
+                }
+                
+                var timestamp = Date.now();
+                var path = 'homework_attachments/' + timestamp + '_' + homeworkId + '_' + file.name;
+                var uploadResult = await supabase.storage.from('homework').upload(path, file);
+                
+                if (uploadResult.error) {
+                    throw new Error(uploadResult.error.message);
+                }
+                
+                var urlData = supabase.storage.from('homework').getPublicUrl(path);
+                var fileUrl = urlData.data.publicUrl;
+                
+                var updateResult = await supabase
+                    .from('homeworks')
+                    .update({ attached_file_url: fileUrl })
+                    .eq('id', homeworkId);
+                
+                if (updateResult.error) {
+                    throw new Error(updateResult.error.message);
+                }
+                
+                alert('✅ Файл успешно прикреплён!');
+                input.value = '';
+                
+                if (currentUser) {
+                    clearCache('homeworks_' + currentUser.id);
+                    window.loadHomework(currentUser.id);
+                }
+                
+            } catch (err) {
+                alert('❌ Ошибка загрузки: ' + err.message);
+                console.error(err);
+            }
+            
+            var card = input.closest('.hw-card');
+            var btn = card ? card.querySelector('.admin-btn:not(.danger)') : null;
+            if (btn) {
+                btn.textContent = '📎 Прикрепить файл';
+                btn.disabled = false;
+            }
         };
 
-        window.loadScheduleAdmin = function() {
-            var container = document.getElementById('scheduleList');
+        window.deleteAttachedFile = async function(homeworkId) {
+            if (!confirm('Удалить прикреплённый файл?')) return;
+            
+            try {
+                var { data, error } = await supabase
+                    .from('homeworks')
+                    .select('attached_file_url')
+                    .eq('id', homeworkId)
+                    .single();
+                
+                if (error) throw error;
+                
+                if (data.attached_file_url) {
+                    var parts = data.attached_file_url.split('/');
+                    var filename = parts[parts.length - 1];
+                    try {
+                        await supabase.storage.from('homework').remove(['homework_attachments/' + filename]);
+                    } catch (e) {
+                        console.log('Не удалось удалить файл из storage:', e);
+                    }
+                }
+                
+                var updateResult = await supabase
+                    .from('homeworks')
+                    .update({ attached_file_url: null })
+                    .eq('id', homeworkId);
+                
+                if (updateResult.error) throw updateResult.error;
+                
+                alert('✅ Файл удалён');
+                
+                if (currentUser) {
+                    clearCache('homeworks_' + currentUser.id);
+                    window.loadHomework(currentUser.id);
+                }
+                
+            } catch (err) {
+                alert('❌ Ошибка удаления: ' + err.message);
+                console.error(err);
+            }
+        };
+                // ==========================================
+        // КАЛЕНДАРЬ ЗАНЯТИЙ
+        // ==========================================
+
+        let currentMonth = new Date();
+        let selectedStudentId = null;
+
+        window.loadCalendarStudents = async function() {
+            const select = document.getElementById('calendarStudent');
+            const planSelect = document.getElementById('planStudent');
+            
+            try {
+                const { data, error } = await supabase
+                    .from('students')
+                    .select('id, name')
+                    .eq('role', 'student')
+                    .order('name');
+                    
+                if (error) throw error;
+                
+                const options = data.map(s => 
+                    `<option value="${s.id}">${s.name}</option>`
+                ).join('');
+                
+                if (select) {
+                    select.innerHTML = `<option value="">Выберите ученика</option>${options}`;
+                }
+                if (planSelect) {
+                    planSelect.innerHTML = `<option value="">Выберите ученика</option>${options}`;
+                }
+            } catch (err) {
+                console.error('Ошибка загрузки учеников:', err);
+            }
+        };
+
+        window.loadStudentCalendar = async function() {
+            const studentId = document.getElementById('calendarStudent').value;
+            if (!studentId) {
+                document.getElementById('calendarDays').innerHTML = '<p style="color:#666; text-align:center; padding:20px;">Выберите ученика</p>';
+                return;
+            }
+            
+            selectedStudentId = studentId;
+            await renderCalendar(currentMonth);
+        };
+
+        window.renderCalendar = async function(date) {
+            if (!selectedStudentId) return;
+            
+            const year = date.getFullYear();
+            const month = date.getMonth();
+            
+            const monthNames = ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 
+                                'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'];
+            document.getElementById('calendarMonth').textContent = monthNames[month] + ' ' + year;
+            
+            const startDate = new Date(year, month, 1);
+            const endDate = new Date(year, month + 1, 0);
+            
+            try {
+                const { data: lessons, error } = await supabase
+                    .from('lesson_calendar')
+                    .select('*')
+                    .eq('student_id', selectedStudentId)
+                    .gte('lesson_date', formatDateSQL(startDate))
+                    .lte('lesson_date', formatDateSQL(endDate));
+                    
+                if (error) throw error;
+                
+                const lessonsMap = {};
+                if (lessons) {
+                    lessons.forEach(l => {
+                        lessonsMap[l.lesson_date] = l;
+                    });
+                }
+                
+                const firstDay = startDate.getDay();
+                const daysInMonth = endDate.getDate();
+                let startOffset = firstDay === 0 ? 6 : firstDay - 1;
+                
+                const today = new Date();
+                const todayStr = formatDateSQL(today);
+                
+                let html = '';
+                
+                for (let i = 0; i < startOffset; i++) {
+                    html += '<div class="calendar-day empty"></div>';
+                }
+                
+                for (let day = 1; day <= daysInMonth; day++) {
+                    const dateStr = year + '-' + String(month + 1).padStart(2, '0') + '-' + String(day).padStart(2, '0');
+                    const lesson = lessonsMap[dateStr];
+                    let statusClass = '';
+                    let statusText = '';
+                    
+                    if (dateStr === todayStr) statusClass += ' today';
+                    
+                    if (lesson) {
+                        if (lesson.status === 'completed') {
+                            statusClass += ' completed';
+                            statusText = '✅';
+                        } else if (lesson.status === 'cancelled') {
+                            statusClass += ' cancelled';
+                            statusText = '❌';
+                        } else {
+                            statusClass += ' planned';
+                            statusText = '📌';
+                        }
+                    }
+                    
+                    const topicText = lesson && lesson.topic ? lesson.topic.substring(0, 15) : '';
+                    
+                    html += `
+                        <div class="calendar-day${statusClass}" onclick="window.handleDayClick('${dateStr}')">
+                            <span class="day-number">${day}</span>
+                            ${statusText ? `<span class="lesson-indicator">${statusText}</span>` : ''}
+                            ${topicText ? `<span class="lesson-topic">${topicText}</span>` : ''}
+                        </div>
+                    `;
+                }
+                
+                document.getElementById('calendarDays').innerHTML = html;
+                await updateLessonStats();
+                
+            } catch (err) {
+                console.error('Ошибка загрузки календаря:', err);
+                document.getElementById('calendarDays').innerHTML = '<p style="color:#666; text-align:center; padding:20px;">Ошибка загрузки</p>';
+            }
+        };
+
+        function formatDateSQL(date) {
+            return date.getFullYear() + '-' + 
+                   String(date.getMonth() + 1).padStart(2, '0') + '-' + 
+                   String(date.getDate()).padStart(2, '0');
+        }
+
+        window.handleDayClick = function(dateStr) {
+            const container = document.getElementById('dayLessons');
+            const list = document.getElementById('dayLessonsList');
+            
+            if (!selectedStudentId) {
+                alert('❌ Сначала выберите ученика');
+                return;
+            }
+            
+            container.style.display = 'block';
+            
+            supabase
+                .from('lesson_calendar')
+                .select('*')
+                .eq('student_id', selectedStudentId)
+                .eq('lesson_date', dateStr)
+                .then(function(response) {
+                    if (response.error) {
+                        list.innerHTML = '<p style="color:#666;">Ошибка загрузки</p>';
+                        return;
+                    }
+                    
+                    const lessons = response.data || [];
+                    
+                    if (lessons.length === 0) {
+                        list.innerHTML = `
+                            <div style="background:rgba(255,255,255,0.03); border-radius:8px; padding:16px; text-align:center; color:#666;">
+                                Нет занятий на ${dateStr}
+                                <br>
+                                <button class="admin-btn success" onclick="window.addLesson('${dateStr}')" style="margin-top:8px;">➕ Добавить занятие</button>
+                            </div>
+                        `;
+                        return;
+                    }
+                    
+                    let html = '';
+                    lessons.forEach(function(lesson) {
+                        const statusMap = {
+                            'planned': '📌 Запланировано',
+                            'completed': '✅ Проведено',
+                            'cancelled': '❌ Отменено'
+                        };
+                        html += `
+                            <div style="display:flex; justify-content:space-between; align-items:center; padding:10px 14px; background:rgba(255,255,255,0.03); border-radius:8px; margin-bottom:6px; border-left:3px solid ${lesson.status === 'completed' ? '#2ecc71' : lesson.status === 'cancelled' ? '#e74c3c' : '#f5a623'};">
+                                <div>
+                                    <div style="color:#b0c4de; font-weight:600;">${lesson.topic || 'Занятие'}</div>
+                                    <div style="color:#666; font-size:12px;">${lesson.start_time || ''} - ${lesson.end_time || ''} • ${statusMap[lesson.status] || lesson.status}</div>
+                                    ${lesson.notes ? `<div style="color:#888; font-size:12px; margin-top:4px;">📝 ${lesson.notes}</div>` : ''}
+                                </div>
+                                <div style="display:flex; gap:6px;">
+                                    <button class="admin-btn" onclick="window.editLesson('${lesson.id}')">✏️</button>
+                                    <button class="admin-btn danger" onclick="window.deleteLesson('${lesson.id}')">🗑</button>
+                                </div>
+                            </div>
+                        `;
+                    });
+                    
+                    list.innerHTML = html;
+                });
+        };
+
+        window.addLesson = function(date) {
+            const studentId = document.getElementById('calendarStudent').value;
+            if (!studentId) {
+                alert('❌ Сначала выберите ученика');
+                return;
+            }
+            
+            const topic = prompt('Введите тему занятия:') || 'Занятие';
+            const startTime = prompt('Введите время начала (например: 15:00):') || '';
+            const endTime = prompt('Введите время окончания (например: 16:00):') || '';
+            const notes = prompt('Заметки к занятию (необязательно):') || '';
+            
+            const lessonDate = date || new Date().toISOString().split('T')[0];
+            
+            supabase
+                .from('lesson_calendar')
+                .insert([{
+                    student_id: studentId,
+                    lesson_date: lessonDate,
+                    start_time: startTime || null,
+                    end_time: endTime || null,
+                    topic: topic,
+                    status: 'planned',
+                    notes: notes || null
+                }])
+                .then(function(response) {
+                    if (response.error) {
+                        alert('❌ Ошибка: ' + response.error.message);
+                        return;
+                    }
+                    alert('✅ Занятие добавлено!');
+                    renderCalendar(currentMonth);
+                });
+        };
+
+        window.editLesson = function(lessonId) {
+            const newTopic = prompt('Введите тему занятия:') || 'Занятие';
+            const newStatus = prompt('Статус (planned/completed/cancelled):') || 'planned';
+            const newNotes = prompt('Заметки:') || '';
+            
+            if (!['planned', 'completed', 'cancelled'].includes(newStatus)) {
+                alert('❌ Неверный статус. Используйте: planned, completed, cancelled');
+                return;
+            }
+            
+            supabase
+                .from('lesson_calendar')
+                .update({
+                    topic: newTopic,
+                    status: newStatus,
+                    notes: newNotes || null
+                })
+                .eq('id', lessonId)
+                .then(function(response) {
+                    if (response.error) {
+                        alert('❌ Ошибка: ' + response.error.message);
+                        return;
+                    }
+                    alert('✅ Занятие обновлено!');
+                    renderCalendar(currentMonth);
+                });
+        };
+
+        window.deleteLesson = function(lessonId) {
+            if (!confirm('Удалить занятие?')) return;
+            
+            supabase
+                .from('lesson_calendar')
+                .delete()
+                .eq('id', lessonId)
+                .then(function(response) {
+                    if (response.error) {
+                        alert('❌ Ошибка: ' + response.error.message);
+                        return;
+                    }
+                    alert('✅ Занятие удалено');
+                    renderCalendar(currentMonth);
+                });
+        };
+
+        window.updateLessonStats = async function() {
+            if (!selectedStudentId) {
+                document.getElementById('totalLessons').textContent = '0';
+                document.getElementById('completedLessons').textContent = '0';
+                document.getElementById('remainingLessons').textContent = '0';
+                document.getElementById('lessonProgress').textContent = '0%';
+                return;
+            }
+            
+            try {
+                const { data: lessons, error } = await supabase
+                    .from('lesson_calendar')
+                    .select('*')
+                    .eq('student_id', selectedStudentId);
+                    
+                if (error) throw error;
+                
+                const total = lessons ? lessons.length : 0;
+                const completed = lessons ? lessons.filter(l => l.status === 'completed').length : 0;
+                const remaining = total - completed;
+                const progress = total > 0 ? Math.round((completed / total) * 100) : 0;
+                
+                document.getElementById('totalLessons').textContent = total;
+                document.getElementById('completedLessons').textContent = completed;
+                document.getElementById('remainingLessons').textContent = remaining;
+                document.getElementById('lessonProgress').textContent = progress + '%';
+                
+            } catch (err) {
+                console.error('Ошибка обновления статистики:', err);
+            }
+        };
+
+        window.prevMonth = function() {
+            currentMonth.setMonth(currentMonth.getMonth() - 1);
+            renderCalendar(currentMonth);
+        };
+
+        window.nextMonth = function() {
+            currentMonth.setMonth(currentMonth.getMonth() + 1);
+            renderCalendar(currentMonth);
+        };
+
+        // ==========================================
+        // ШАБЛОНЫ ПЛАНОВ
+        // ==========================================
+
+        window.loadTemplates = function() {
+            const container = document.getElementById('templatesList');
             if (!container) return;
             
-            var cached = getCache('schedule');
+            const cached = getCache('plan_templates');
             if (cached) {
-                renderScheduleAdmin(cached, container);
+                renderTemplates(cached, container);
                 return;
             }
             
             container.innerHTML = '⏳ Загрузка...';
+            
             supabase
-                .from('students')
-                .select('id, name')
-                .eq('role', 'student')
-                .then(function(studentsRes) {
-                    var students = studentsRes.data || [];
-                    var studentsMap = {};
-                    students.forEach(function(s) { studentsMap[s.id] = s.name; });
-                    supabase
-                        .from('schedule')
-                        .select('*')
-                        .order('row_num', { ascending: true })
-                        .then(function(response) {
-                            if (response.error) { container.innerHTML = '❌ Ошибка: ' + response.error.message; return; }
-                            var data = response.data || [];
-                            var result = { data: data, studentsMap: studentsMap };
-                            setCache('schedule', result);
-                            renderScheduleAdmin(result, container);
-                        })
-                        .catch(function(err) { container.innerHTML = '❌ Ошибка: ' + err.message; });
+                .from('plan_templates')
+                .select('*')
+                .order('target_score', { ascending: false })
+                .then(function(response) {
+                    if (response.error) {
+                        container.innerHTML = '❌ Ошибка: ' + response.error.message;
+                        return;
+                    }
+                    const data = response.data || [];
+                    setCache('plan_templates', data);
+                    renderTemplates(data, container);
                 })
-                .catch(function(err) { container.innerHTML = '❌ Ошибка: ' + err.message; });
+                .catch(function(err) {
+                    container.innerHTML = '❌ Ошибка: ' + err.message;
+                });
         };
 
-        function renderScheduleAdmin(cacheData, container) {
-            var data = cacheData.data || cacheData;
-            var studentsMap = cacheData.studentsMap || {};
+        function renderTemplates(data, container) {
+            if (data.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <span class="icon">📭</span>
+                        <div class="title">Нет шаблонов</div>
+                        <div class="desc">Создайте первый шаблон для быстрого создания планов</div>
+                    </div>
+                `;
+                return;
+            }
             
-            if (data.length === 0) { container.innerHTML = '📭 Нет занятий. Нажмите "➕ Добавить строку".'; return; }
-            var rows = {};
-            data.forEach(function(item) {
-                if (!rows[item.row_num]) rows[item.row_num] = {};
-                rows[item.row_num][item.day_of_week] = { student_id: item.student_id, topic: item.topic || '', id: item.id };
+            let html = `<div style="display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:16px; margin-top:16px;">`;
+            
+            data.forEach(function(template) {
+                const scoreEmoji = template.target_score >= 100 ? '💯' : 
+                                   template.target_score >= 90 ? '⭐' : 
+                                   template.target_score >= 80 ? '📈' : '📊';
+                
+                html += `
+                    <div class="template-card">
+                        <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+                            <div>
+                                <div class="template-name">${template.name}</div>
+                                <div class="template-score">${scoreEmoji} ${template.target_score}+ баллов</div>
+                            </div>
+                            <div style="display:flex; gap:6px;">
+                                <button class="admin-btn" onclick="window.editTemplate('${template.id}')">✏️</button>
+                                <button class="admin-btn danger" onclick="window.deleteTemplate('${template.id}')">🗑</button>
+                            </div>
+                        </div>
+                        <div class="template-meta">
+                            📅 ${template.duration_months} месяцев • 
+                            📚 ${template.lessons_per_week} занятий/нед
+                            ${template.description ? `<br>📝 ${template.description}` : ''}
+                        </div>
+                        <div class="template-actions">
+                            <button class="admin-btn success" onclick="window.useTemplate('${template.id}')">📋 Использовать</button>
+                        </div>
+                    </div>
+                `;
             });
-            var html = '<div class="schedule-table-wrap"><table class="schedule-table">';
-            html += '<tr><th>№</th>';
-            daysArray.forEach(function(day) { html += '<th>' + daysMap[day] + '</th>'; });
-            html += '</tr>';
-            var sortedRows = Object.keys(rows).sort(function(a, b) { return parseInt(a) - parseInt(b); });
-            sortedRows.forEach(function(rowNum) {
-                html += '<tr>';
-                html += '<td class="row-num">' + rowNum + '</td>';
-                daysArray.forEach(function(day) {
-                    var cell = rows[rowNum][day];
-                    if (cell && cell.student_id) {
-                        var studentName = studentsMap[cell.student_id] || 'Ученик';
-                        html += '<td class="cell-occupied" onclick="window.editScheduleCell(' + cell.id + ', \'' + day + '\', ' + rowNum + ')">';
-                        html += '<div class="cell-content"><span class="student-name">' + studentName + '</span>';
-                        if (cell.topic) html += '<span class="topic">' + cell.topic + '</span>';
-                        html += '</div></td>';
-                    } else {
-                        html += '<td class="cell-empty" onclick="window.addScheduleCell(' + rowNum + ', \'' + day + '\')">';
-                        html += '<div class="cell-content"><span class="empty-text">➕</span></div></td>';
-                    }
-                });
-                html += '</tr>';
-            });
-            html += '</table></div>';
+            
+            html += '</div>';
             container.innerHTML = html;
         }
 
-        window.addScheduleCell = function(rowNum, day) {
+        window.loadTemplatesForSelect = function() {
+            const select = document.getElementById('planTemplate');
+            if (!select) return;
+            
             supabase
-                .from('students')
-                .select('id, name')
-                .eq('role', 'student')
-                .then(function(response) {
-                    var students = response.data || [];
-                    if (students.length === 0) { alert('Нет учеников с доступом!'); return; }
-                    var list = 'Выберите ученика:\n';
-                    students.forEach(function(s, i) { list += (i + 1) + '. ' + s.name + '\n'; });
-                    var choice = prompt(list);
-                    if (!choice) return;
-                    var idx = parseInt(choice) - 1;
-                    if (idx < 0 || idx >= students.length) { alert('Неверный выбор!'); return; }
-                    var student = students[idx];
-                    var topic = prompt('Введите тему занятия:');
-                    if (topic === null) return;
-                    supabase
-                        .from('schedule')
-                        .select('id')
-                        .eq('row_num', rowNum)
-                        .eq('day_of_week', day)
-                        .then(function(checkRes) {
-                            var existing = checkRes.data || [];
-                            if (existing.length > 0) {
-                                supabase
-                                    .from('schedule')
-                                    .update({ student_id: student.id, topic: topic || null })
-                                    .eq('id', existing[0].id)
-                                    .then(function() { alert('✅ Ячейка обновлена!'); clearCache('schedule'); window.loadScheduleAdmin(); if (currentUser) window.loadStudentSchedule(currentUser.id); })
-                                    .catch(function(err) { alert('❌ Ошибка: ' + err.message); });
-                            } else {
-                                supabase
-                                    .from('schedule')
-                                    .insert([{ row_num: rowNum, day_of_week: day, student_id: student.id, topic: topic || null }])
-                                    .then(function() { alert('✅ Ячейка добавлена!'); clearCache('schedule'); window.loadScheduleAdmin(); if (currentUser) window.loadStudentSchedule(currentUser.id); })
-                                    .catch(function(err) { alert('❌ Ошибка: ' + err.message); });
-                            }
-                        })
-                        .catch(function(err) { alert('❌ Ошибка: ' + err.message); });
-                })
-                .catch(function(err) { alert('❌ Ошибка: ' + err.message); });
-        };
-
-        window.editScheduleCell = function(cellId, day, rowNum) {
-            supabase
-                .from('students')
-                .select('id, name')
-                .eq('role', 'student')
-                .then(function(response) {
-                    var students = response.data || [];
-                    if (students.length === 0) { alert('Нет учеников с доступом!'); return; }
-                    var list = 'Выберите ученика (или 0 для удаления):\n';
-                    students.forEach(function(s, i) { list += (i + 1) + '. ' + s.name + '\n'; });
-                    list += '\n0. Удалить занятие';
-                    var choice = prompt(list);
-                    if (choice === null) return;
-                    var idx = parseInt(choice) - 1;
-                    if (choice === '0') {
-                        supabase
-                            .from('schedule')
-                            .update({ student_id: null, topic: null })
-                            .eq('id', cellId)
-                            .then(function() { alert('✅ Занятие удалено'); clearCache('schedule'); window.loadScheduleAdmin(); if (currentUser) window.loadStudentSchedule(currentUser.id); })
-                            .catch(function(err) { alert('❌ Ошибка: ' + err.message); });
-                        return;
-                    }
-                    if (idx < 0 || idx >= students.length) { alert('Неверный выбор!'); return; }
-                    var student = students[idx];
-                    var topic = prompt('Введите тему занятия (или Enter для удаления):');
-                    if (topic === null) return;
-                    if (topic === '') {
-                        supabase
-                            .from('schedule')
-                            .update({ student_id: null, topic: null })
-                            .eq('id', cellId)
-                            .then(function() { alert('✅ Занятие удалено'); clearCache('schedule'); window.loadScheduleAdmin(); if (currentUser) window.loadStudentSchedule(currentUser.id); })
-                            .catch(function(err) { alert('❌ Ошибка: ' + err.message); });
-                        return;
-                    }
-                    supabase
-                        .from('schedule')
-                        .update({ student_id: student.id, topic: topic })
-                        .eq('id', cellId)
-                        .then(function() { alert('✅ Ячейка обновлена!'); clearCache('schedule'); window.loadScheduleAdmin(); if (currentUser) window.loadStudentSchedule(currentUser.id); })
-                        .catch(function(err) { alert('❌ Ошибка: ' + err.message); });
-                })
-                .catch(function(err) { alert('❌ Ошибка: ' + err.message); });
-        };
-
-        window.loadStudentSchedule = function(studentId) {
-            var container = document.getElementById('studentSchedule');
-            if (!container) return;
-            container.innerHTML = '⏳ Загрузка...';
-            supabase
-                .from('schedule')
+                .from('plan_templates')
                 .select('*')
-                .eq('student_id', studentId)
-                .order('row_num', { ascending: true })
+                .order('target_score', { ascending: false })
                 .then(function(response) {
-                    if (response.error) { container.innerHTML = '❌ Ошибка загрузки расписания.'; return; }
-                    var data = response.data || [];
-                    if (data.length === 0) { container.innerHTML = '📭 Нет занятий.'; return; }
-                    var rows = {};
-                    data.forEach(function(item) {
-                        if (!rows[item.row_num]) rows[item.row_num] = {};
-                        rows[item.row_num][item.day_of_week] = item.topic || '';
+                    if (response.error) return;
+                    const data = response.data || [];
+                    select.innerHTML = '<option value="">Без шаблона</option>';
+                    data.forEach(function(template) {
+                        select.innerHTML += `<option value="${template.id}">${template.name} (${template.target_score}+ баллов)</option>`;
                     });
-                    var html = '<div class="schedule-table-wrap"><table class="schedule-table">';
-                    html += '<tr><th>№</th>';
-                    daysArray.forEach(function(day) { html += '<th>' + daysMap[day] + '</th>'; });
-                    html += '</tr>';
-                    var sortedRows = Object.keys(rows).sort(function(a, b) { return parseInt(a) - parseInt(b); });
-                    sortedRows.forEach(function(rowNum) {
-                        html += '<tr>';
-                        html += '<td class="row-num">' + rowNum + '</td>';
-                        daysArray.forEach(function(day) {
-                            var cell = rows[rowNum][day] || '';
-                            if (cell) html += '<td class="cell-occupied">' + cell + '</td>';
-                            else html += '<td class="cell-empty">—</td>';
-                        });
-                        html += '</tr>';
-                    });
-                    html += '</table></div>';
-                    container.innerHTML = html;
-                })
-                .catch(function(err) { container.innerHTML = '❌ Ошибка: ' + err.message; });
+                });
         };
+
+        window.showTemplateModal = function() {
+            document.getElementById('templateModalTitle').textContent = '📚 Добавить шаблон';
+            document.getElementById('templateName').value = '';
+            document.getElementById('templateScore').value = '90';
+            document.getElementById('templateDuration').value = '6';
+            document.getElementById('templateLessonsPerWeek').value = '3';
+            document.getElementById('templateDescription').value = '';
+            document.getElementById('templateEditId').value = '';
+            document.getElementById('templateModal').classList.add('active');
+        };
+
+        window.closeTemplateModal = function() {
+            document.getElementById('templateModal').classList.remove('active');
+        };
+
+        window.saveTemplate = function() {
+            const name = document.getElementById('templateName').value.trim();
+            const target_score = parseInt(document.getElementById('templateScore').value);
+            const duration_months = parseInt(document.getElementById('templateDuration').value);
+            const lessons_per_week = parseInt(document.getElementById('templateLessonsPerWeek').value);
+            const description = document.getElementById('templateDescription').value.trim();
+            const editId = document.getElementById('templateEditId').value;
+            
+            if (!name) {
+                alert('❌ Введите название шаблона');
+                return;
+            }
+            
+            const data = {
+                name: name,
+                target_score: target_score,
+                duration_months: duration_months,
+                lessons_per_week: lessons_per_week,
+                description: description || null
+            };
+            
+            let promise;
+            if (editId) {
+                promise = supabase
+                    .from('plan_templates')
+                    .update(data)
+                    .eq('id', editId);
+            } else {
+                promise = supabase
+                    .from('plan_templates')
+                    .insert([data]);
+            }
+            
+            promise.then(function(response) {
+                if (response.error) {
+                    alert('❌ Ошибка: ' + response.error.message);
+                    return;
+                }
+                alert('✅ Шаблон сохранён!');
+                clearCache('plan_templates');
+                window.closeTemplateModal();
+                window.loadTemplates();
+                window.loadTemplatesForSelect();
+            });
+        };
+
+        window.editTemplate = function(id) {
+            supabase
+                .from('plan_templates')
+                .select('*')
+                .eq('id', id)
+                .single()
+                .then(function(response) {
+                    if (response.error) {
+                        alert('❌ Ошибка: ' + response.error.message);
+                        return;
+                    }
+                    const template = response.data;
+                    document.getElementById('templateModalTitle').textContent = '✏️ Редактировать шаблон';
+                    document.getElementById('templateName').value = template.name;
+                    document.getElementById('templateScore').value = template.target_score;
+                    document.getElementById('templateDuration').value = template.duration_months;
+                    document.getElementById('templateLessonsPerWeek').value = template.lessons_per_week;
+                    document.getElementById('templateDescription').value = template.description || '';
+                    document.getElementById('templateEditId').value = id;
+                    document.getElementById('templateModal').classList.add('active');
+                });
+        };
+
+        window.deleteTemplate = function(id) {
+            if (!confirm('Удалить шаблон?')) return;
+            
+            supabase
+                .from('plan_templates')
+                .delete()
+                .eq('id', id)
+                .then(function(response) {
+                    if (response.error) {
+                        alert('❌ Ошибка: ' + response.error.message);
+                        return;
+                    }
+                    alert('✅ Шаблон удалён');
+                    clearCache('plan_templates');
+                    window.loadTemplates();
+                    window.loadTemplatesForSelect();
+                });
+        };
+
+        window.useTemplate = function(templateId) {
+            // Переключаемся на вкладку плана и выбираем шаблон
+            const tabBtn = document.querySelector('.admin-tabs button[data-tab="studyplan"]');
+            if (tabBtn) tabBtn.click();
+            
+            setTimeout(function() {
+                const select = document.getElementById('planTemplate');
+                if (select) {
+                    select.value = templateId;
+                }
+            }, 300);
+        };
+
+        // ==========================================
+        // ИНДИВИДУАЛЬНЫЙ ПЛАН ПОДГОТОВКИ
+        // ==========================================
+
+        window.generatePlan = async function() {
+            const studentId = document.getElementById('planStudent').value;
+            const examDate = document.getElementById('examDate').value;
+            const targetScore = parseInt(document.getElementById('targetScore').value);
+            const templateId = document.getElementById('planTemplate').value;
+            
+            if (!studentId) {
+                alert('❌ Выберите ученика');
+                return;
+            }
+            if (!examDate) {
+                alert('❌ Введите дату экзамена');
+                return;
+            }
+            
+            const today = new Date();
+            const exam = new Date(examDate);
+            const daysUntilExam = Math.ceil((exam - today) / (1000 * 60 * 60 * 24));
+            
+            if (daysUntilExam < 0) {
+                alert('❌ Дата экзамена должна быть в будущем');
+                return;
+            }
+            
+            // Получаем шаблон если выбран
+            let template = null;
+            if (templateId) {
+                const { data, error } = await supabase
+                    .from('plan_templates')
+                    .select('*')
+                    .eq('id', templateId)
+                    .single();
+                if (!error && data) {
+                    template = data;
+                }
+            }
+            
+            const weeksUntilExam = Math.ceil(daysUntilExam / 7);
+            
+            let lessonsPerWeek = template ? template.lessons_per_week : 3;
+            if (targetScore >= 90) lessonsPerWeek = 4;
+            else if (targetScore >= 80) lessonsPerWeek = 3;
+            else lessonsPerWeek = 2;
+            
+            const totalLessons = weeksUntilExam * lessonsPerWeek;
+            
+            const { data: sections, error: sectionsError } = await supabase
+                .from('video_sections')
+                .select('*')
+                .order('order_num', { ascending: true });
+                
+            if (sectionsError) {
+                alert('❌ Ошибка загрузки разделов: ' + sectionsError.message);
+                return;
+            }
+            
+            if (!sections || sections.length === 0) {
+                alert('❌ Нет разделов для планирования');
+                return;
+            }
+            
+            const planData = {
+                student_id: studentId,
+                exam_date: examDate,
+                start_date: today.toISOString().split('T')[0],
+                total_lessons_planned: totalLessons,
+                target_score: targetScore,
+                current_level: targetScore >= 90 ? 'advanced' : (targetScore >= 80 ? 'intermediate' : 'beginner')
+            };
+            
+            const { data: plan, error: planError } = await supabase
+                .from('study_plans')
+                .upsert([planData])
+                .select();
+                
+            if (planError) {
+                alert('❌ Ошибка сохранения плана: ' + planError.message);
+                return;
+            }
+            
+            const planId = plan[0].id;
+            
+            await supabase
+                .from('study_plan_sections')
+                .delete()
+                .eq('plan_id', planId);
+            
+            const totalSections = sections.length;
+            const lessonsPerSection = Math.floor(totalLessons / totalSections);
+            const remainingLessons = totalLessons % totalSections;
+            
+            const planSections = sections.map((section, index) => {
+                const lessonsForSection = lessonsPerSection + (index < remainingLessons ? 1 : 0);
+                const weekNumber = Math.floor((index * totalLessons / totalSections) / lessonsPerWeek) + 1;
+                const deadline = new Date(today);
+                deadline.setDate(deadline.getDate() + weekNumber * 7);
+                
+                return {
+                    plan_id: planId,
+                    section_id: section.id,
+                    order_num: index + 1,
+                    priority: 1,
+                    deadline: deadline.toISOString().split('T')[0],
+                    hours_needed: Math.max(1, Math.ceil(lessonsForSection * 1.5))
+                };
+            });
+            
+            const { error: insertError } = await supabase
+                .from('study_plan_sections')
+                .insert(planSections);
+                
+            if (insertError) {
+                alert('❌ Ошибка сохранения разделов: ' + insertError.message);
+                return;
+            }
+            
+            alert('✅ План подготовки сгенерирован!\n📚 Всего занятий: ' + totalLessons + '\n📖 Разделов: ' + totalSections);
+            loadStudyPlan();
+        };
+
+        window.loadStudyPlan = async function() {
+            const studentId = document.getElementById('planStudent').value;
+            const container = document.getElementById('planContent');
+            
+            if (!studentId) {
+                container.innerHTML = '<p style="color:#666;">Выберите ученика</p>';
+                return;
+            }
+            
+            try {
+                const { data: plan, error: planError } = await supabase
+                    .from('study_plans')
+                    .select('*')
+                    .eq('student_id', studentId)
+                    .maybeSingle();
+                    
+                if (planError) throw planError;
+                
+                if (!plan) {
+                    container.innerHTML = `
+                        <div class="empty-state">
+                            <span class="icon">📭</span>
+                            <div class="title">План не создан</div>
+                            <div class="desc">Настройте параметры и нажмите "Сгенерировать план"</div>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                const { data: sections, error: sectionsError } = await supabase
+                    .from('study_plan_sections')
+                    .select('*, video_sections(name)')
+                    .eq('plan_id', plan.id)
+                    .order('order_num', { ascending: true });
+                    
+                if (sectionsError) throw sectionsError;
+                
+                const { data: lessons } = await supabase
+                    .from('lesson_calendar')
+                    .select('*')
+                    .eq('student_id', studentId)
+                    .order('lesson_date', { ascending: true });
+                    
+                const completedLessons = lessons ? lessons.filter(l => l.status === 'completed').length : 0;
+                const totalLessons = plan.total_lessons_planned || 0;
+                const progress = totalLessons > 0 ? Math.round((completedLessons / totalLessons) * 100) : 0;
+                
+                await supabase
+                    .from('study_plans')
+                    .update({
+                        lessons_completed: completedLessons,
+                        progress_percent: progress
+                    })
+                    .eq('id', plan.id);
+                
+                const examDate = new Date(plan.exam_date);
+                const today = new Date();
+                const daysLeft = Math.ceil((examDate - today) / (1000 * 60 * 60 * 24));
+                
+                let html = `
+                    <div class="plan-summary" style="display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:16px; margin-bottom:24px;">
+                        <div class="stat-card" style="background:rgba(255,255,255,0.03); padding:16px; border-radius:12px; text-align:center;">
+                            <div style="font-size:28px; font-weight:900; color:#ffffff;">${plan.target_score}</div>
+                            <div style="color:#888; font-size:13px;">🎯 Целевой балл</div>
+                        </div>
+                        <div class="stat-card" style="background:rgba(255,255,255,0.03); padding:16px; border-radius:12px; text-align:center;">
+                            <div style="font-size:28px; font-weight:900; color:#ffffff;">${totalLessons}</div>
+                            <div style="color:#888; font-size:13px;">📚 Всего занятий</div>
+                        </div>
+                        <div class="stat-card" style="background:rgba(255,255,255,0.03); padding:16px; border-radius:12px; text-align:center;">
+                            <div style="font-size:28px; font-weight:900; color:#2ecc71;">${completedLessons}</div>
+                            <div style="color:#888; font-size:13px;">✅ Проведено</div>
+                        </div>
+                        <div class="stat-card" style="background:rgba(255,255,255,0.03); padding:16px; border-radius:12px; text-align:center;">
+                            <div style="font-size:28px; font-weight:900; color:#f5a623;">${daysLeft > 0 ? daysLeft : '0'}</div>
+                            <div style="color:#888; font-size:13px;">📅 Дней до экзамена</div>
+                        </div>
+                    </div>
+                    
+                    <h4 style="color:#f5a623; margin-bottom:16px;">📖 Разделы к изучению</h4>
+                    <div style="margin-bottom:24px;">
+                `;
+                
+                if (sections && sections.length > 0) {
+                    sections.forEach((section, index) => {
+                        const isCompleted = section.completed;
+                        const deadline = section.deadline ? new Date(section.deadline).toLocaleDateString('ru-RU') : '—';
+                        const sectionName = section.video_sections ? section.video_sections.name : 'Раздел ' + (index + 1);
+                        
+                        html += `
+                            <div class="section-progress" style="${isCompleted ? 'border-color:rgba(46,204,113,0.3);' : ''}">
+                                <span class="status-icon">${isCompleted ? '✅' : '📌'}</span>
+                                <span class="name">${sectionName}</span>
+                                <div class="bar-wrap">
+                                    <div class="fill ${isCompleted ? 'green' : 'yellow'}" style="width:${isCompleted ? 100 : 0}%;"></div>
+                                </div>
+                                <span class="percent">${isCompleted ? '✅ Выполнено' : '⏳ Ожидает'}</span>
+                                <span style="color:#888; font-size:12px;">📅 ${deadline}</span>
+                                <button class="admin-btn ${isCompleted ? '' : 'success'}" onclick="window.toggleSectionComplete('${section.id}', ${!isCompleted})">
+                                    ${isCompleted ? '↩ Вернуть' : '✅ Отметить'}
+                                </button>
+                            </div>
+                        `;
+                    });
+                } else {
+                    html += '<p style="color:#666;">Нет разделов в плане</p>';
+                }
+                
+                html += '</div>';
+                
+                // Еженедельный план
+                html += `
+                    <h4 style="color:#f5a623; margin-bottom:16px;">📅 Еженедельный план</h4>
+                    <div id="weeklyPlanContent">
+                `;
+                
+                if (lessons && lessons.length > 0) {
+                    const weeks = {};
+                    lessons.forEach(lesson => {
+                        const weekStart = getWeekStart(new Date(lesson.lesson_date));
+                        const key = weekStart.toISOString().split('T')[0];
+                        if (!weeks[key]) weeks[key] = [];
+                        weeks[key].push(lesson);
+                    });
+                    
+                    const sortedWeeks = Object.keys(weeks).sort();
+                    sortedWeeks.forEach(weekKey => {
+                        const weekLessons = weeks[weekKey];
+                        const completed = weekLessons.filter(l => l.status === 'completed').length;
+                        const total = weekLessons.length;
+                        
+                        html += `
+                            <div style="background:rgba(255,255,255,0.03); border-radius:12px; padding:12px 16px; margin-bottom:8px; border:1px solid rgba(255,255,255,0.05);">
+                                <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+                                    <span style="color:#b0c4de; font-weight:600;">📅 Неделя ${new Date(weekKey).toLocaleDateString('ru-RU')}</span>
+                                    <span style="color:#888; font-size:13px;">Занятий: ${completed}/${total} ✅</span>
+                                </div>
+                                <div style="margin-top:4px; font-size:13px; color:#666;">
+                                    ${weekLessons.map(l => 
+                                        `${l.lesson_date.split('-').slice(1).join('.')} ${l.start_time || ''} ${l.topic || ''} ${l.status === 'completed' ? '✅' : l.status === 'cancelled' ? '❌' : '📌'}`
+                                    ).join(' • ')}
+                                </div>
+                            </div>
+                        `;
+                    });
+                } else {
+                    html += '<p style="color:#666;">Нет запланированных занятий</p>';
+                }
+                
+                html += '</div>';
+                
+                container.innerHTML = html;
+                
+            } catch (err) {
+                console.error('Ошибка загрузки плана:', err);
+                container.innerHTML = '<p style="color:#666;">Ошибка загрузки плана</p>';
+            }
+        };
+
+        window.toggleSectionComplete = async function(sectionId, completed) {
+            supabase
+                .from('study_plan_sections')
+                .update({ 
+                    completed: completed,
+                    completed_at: completed ? new Date().toISOString() : null
+                })
+                .eq('id', sectionId)
+                .then(function(response) {
+                    if (response.error) {
+                        alert('❌ Ошибка: ' + response.error.message);
+                        return;
+                    }
+                    loadStudyPlan();
+                });
+        };
+
+        function getWeekStart(date) {
+            const d = new Date(date);
+            const day = d.getDay();
+            const diff = d.getDate() - day + (day === 0 ? -6 : 1);
+            d.setDate(diff);
+            d.setHours(0, 0, 0, 0);
+            return d;
+        }
 
         // ==========================================
         // СТАТИСТИКА
@@ -3614,6 +4595,9 @@
             if (page === 'homeworks' && currentUser) {
                 window.loadHomework(currentUser.id);
             }
+            if (page === 'myplan' && currentUser) {
+                window.loadStudentPlan();
+            }
         };
 
         window.openSection = function(sectionId) {
@@ -3680,6 +4664,115 @@
             } catch (err) {
                 content.innerHTML = '<div class="empty">❌ Ошибка загрузки</div>';
                 console.error(err);
+            }
+        };
+
+        // ==========================================
+        // СТРАНИЦА "МОЙ ПЛАН" ДЛЯ УЧЕНИКА
+        // ==========================================
+
+        window.loadStudentPlan = async function() {
+            const container = document.getElementById('studentPlanSummary');
+            if (!container || !currentUser) return;
+            
+            try {
+                const { data: plan, error: planError } = await supabase
+                    .from('study_plans')
+                    .select('*')
+                    .eq('student_id', currentUser.id)
+                    .maybeSingle();
+                    
+                if (planError) throw planError;
+                
+                if (!plan) {
+                    container.innerHTML = `
+                        <div class="empty-state">
+                            <span class="icon">📭</span>
+                            <div class="title">План подготовки не создан</div>
+                            <div class="desc">Преподаватель ещё не создал индивидуальный план</div>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                const { data: sections } = await supabase
+                    .from('study_plan_sections')
+                    .select('*, video_sections(name)')
+                    .eq('plan_id', plan.id)
+                    .order('order_num', { ascending: true });
+                    
+                const { data: lessons } = await supabase
+                    .from('lesson_calendar')
+                    .select('*')
+                    .eq('student_id', currentUser.id)
+                    .order('lesson_date', { ascending: true });
+                    
+                const completedLessons = lessons ? lessons.filter(l => l.status === 'completed').length : 0;
+                const totalLessons = plan.total_lessons_planned || 0;
+                const progress = totalLessons > 0 ? Math.round((completedLessons / totalLessons) * 100) : 0;
+                
+                const examDate = new Date(plan.exam_date);
+                const today = new Date();
+                const daysLeft = Math.ceil((examDate - today) / (1000 * 60 * 60 * 24));
+                
+                let html = `
+                    <div class="exam-countdown" style="text-align:center; margin-bottom:24px;">
+                        <div style="font-size:48px; font-weight:900; color:#f5a623;">${daysLeft > 0 ? daysLeft : '0'}</div>
+                        <div style="color:#888; font-size:16px;">дней до экзамена</div>
+                        <div style="width:100%; max-width:400px; margin:16px auto; height:8px; background:rgba(255,255,255,0.05); border-radius:10px; overflow:hidden;">
+                            <div style="height:100%; width:${progress}%; background:linear-gradient(90deg, #667eea, #764ba2); border-radius:10px; transition:width 0.8s;"></div>
+                        </div>
+                        <div style="color:#b0c4de; font-size:14px;">Прогресс: ${progress}% (${completedLessons}/${totalLessons} занятий)</div>
+                    </div>
+                    
+                    <h4 style="color:#f5a623; margin-bottom:16px;">🎯 Цель: ${plan.target_score}+ баллов</h4>
+                    
+                    <h4 style="color:#f5a623; margin-bottom:16px; margin-top:24px;">📖 План по разделам</h4>
+                `;
+                
+                if (sections && sections.length > 0) {
+                    sections.forEach((section) => {
+                        const isCompleted = section.completed;
+                        const deadline = section.deadline ? new Date(section.deadline).toLocaleDateString('ru-RU') : '—';
+                        const sectionName = section.video_sections ? section.video_sections.name : 'Раздел';
+                        
+                        html += `
+                            <div class="section-progress" style="${isCompleted ? 'border-color:rgba(46,204,113,0.3);' : ''}">
+                                <span class="status-icon">${isCompleted ? '✅' : '📌'}</span>
+                                <span class="name">${sectionName}</span>
+                                <div class="bar-wrap">
+                                    <div class="fill ${isCompleted ? 'green' : 'yellow'}" style="width:${isCompleted ? 100 : 0}%;"></div>
+                                </div>
+                                <span class="percent">${isCompleted ? '✅ Выполнено' : '⏳ Ожидает'}</span>
+                                <span style="color:#888; font-size:12px;">📅 ${deadline}</span>
+                            </div>
+                        `;
+                    });
+                } else {
+                    html += '<p style="color:#666;">Нет разделов в плане</p>';
+                }
+                
+                // Ближайшие занятия
+                const upcomingLessons = lessons ? lessons.filter(l => l.status === 'planned' && new Date(l.lesson_date) >= today).slice(0, 5) : [];
+                if (upcomingLessons.length > 0) {
+                    html += `
+                        <h4 style="color:#f5a623; margin-bottom:16px; margin-top:24px;">📅 Ближайшие занятия</h4>
+                    `;
+                    upcomingLessons.forEach(function(lesson) {
+                        html += `
+                            <div style="background:rgba(255,255,255,0.03); border-radius:8px; padding:10px 14px; margin-bottom:6px; border-left:3px solid #f5a623;">
+                                <div style="color:#b0c4de;">${new Date(lesson.lesson_date).toLocaleDateString('ru-RU')} ${lesson.start_time || ''}</div>
+                                <div style="color:#888; font-size:13px;">${lesson.topic || 'Занятие'}</div>
+                            </div>
+                        `;
+                    });
+                }
+                
+                container.innerHTML = html;
+                
+            } catch (err) {
+                console.error('Ошибка загрузки плана ученика:', err);
+                container.innerHTML = '<p style="color:#666;">Ошибка загрузки плана</p>';
             }
         };
 
@@ -3827,6 +4920,7 @@
                         window.loadStudentSchedule(user.id);
                         window.loadSectionsAndVideos();
                         window.loadSettings();
+                        window.loadStudentPlan();
                         
                         startAutoRefresh();
                         
@@ -3910,6 +5004,8 @@
             window.loadVideosAdmin();
             window.loadScheduleAdmin();
             window.loadStats();
+            window.loadTemplates();
+            window.loadCalendarStudents();
         };
 
         // ==========================================
@@ -3925,6 +5021,10 @@
         console.log('  📎 attached_file_url - файлы учеников к ДЗ');
         console.log('  💬 messages - чат (students)');
         console.log('  📅 schedule - расписание (students)');
+        console.log('  📅 lesson_calendar - календарь занятий');
+        console.log('  📚 study_plans - планы подготовки');
+        console.log('  📖 study_plan_sections - разделы планов');
+        console.log('  📋 plan_templates - шаблоны планов');
         console.log('⚡ Оптимизации включены: кеширование, lazy loading, пагинация');
         console.log('✅ PDF из видео УДАЛЁН полностью');
         console.log('✅ Исправлен белый текст в select');
@@ -3936,6 +5036,10 @@
         console.log('✅ Добавлена кнопка "Обновить" на всех страницах');
         console.log('✅ Добавлена возможность прикреплять файлы к ДЗ (PDF, JPG, PNG, GIF, WEBP)');
         console.log('✅ Админ видит прикреплённые файлы в таблице ДЗ');
+        console.log('✅ Добавлен календарь занятий');
+        console.log('✅ Добавлены индивидуальные планы подготовки');
+        console.log('✅ Добавлены шаблоны планов');
+        console.log('✅ Добавлена страница "Мой план" для ученика');
     </script>
 
 </body>
