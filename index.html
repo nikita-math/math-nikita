@@ -161,29 +161,91 @@
             box-shadow: 0 0 0 3px rgba(102,126,234,0.15);
             background: rgba(255,255,255,0.12);
         }
+
+        /* ===== ИСПРАВЛЕНИЕ ДЛЯ SELECT (белый текст на белом фоне) ===== */
+        select {
+            background: #2a2a4a !important;
+            color: #ffffff !important;
+            border: 1px solid rgba(255,255,255,0.15) !important;
+            padding: 10px 14px !important;
+            border-radius: 10px !important;
+            font-size: 15px !important;
+            width: 100% !important;
+            appearance: auto !important;
+            -webkit-appearance: auto !important;
+            cursor: pointer !important;
+            font-family: Arial, sans-serif !important;
+        }
+
+        select option {
+            background: #1a1a2e !important;
+            color: #ffffff !important;
+            padding: 10px !important;
+        }
+
+        select:focus {
+            border-color: #667eea !important;
+            outline: none !important;
+            box-shadow: 0 0 0 3px rgba(102,126,234,0.15) !important;
+        }
+
+        select:disabled {
+            opacity: 0.5 !important;
+            cursor: not-allowed !important;
+        }
+
         .modal-content select {
             background: #2a2a4a !important;
             color: #ffffff !important;
-            border: 1px solid rgba(255,255,255,0.15);
-            padding: 12px 16px;
-            border-radius: 10px;
-            font-size: 15px;
-            width: 100%;
-            appearance: auto;
-            cursor: pointer;
-            margin-bottom: 15px;
-            font-family: Arial, sans-serif;
+            border: 1px solid rgba(255,255,255,0.15) !important;
+            padding: 12px 16px !important;
+            border-radius: 10px !important;
+            font-size: 15px !important;
+            width: 100% !important;
+            appearance: auto !important;
+            -webkit-appearance: auto !important;
+            cursor: pointer !important;
+            font-family: Arial, sans-serif !important;
+            margin-bottom: 15px !important;
         }
+
         .modal-content select option {
             background: #1a1a2e !important;
             color: #ffffff !important;
-            padding: 10px;
+            padding: 10px !important;
         }
+
         .modal-content select:focus {
-            border-color: var(--primary);
-            outline: none;
-            box-shadow: 0 0 0 3px rgba(102,126,234,0.15);
+            border-color: #667eea !important;
+            outline: none !important;
+            box-shadow: 0 0 0 3px rgba(102,126,234,0.15) !important;
         }
+
+        .calendar-controls select {
+            background: #2a2a4a !important;
+            color: #ffffff !important;
+            border: 1px solid rgba(255,255,255,0.15) !important;
+            padding: 8px 16px !important;
+            border-radius: 10px !important;
+            font-size: 14px !important;
+            font-family: Arial, sans-serif !important;
+            min-width: 180px !important;
+            appearance: auto !important;
+            -webkit-appearance: auto !important;
+            cursor: pointer !important;
+        }
+
+        .calendar-controls select option {
+            background: #1a1a2e !important;
+            color: #ffffff !important;
+            padding: 8px !important;
+        }
+
+        .calendar-controls select:focus {
+            border-color: #667eea !important;
+            outline: none !important;
+        }
+
         .modal-content .preview-text { margin-top: -10px; margin-bottom: 15px; font-size: 14px; color: #666; }
         .modal-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 10px; }
         .modal-actions button { padding: 12px 30px; border: none; border-radius: var(--radius-sm); color: #fff; font-weight: 700; cursor: pointer; transition: var(--transition); font-family: Arial, sans-serif; font-size: 14px; }
@@ -226,6 +288,122 @@
             color: #fff;
         }
 
+        /* ===== МОДАЛКА ДЛЯ АДМИНА (управление занятием) ===== */
+        #adminLessonModal .modal-content {
+            max-width: 450px;
+        }
+        #adminLessonModal .lesson-info {
+            margin: 12px 0;
+            padding: 12px 16px;
+            background: rgba(255,255,255,0.03);
+            border-radius: 10px;
+        }
+        #adminLessonModal .lesson-info p {
+            color: #b0c4de;
+            font-size: 14px;
+            margin: 4px 0;
+        }
+        #adminLessonModal .status-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+        #adminLessonModal .status-badge.completed {
+            background: rgba(46,204,113,0.2);
+            color: #2ecc71;
+        }
+        #adminLessonModal .status-badge.cancelled {
+            background: rgba(231,76,60,0.2);
+            color: #e74c3c;
+        }
+        #adminLessonModal .status-badge.planned {
+            background: rgba(245,166,35,0.2);
+            color: #f5a623;
+        }
+        #adminLessonModal .action-buttons {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin: 12px 0;
+        }
+        #adminLessonModal .action-buttons button {
+            flex: 1;
+            min-width: 80px;
+            padding: 8px 12px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 13px;
+            transition: 0.3s;
+            font-family: Arial, sans-serif;
+        }
+        #adminLessonModal .action-buttons .btn-completed {
+            background: rgba(46,204,113,0.2);
+            color: #2ecc71;
+        }
+        #adminLessonModal .action-buttons .btn-completed:hover {
+            background: #27ae60;
+            color: #fff;
+        }
+        #adminLessonModal .action-buttons .btn-cancelled {
+            background: rgba(231,76,60,0.2);
+            color: #e74c3c;
+        }
+        #adminLessonModal .action-buttons .btn-cancelled:hover {
+            background: #e74c3c;
+            color: #fff;
+        }
+        #adminLessonModal .action-buttons .btn-planned {
+            background: rgba(245,166,35,0.2);
+            color: #f5a623;
+        }
+        #adminLessonModal .action-buttons .btn-planned:hover {
+            background: #f5a623;
+            color: #fff;
+        }
+        #adminLessonModal .move-section {
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid rgba(255,255,255,0.05);
+        }
+        #adminLessonModal .move-section label {
+            color: #888;
+            font-size: 13px;
+            display: block;
+            margin-bottom: 4px;
+        }
+        #adminLessonModal .move-section .move-row {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        #adminLessonModal .move-section .move-row input[type="date"] {
+            flex: 1;
+            padding: 8px 12px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 8px;
+            color: #fff;
+            font-size: 14px;
+            font-family: Arial, sans-serif;
+        }
+        #adminLessonModal .move-section .move-row button {
+            padding: 8px 20px;
+            border: none;
+            border-radius: 8px;
+            background: #667eea;
+            color: #fff;
+            cursor: pointer;
+            font-weight: 600;
+            font-family: Arial, sans-serif;
+        }
+        #adminLessonModal .move-section .move-row button:hover {
+            background: #5a6fd6;
+        }
+
         /* ===== КАЛЕНДАРЬ ===== */
         .calendar-controls {
             display: flex;
@@ -242,6 +420,7 @@
             color: #fff;
             font-size: 14px;
             font-family: Arial, sans-serif;
+            min-width: 180px;
         }
         .calendar-controls button {
             background: rgba(255,255,255,0.05);
@@ -346,6 +525,9 @@
             border-color: rgba(46,204,113,0.3);
             background: rgba(46,204,113,0.08);
         }
+        .calendar-day.completed .day-number {
+            color: #2ecc71;
+        }
         .calendar-day.planned {
             border-color: rgba(245,166,35,0.3);
             background: rgba(245,166,35,0.08);
@@ -354,6 +536,9 @@
             border-color: rgba(231,76,60,0.3);
             background: rgba(231,76,60,0.08);
             opacity: 0.6;
+        }
+        .calendar-day.cancelled .day-number {
+            color: #e74c3c;
         }
         .calendar-day.today {
             border-color: #667eea;
@@ -381,7 +566,7 @@
             min-height: 55px;
             background: rgba(255,255,255,0.03);
             border-radius: 10px;
-            padding: 6px;
+            padding: 4px;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -402,15 +587,19 @@
             font-size: 14px;
         }
         .student-calendar-day .lesson-topic-label {
-            font-size: 8px;
+            font-size: 7px;
             color: #88ccff;
-            margin-top: 2px;
+            margin-top: 1px;
             text-align: center;
-            line-height: 1.2;
+            line-height: 1.1;
             max-width: 100%;
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
+        }
+        .student-calendar-day .lesson-status-icon {
+            font-size: 10px;
+            margin-top: 1px;
         }
         .student-calendar-day.has-lesson {
             border-color: rgba(102,126,234,0.4);
@@ -439,6 +628,15 @@
         .student-calendar-day.empty:hover {
             background: transparent;
             border-color: transparent;
+        }
+        .student-calendar-day .status-completed {
+            color: #2ecc71;
+        }
+        .student-calendar-day .status-cancelled {
+            color: #e74c3c;
+        }
+        .student-calendar-day .status-planned {
+            color: #f5a623;
         }
 
         /* ===== ШАБЛОНЫ ===== */
@@ -807,6 +1005,9 @@
             .student-calendar-grid { padding: 8px; gap: 4px; }
             .schedule-table { font-size: 12px; }
             .schedule-table th, .schedule-table td { padding: 6px 4px; min-width: 60px; }
+            #adminLessonModal .action-buttons { flex-direction: column; }
+            #adminLessonModal .move-section .move-row { flex-direction: column; }
+            #adminLessonModal .move-section .move-row input[type="date"] { width: 100%; }
         }
     </style>
 </head>
@@ -1203,7 +1404,7 @@
                 <div id="scheduleList" style="margin-top:15px;">Загрузка...</div>
             </div>
             
-            <!-- ===== КАЛЕНДАРЬ ===== -->
+            <!-- ===== КАЛЕНДАРЬ (С НОВОЙ МОДАЛКОЙ ДЛЯ АДМИНА) ===== -->
             <div class="admin-content" id="tab-calendar">
                 <h3 style="color: #f5a623; margin-bottom: 20px;">📅 Календарь занятий</h3>
                 
@@ -1215,6 +1416,7 @@
                     <span id="calendarMonth">Январь 2026</span>
                     <button onclick="window.nextMonth()">▶</button>
                     <button class="admin-btn success" onclick="window.showAddLessonModal()">➕ Добавить серию занятий</button>
+                    <button class="admin-btn" onclick="window.refreshCalendar()" style="background:#2a2a4a;">🔄</button>
                 </div>
                 
                 <div class="calendar-grid">
@@ -1549,6 +1751,42 @@
         </div>
     </div>
 
+    <!-- ===== НОВАЯ МОДАЛКА ДЛЯ АДМИНА (УПРАВЛЕНИЕ ЗАНЯТИЕМ) ===== -->
+    <div class="modal-overlay" id="adminLessonModal">
+        <div class="modal-content">
+            <h3 id="adminLessonTitle">📌 Управление занятием</h3>
+            
+            <div class="lesson-info">
+                <p id="adminLessonTopic" style="font-size:18px; font-weight:700; color:#ffffff;">Занятие</p>
+                <p id="adminLessonStudent">👤 Ученик: <span id="adminLessonStudentName">—</span></p>
+                <p id="adminLessonTime">⏰ Время: <span id="adminLessonTimeValue">—</span></p>
+                <p id="adminLessonDate">📅 Дата: <span id="adminLessonDateValue">—</span></p>
+                <p id="adminLessonSection">📚 Раздел: <span id="adminLessonSectionValue">Не указан</span></p>
+                <p id="adminLessonStatusLine">Статус: <span id="adminLessonStatusBadge" class="status-badge planned">📌 Запланировано</span></p>
+                <p id="adminLessonNotes" style="color:#888; font-size:13px;">📝 Заметки: <span id="adminLessonNotesValue">—</span></p>
+            </div>
+            
+            <div class="action-buttons">
+                <button class="btn-completed" onclick="window.updateAdminLessonStatus('completed')">✅ Проведено</button>
+                <button class="btn-cancelled" onclick="window.updateAdminLessonStatus('cancelled')">❌ Отменено</button>
+                <button class="btn-planned" onclick="window.updateAdminLessonStatus('planned')">📌 Вернуть</button>
+            </div>
+            
+            <div class="move-section">
+                <label>📅 Перенести на другую дату:</label>
+                <div class="move-row">
+                    <input type="date" id="moveLessonDate">
+                    <button onclick="window.moveAdminLesson()">📅 Перенести</button>
+                </div>
+            </div>
+            
+            <div style="margin-top:12px; padding-top:12px; border-top:1px solid rgba(255,255,255,0.05); display:flex; gap:8px; flex-wrap:wrap;">
+                <button class="cancel-btn" onclick="window.closeAdminLessonModal()" style="flex:1;">Закрыть</button>
+                <button class="admin-btn danger" onclick="window.deleteAdminLesson()" style="flex:1;">🗑 Удалить занятие</button>
+            </div>
+        </div>
+    </div>
+
     <footer>
         © 2026 Математика с Никитой. Все права защищены.
     </footer>
@@ -1594,6 +1832,10 @@
         var currentMonth = new Date();
         var selectedStudentId = null;
         var studentMonth = new Date();
+
+        // Переменные для модалки управления занятием
+        var adminCurrentLessonId = null;
+        var adminCurrentLessonData = null;
 
         var daysMap = {
             'mon': 'ПН',
@@ -1698,6 +1940,14 @@
             });
             
             console.log('🔄 Данные обновлены вручную');
+        };
+
+        window.refreshCalendar = function() {
+            if (selectedStudentId) {
+                window.renderCalendar(currentMonth);
+            } else {
+                window.loadStudentCalendar();
+            }
         };
 
         function startAutoRefresh() {
@@ -2703,7 +2953,8 @@
             tabsContainer1.appendChild(fragment1);
             tabsContainer2.appendChild(fragment2);
         };
-                // ==========================================
+
+        // ==========================================
         // ДОМАШНИЕ ЗАДАНИЯ (СТУДЕНТ) С ПРИКРЕПЛЕНИЕМ ФАЙЛОВ
         // ==========================================
 
@@ -3150,8 +3401,7 @@
                 })
                 .catch(function(err) { alert('❌ Ошибка: ' + err.message); });
         };
-
-        // ==========================================
+                // ==========================================
         // ЗАГРУЗКА ФАЙЛОВ К ДЗ
         // ==========================================
 
@@ -3281,12 +3531,10 @@
                 console.error(err);
             }
         };
-                // ==========================================
+
+        // ==========================================
         // КАЛЕНДАРЬ ЗАНЯТИЙ (АДМИН)
         // ==========================================
-
-        var currentMonth = new Date();
-        var selectedStudentId = null;
 
         window.loadCalendarStudents = async function() {
             var select = document.getElementById('calendarStudent');
@@ -3301,18 +3549,27 @@
                     
                 if (error) throw error;
                 
+                console.log('✅ Загружено учеников для календаря:', data.length);
+                
                 var options = data.map(function(s) {
                     return '<option value="' + s.id + '">' + s.name + '</option>';
                 }).join('');
                 
                 if (select) {
                     select.innerHTML = '<option value="">Выберите ученика</option>' + options;
+                    // Автоматически выбираем первого ученика, если есть
+                    if (data.length > 0) {
+                        select.value = data[0].id;
+                        window.loadStudentCalendar();
+                    }
                 }
                 if (planSelect) {
                     planSelect.innerHTML = '<option value="">Выберите ученика</option>' + options;
                 }
             } catch (err) {
-                console.error('Ошибка загрузки учеников:', err);
+                console.error('❌ Ошибка загрузки учеников:', err);
+                var select = document.getElementById('calendarStudent');
+                if (select) select.innerHTML = '<option value="">Ошибка загрузки</option>';
             }
         };
 
@@ -3375,6 +3632,7 @@
                     var lesson = lessonsMap[dateStr];
                     var statusClass = '';
                     var statusText = '';
+                    var statusIcon = '';
                     
                     if (dateStr === todayStr) statusClass += ' today';
                     
@@ -3382,12 +3640,15 @@
                         if (lesson.status === 'completed') {
                             statusClass += ' completed';
                             statusText = '✅';
+                            statusIcon = '✅';
                         } else if (lesson.status === 'cancelled') {
                             statusClass += ' cancelled';
                             statusText = '❌';
+                            statusIcon = '❌';
                         } else {
                             statusClass += ' planned';
                             statusText = '📌';
+                            statusIcon = '📌';
                         }
                     }
                     
@@ -3395,7 +3656,7 @@
                     var seriesBadge = lesson && lesson.series_id ? '<span class="series-badge">🔁</span>' : '';
                     
                     html += `
-                        <div class="calendar-day${statusClass}" onclick="window.handleDayClick('${dateStr}')">
+                        <div class="calendar-day${statusClass}" onclick="window.handleAdminDayClick('${dateStr}')">
                             <span class="day-number">${day}</span>
                             ${statusText ? '<span class="lesson-indicator">' + statusText + '</span>' : ''}
                             ${topicText ? '<span class="lesson-topic">' + topicText + '</span>' : ''}
@@ -3413,7 +3674,8 @@
             }
         };
 
-        window.handleDayClick = function(dateStr) {
+        // ===== НОВАЯ ФУНКЦИЯ: Клик по дню в календаре админа =====
+        window.handleAdminDayClick = function(dateStr) {
             var container = document.getElementById('dayLessons');
             var list = document.getElementById('dayLessonsList');
             
@@ -3453,6 +3715,7 @@
                             'completed': '✅ Проведено',
                             'cancelled': '❌ Отменено'
                         };
+                        var statusClass = lesson.status === 'completed' ? 'completed' : (lesson.status === 'cancelled' ? 'cancelled' : 'planned');
                         
                         var seriesInfo = '';
                         if (lesson.lesson_series) {
@@ -3475,16 +3738,15 @@
                         
                         html += `
                             <div style="display:flex; justify-content:space-between; align-items:center; padding:10px 14px; background:rgba(255,255,255,0.03); border-radius:8px; margin-bottom:6px; border-left:3px solid ${lesson.status === 'completed' ? '#2ecc71' : lesson.status === 'cancelled' ? '#e74c3c' : '#f5a623'};">
-                                <div>
+                                <div style="flex:1; cursor:pointer;" onclick="window.openAdminLessonModal('${lesson.id}')">
                                     <div style="color:#b0c4de; font-weight:600;">${lesson.topic || 'Занятие'}</div>
                                     ${sectionInfo}
-                                    <div style="color:#666; font-size:12px;">${lesson.start_time || ''} - ${lesson.end_time || ''} • ${statusMap[lesson.status] || lesson.status}</div>
+                                    <div style="color:#666; font-size:12px;">${lesson.start_time || ''} - ${lesson.end_time || ''} • <span class="status-badge ${statusClass}">${statusMap[lesson.status] || lesson.status}</span></div>
                                     ${lesson.notes ? '<div style="color:#888; font-size:12px; margin-top:4px;">📝 ' + lesson.notes + '</div>' : ''}
                                     ${seriesInfo}
                                 </div>
-                                <div style="display:flex; gap:6px;">
-                                    <button class="admin-btn" onclick="window.editLesson('${lesson.id}')">✏️</button>
-                                    <button class="admin-btn danger" onclick="window.deleteLesson('${lesson.id}')">🗑</button>
+                                <div style="display:flex; gap:6px; flex-shrink:0;">
+                                    <button class="admin-btn" onclick="window.openAdminLessonModal('${lesson.id}')" title="Управлять">⚙️</button>
                                 </div>
                             </div>
                         `;
@@ -3754,6 +4016,278 @@
         };
 
         // ==========================================
+        // НОВАЯ ФУНКЦИЯ: РАЗДЕЛИТЬ СЕРИЮ
+        // ==========================================
+
+        window.showSplitSeriesModal = function(seriesId) {
+            // Загружаем данные серии
+            supabase
+                .from('lesson_series')
+                .select('*')
+                .eq('id', seriesId)
+                .single()
+                .then(function(response) {
+                    if (response.error) {
+                        alert('❌ Ошибка: ' + response.error.message);
+                        return;
+                    }
+                    var series = response.data;
+                    
+                    var splitDate = prompt('Введите дату, с которой начинаются изменения (в формате ГГГГ-ММ-ДД):\n' +
+                        'Например: 2026-09-01\n\n' +
+                        'Все занятия до этой даты останутся без изменений,\n' +
+                        'а с этой даты начнётся новая серия с другими днями недели.');
+                    
+                    if (!splitDate) return;
+                    
+                    // Проверяем дату
+                    if (new Date(splitDate) <= new Date(series.start_date)) {
+                        alert('❌ Дата разделения должна быть позже даты начала серии');
+                        return;
+                    }
+                    if (new Date(splitDate) > new Date(series.end_date)) {
+                        alert('❌ Дата разделения должна быть раньше даты окончания серии');
+                        return;
+                    }
+                    
+                    var newDays = prompt('Введите новые дни недели через запятую (1-7, где 1=ПН, 7=ВС):\n' +
+                        'Например: 2,4 (вторник и четверг)');
+                    
+                    if (!newDays) return;
+                    
+                    var daysArray = newDays.split(',').map(function(d) { return parseInt(d.trim()); });
+                    daysArray = daysArray.filter(function(d) { return d >= 1 && d <= 7; });
+                    
+                    if (daysArray.length === 0) {
+                        alert('❌ Введите корректные дни недели');
+                        return;
+                    }
+                    
+                    // Обновляем старую серию: end_date = splitDate - 1 день
+                    var newEndDate = new Date(splitDate);
+                    newEndDate.setDate(newEndDate.getDate() - 1);
+                    var newEndDateStr = formatDateSQL(newEndDate);
+                    
+                    supabase
+                        .from('lesson_series')
+                        .update({ end_date: newEndDateStr })
+                        .eq('id', seriesId)
+                        .then(function(updateRes) {
+                            if (updateRes.error) {
+                                alert('❌ Ошибка обновления серии: ' + updateRes.error.message);
+                                return;
+                            }
+                            
+                            // Создаём новую серию с новыми днями
+                            var newSeriesData = {
+                                student_id: series.student_id,
+                                day_of_week: daysArray[0],
+                                start_time: series.start_time,
+                                end_time: series.end_time,
+                                section_id: series.section_id,
+                                topic: series.topic,
+                                start_date: splitDate,
+                                end_date: series.end_date
+                            };
+                            
+                            supabase
+                                .from('lesson_series')
+                                .insert([newSeriesData])
+                                .then(function(insertRes) {
+                                    if (insertRes.error) {
+                                        alert('❌ Ошибка создания новой серии: ' + insertRes.error.message);
+                                        return;
+                                    }
+                                    alert('✅ Серия разделена!\n' +
+                                        'Старая серия: до ' + newEndDateStr + '\n' +
+                                        'Новая серия: с ' + splitDate);
+                                    window.renderCalendar(currentMonth);
+                                })
+                                .catch(function(err) {
+                                    alert('❌ Ошибка: ' + err.message);
+                                });
+                        })
+                        .catch(function(err) {
+                            alert('❌ Ошибка: ' + err.message);
+                        });
+                })
+                .catch(function(err) {
+                    alert('❌ Ошибка загрузки серии: ' + err.message);
+                });
+        };
+                // ==========================================
+        // НОВАЯ МОДАЛКА УПРАВЛЕНИЯ ЗАНЯТИЕМ ДЛЯ АДМИНА
+        // ==========================================
+
+        window.openAdminLessonModal = function(lessonId) {
+            adminCurrentLessonId = lessonId;
+            
+            // Загружаем данные занятия
+            supabase
+                .from('lesson_calendar')
+                .select('*, students(id, name), video_sections(id, name), lesson_series(id, day_of_week)')
+                .eq('id', lessonId)
+                .single()
+                .then(function(response) {
+                    if (response.error) {
+                        alert('❌ Ошибка загрузки занятия: ' + response.error.message);
+                        return;
+                    }
+                    var lesson = response.data;
+                    adminCurrentLessonData = lesson;
+                    
+                    // Заполняем данные
+                    document.getElementById('adminLessonTopic').textContent = lesson.topic || 'Занятие без темы';
+                    document.getElementById('adminLessonStudentName').textContent = lesson.students ? lesson.students.name : 'Неизвестно';
+                    document.getElementById('adminLessonTimeValue').textContent = (lesson.start_time || '') + ' - ' + (lesson.end_time || '');
+                    document.getElementById('adminLessonDateValue').textContent = lesson.lesson_date ? new Date(lesson.lesson_date).toLocaleDateString('ru-RU') : '—';
+                    document.getElementById('adminLessonSectionValue').textContent = lesson.video_sections ? lesson.video_sections.name : 'Не указан';
+                    document.getElementById('adminLessonNotesValue').textContent = lesson.notes || '—';
+                    
+                    // Статус
+                    var statusBadge = document.getElementById('adminLessonStatusBadge');
+                    var statusMap = {
+                        'planned': { text: '📌 Запланировано', class: 'planned' },
+                        'completed': { text: '✅ Проведено', class: 'completed' },
+                        'cancelled': { text: '❌ Отменено', class: 'cancelled' }
+                    };
+                    var statusInfo = statusMap[lesson.status] || statusMap['planned'];
+                    statusBadge.textContent = statusInfo.text;
+                    statusBadge.className = 'status-badge ' + statusInfo.class;
+                    
+                    // Дата для переноса (по умолчанию сегодня)
+                    document.getElementById('moveLessonDate').value = formatDateSQL(new Date());
+                    
+                    // Показываем модалку
+                    document.getElementById('adminLessonModal').classList.add('active');
+                })
+                .catch(function(err) {
+                    alert('❌ Ошибка: ' + err.message);
+                });
+        };
+
+        window.closeAdminLessonModal = function() {
+            document.getElementById('adminLessonModal').classList.remove('active');
+            adminCurrentLessonId = null;
+            adminCurrentLessonData = null;
+        };
+
+        window.updateAdminLessonStatus = function(status) {
+            if (!adminCurrentLessonId) {
+                alert('❌ Ошибка: занятие не выбрано');
+                return;
+            }
+            
+            var statusLabels = {
+                'completed': '✅ Проведено',
+                'cancelled': '❌ Отменено',
+                'planned': '📌 Запланировано'
+            };
+            
+            if (!confirm('Изменить статус на "' + statusLabels[status] + '"?')) return;
+            
+            supabase
+                .from('lesson_calendar')
+                .update({ status: status })
+                .eq('id', adminCurrentLessonId)
+                .then(function(response) {
+                    if (response.error) {
+                        alert('❌ Ошибка обновления статуса: ' + response.error.message);
+                        return;
+                    }
+                    alert('✅ Статус изменён на "' + statusLabels[status] + '"');
+                    window.closeAdminLessonModal();
+                    window.renderCalendar(currentMonth);
+                })
+                .catch(function(err) {
+                    alert('❌ Ошибка: ' + err.message);
+                });
+        };
+
+        window.moveAdminLesson = function() {
+            if (!adminCurrentLessonId) {
+                alert('❌ Ошибка: занятие не выбрано');
+                return;
+            }
+            
+            var newDate = document.getElementById('moveLessonDate').value;
+            if (!newDate) {
+                alert('❌ Выберите новую дату');
+                return;
+            }
+            
+            // Проверяем, что дата не совпадает с текущей
+            if (adminCurrentLessonData && adminCurrentLessonData.lesson_date === newDate) {
+                alert('❌ Дата не изменилась');
+                return;
+            }
+            
+            if (!confirm('Перенести занятие на ' + new Date(newDate).toLocaleDateString('ru-RU') + '?')) return;
+            
+            // Проверяем, что на новую дату нет других занятий у этого ученика
+            supabase
+                .from('lesson_calendar')
+                .select('id')
+                .eq('student_id', adminCurrentLessonData.student_id)
+                .eq('lesson_date', newDate)
+                .then(function(checkRes) {
+                    if (checkRes.error) {
+                        alert('❌ Ошибка проверки: ' + checkRes.error.message);
+                        return;
+                    }
+                    if (checkRes.data && checkRes.data.length > 0) {
+                        if (!confirm('⚠️ На эту дату уже есть занятие. Перенести всё равно?')) return;
+                    }
+                    
+                    supabase
+                        .from('lesson_calendar')
+                        .update({ lesson_date: newDate })
+                        .eq('id', adminCurrentLessonId)
+                        .then(function(updateRes) {
+                            if (updateRes.error) {
+                                alert('❌ Ошибка переноса: ' + updateRes.error.message);
+                                return;
+                            }
+                            alert('✅ Занятие перенесено на ' + new Date(newDate).toLocaleDateString('ru-RU'));
+                            window.closeAdminLessonModal();
+                            window.renderCalendar(currentMonth);
+                        })
+                        .catch(function(err) {
+                            alert('❌ Ошибка: ' + err.message);
+                        });
+                })
+                .catch(function(err) {
+                    alert('❌ Ошибка: ' + err.message);
+                });
+        };
+
+        window.deleteAdminLesson = function() {
+            if (!adminCurrentLessonId) {
+                alert('❌ Ошибка: занятие не выбрано');
+                return;
+            }
+            
+            if (!confirm('Удалить занятие? Это действие нельзя отменить.')) return;
+            
+            supabase
+                .from('lesson_calendar')
+                .delete()
+                .eq('id', adminCurrentLessonId)
+                .then(function(response) {
+                    if (response.error) {
+                        alert('❌ Ошибка удаления: ' + response.error.message);
+                        return;
+                    }
+                    alert('✅ Занятие удалено');
+                    window.closeAdminLessonModal();
+                    window.renderCalendar(currentMonth);
+                })
+                .catch(function(err) {
+                    alert('❌ Ошибка: ' + err.message);
+                });
+        };
+
+        // ==========================================
         // КАЛЕНДАРЬ ДЛЯ УЧЕНИКА (ИСПРАВЛЕННЫЙ)
         // ==========================================
 
@@ -3809,27 +4343,39 @@
                         var dateStr = year + '-' + String(month + 1).padStart(2, '0') + '-' + String(day).padStart(2, '0');
                         var lesson = lessonsMap[dateStr];
                         var classNames = 'student-calendar-day';
-                        var dotClass = 'lesson-dot';
                         var hasLesson = false;
                         var topicLabel = '';
+                        var statusIcon = '';
+                        var statusClass = '';
                         
                         if (lesson) {
                             hasLesson = true;
                             classNames += ' has-lesson';
                             if (dateStr === todayStr) {
                                 classNames += ' has-lesson-today';
-                                dotClass += ' today-dot';
                             }
                             if (lesson.topic) {
                                 topicLabel = lesson.topic.length > 10 ? lesson.topic.substring(0, 10) + '..' : lesson.topic;
+                            }
+                            // Статус иконка
+                            if (lesson.status === 'completed') {
+                                statusIcon = '✅';
+                                statusClass = 'status-completed';
+                            } else if (lesson.status === 'cancelled') {
+                                statusIcon = '❌';
+                                statusClass = 'status-cancelled';
+                            } else {
+                                statusIcon = '📌';
+                                statusClass = 'status-planned';
                             }
                         }
                         
                         html += `
                             <div class="${classNames}" onclick="window.showStudentDayLessons('${dateStr}')">
                                 <span class="day-number">${day}</span>
-                                ${hasLesson ? '<div class="' + dotClass + '"></div>' : ''}
+                                ${hasLesson ? '<div class="lesson-dot"></div>' : ''}
                                 ${topicLabel ? '<div class="lesson-topic-label">' + topicLabel + '</div>' : ''}
+                                ${statusIcon ? '<div class="lesson-status-icon ' + statusClass + '">' + statusIcon + '</div>' : ''}
                             </div>
                         `;
                     }
@@ -3871,12 +4417,13 @@
                             'completed': '✅ Проведено',
                             'cancelled': '❌ Отменено'
                         };
+                        var statusClass = lesson.status === 'completed' ? 'completed' : (lesson.status === 'cancelled' ? 'cancelled' : 'planned');
                         
                         html += `
                             <div style="display:flex; justify-content:space-between; padding:10px 14px; background:rgba(255,255,255,0.03); border-radius:8px; margin-bottom:6px; border-left:3px solid ${lesson.status === 'completed' ? '#2ecc71' : lesson.status === 'cancelled' ? '#e74c3c' : '#f5a623'};">
                                 <div>
                                     <div style="color:#b0c4de; font-weight:600;">${lesson.topic || 'Занятие'}</div>
-                                    <div style="color:#666; font-size:12px;">${lesson.start_time || ''} - ${lesson.end_time || ''} • ${statusMap[lesson.status] || lesson.status}</div>
+                                    <div style="color:#666; font-size:12px;">${lesson.start_time || ''} - ${lesson.end_time || ''} • <span class="status-badge ${statusClass}">${statusMap[lesson.status] || lesson.status}</span></div>
                                     ${lesson.notes ? '<div style="color:#888; font-size:12px; margin-top:4px;">📝 ' + lesson.notes + '</div>' : ''}
                                 </div>
                             </div>
@@ -5708,6 +6255,10 @@
         console.log('✅ Добавлена страница "Мой календарь" для ученика');
         console.log('✅ Вернули расписание для админа');
         console.log('✅ Исправлен календарь ученика (цветные дни, подписи)');
+        console.log('✅ Добавлена модалка управления занятием для админа');
+        console.log('✅ Добавлена возможность переносить занятия');
+        console.log('✅ Добавлена возможность менять статус занятия');
+        console.log('✅ Добавлена функция разделения серий');
     </script>
 
 </body>
