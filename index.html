@@ -5159,10 +5159,34 @@
                 current_level: targetScore >= 90 ? 'advanced' : (targetScore >= 80 ? 'intermediate' : 'beginner')
             };
             
-            var { data: plan, error: planError } = await supabase
-                .from('study_plans')
-                .upsert([planData])
-                .select();
+      // Сначала проверяем, есть ли уже план у этого ученика
+var { data: existingPlan, error: checkError } = await supabase
+    .from('study_plans')
+    .select('id')
+    .eq('student_id', studentId)
+    .maybeSingle();
+
+var plan;
+var planError;
+
+if (existingPlan) {
+    // Если план есть — обновляем
+    var { data, error } = await supabase
+        .from('study_plans')
+        .update(planData)
+        .eq('student_id', studentId)
+        .select();
+    plan = data;
+    planError = error;
+} else {
+    // Если плана нет — создаём новый
+    var { data, error } = await supabase
+        .from('study_plans')
+        .insert([planData])
+        .select();
+    plan = data;
+    planError = error;
+}
                 
             if (planError) { alert('❌ Ошибка сохранения плана: ' + planError.message); return; }
             
