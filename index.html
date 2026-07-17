@@ -1826,9 +1826,23 @@
                 <textarea id="homeworkComment" rows="3" placeholder="Например: сделать номера 1, 3, 5, 7..."></textarea>
             </div>
             
-            <div>
-                <label>📎 PDF файл с ДЗ:</label>
-                <input type="file" id="pdfFile" accept=".pdf">
+                       <div style="margin-top: 12px; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 12px;">
+                <label style="color: #f5a623; font-weight: 600;">🔗 Дополнительные ссылки (необязательно)</label>
+                
+                <div style="margin-top: 8px;">
+                    <label style="font-size: 13px; color: #888;">Ссылка 1:</label>
+                    <input type="text" id="homeworkLink1" placeholder="https://example.com/video" style="width: 100%; padding: 8px 12px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; color: #fff; font-size: 14px; margin-bottom: 8px;">
+                </div>
+                
+                <div>
+                    <label style="font-size: 13px; color: #888;">Ссылка 2:</label>
+                    <input type="text" id="homeworkLink2" placeholder="https://example.com/document" style="width: 100%; padding: 8px 12px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; color: #fff; font-size: 14px; margin-bottom: 8px;">
+                </div>
+                
+                <div>
+                    <label style="font-size: 13px; color: #888;">Ссылка 3:</label>
+                    <input type="text" id="homeworkLink3" placeholder="https://example.com/extra" style="width: 100%; padding: 8px 12px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; color: #fff; font-size: 14px;">
+                </div>
             </div>
             
             <div>
@@ -3256,6 +3270,29 @@
                 if (hw.file_url) {
                     fileHtml = '<div class="meta">📎 <a href="' + hw.file_url + '" target="_blank">Скачать файл от преподавателя</a></div>';
                 }
+                                // Отображаем дополнительные ссылки
+                var extraLinksHtml = '';
+                if (hw.extra_links) {
+                    try {
+                        var links = typeof hw.extra_links === 'string' ? JSON.parse(hw.extra_links) : hw.extra_links;
+                        if (Array.isArray(links) && links.length > 0) {
+                            extraLinksHtml = '<div class="meta" style="margin-top:4px;">🔗 Дополнительные материалы:<br>';
+                            links.forEach(function(link, index) {
+                                var icon = '🔗';
+                                if (link.includes('youtube.com') || link.includes('youtu.be')) icon = '🎥';
+                                else if (link.includes('drive.google.com')) icon = '📁';
+                                else if (link.includes('.pdf')) icon = '📄';
+                                extraLinksHtml += '<a href="' + link + '" target="_blank" style="color:#88ccff; display:inline-block; margin:2px 8px 2px 0; font-size:13px;">' + icon + ' Ссылка ' + (index + 1) + '</a>';
+                            });
+                            extraLinksHtml += '</div>';
+                        }
+                    } catch (e) {
+                        // Если не JSON, просто показываем как текст
+                        if (hw.extra_links) {
+                            extraLinksHtml = '<div class="meta" style="margin-top:4px;">🔗 <a href="' + hw.extra_links + '" target="_blank" style="color:#88ccff;">Дополнительный материал</a></div>';
+                        }
+                    }
+                }
                 var deadlineText = hw.deadline ? '📅 Срок: ' + hw.deadline : '📅 Без срока';
                 
                 var commentHtml = '';
@@ -3276,7 +3313,7 @@
                     </div>
                 `;
                 
-                html += '<div class="hw-card"><div class="title">' + hw.title + '</div>' + sectionInfo + '<div class="meta">' + deadlineText + '</div>' + commentHtml + '<div class="status ' + statusClass + '">' + statusText + '</div><div class="hw-actions">' + btnHtml + attachBtn + '</div>' + fileHtml + attachedFileHtml + commentsHtml + '</div>';
+                            html += '<div class="hw-card"><div class="title">' + hw.title + '</div>' + sectionInfo + '<div class="meta">' + deadlineText + '</div>' + commentHtml + '<div class="status ' + statusClass + '">' + statusText + '</div><div class="hw-actions">' + btnHtml + attachBtn + '</div>' + fileHtml + extraLinksHtml + attachedFileHtml + commentsHtml + '</div>';
                 
                 setTimeout(function() {
                     window.loadHomeworkComments(hw.id, 'comments_' + hw.id);
@@ -5998,15 +6035,21 @@ if (existingPlan) {
         };
 
         window.closeAssignmentModal = function() {
-            document.getElementById('assignmentModal').classList.remove('active');
-            document.getElementById('sectionNumber').value = '';
-            document.getElementById('homeworkTitle').value = '';
-            document.getElementById('homeworkComment').value = '';
-            document.getElementById('pdfFile').value = '';
-            document.getElementById('deadline').value = '';
-            document.getElementById('noDeadline').checked = false;
-            document.getElementById('sectionPreview').textContent = 'Введите номер для просмотра раздела';
-            document.getElementById('sectionPreview').style.color = '#666';
+           window.closeAssignmentModal = function() {
+    document.getElementById('assignmentModal').classList.remove('active');
+    document.getElementById('sectionNumber').value = '';
+    document.getElementById('homeworkTitle').value = '';
+    document.getElementById('homeworkComment').value = '';
+    document.getElementById('pdfFile').value = '';
+    document.getElementById('deadline').value = '';
+    document.getElementById('noDeadline').checked = false;
+    document.getElementById('sectionPreview').textContent = 'Введите номер для просмотра раздела';
+    document.getElementById('sectionPreview').style.color = '#666';
+    document.getElementById('homeworkLink1').value = '';
+    document.getElementById('homeworkLink2').value = '';
+    document.getElementById('homeworkLink3').value = '';
+};
+            
         };
 
         window.loadStudentsForSelect = async function() {
@@ -6108,6 +6151,20 @@ if (existingPlan) {
             
             var finalDeadline = noDeadline ? null : (deadline || null);
             
+                      // Получаем дополнительные ссылки
+            var link1 = document.getElementById('homeworkLink1').value.trim();
+            var link2 = document.getElementById('homeworkLink2').value.trim();
+            var link3 = document.getElementById('homeworkLink3').value.trim();
+            
+            // Собираем ссылки в массив (только непустые)
+            var extraLinks = [];
+            if (link1) extraLinks.push(link1);
+            if (link2) extraLinks.push(link2);
+            if (link3) extraLinks.push(link3);
+            
+            // Превращаем массив в JSON строку для хранения в базе
+            var extraLinksJson = extraLinks.length > 0 ? JSON.stringify(extraLinks) : null;
+            
             var homeworks = students.map(function(s) {
                 return { 
                     title: title, 
@@ -6117,7 +6174,8 @@ if (existingPlan) {
                     deadline: finalDeadline, 
                     file_url: pdfUrl, 
                     video_link: null,
-                    comment: comment || null
+                    comment: comment || null,
+                    extra_links: extraLinksJson  // ← ДОБАВЛЯЕМ
                 };
             });
             
