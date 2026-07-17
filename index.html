@@ -1036,6 +1036,151 @@
             #adminLessonModal .move-section .move-row { flex-direction: column; }
             #adminLessonModal .move-section .move-row input[type="date"] { width: 100%; }
         }
+                /* ===== СТИЛИ ДЛЯ КОНСТРУКТОРА ПЛАНА ===== */
+        .plan-row {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            padding: 8px 12px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 10px;
+            margin-bottom: 8px;
+            flex-wrap: wrap;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: 0.3s;
+        }
+        .plan-row:hover {
+            background: rgba(255, 255, 255, 0.06);
+            border-color: rgba(102, 126, 234, 0.2);
+        }
+        .plan-row .row-number {
+            color: #888;
+            font-weight: 700;
+            min-width: 80px;
+            font-size: 14px;
+        }
+        .plan-row select {
+            flex: 1;
+            min-width: 150px;
+            padding: 6px 12px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            color: #fff;
+            font-size: 14px;
+            font-family: Arial, sans-serif;
+        }
+        .plan-row select:focus {
+            border-color: #667eea;
+            outline: none;
+        }
+        .plan-row select option {
+            background: #1a1a2e;
+            color: #fff;
+        }
+        .plan-row .delete-row-btn {
+            padding: 4px 12px;
+            font-size: 12px;
+            background: rgba(231, 76, 60, 0.2);
+            color: #e74c3c;
+            border: 1px solid rgba(231, 76, 60, 0.2);
+            border-radius: 6px;
+            cursor: pointer;
+            transition: 0.3s;
+            font-family: Arial, sans-serif;
+        }
+        .plan-row .delete-row-btn:hover {
+            background: #e74c3c;
+            color: #fff;
+        }
+        .plan-day-checkbox {
+            color: #b0c4de;
+            font-size: 14px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .plan-day-checkbox input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
+            accent-color: #667eea;
+        }
+        .plan-constructor-section {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 16px;
+            padding: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            margin-bottom: 24px;
+        }
+        .plan-constructor-section h4 {
+            color: #f5a623;
+            margin-bottom: 16px;
+        }
+        .plan-constructor-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+        .plan-constructor-grid label {
+            color: #888;
+            font-size: 13px;
+            display: block;
+            margin-bottom: 4px;
+        }
+        .plan-constructor-grid input,
+        .plan-constructor-grid select {
+            width: 100%;
+            padding: 8px 12px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            color: #fff;
+            font-size: 14px;
+            font-family: Arial, sans-serif;
+        }
+        .plan-constructor-grid input:focus,
+        .plan-constructor-grid select:focus {
+            border-color: #667eea;
+            outline: none;
+        }
+        .plan-constructor-grid .days-checkboxes {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            padding-top: 4px;
+        }
+        .plan-rows-container {
+            max-height: 400px;
+            overflow-y: auto;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        /* ===== ПОДСВЕТКА СЕГОДНЯШНЕЙ ДАТЫ В КАЛЕНДАРЕ УЧЕНИКА ===== */
+        .student-calendar-day.today-highlight {
+            border-color: #f5a623 !important;
+            box-shadow: 0 0 20px rgba(245, 166, 35, 0.25);
+            background: rgba(245, 166, 35, 0.08);
+        }
+        .student-calendar-day.today-highlight .day-number {
+            color: #f5a623;
+            font-weight: 900;
+            font-size: 16px;
+        }
+        .student-calendar-day.has-lesson-today {
+            border-color: #f5a623 !important;
+            box-shadow: 0 0 30px rgba(245, 166, 35, 0.35);
+            background: rgba(245, 166, 35, 0.18);
+        }
+        .student-calendar-day.has-lesson-today .day-number {
+            color: #f5a623;
+            font-weight: 900;
+        }
     </style>
 </head>
 <body>
@@ -1480,7 +1625,7 @@
                 </div>
             </div>
             
-            <!-- ===== ПЛАН ПОДГОТОВКИ ===== -->
+                  <!-- ===== ПЛАН ПОДГОТОВКИ (С КОНСТРУКТОРОМ) ===== -->
             <div class="admin-content" id="tab-studyplan">
                 <h3 style="color: #f5a623; margin-bottom: 20px;">📚 Индивидуальный план подготовки</h3>
                 
@@ -1504,22 +1649,57 @@
                             <option value="70">📊 70+ баллов</option>
                         </select>
                     </div>
-                    <div>
-                        <label>📚 Шаблон</label>
-                        <select id="planTemplate">
-                            <option value="">Без шаблона</option>
-                        </select>
+                </div>
+
+                <!-- КОНСТРУКТОР ПЛАНА -->
+                <div class="plan-constructor-section">
+                    <h4>🛠️ Конструктор плана</h4>
+                    
+                    <div class="plan-constructor-grid">
+                        <div>
+                            <label>📅 Дни занятий</label>
+                            <div class="days-checkboxes">
+                                <label class="plan-day-checkbox"><input type="checkbox" class="plan-day" value="1"> ПН</label>
+                                <label class="plan-day-checkbox"><input type="checkbox" class="plan-day" value="2"> ВТ</label>
+                                <label class="plan-day-checkbox"><input type="checkbox" class="plan-day" value="3"> СР</label>
+                                <label class="plan-day-checkbox"><input type="checkbox" class="plan-day" value="4"> ЧТ</label>
+                                <label class="plan-day-checkbox"><input type="checkbox" class="plan-day" value="5"> ПТ</label>
+                                <label class="plan-day-checkbox"><input type="checkbox" class="plan-day" value="6"> СБ</label>
+                                <label class="plan-day-checkbox"><input type="checkbox" class="plan-day" value="7"> ВС</label>
+                            </div>
+                        </div>
+                        <div>
+                            <label>📊 Количество занятий</label>
+                            <input type="number" id="planTotalLessons" value="10" min="1" max="100">
+                        </div>
+                        <div>
+                            <label>📅 Дата первого занятия</label>
+                            <input type="date" id="planStartDate">
+                        </div>
                     </div>
-                    <div style="display:flex; align-items:flex-end;">
-                        <button class="admin-btn success" onclick="window.generatePlan()" style="width:100%; padding:10px;">🎯 Сгенерировать план</button>
+                    
+                    <div style="margin-top: 16px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 12px;">
+                            <span style="color: #b0c4de; font-weight: 600;">📖 Распределение разделов по занятиям</span>
+                            <button class="admin-btn success" onclick="window.addPlanRow()">➕ Добавить занятие</button>
+                        </div>
+                        
+                        <div class="plan-rows-container" id="planRowsContainer">
+                            <!-- Сюда динамически добавляются строки -->
+                        </div>
+                        
+                        <div style="margin-top: 16px; display: flex; gap: 12px; flex-wrap: wrap;">
+                            <button class="admin-btn" onclick="window.clearPlanRows()">🗑 Очистить все</button>
+                            <button class="admin-btn success" onclick="window.generatePlanFromConstructor()" style="background: linear-gradient(135deg, #27ae60, #2ecc71);">🎯 Создать план</button>
+                            <button class="admin-btn" onclick="window.loadStudyPlan()">🔄 Обновить</button>
+                        </div>
                     </div>
                 </div>
                 
                 <div id="planContent">
-                    <p style="color:#666;">Выберите ученика и настройте параметры плана</p>
+                    <p style="color:#666;">Выберите ученика и настройте план</p>
                 </div>
             </div>
-            
             <!-- ===== ШАБЛОНЫ ===== -->
             <div class="admin-content" id="tab-templates">
                 <h3 style="color: #f5a623; margin-bottom: 20px;">📚 Шаблоны планов подготовки</h3>
@@ -4326,11 +4506,7 @@
                 });
         };
 
-        // ==========================================
-        // КАЛЕНДАРЬ ДЛЯ УЧЕНИКА (ИСПРАВЛЕННЫЙ - СЕТКА 7 КОЛОНОК)
-        // ==========================================
-
-        window.renderStudentCalendar = function(date) {
+                window.renderStudentCalendar = function(date) {
             if (!currentUser) return;
             
             var container = document.getElementById('studentCalendarDays');
@@ -4346,6 +4522,9 @@
             
             var startDate = new Date(year, month, 1);
             var endDate = new Date(year, month + 1, 0);
+            
+            var today = new Date();
+            var todayStr = formatDateSQL(today);
             
             supabase
                 .from('lesson_calendar')
@@ -4369,9 +4548,6 @@
                     var daysInMonth = endDate.getDate();
                     var startOffset = firstDay === 0 ? 6 : firstDay - 1;
                     
-                    var today = new Date();
-                    var todayStr = formatDateSQL(today);
-                    
                     var html = '';
                     
                     for (var i = 0; i < startOffset; i++) {
@@ -4382,15 +4558,21 @@
                         var dateStr = year + '-' + String(month + 1).padStart(2, '0') + '-' + String(day).padStart(2, '0');
                         var lesson = lessonsMap[dateStr];
                         var classNames = 'student-calendar-day';
+                        var isToday = dateStr === todayStr;
                         var hasLesson = false;
                         var topicLabel = '';
                         var statusIcon = '';
                         var statusClass = '';
                         
+                        // 👇 ВСЕГДА ПОДСВЕЧИВАЕМ СЕГОДНЯШНЮЮ ДАТУ
+                        if (isToday) {
+                            classNames += ' today-highlight';
+                        }
+                        
                         if (lesson) {
                             hasLesson = true;
                             classNames += ' has-lesson';
-                            if (dateStr === todayStr) {
+                            if (isToday) {
                                 classNames += ' has-lesson-today';
                             }
                             if (lesson.topic) {
@@ -4414,6 +4596,7 @@
                                 ${hasLesson ? '<div class="lesson-dot"></div>' : ''}
                                 ${topicLabel ? '<div class="lesson-topic-label">' + topicLabel + '</div>' : ''}
                                 ${statusIcon ? '<div class="lesson-status-icon ' + statusClass + '">' + statusIcon + '</div>' : ''}
+                                ${isToday && !hasLesson ? '<div style="font-size:8px; color:#f5a623; margin-top:2px;">сегодня</div>' : ''}
                             </div>
                         `;
                     }
@@ -4421,7 +4604,6 @@
                     container.innerHTML = html;
                 });
         };
-
         window.showStudentDayLessons = function(dateStr) {
             var container = document.getElementById('studentDayLessons');
             var list = document.getElementById('studentDayLessonsList');
@@ -6257,6 +6439,182 @@
             window.loadStats();
             window.loadTemplates();
             window.loadCalendarStudents();
+        };
+                // ==========================================
+        // ===== КОНСТРУКТОР ПЛАНА ПОДГОТОВКИ =====
+        // ==========================================
+        var planRowCounter = 0;
+        var cachedSectionsForPlan = null;
+
+        function getSectionsForPlan() {
+            return new Promise(function(resolve) {
+                if (cachedSectionsForPlan) { resolve(cachedSectionsForPlan); return; }
+                supabase
+                    .from('video_sections')
+                    .select('id, name, order_num')
+                    .order('order_num', { ascending: true })
+                    .then(function(response) {
+                        if (!response.error) { cachedSectionsForPlan = response.data || []; resolve(cachedSectionsForPlan); }
+                        else { resolve([]); }
+                    });
+            });
+        }
+
+        window.addPlanRow = function() {
+            var container = document.getElementById('planRowsContainer');
+            if (!container) return;
+            planRowCounter++;
+            getSectionsForPlan().then(function(sections) {
+                var row = document.createElement('div');
+                row.className = 'plan-row';
+                row.id = 'planRow_' + planRowCounter;
+                var numSpan = document.createElement('span');
+                numSpan.className = 'row-number';
+                numSpan.textContent = 'Занятие #' + planRowCounter;
+                row.appendChild(numSpan);
+                var select = document.createElement('select');
+                select.className = 'plan-section-select';
+                select.id = 'planSection_' + planRowCounter;
+                var emptyOption = document.createElement('option');
+                emptyOption.value = '';
+                emptyOption.textContent = '— Выберите раздел —';
+                select.appendChild(emptyOption);
+                sections.forEach(function(section) {
+                    var option = document.createElement('option');
+                    option.value = section.id;
+                    option.textContent = section.order_num + '. ' + section.name;
+                    select.appendChild(option);
+                });
+                row.appendChild(select);
+                var deleteBtn = document.createElement('button');
+                deleteBtn.className = 'delete-row-btn';
+                deleteBtn.textContent = '✕';
+                deleteBtn.onclick = function() {
+                    if (confirm('Удалить занятие #' + planRowCounter + '?')) { row.remove(); }
+                };
+                row.appendChild(deleteBtn);
+                container.appendChild(row);
+            });
+        };
+
+        window.clearPlanRows = function() {
+            var container = document.getElementById('planRowsContainer');
+            if (!container) return;
+            if (!confirm('Очистить все строки?')) return;
+            container.innerHTML = '';
+            planRowCounter = 0;
+        };
+
+        function initPlanRows(count) {
+            var container = document.getElementById('planRowsContainer');
+            if (!container) return;
+            container.innerHTML = '';
+            planRowCounter = 0;
+            for (var i = 0; i < count; i++) { window.addPlanRow(); }
+        }
+
+        function getSelectedDays() {
+            var checkboxes = document.querySelectorAll('.plan-day:checked');
+            var days = [];
+            checkboxes.forEach(function(cb) { days.push(parseInt(cb.value)); });
+            return days;
+        }
+
+        window.generatePlanFromConstructor = async function() {
+            var studentId = document.getElementById('planStudent').value;
+            var examDate = document.getElementById('examDate').value;
+            var targetScore = parseInt(document.getElementById('targetScore').value);
+            var totalLessons = parseInt(document.getElementById('planTotalLessons').value) || 0;
+            var startDate = document.getElementById('planStartDate').value;
+            if (!studentId) { alert('❌ Выберите ученика'); return; }
+            if (!examDate) { alert('❌ Введите дату экзамена'); return; }
+            if (!startDate) { alert('❌ Введите дату первого занятия'); return; }
+            var selectedDays = getSelectedDays();
+            if (selectedDays.length === 0) { alert('❌ Выберите хотя бы один день недели'); return; }
+            var rows = document.querySelectorAll('.plan-row');
+            var assignments = [];
+            rows.forEach(function(row) {
+                var select = row.querySelector('.plan-section-select');
+                if (select && select.value) { assignments.push(select.value); }
+            });
+            if (assignments.length === 0) { alert('❌ Добавьте хотя бы одно занятие с разделом'); return; }
+            if (assignments.length !== totalLessons) {
+                if (!confirm('⚠️ Количество занятий в расписании (' + assignments.length + ') не совпадает с указанным (' + totalLessons + '). Продолжить?')) { return; }
+            }
+            var start = new Date(startDate);
+            var dates = [];
+            var currentDate = new Date(start);
+            var maxAttempts = 1000;
+            var attempts = 0;
+            while (dates.length < assignments.length && attempts < maxAttempts) {
+                var dayOfWeek = currentDate.getDay();
+                var dayNum = dayOfWeek === 0 ? 7 : dayOfWeek;
+                if (selectedDays.includes(dayNum)) { dates.push(new Date(currentDate)); }
+                currentDate.setDate(currentDate.getDate() + 1);
+                attempts++;
+            }
+            if (dates.length < assignments.length) {
+                alert('⚠️ Не удалось найти достаточно дат для всех занятий. Увеличьте период или добавьте больше дней.');
+                return;
+            }
+            var planData = {
+                student_id: studentId,
+                exam_date: examDate,
+                start_date: startDate,
+                total_lessons_planned: assignments.length,
+                target_score: targetScore,
+                lessons_per_week: selectedDays.length,
+                current_level: targetScore >= 90 ? 'advanced' : (targetScore >= 80 ? 'intermediate' : 'beginner')
+            };
+            try {
+                var { data: plan, error: planError } = await supabase
+                    .from('study_plans')
+                    .upsert([planData])
+                    .select();
+                if (planError) throw planError;
+                var planId = plan[0].id;
+                await supabase.from('study_plan_sections').delete().eq('plan_id', planId);
+                var planSections = assignments.map(function(sectionId, index) {
+                    var dateStr = dates[index].toISOString().split('T')[0];
+                    return { plan_id: planId, section_id: sectionId, order_num: index + 1, priority: 1, deadline: dateStr, hours_needed: 2 };
+                });
+                var { error: insertError } = await supabase.from('study_plan_sections').insert(planSections);
+                if (insertError) throw insertError;
+                var sectionMap = {};
+                if (cachedSectionsForPlan) {
+                    cachedSectionsForPlan.forEach(function(s) { sectionMap[s.id] = s.name; });
+                }
+                var lessons = assignments.map(function(sectionId, index) {
+                    var dateStr = dates[index].toISOString().split('T')[0];
+                    var topic = sectionMap[sectionId] || 'Раздел';
+                    return { student_id: studentId, section_id: sectionId, lesson_date: dateStr, topic: topic, status: 'planned', start_time: '18:00', end_time: '19:30' };
+                });
+                var { error: lessonError } = await supabase.from('lesson_calendar').insert(lessons);
+                if (lessonError) { console.warn('⚠️ Ошибка создания занятий в календаре:', lessonError); }
+                alert('✅ План подготовки создан!\n📚 Всего занятий: ' + assignments.length + '\n📅 Первое занятие: ' + dates[0].toLocaleDateString('ru-RU') + '\n📅 Последнее: ' + dates[dates.length - 1].toLocaleDateString('ru-RU'));
+                clearCache('study_plans');
+                window.loadStudyPlan();
+                window.renderCalendar(currentMonth);
+            } catch (err) { alert('❌ Ошибка: ' + err.message); console.error(err); }
+        };
+
+        // Модифицируем switchAdminTab для инициализации конструктора
+        var originalSwitchAdminTab = window.switchAdminTab;
+        window.switchAdminTab = function(tab) {
+            originalSwitchAdminTab(tab);
+            if (tab === 'studyplan') {
+                setTimeout(function() {
+                    if (!document.getElementById('planRowsContainer').children.length) {
+                        initPlanRows(10);
+                    }
+                    var startDateInput = document.getElementById('planStartDate');
+                    if (!startDateInput.value) {
+                        var tomorrow = new Date();
+                        tomorrow.setDate(tomorrow.getDate() + 1);
+                        startDateInput.value = formatDateSQL(tomorrow);
+                    }
+                }, 300);
+            }
         };
 
         // ==========================================
