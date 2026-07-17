@@ -551,16 +551,30 @@
             margin-top: 20px;
         }
 
-        /* ===== КАЛЕНДАРЬ ДЛЯ УЧЕНИКА (ИСПРАВЛЕННЫЙ) ===== */
+        /* ===== КАЛЕНДАРЬ ДЛЯ УЧЕНИКА (ИСПРАВЛЕННЫЙ - СЕТКА 7 КОЛОНОК) ===== */
         .student-calendar-grid {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            gap: 6px;
+            display: grid !important;
+            grid-template-columns: repeat(7, 1fr) !important;
+            gap: 6px !important;
             background: rgba(255,255,255,0.03);
             border-radius: 12px;
             padding: 16px;
             margin-top: 12px;
+            width: 100%;
         }
+
+        .student-calendar-grid > .day-header {
+            text-align: center;
+            color: #888;
+            font-weight: 600;
+            font-size: 13px;
+            padding: 4px;
+        }
+
+        #studentCalendarDays {
+            display: contents !important;
+        }
+
         .student-calendar-day {
             aspect-ratio: 1;
             min-height: 55px;
@@ -577,15 +591,18 @@
             transition: 0.3s;
             position: relative;
         }
+
         .student-calendar-day:hover {
             background: rgba(255,255,255,0.08);
             border-color: rgba(255,255,255,0.15);
         }
+
         .student-calendar-day .day-number {
             font-weight: 600;
             color: #b0c4de;
             font-size: 14px;
         }
+
         .student-calendar-day .lesson-topic-label {
             font-size: 7px;
             color: #88ccff;
@@ -597,19 +614,12 @@
             text-overflow: ellipsis;
             white-space: nowrap;
         }
+
         .student-calendar-day .lesson-status-icon {
             font-size: 10px;
             margin-top: 1px;
         }
-        .student-calendar-day.has-lesson {
-            border-color: rgba(102,126,234,0.4);
-            background: rgba(102,126,234,0.12);
-        }
-        .student-calendar-day.has-lesson-today {
-            border-color: #f5a623;
-            background: rgba(245,166,35,0.15);
-            box-shadow: 0 0 20px rgba(245,166,35,0.1);
-        }
+
         .student-calendar-day .lesson-dot {
             width: 6px;
             height: 6px;
@@ -617,24 +627,41 @@
             background: #667eea;
             margin-top: 2px;
         }
+
         .student-calendar-day .today-dot {
             background: #f5a623;
         }
+
+        .student-calendar-day.has-lesson {
+            border-color: rgba(102,126,234,0.4);
+            background: rgba(102,126,234,0.12);
+        }
+
+        .student-calendar-day.has-lesson-today {
+            border-color: #f5a623;
+            background: rgba(245,166,35,0.15);
+            box-shadow: 0 0 20px rgba(245,166,35,0.1);
+        }
+
         .student-calendar-day.empty {
             background: transparent;
             cursor: default;
             border-color: transparent;
         }
+
         .student-calendar-day.empty:hover {
             background: transparent;
             border-color: transparent;
         }
+
         .student-calendar-day .status-completed {
             color: #2ecc71;
         }
+
         .student-calendar-day .status-cancelled {
             color: #e74c3c;
         }
+
         .student-calendar-day .status-planned {
             color: #f5a623;
         }
@@ -1021,7 +1048,8 @@
             <h1>📐 Математика с <span>Никитой</span></h1>
             <p>Подготовка к ЕГЭ по профильной математике на 90+ баллов</p>
         </header>
-                <div id="mainContent">
+
+        <div id="mainContent">
             <div class="profile" id="profileBlock">
                 <div class="profile-avatar" id="profileAvatar">
                     <img id="profileAvatarImg" style="display:none; width:100%; height:100%; object-fit:cover; border-radius:50%;" alt="Аватар">
@@ -1057,8 +1085,7 @@
                 </p>
             </div>
         </div>
-
-        <div id="dashboard">
+                <div id="dashboard">
             <div class="header">
                 <h3 id="welcomeMessage">👋 Привет!</h3>
             </div>
@@ -1094,7 +1121,7 @@
                 </div>
 
                 <div class="dashboard-content">
-                    <!-- ===== СТРАНИЦА ОБЗОР ===== -->
+                    <!-- ===== ОБЗОР ===== -->
                     <div id="page-overview" class="dashboard-page">
                         <div class="section-title">🏠 Обзор</div>
                         <div class="stats-grid" id="statsGrid">
@@ -1246,19 +1273,19 @@
                         <div class="section-title">📅 Мой календарь занятий</div>
                         
                         <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; margin-bottom:16px;">
-                            <button onclick="window.prevStudentMonth()" style="background:none; border:1px solid rgba(255,255,255,0.1); color:#fff; padding:6px 16px; border-radius:8px; cursor:pointer;">◀</button>
+                            <button onclick="window.prevStudentMonth()" style="background:none; border:1px solid rgba(255,255,255,0.1); color:#fff; padding:6px 16px; border-radius:8px; cursor:pointer; font-family:Arial,sans-serif;">◀</button>
                             <span id="studentCalendarMonth" style="font-size:18px; font-weight:700; color:#f5a623;">Январь 2026</span>
-                            <button onclick="window.nextStudentMonth()" style="background:none; border:1px solid rgba(255,255,255,0.1); color:#fff; padding:6px 16px; border-radius:8px; cursor:pointer;">▶</button>
+                            <button onclick="window.nextStudentMonth()" style="background:none; border:1px solid rgba(255,255,255,0.1); color:#fff; padding:6px 16px; border-radius:8px; cursor:pointer; font-family:Arial,sans-serif;">▶</button>
                         </div>
                         
                         <div class="student-calendar-grid">
-                            <div style="text-align:center; color:#888; font-weight:600; font-size:13px; padding:4px;">ПН</div>
-                            <div style="text-align:center; color:#888; font-weight:600; font-size:13px; padding:4px;">ВТ</div>
-                            <div style="text-align:center; color:#888; font-weight:600; font-size:13px; padding:4px;">СР</div>
-                            <div style="text-align:center; color:#888; font-weight:600; font-size:13px; padding:4px;">ЧТ</div>
-                            <div style="text-align:center; color:#888; font-weight:600; font-size:13px; padding:4px;">ПТ</div>
-                            <div style="text-align:center; color:#888; font-weight:600; font-size:13px; padding:4px;">СБ</div>
-                            <div style="text-align:center; color:#888; font-weight:600; font-size:13px; padding:4px;">ВС</div>
+                            <div class="day-header">ПН</div>
+                            <div class="day-header">ВТ</div>
+                            <div class="day-header">СР</div>
+                            <div class="day-header">ЧТ</div>
+                            <div class="day-header">ПТ</div>
+                            <div class="day-header">СБ</div>
+                            <div class="day-header">ВС</div>
                             <div id="studentCalendarDays"></div>
                         </div>
                         
@@ -1326,7 +1353,7 @@
                 </div>
             </div>
 
-            <!-- ВИДЕОУРОКИ (остаются для всех) -->
+            <!-- ВИДЕОУРОКИ -->
             <div class="video-section" style="margin-top:40px;">
                 <h3>🎥 Видеоуроки по темам</h3>
                 <div class="part-divider">📘 Первая часть</div>
@@ -1335,7 +1362,8 @@
                 <div class="video-tabs" id="videoTabsPart2"></div>
             </div>
         </div>
-                <!-- СТРАНИЦА РАЗДЕЛА -->
+
+        <!-- СТРАНИЦА РАЗДЕЛА -->
         <div id="sectionPage">
             <button class="back-btn" id="backToDashboard">← Назад к списку разделов</button>
             <div id="sectionContent">
@@ -1395,7 +1423,7 @@
                 <div id="videosList" style="margin-top:15px;">Загрузка...</div>
             </div>
             
-            <!-- ===== РАСПИСАНИЕ (ДЛЯ АДМИНА) ===== -->
+            <!-- ===== РАСПИСАНИЕ ===== -->
             <div class="admin-content" id="tab-schedule">
                 <div class="schedule-actions">
                     <button class="admin-btn success" onclick="window.addScheduleRow()">➕ Добавить строку</button>
@@ -1404,7 +1432,7 @@
                 <div id="scheduleList" style="margin-top:15px;">Загрузка...</div>
             </div>
             
-            <!-- ===== КАЛЕНДАРЬ (С НОВОЙ МОДАЛКОЙ ДЛЯ АДМИНА) ===== -->
+            <!-- ===== КАЛЕНДАРЬ ===== -->
             <div class="admin-content" id="tab-calendar">
                 <h3 style="color: #f5a623; margin-bottom: 20px;">📅 Календарь занятий</h3>
                 
@@ -1751,7 +1779,7 @@
         </div>
     </div>
 
-    <!-- ===== НОВАЯ МОДАЛКА ДЛЯ АДМИНА (УПРАВЛЕНИЕ ЗАНЯТИЕМ) ===== -->
+    <!-- МОДАЛКА ДЛЯ АДМИНА (УПРАВЛЕНИЕ ЗАНЯТИЕМ) -->
     <div class="modal-overlay" id="adminLessonModal">
         <div class="modal-content">
             <h3 id="adminLessonTitle">📌 Управление занятием</h3>
@@ -2953,8 +2981,7 @@
             tabsContainer1.appendChild(fragment1);
             tabsContainer2.appendChild(fragment2);
         };
-
-        // ==========================================
+                // ==========================================
         // ДОМАШНИЕ ЗАДАНИЯ (СТУДЕНТ) С ПРИКРЕПЛЕНИЕМ ФАЙЛОВ
         // ==========================================
 
@@ -3401,7 +3428,8 @@
                 })
                 .catch(function(err) { alert('❌ Ошибка: ' + err.message); });
         };
-                // ==========================================
+
+        // ==========================================
         // ЗАГРУЗКА ФАЙЛОВ К ДЗ
         // ==========================================
 
@@ -3557,7 +3585,6 @@
                 
                 if (select) {
                     select.innerHTML = '<option value="">Выберите ученика</option>' + options;
-                    // Автоматически выбираем первого ученика, если есть
                     if (data.length > 0) {
                         select.value = data[0].id;
                         window.loadStudentCalendar();
@@ -3632,7 +3659,6 @@
                     var lesson = lessonsMap[dateStr];
                     var statusClass = '';
                     var statusText = '';
-                    var statusIcon = '';
                     
                     if (dateStr === todayStr) statusClass += ' today';
                     
@@ -3640,15 +3666,12 @@
                         if (lesson.status === 'completed') {
                             statusClass += ' completed';
                             statusText = '✅';
-                            statusIcon = '✅';
                         } else if (lesson.status === 'cancelled') {
                             statusClass += ' cancelled';
                             statusText = '❌';
-                            statusIcon = '❌';
                         } else {
                             statusClass += ' planned';
                             statusText = '📌';
-                            statusIcon = '📌';
                         }
                     }
                     
@@ -3674,7 +3697,7 @@
             }
         };
 
-        // ===== НОВАЯ ФУНКЦИЯ: Клик по дню в календаре админа =====
+        // ===== КЛИК ПО ДНЮ В КАЛЕНДАРЕ АДМИНА =====
         window.handleAdminDayClick = function(dateStr) {
             var container = document.getElementById('dayLessons');
             var list = document.getElementById('dayLessonsList');
@@ -3797,8 +3820,7 @@
             currentMonth.setMonth(currentMonth.getMonth() + 1);
             window.renderCalendar(currentMonth);
         };
-
-        // ==========================================
+                // ==========================================
         // СЕРИИ ЗАНЯТИЙ
         // ==========================================
 
@@ -3879,26 +3901,55 @@
                 topic = prompt('Введите тему занятия (или оставьте пустым):') || null;
             }
             
+            // Проверяем, нет ли уже занятий на эти даты (чтобы избежать дублирования)
             supabase
-                .from('lesson_series')
-                .insert([{
-                    student_id: studentId,
-                    day_of_week: dayOfWeek,
-                    start_time: startTime,
-                    end_time: endTime,
-                    section_id: sectionId,
-                    topic: topic,
-                    start_date: startDate,
-                    end_date: endDate
-                }])
-                .then(function(response) {
-                    if (response.error) {
-                        alert('❌ Ошибка: ' + response.error.message);
+                .from('lesson_calendar')
+                .select('id, lesson_date')
+                .eq('student_id', studentId)
+                .gte('lesson_date', startDate)
+                .lte('lesson_date', endDate)
+                .then(function(checkRes) {
+                    if (checkRes.error) {
+                        alert('❌ Ошибка проверки: ' + checkRes.error.message);
                         return;
                     }
-                    alert('✅ Серия занятий создана!');
-                    window.closeAddLessonModal();
-                    window.renderCalendar(currentMonth);
+                    
+                    // Если есть существующие занятия, предупреждаем
+                    if (checkRes.data && checkRes.data.length > 0) {
+                        if (!confirm('⚠️ На этот период уже есть занятия у ученика. Продолжить? (будут созданы только новые занятия)')) {
+                            return;
+                        }
+                    }
+                    
+                    supabase
+                        .from('lesson_series')
+                        .insert([{
+                            student_id: studentId,
+                            day_of_week: dayOfWeek,
+                            start_time: startTime,
+                            end_time: endTime,
+                            section_id: sectionId,
+                            topic: topic,
+                            start_date: startDate,
+                            end_date: endDate
+                        }])
+                        .then(function(response) {
+                            if (response.error) {
+                                // Если ошибка дублирования, показываем понятное сообщение
+                                if (response.error.message && response.error.message.includes('duplicate key value')) {
+                                    alert('❌ У этого ученика уже есть занятия на выбранные даты и время.\nПожалуйста, выберите другое время или даты.');
+                                } else {
+                                    alert('❌ Ошибка: ' + response.error.message);
+                                }
+                                return;
+                            }
+                            alert('✅ Серия занятий создана!');
+                            window.closeAddLessonModal();
+                            window.renderCalendar(currentMonth);
+                        })
+                        .catch(function(err) {
+                            alert('❌ Ошибка: ' + err.message);
+                        });
                 })
                 .catch(function(err) {
                     alert('❌ Ошибка: ' + err.message);
@@ -3935,6 +3986,18 @@
                     document.querySelector('#addLessonModal .submit-btn').onclick = function() {
                         window.updateLessonSeries(seriesId);
                     };
+                    
+                    // Добавляем кнопку "Разделить серию"
+                    var actionsDiv = document.querySelector('#addLessonModal .modal-actions');
+                    var splitBtn = document.createElement('button');
+                    splitBtn.className = 'admin-btn';
+                    splitBtn.textContent = '✂️ Разделить серию';
+                    splitBtn.style.cssText = 'background:#f39c12; color:#fff; padding:12px 20px; border:none; border-radius:12px; cursor:pointer; font-weight:700;';
+                    splitBtn.onclick = function() {
+                        window.closeAddLessonModal();
+                        window.showSplitSeriesModal(seriesId);
+                    };
+                    actionsDiv.prepend(splitBtn);
                     
                     document.getElementById('addLessonModal').classList.add('active');
                 });
@@ -3985,9 +4048,13 @@
                     }
                     alert('✅ Серия обновлена!');
                     window.closeAddLessonModal();
+                    // Восстанавливаем кнопку
                     document.querySelector('#addLessonModal h3').textContent = '📅 Добавить серию занятий';
                     document.querySelector('#addLessonModal .submit-btn').textContent = '✅ Создать серию';
                     document.querySelector('#addLessonModal .submit-btn').onclick = window.saveLessonSeries;
+                    // Удаляем кнопку разделения
+                    var splitBtn = document.querySelector('#addLessonModal .admin-btn');
+                    if (splitBtn) splitBtn.remove();
                     window.renderCalendar(currentMonth);
                 })
                 .catch(function(err) {
@@ -4016,11 +4083,10 @@
         };
 
         // ==========================================
-        // НОВАЯ ФУНКЦИЯ: РАЗДЕЛИТЬ СЕРИЮ
+        // РАЗДЕЛИТЬ СЕРИЮ
         // ==========================================
 
         window.showSplitSeriesModal = function(seriesId) {
-            // Загружаем данные серии
             supabase
                 .from('lesson_series')
                 .select('*')
@@ -4040,7 +4106,6 @@
                     
                     if (!splitDate) return;
                     
-                    // Проверяем дату
                     if (new Date(splitDate) <= new Date(series.start_date)) {
                         alert('❌ Дата разделения должна быть позже даты начала серии');
                         return;
@@ -4063,7 +4128,6 @@
                         return;
                     }
                     
-                    // Обновляем старую серию: end_date = splitDate - 1 день
                     var newEndDate = new Date(splitDate);
                     newEndDate.setDate(newEndDate.getDate() - 1);
                     var newEndDateStr = formatDateSQL(newEndDate);
@@ -4078,7 +4142,6 @@
                                 return;
                             }
                             
-                            // Создаём новую серию с новыми днями
                             var newSeriesData = {
                                 student_id: series.student_id,
                                 day_of_week: daysArray[0],
@@ -4115,14 +4178,14 @@
                     alert('❌ Ошибка загрузки серии: ' + err.message);
                 });
         };
-                // ==========================================
-        // НОВАЯ МОДАЛКА УПРАВЛЕНИЯ ЗАНЯТИЕМ ДЛЯ АДМИНА
+
+        // ==========================================
+        // МОДАЛКА УПРАВЛЕНИЯ ЗАНЯТИЕМ ДЛЯ АДМИНА
         // ==========================================
 
         window.openAdminLessonModal = function(lessonId) {
             adminCurrentLessonId = lessonId;
             
-            // Загружаем данные занятия
             supabase
                 .from('lesson_calendar')
                 .select('*, students(id, name), video_sections(id, name), lesson_series(id, day_of_week)')
@@ -4136,7 +4199,6 @@
                     var lesson = response.data;
                     adminCurrentLessonData = lesson;
                     
-                    // Заполняем данные
                     document.getElementById('adminLessonTopic').textContent = lesson.topic || 'Занятие без темы';
                     document.getElementById('adminLessonStudentName').textContent = lesson.students ? lesson.students.name : 'Неизвестно';
                     document.getElementById('adminLessonTimeValue').textContent = (lesson.start_time || '') + ' - ' + (lesson.end_time || '');
@@ -4144,7 +4206,6 @@
                     document.getElementById('adminLessonSectionValue').textContent = lesson.video_sections ? lesson.video_sections.name : 'Не указан';
                     document.getElementById('adminLessonNotesValue').textContent = lesson.notes || '—';
                     
-                    // Статус
                     var statusBadge = document.getElementById('adminLessonStatusBadge');
                     var statusMap = {
                         'planned': { text: '📌 Запланировано', class: 'planned' },
@@ -4155,10 +4216,8 @@
                     statusBadge.textContent = statusInfo.text;
                     statusBadge.className = 'status-badge ' + statusInfo.class;
                     
-                    // Дата для переноса (по умолчанию сегодня)
                     document.getElementById('moveLessonDate').value = formatDateSQL(new Date());
                     
-                    // Показываем модалку
                     document.getElementById('adminLessonModal').classList.add('active');
                 })
                 .catch(function(err) {
@@ -4216,7 +4275,6 @@
                 return;
             }
             
-            // Проверяем, что дата не совпадает с текущей
             if (adminCurrentLessonData && adminCurrentLessonData.lesson_date === newDate) {
                 alert('❌ Дата не изменилась');
                 return;
@@ -4224,37 +4282,18 @@
             
             if (!confirm('Перенести занятие на ' + new Date(newDate).toLocaleDateString('ru-RU') + '?')) return;
             
-            // Проверяем, что на новую дату нет других занятий у этого ученика
             supabase
                 .from('lesson_calendar')
-                .select('id')
-                .eq('student_id', adminCurrentLessonData.student_id)
-                .eq('lesson_date', newDate)
-                .then(function(checkRes) {
-                    if (checkRes.error) {
-                        alert('❌ Ошибка проверки: ' + checkRes.error.message);
+                .update({ lesson_date: newDate })
+                .eq('id', adminCurrentLessonId)
+                .then(function(updateRes) {
+                    if (updateRes.error) {
+                        alert('❌ Ошибка переноса: ' + updateRes.error.message);
                         return;
                     }
-                    if (checkRes.data && checkRes.data.length > 0) {
-                        if (!confirm('⚠️ На эту дату уже есть занятие. Перенести всё равно?')) return;
-                    }
-                    
-                    supabase
-                        .from('lesson_calendar')
-                        .update({ lesson_date: newDate })
-                        .eq('id', adminCurrentLessonId)
-                        .then(function(updateRes) {
-                            if (updateRes.error) {
-                                alert('❌ Ошибка переноса: ' + updateRes.error.message);
-                                return;
-                            }
-                            alert('✅ Занятие перенесено на ' + new Date(newDate).toLocaleDateString('ru-RU'));
-                            window.closeAdminLessonModal();
-                            window.renderCalendar(currentMonth);
-                        })
-                        .catch(function(err) {
-                            alert('❌ Ошибка: ' + err.message);
-                        });
+                    alert('✅ Занятие перенесено на ' + new Date(newDate).toLocaleDateString('ru-RU'));
+                    window.closeAdminLessonModal();
+                    window.renderCalendar(currentMonth);
                 })
                 .catch(function(err) {
                     alert('❌ Ошибка: ' + err.message);
@@ -4288,7 +4327,7 @@
         };
 
         // ==========================================
-        // КАЛЕНДАРЬ ДЛЯ УЧЕНИКА (ИСПРАВЛЕННЫЙ)
+        // КАЛЕНДАРЬ ДЛЯ УЧЕНИКА (ИСПРАВЛЕННЫЙ - СЕТКА 7 КОЛОНОК)
         // ==========================================
 
         window.renderStudentCalendar = function(date) {
@@ -4357,7 +4396,6 @@
                             if (lesson.topic) {
                                 topicLabel = lesson.topic.length > 10 ? lesson.topic.substring(0, 10) + '..' : lesson.topic;
                             }
-                            // Статус иконка
                             if (lesson.status === 'completed') {
                                 statusIcon = '✅';
                                 statusClass = 'status-completed';
@@ -4443,7 +4481,8 @@
             studentMonth.setMonth(studentMonth.getMonth() + 1);
             window.renderStudentCalendar(studentMonth);
         };
-                // ==========================================
+
+        // ==========================================
         // РАСПИСАНИЕ (ДЛЯ АДМИНА)
         // ==========================================
 
@@ -4672,8 +4711,7 @@
                 })
                 .catch(function(err) { container.innerHTML = '❌ Ошибка: ' + err.message; });
         };
-
-        // ==========================================
+                // ==========================================
         // ШАБЛОНЫ ПЛАНОВ
         // ==========================================
 
@@ -4883,7 +4921,8 @@
                 }
             }, 300);
         };
-                // ==========================================
+
+        // ==========================================
         // ИНДИВИДУАЛЬНЫЙ ПЛАН ПОДГОТОВКИ
         // ==========================================
 
@@ -5407,7 +5446,8 @@
         function renderStats(data, container) {
             container.innerHTML = '<div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:20px;"><div style="background:rgba(255,255,255,0.05); padding:20px; border-radius:16px; text-align:center;"><div style="font-size:48px;">👨‍🎓</div><div style="font-size:32px; font-weight:900; color:#ffffff;">' + data.totalStudents + '</div><div style="color:#666;">Учеников с доступом</div></div><div style="background:rgba(255,255,255,0.05); padding:20px; border-radius:16px; text-align:center;"><div style="font-size:48px;">📝</div><div style="font-size:32px; font-weight:900; color:#ffffff;">' + data.totalHomeworks + '</div><div style="color:#666;">Всего ДЗ</div></div><div style="background:rgba(39,174,96,0.15); padding:20px; border-radius:16px; text-align:center;"><div style="font-size:48px;">✅</div><div style="font-size:32px; font-weight:900; color:#2ecc71;">' + data.doneHomeworks + '</div><div style="color:#7ddfa0;">Выполнено</div></div><div style="background:rgba(231,76,60,0.15); padding:20px; border-radius:16px; text-align:center;"><div style="font-size:48px;">⏳</div><div style="font-size:32px; font-weight:900; color:#f1948a;">' + (data.totalHomeworks - data.doneHomeworks) + '</div><div style="color:#f1948a;">В процессе</div></div><div style="background:rgba(52,152,219,0.15); padding:20px; border-radius:16px; text-align:center;"><div style="font-size:48px;">🎥</div><div style="font-size:32px; font-weight:900; color:#85c1e9;">' + data.totalVideos + '</div><div style="color:#85c1e9;">Видео</div></div></div>';
         }
-                // ==========================================
+
+        // ==========================================
         // ЧАТ
         // ==========================================
 
@@ -5742,8 +5782,7 @@
         window.closeChat = closeChat;
         window.sendMessage = sendMessage;
         window.loadChatList = loadChatList;
-
-        // ==========================================
+                // ==========================================
         // МОДАЛЬНОЕ ОКНО ВЫДАЧИ ДЗ
         // ==========================================
 
@@ -6254,11 +6293,12 @@
         console.log('✅ Добавлены шаблоны планов');
         console.log('✅ Добавлена страница "Мой календарь" для ученика');
         console.log('✅ Вернули расписание для админа');
-        console.log('✅ Исправлен календарь ученика (цветные дни, подписи)');
+        console.log('✅ Исправлен календарь ученика (сетка 7 колонок, цветные дни, подписи)');
         console.log('✅ Добавлена модалка управления занятием для админа');
         console.log('✅ Добавлена возможность переносить занятия');
         console.log('✅ Добавлена возможность менять статус занятия');
         console.log('✅ Добавлена функция разделения серий');
+        console.log('✅ Добавлена проверка дублирования занятий при создании серии');
     </script>
 
 </body>
