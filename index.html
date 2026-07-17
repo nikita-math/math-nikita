@@ -6544,7 +6544,7 @@ if (existingPlan) {
             return days;
         }
 
-        window.generatePlanFromConstructor = async function() {
+         window.generatePlanFromConstructor = async function() {
             var studentId = document.getElementById('planStudent').value;
             var examDate = document.getElementById('examDate').value;
             var targetScore = parseInt(document.getElementById('targetScore').value);
@@ -6581,22 +6581,49 @@ if (existingPlan) {
                 alert('⚠️ Не удалось найти достаточно дат для всех занятий. Увеличьте период или добавьте больше дней.');
                 return;
             }
+            
             var planData = {
                 student_id: studentId,
                 exam_date: examDate,
                 start_date: startDate,
                 total_lessons_planned: assignments.length,
                 target_score: targetScore,
-                lessons_per_week: selectedDays.length,
                 current_level: targetScore >= 90 ? 'advanced' : (targetScore >= 80 ? 'intermediate' : 'beginner')
             };
+            
             try {
-                var { data: plan, error: planError } = await supabase
+                // ПРОВЕРЯЕМ, ЕСТЬ ЛИ УЖЕ ПЛАН
+                var { data: existingPlan, error: checkError } = await supabase
                     .from('study_plans')
-                    .upsert([planData])
-                    .select();
+                    .select('id')
+                    .eq('student_id', studentId)
+                    .maybeSingle();
+
+                var plan;
+                var planError;
+
+                if (existingPlan) {
+                    // ОБНОВЛЯЕМ СУЩЕСТВУЮЩИЙ ПЛАН
+                    var { data, error } = await supabase
+                        .from('study_plans')
+                        .update(planData)
+                        .eq('student_id', studentId)
+                        .select();
+                    plan = data;
+                    planError = error;
+                } else {
+                    // СОЗДАЁМ НОВЫЙ ПЛАН
+                    var { data, error } = await supabase
+                        .from('study_plans')
+                        .insert([planData])
+                        .select();
+                    plan = data;
+                    planError = error;
+                }
+                
                 if (planError) throw planError;
                 var planId = plan[0].id;
+                
                 await supabase.from('study_plan_sections').delete().eq('plan_id', planId);
                 var planSections = assignments.map(function(sectionId, index) {
                     var dateStr = dates[index].toISOString().split('T')[0];
@@ -6621,7 +6648,6 @@ if (existingPlan) {
                 window.renderCalendar(currentMonth);
             } catch (err) { alert('❌ Ошибка: ' + err.message); console.error(err); }
         };
-
         // Модифицируем switchAdminTab для инициализации конструктора
         var originalSwitchAdminTab = window.switchAdminTab;
         window.switchAdminTab = function(tab) {
