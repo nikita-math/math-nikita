@@ -1790,7 +1790,7 @@
         </div>
     </div>
 
-    <!-- МОДАЛКА ВЫДАЧИ ДЗ -->
+      <!-- МОДАЛКА ВЫДАЧИ ДЗ -->
     <div class="modal-overlay" id="assignmentModal">
         <div class="modal-content">
             <h3>📝 Выдать домашнее задание</h3>
@@ -1826,7 +1826,14 @@
                 <textarea id="homeworkComment" rows="3" placeholder="Например: сделать номера 1, 3, 5, 7..."></textarea>
             </div>
             
-                       <div style="margin-top: 12px; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 12px;">
+            <!-- ===== PDF ФАЙЛ (ОБЯЗАТЕЛЬНО ДОЛЖЕН БЫТЬ!) ===== -->
+            <div>
+                <label>📎 PDF файл с ДЗ:</label>
+                <input type="file" id="pdfFile" accept=".pdf">
+            </div>
+            
+            <!-- ===== ДОПОЛНИТЕЛЬНЫЕ ССЫЛКИ ===== -->
+            <div style="margin-top: 12px; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 12px;">
                 <label style="color: #f5a623; font-weight: 600;">🔗 Дополнительные ссылки (необязательно)</label>
                 
                 <div style="margin-top: 8px;">
@@ -1862,7 +1869,6 @@
             </div>
         </div>
     </div>
-
     <!-- МОДАЛКА ШАБЛОНА -->
     <div class="modal-overlay" id="templateModal">
         <div class="modal-content">
