@@ -6104,8 +6104,7 @@ if (existingPlan) {
                 console.error('Ошибка поиска раздела:', err);
             }
         };
-
-        window.submitAssignment = async function() {
+             window.submitAssignment = async function() {
             var target = document.getElementById('assignmentTarget').value;
             var studentId = document.getElementById('studentSelect').value;
             var sectionNumber = document.getElementById('sectionNumber').value;
@@ -6114,6 +6113,17 @@ if (existingPlan) {
             var fileInput = document.getElementById('pdfFile');
             var deadline = document.getElementById('deadline').value;
             var noDeadline = document.getElementById('noDeadline').checked;
+            
+            // Получаем дополнительные ссылки
+            var link1 = document.getElementById('homeworkLink1').value.trim();
+            var link2 = document.getElementById('homeworkLink2').value.trim();
+            var link3 = document.getElementById('homeworkLink3').value.trim();
+            
+            var extraLinks = [];
+            if (link1) extraLinks.push(link1);
+            if (link2) extraLinks.push(link2);
+            if (link3) extraLinks.push(link3);
+            var extraLinksJson = extraLinks.length > 0 ? JSON.stringify(extraLinks) : null;
             
             if (!title) { alert('❌ Введите название ДЗ'); return; }
             if (!sectionNumber) { alert('❌ Введите номер раздела'); return; }
@@ -6151,20 +6161,6 @@ if (existingPlan) {
             
             var finalDeadline = noDeadline ? null : (deadline || null);
             
-                      // Получаем дополнительные ссылки
-            var link1 = document.getElementById('homeworkLink1').value.trim();
-            var link2 = document.getElementById('homeworkLink2').value.trim();
-            var link3 = document.getElementById('homeworkLink3').value.trim();
-            
-            // Собираем ссылки в массив (только непустые)
-            var extraLinks = [];
-            if (link1) extraLinks.push(link1);
-            if (link2) extraLinks.push(link2);
-            if (link3) extraLinks.push(link3);
-            
-            // Превращаем массив в JSON строку для хранения в базе
-            var extraLinksJson = extraLinks.length > 0 ? JSON.stringify(extraLinks) : null;
-            
             var homeworks = students.map(function(s) {
                 return { 
                     title: title, 
@@ -6175,7 +6171,7 @@ if (existingPlan) {
                     file_url: pdfUrl, 
                     video_link: null,
                     comment: comment || null,
-                    extra_links: extraLinksJson  // ← ДОБАВЛЯЕМ
+                    extra_links: extraLinksJson
                 };
             });
             
@@ -6184,7 +6180,8 @@ if (existingPlan) {
                 if (insertResult.error) throw insertResult.error;
                 var count = homeworks.length;
                 var deadlineText = noDeadline ? 'без дедлайна' : (deadline || 'не указан');
-                alert('✅ ДЗ "' + title + '" выдано ' + count + ' ученикам в раздел "' + sectionData.name + '"!\n📅 Срок: ' + deadlineText + (comment ? '\n📝 Комментарий: ' + comment : ''));
+                var linksText = extraLinks.length > 0 ? '\n🔗 Добавлено ссылок: ' + extraLinks.length : '';
+                alert('✅ ДЗ "' + title + '" выдано ' + count + ' ученикам в раздел "' + sectionData.name + '"!\n📅 Срок: ' + deadlineText + (comment ? '\n📝 Комментарий: ' + comment : '') + linksText);
                 clearCache('all_homeworks');
                 if (currentUser) clearCache('homeworks_' + currentUser.id);
                 window.closeAssignmentModal();
@@ -6193,7 +6190,10 @@ if (existingPlan) {
                     window.loadHomework(currentUser.id);
                     window.loadDashboardOverview(currentUser.id);
                 }
-            } catch (err) { alert('❌ Ошибка сохранения ДЗ: ' + err.message); }
+            } catch (err) {
+                alert('❌ Ошибка сохранения ДЗ: ' + err.message);
+                console.error(err);
+            }
         };
 
         // ==========================================
