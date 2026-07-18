@@ -2190,44 +2190,44 @@
             </div>
         </div>
     </div>
-    <!-- МОДАЛКА ДЛЯ АДМИНА (УПРАВЛЕНИЕ ЗАНЯТИЕМ) -->
-    <div class="modal-overlay" id="adminLessonModal">
-        <div class="modal-content">
-            <h3 id="adminLessonTitle">📌 Управление занятием</h3>
-            
-            <div class="lesson-info">
-                <p id="adminLessonTopic" style="font-size:18px; font-weight:700; color:#ffffff;">Занятие</p>
-                <p id="adminLessonStudent">👤 Ученик: <span id="adminLessonStudentName">—</span></p>
-                <p id="adminLessonTime">⏰ Время: <span id="adminLessonTimeValue">—</span></p>
-                <p id="adminLessonDate">📅 Дата: <span id="adminLessonDateValue">—</span></p>
-                <p id="adminLessonSection">📚 Раздел: <span id="adminLessonSectionValue">Не указан</span></p>
-                <p id="adminLessonStatusLine">Статус: <span id="adminLessonStatusBadge" class="status-badge planned">📌 Запланировано</span></p>
-                <p id="adminLessonNotes" style="color:#888; font-size:13px;">📝 Заметки: <span id="adminLessonNotesValue">—</span></p>
-            </div>
-            
-                      <!-- ===== КНОПКИ ДЛЯ СЕРИИ ===== -->
-            <div id="seriesActions" style="display:none; margin-top: 12px; padding-top: 12px; border-top: 1px solid rgba(255,255,255,0.05);">
-                <div style="display:flex; gap:8px; flex-wrap:wrap;">
-                    <button class="admin-btn" onclick="window.editSeriesFromModal()" style="flex:1; background:#667eea;">✏️ Редактировать серию</button>
-                    <button class="admin-btn" onclick="window.splitSeriesFromModal()" style="flex:1; background:#f39c12;">✂️ Разделить серию</button>
-                </div>
-            </div>
-            
-            <div class="move-section">
-                <label>📅 Перенести на другую дату:</label>
-                <div class="move-row">
-                    <input type="date" id="moveLessonDate">
-                    <button onclick="window.moveAdminLesson()">📅 Перенести</button>
-                </div>
-            </div>
-            
-                      <div style="margin-top:12px; padding-top:12px; border-top:1px solid rgba(255,255,255,0.05); display:flex; gap:8px; flex-wrap:wrap;">
-                <button class="cancel-btn" onclick="window.closeAdminLessonModal()" style="flex:1;">Закрыть</button>
-                <button class="admin-btn danger" onclick="window.deleteAdminLesson()" style="flex:1;">🗑 Удалить занятие</button>
-                <button class="admin-btn danger" onclick="window.deleteSeriesFromModal()" style="flex:1; background:#e67e22;">🔁 Удалить серию</button>
+<!-- МОДАЛКА ДЛЯ АДМИНА (УПРАВЛЕНИЕ ЗАНЯТИЕМ) -->
+<div class="modal-overlay" id="adminLessonModal">
+    <div class="modal-content">
+        <h3 id="adminLessonTitle">📌 Управление занятием</h3>
+        
+        <div class="lesson-info">
+            <p id="adminLessonTopic" style="font-size:18px; font-weight:700; color:#ffffff;">Занятие</p>
+            <p id="adminLessonStudent">👤 Ученик: <span id="adminLessonStudentName">—</span></p>
+            <p id="adminLessonTime">⏰ Время: <span id="adminLessonTimeValue">—</span></p>
+            <p id="adminLessonDate">📅 Дата: <span id="adminLessonDateValue">—</span></p>
+            <p id="adminLessonSection">📚 Раздел: <span id="adminLessonSectionValue">Не указан</span></p>
+            <p id="adminLessonStatusLine">Статус: <span id="adminLessonStatusBadge" class="status-badge planned">📌 Запланировано</span></p>
+            <p id="adminLessonNotes" style="color:#888; font-size:13px;">📝 Заметки: <span id="adminLessonNotesValue">—</span></p>
+        </div>
+        
+        <!-- КНОПКИ ДЛЯ СЕРИИ -->
+        <div id="seriesActions" style="display:none; margin-top: 12px; padding-top: 12px; border-top: 1px solid rgba(255,255,255,0.05);">
+            <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                <button class="admin-btn" onclick="window.editSeriesFromModal()" style="flex:1; background:#667eea;">✏️ Редактировать серию</button>
+                <button class="admin-btn" onclick="window.splitSeriesFromModal()" style="flex:1; background:#f39c12;">✂️ Разделить серию</button>
             </div>
         </div>
+        
+        <div class="move-section">
+            <label>📅 Перенести на другую дату:</label>
+            <div class="move-row">
+                <input type="date" id="moveLessonDate">
+                <button onclick="window.moveAdminLesson()">📅 Перенести</button>
+            </div>
+        </div>
+        
+        <div style="margin-top:12px; padding-top:12px; border-top:1px solid rgba(255,255,255,0.05); display:flex; gap:8px; flex-wrap:wrap;">
+            <button class="cancel-btn" onclick="window.closeAdminLessonModal()" style="flex:1;">Закрыть</button>
+            <button class="admin-btn danger" onclick="window.deleteAdminLesson()" style="flex:1;">🗑 Удалить занятие</button>
+            <button class="admin-btn danger" onclick="window.deleteSeriesFromModal()" style="flex:1; background:#e67e22;">🔁 Удалить серию</button>
+        </div>
     </div>
+</div>
         <!-- ===== МОДАЛКА ДОБАВЛЕНИЯ ЗАНЯТИЯ НА ДАТУ ===== -->
     <div class="modal-overlay" id="addLessonOnDateModal">
         <div class="modal-content">
@@ -7500,108 +7500,9 @@ if (existingPlan) {
             window.closeAdminLessonModal();
             window.showSplitSeriesModal(seriesId);
         };
-                // ==========================================
-        // СОЗДАНИЕ СЕРИИ ЗАНЯТИЙ
-        // ==========================================
-        window.saveLessonSeries = function() {
-            var studentId = document.getElementById('lessonStudent').value;
-            var sectionId = document.getElementById('lessonSection').value || null;
-            var startTime = document.getElementById('lessonStartTime').value;
-            var endTime = document.getElementById('lessonEndTime').value || null;
-            var startDate = document.getElementById('lessonStartDate').value;
-            var endDate = document.getElementById('lessonEndDate').value;
-            var notes = document.getElementById('lessonNotes').value || null;
-            
-            // Получаем выбранные дни недели (несколько)
-            var dayCheckboxes = document.querySelectorAll('.series-day:checked');
-            var selectedDays = [];
-            dayCheckboxes.forEach(function(cb) {
-                selectedDays.push(parseInt(cb.value));
-            });
-            
-            if (!studentId) { alert('❌ Выберите ученика'); return; }
-            if (selectedDays.length === 0) { alert('❌ Выберите хотя бы один день недели'); return; }
-            if (!startTime) { alert('❌ Введите время начала'); return; }
-            if (!startDate) { alert('❌ Введите дату первого занятия'); return; }
-            if (!endDate) { alert('❌ Введите дату последнего занятия'); return; }
-            
-            if (new Date(startDate) > new Date(endDate)) {
-                alert('❌ Дата первого занятия не может быть позже даты последнего занятия');
-                return;
-            }
-            
-            // Получаем название раздела если выбран
-            var topic = null;
-            if (sectionId) {
-                var sectionSelect = document.getElementById('lessonSection');
-                var option = sectionSelect.querySelector('option[value="' + sectionId + '"]');
-                if (option) topic = option.textContent;
-            }
-            
-            // Если раздел не выбран, спрашиваем тему
-            if (!topic) {
-                topic = prompt('Введите тему занятия (или оставьте пустым):') || null;
-            }
-            
-            // Проверяем, нет ли уже занятий на эти даты
-            supabase
-                .from('lesson_calendar')
-                .select('id, lesson_date')
-                .eq('student_id', studentId)
-                .gte('lesson_date', startDate)
-                .lte('lesson_date', endDate)
-                .then(function(checkRes) {
-                    if (checkRes.error) {
-                        alert('❌ Ошибка проверки: ' + checkRes.error.message);
-                        return;
-                    }
-                    
-                    if (checkRes.data && checkRes.data.length > 0) {
-                        if (!confirm('⚠️ На этот период уже есть занятия у ученика. Продолжить? (будут созданы только новые занятия)')) {
-                            return;
-                        }
-                    }
-                    
-                    // Для каждого выбранного дня создаём отдельную серию
-                    var promises = [];
-                    selectedDays.forEach(function(dayOfWeek) {
-                        promises.push(
-                                                      supabase
-                                .from('lesson_series')
-                                .insert([{
-                                    student_id: studentId,
-                                    day_of_week: dayOfWeek,
-                                    start_time: startTime,
-                                    end_time: endTime,
-                                    section_id: sectionId,
-                                    topic: topic,
-                                    start_date: startDate,
-                                    end_date: endDate
-                                }])
-                        );
-                    });
-                    
-                    Promise.all(promises)
-                        .then(function(results) {
-                            var errors = results.filter(function(r) { return r.error; });
-                            if (errors.length > 0) {
-                                alert('❌ Ошибка при создании серий: ' + errors[0].error.message);
-                                return;
-                            }
-                            alert('✅ Серии занятий созданы! (' + selectedDays.length + ' серий)');
-                            window.closeAddLessonModal();
-                            window.renderCalendar(currentMonth);
-                        })
-                        .catch(function(err) {
-                            alert('❌ Ошибка: ' + err.message);
-                        });
-                })
-                .catch(function(err) {
-                    alert('❌ Ошибка: ' + err.message);
-                });
-        };
-                // ==========================================
-        // СОЗДАНИЕ СЕРИИ ЗАНЯТИЙ
+       
+               // ==========================================
+        // СОЗДАНИЕ СЕРИИ ЗАНЯТИЙ (ИСПРАВЛЕННАЯ ВЕРСИЯ)
         // ==========================================
         window.saveLessonSeries = function() {
             var studentId = document.getElementById('lessonStudent').value;
@@ -7677,6 +7578,7 @@ if (existingPlan) {
                                     topic: topic,
                                     start_date: startDate,
                                     end_date: endDate,
+                                    notes: notes
                                 }])
                         );
                     });
@@ -7688,9 +7590,53 @@ if (existingPlan) {
                                 alert('❌ Ошибка при создании серий: ' + errors[0].error.message);
                                 return;
                             }
-                            alert('✅ Серии занятий созданы! (' + selectedDays.length + ' серий)');
-                            window.closeAddLessonModal();
-                            window.renderCalendar(currentMonth);
+                            
+                            // ✅ ДОБАВЛЯЕМ: Создаём конкретные занятия в календаре
+                            // Генерируем все даты между startDate и endDate для выбранных дней
+                            var currentDate = new Date(startDate);
+                            var end = new Date(endDate);
+                            var lessonPromises = [];
+                            
+                            while (currentDate <= end) {
+                                var dayOfWeekNum = currentDate.getDay(); // 0=ВС, 1=ПН, ...
+                                var dayNum = dayOfWeekNum === 0 ? 7 : dayOfWeekNum; // 1=ПН ... 7=ВС
+                                
+                                if (selectedDays.includes(dayNum)) {
+                                    var dateStr = formatDateSQL(currentDate);
+                                    lessonPromises.push(
+                                        supabase
+                                            .from('lesson_calendar')
+                                            .insert([{
+                                                student_id: studentId,
+                                                section_id: sectionId || null,
+                                                lesson_date: dateStr,
+                                                topic: topic,
+                                                start_time: startTime,
+                                                end_time: endTime || null,
+                                                notes: notes || null,
+                                                status: 'planned',
+                                                series_id: null // пока не знаем ID серии
+                                            }])
+                                    );
+                                }
+                                currentDate.setDate(currentDate.getDate() + 1);
+                            }
+                            
+                            Promise.all(lessonPromises)
+                                .then(function(lessonResults) {
+                                    var lessonErrors = lessonResults.filter(function(r) { return r.error; });
+                                    if (lessonErrors.length > 0) {
+                                        console.warn('⚠️ Некоторые занятия не создались:', lessonErrors);
+                                    }
+                                    alert('✅ Серии занятий созданы! (' + selectedDays.length + ' серий, ' + lessonPromises.length + ' занятий)');
+                                    window.closeAddLessonModal();
+                                    window.renderCalendar(currentMonth);
+                                })
+                                .catch(function(err) {
+                                    alert('⚠️ Серии созданы, но ошибка при создании занятий: ' + err.message);
+                                    window.closeAddLessonModal();
+                                    window.renderCalendar(currentMonth);
+                                });
                         })
                         .catch(function(err) {
                             alert('❌ Ошибка: ' + err.message);
@@ -7700,10 +7646,6 @@ if (existingPlan) {
                     alert('❌ Ошибка: ' + err.message);
                 });
         };
-
-        // ==========================================
-        // ЗАВЕРШЕНИЕ
-        // ==========================================
 
         console.log('✅ Сайт полностью загружен!');
         console.log('📊 Используемые таблицы:');
