@@ -7308,7 +7308,6 @@ if (existingPlan) {
                     topic: topic,
                     start_time: startTime,
                     end_time: endTime || null,
-                    notes: notes || null,
                     status: 'planned'
                 }])
                 .then(function(response) {
@@ -7502,7 +7501,7 @@ if (existingPlan) {
                     var promises = [];
                     selectedDays.forEach(function(dayOfWeek) {
                         promises.push(
-                            supabase
+                                                      supabase
                                 .from('lesson_series')
                                 .insert([{
                                     student_id: studentId,
@@ -7512,8 +7511,7 @@ if (existingPlan) {
                                     section_id: sectionId,
                                     topic: topic,
                                     start_date: startDate,
-                                    end_date: endDate,
-                                    notes: notes || null
+                                    end_date: endDate
                                 }])
                         );
                     });
@@ -7614,7 +7612,6 @@ if (existingPlan) {
                                     topic: topic,
                                     start_date: startDate,
                                     end_date: endDate,
-                                    notes: notes || null
                                 }])
                         );
                     });
