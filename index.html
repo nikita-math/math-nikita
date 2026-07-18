@@ -2133,29 +2133,7 @@
         </div>
     </div>
         
-        <!-- КНОПКИ ДЛЯ СЕРИИ -->
-        <div id="seriesActions" style="display:none; margin-top: 12px; padding-top: 12px; border-top: 1px solid rgba(255,255,255,0.05);">
-            <div style="display:flex; gap:8px; flex-wrap:wrap;">
-                <button class="admin-btn" onclick="window.editSeriesFromModal()" style="flex:1; background:#667eea; cursor:pointer;">✏️ Редактировать серию</button>
-                <button class="admin-btn" onclick="window.splitSeriesFromModal()" style="flex:1; background:#f39c12; cursor:pointer;">✂️ Разделить серию</button>
-            </div>
-        </div>
-        
-        <div class="move-section">
-            <label>📅 Перенести на другую дату:</label>
-            <div class="move-row">
-                <input type="date" id="moveLessonDate">
-                <button onclick="window.moveAdminLesson()" style="cursor:pointer;">📅 Перенести</button>
-            </div>
-        </div>
-        
-        <div style="margin-top:12px; padding-top:12px; border-top:1px solid rgba(255,255,255,0.05); display:flex; gap:8px; flex-wrap:wrap;">
-            <button class="cancel-btn" onclick="window.closeAdminLessonModal()" style="flex:1; cursor:pointer;">Закрыть</button>
-            <button class="admin-btn danger" onclick="window.deleteAdminLesson()" style="flex:1; cursor:pointer;">🗑 Удалить занятие</button>
-            <button class="admin-btn danger" onclick="window.deleteSeriesFromModal()" style="flex:1; background:#e67e22; cursor:pointer;">🔁 Удалить серию</button>
-        </div>
-    </div>
-</div>    
+
     <footer>
         © 2026 Математика с Никитой. Все права защищены.
     </footer>
@@ -4838,70 +4816,6 @@
         };
                
 
-        // ==========================================
-        // МОДАЛКА УПРАВЛЕНИЯ ЗАНЯТИЕМ ДЛЯ АДМИНА
-        // ==========================================
-       window.openAdminLessonModal = function(lessonId) {
-    console.log('🔍 Открываем занятие:', lessonId);
-    adminCurrentLessonId = lessonId;
-    
-    supabase
-        .from('lesson_calendar')
-        .select('*, students(id, name), video_sections(id, name), lesson_series(id, day_of_week)')
-        .eq('id', lessonId)
-        .single()
-        .then(function(response) {
-            if (response.error) {
-                alert('❌ Ошибка загрузки занятия: ' + response.error.message);
-                return;
-            }
-            var lesson = response.data;
-            adminCurrentLessonData = lesson;
-            console.log('🔍 Данные занятия:', lesson);
-            
-            document.getElementById('adminLessonTopic').textContent = lesson.topic || 'Занятие без темы';
-            document.getElementById('adminLessonStudentName').textContent = lesson.students ? lesson.students.name : 'Неизвестно';
-            document.getElementById('adminLessonTimeValue').textContent = (lesson.start_time || '') + ' - ' + (lesson.end_time || '');
-            document.getElementById('adminLessonDateValue').textContent = lesson.lesson_date ? new Date(lesson.lesson_date).toLocaleDateString('ru-RU') : '—';
-            document.getElementById('adminLessonSectionValue').textContent = lesson.video_sections ? lesson.video_sections.name : 'Не указан';
-            document.getElementById('adminLessonNotesValue').textContent = lesson.notes || '—';
-            
-            var statusBadge = document.getElementById('adminLessonStatusBadge');
-            var statusMap = {
-                'planned': { text: '📌 Запланировано', class: 'planned' },
-                'completed': { text: '✅ Проведено', class: 'completed' },
-                'cancelled': { text: '❌ Отменено', class: 'cancelled' }
-            };
-            var statusInfo = statusMap[lesson.status] || statusMap['planned'];
-            statusBadge.textContent = statusInfo.text;
-            statusBadge.className = 'status-badge ' + statusInfo.class;
-            
-            // ✅ ИСПРАВЛЕНО: проверка на существование элемента
-            var moveDateInput = document.getElementById('moveLessonDate');
-            if (moveDateInput) {
-                moveDateInput.value = formatDateSQL(new Date());
-            }
-            
-            // ✅ ИСПРАВЛЕНО: проверка на существование элемента
-            var seriesActions = document.getElementById('seriesActions');
-            if (seriesActions) {
-                if (lesson.series_id) {
-                    seriesActions.style.display = 'block';
-                    console.log('🔍 Показаны кнопки серии');
-                } else {
-                    seriesActions.style.display = 'none';
-                    console.log('🔍 Кнопки серии скрыты');
-                }
-            }
-            
-            document.getElementById('adminLessonModal').classList.add('active');
-            console.log('✅ Модалка открыта');
-        })
-        .catch(function(err) {
-            alert('❌ Ошибка: ' + err.message);
-            console.error('Ошибка:', err);
-        });
-};
 
         window.moveAdminLesson = function() {
             if (!adminCurrentLessonId) {
@@ -7825,7 +7739,7 @@ if (existingPlan) {
 
         console.log('✅ Функции для модалки управления занятием добавлены!');
 
-        console.log('✅ Функции для модалки управления занятием добавлены!');
+    
 
         console.log('✅ Сайт полностью загружен!');
         console.log('📊 Используемые таблицы:');
