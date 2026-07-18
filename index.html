@@ -4672,21 +4672,60 @@
                     alert('❌ Ошибка: ' + err.message);
                 });
         };
-
-        window.deleteSeries = function(seriesId) {
-            if (!confirm('Удалить серию занятий? Все занятия в этой серии будут удалены.')) return;
+        window.editSeries = function(seriesId) {
+            if (!seriesId) {
+                alert('❌ Ошибка: ID серии не указан');
+                return;
+            }
             
             supabase
                 .from('lesson_series')
-                .delete()
+                .select('*')
                 .eq('id', seriesId)
                 .then(function(response) {
                     if (response.error) {
                         alert('❌ Ошибка: ' + response.error.message);
                         return;
                     }
-                    alert('✅ Серия удалена');
-                    window.renderCalendar(currentMonth);
+                    
+                    if (!response.data || response.data.length === 0) {
+                        alert('❌ Серия не найдена');
+                        return;
+                    }
+                    
+                    var series = response.data[0]; // берём первую запись
+                    
+                    document.getElementById('lessonStudent').value = series.student_id;
+                    document.getElementById('lessonDayOfWeek').value = series.day_of_week;
+                    document.getElementById('lessonStartTime').value = series.start_time;
+                    document.getElementById('lessonEndTime').value = series.end_time || '';
+                    document.getElementById('lessonStartDate').value = series.start_date;
+                    document.getElementById('lessonEndDate').value = series.end_date;
+                    document.getElementById('lessonNotes').value = series.notes || '';
+                    
+                    if (series.section_id) {
+                        document.getElementById('lessonSection').value = series.section_id;
+                    }
+                    
+                    document.querySelector('#addLessonModal h3').textContent = '✏️ Редактировать серию';
+                    document.querySelector('#addLessonModal .submit-btn').textContent = '💾 Сохранить';
+                    document.querySelector('#addLessonModal .submit-btn').onclick = function() {
+                        window.updateLessonSeries(seriesId);
+                    };
+                    
+                    // Добавляем кнопку "Разделить серию"
+                    var actionsDiv = document.querySelector('#addLessonModal .modal-actions');
+                    var splitBtn = document.createElement('button');
+                    splitBtn.className = 'admin-btn';
+                    splitBtn.textContent = '✂️ Разделить серию';
+                    splitBtn.style.cssText = 'background:#f39c12; color:#fff; padding:12px 20px; border:none; border-radius:12px; cursor:pointer; font-weight:700;';
+                    splitBtn.onclick = function() {
+                        window.closeAddLessonModal();
+                        window.showSplitSeriesModal(seriesId);
+                    };
+                    actionsDiv.prepend(splitBtn);
+                    
+                    document.getElementById('addLessonModal').classList.add('active');
                 })
                 .catch(function(err) {
                     alert('❌ Ошибка: ' + err.message);
@@ -4696,19 +4735,28 @@
         // ==========================================
         // РАЗДЕЛИТЬ СЕРИЮ
         // ==========================================
-
         window.showSplitSeriesModal = function(seriesId) {
+            if (!seriesId) {
+                alert('❌ Ошибка: ID серии не указан');
+                return;
+            }
+            
             supabase
                 .from('lesson_series')
                 .select('*')
                 .eq('id', seriesId)
-                .single()
                 .then(function(response) {
                     if (response.error) {
                         alert('❌ Ошибка: ' + response.error.message);
                         return;
                     }
-                    var series = response.data;
+                    
+                    if (!response.data || response.data.length === 0) {
+                        alert('❌ Серия не найдена');
+                        return;
+                    }
+                    
+                    var series = response.data[0]; // берём первую запись
                     
                     var splitDate = prompt('Введите дату, с которой начинаются изменения (в формате ГГГГ-ММ-ДД):\n' +
                         'Например: 2026-09-01\n\n' +
@@ -4789,6 +4837,7 @@
                     alert('❌ Ошибка загрузки серии: ' + err.message);
                 });
         };
+               
 
         // ==========================================
         // МОДАЛКА УПРАВЛЕНИЯ ЗАНЯТИЕМ ДЛЯ АДМИНА
