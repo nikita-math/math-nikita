@@ -7537,6 +7537,107 @@ if (existingPlan) {
                     alert('❌ Ошибка: ' + err.message);
                 });
         };
+                // ==========================================
+        // СОЗДАНИЕ СЕРИИ ЗАНЯТИЙ
+        // ==========================================
+        window.saveLessonSeries = function() {
+            var studentId = document.getElementById('lessonStudent').value;
+            var sectionId = document.getElementById('lessonSection').value || null;
+            var startTime = document.getElementById('lessonStartTime').value;
+            var endTime = document.getElementById('lessonEndTime').value || null;
+            var startDate = document.getElementById('lessonStartDate').value;
+            var endDate = document.getElementById('lessonEndDate').value;
+            var notes = document.getElementById('lessonNotes').value || null;
+            
+            // Получаем выбранные дни недели (несколько)
+            var dayCheckboxes = document.querySelectorAll('.series-day:checked');
+            var selectedDays = [];
+            dayCheckboxes.forEach(function(cb) {
+                selectedDays.push(parseInt(cb.value));
+            });
+            
+            if (!studentId) { alert('❌ Выберите ученика'); return; }
+            if (selectedDays.length === 0) { alert('❌ Выберите хотя бы один день недели'); return; }
+            if (!startTime) { alert('❌ Введите время начала'); return; }
+            if (!startDate) { alert('❌ Введите дату первого занятия'); return; }
+            if (!endDate) { alert('❌ Введите дату последнего занятия'); return; }
+            
+            if (new Date(startDate) > new Date(endDate)) {
+                alert('❌ Дата первого занятия не может быть позже даты последнего занятия');
+                return;
+            }
+            
+            // Получаем название раздела если выбран
+            var topic = null;
+            if (sectionId) {
+                var sectionSelect = document.getElementById('lessonSection');
+                var option = sectionSelect.querySelector('option[value="' + sectionId + '"]');
+                if (option) topic = option.textContent;
+            }
+            
+            // Если раздел не выбран, спрашиваем тему
+            if (!topic) {
+                topic = prompt('Введите тему занятия (или оставьте пустым):') || null;
+            }
+            
+            // Проверяем, нет ли уже занятий на эти даты
+            supabase
+                .from('lesson_calendar')
+                .select('id, lesson_date')
+                .eq('student_id', studentId)
+                .gte('lesson_date', startDate)
+                .lte('lesson_date', endDate)
+                .then(function(checkRes) {
+                    if (checkRes.error) {
+                        alert('❌ Ошибка проверки: ' + checkRes.error.message);
+                        return;
+                    }
+                    
+                    if (checkRes.data && checkRes.data.length > 0) {
+                        if (!confirm('⚠️ На этот период уже есть занятия у ученика. Продолжить? (будут созданы только новые занятия)')) {
+                            return;
+                        }
+                    }
+                    
+                    // Для каждого выбранного дня создаём отдельную серию
+                    var promises = [];
+                    selectedDays.forEach(function(dayOfWeek) {
+                        promises.push(
+                            supabase
+                                .from('lesson_series')
+                                .insert([{
+                                    student_id: studentId,
+                                    day_of_week: dayOfWeek,
+                                    start_time: startTime,
+                                    end_time: endTime,
+                                    section_id: sectionId,
+                                    topic: topic,
+                                    start_date: startDate,
+                                    end_date: endDate,
+                                    notes: notes || null
+                                }])
+                        );
+                    });
+                    
+                    Promise.all(promises)
+                        .then(function(results) {
+                            var errors = results.filter(function(r) { return r.error; });
+                            if (errors.length > 0) {
+                                alert('❌ Ошибка при создании серий: ' + errors[0].error.message);
+                                return;
+                            }
+                            alert('✅ Серии занятий созданы! (' + selectedDays.length + ' серий)');
+                            window.closeAddLessonModal();
+                            window.renderCalendar(currentMonth);
+                        })
+                        .catch(function(err) {
+                            alert('❌ Ошибка: ' + err.message);
+                        });
+                })
+                .catch(function(err) {
+                    alert('❌ Ошибка: ' + err.message);
+                });
+        };
 
         // ==========================================
         // ЗАВЕРШЕНИЕ
