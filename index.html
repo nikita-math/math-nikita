@@ -1181,6 +1181,71 @@
             color: #f5a623;
             font-weight: 900;
         }
+                /* ===== СТИЛИ ДЛЯ ЗАНЯТИЙ В ПЛАНЕ ===== */
+        .plan-lesson-item {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            padding: 10px 14px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 10px;
+            margin-bottom: 6px;
+            flex-wrap: wrap;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: 0.3s;
+        }
+        .plan-lesson-item:hover {
+            background: rgba(255, 255, 255, 0.06);
+            border-color: rgba(102, 126, 234, 0.2);
+        }
+        .plan-lesson-item .lesson-date {
+            color: #b0c4de;
+            font-weight: 600;
+            min-width: 100px;
+            font-size: 14px;
+        }
+        .plan-lesson-item .lesson-time {
+            color: #888;
+            font-size: 13px;
+            min-width: 70px;
+        }
+        .plan-lesson-item .lesson-status {
+            font-size: 13px;
+            min-width: 80px;
+        }
+        .plan-lesson-item .lesson-status.completed {
+            color: #2ecc71;
+        }
+        .plan-lesson-item .lesson-status.cancelled {
+            color: #e74c3c;
+        }
+        .plan-lesson-item .lesson-status.planned {
+            color: #f5a623;
+        }
+        .plan-lesson-item select {
+            flex: 1;
+            min-width: 150px;
+            padding: 6px 12px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            color: #fff;
+            font-size: 14px;
+            font-family: Arial, sans-serif;
+        }
+        .plan-lesson-item select:focus {
+            border-color: #667eea;
+            outline: none;
+        }
+        .plan-lesson-item select option {
+            background: #1a1a2e;
+            color: #fff;
+        }
+        .plan-lesson-item .lesson-topic-preview {
+            color: #88ccff;
+            font-size: 13px;
+            min-width: 80px;
+        }
     </style>
 </head>
 <body>
@@ -1625,14 +1690,14 @@
                 </div>
             </div>
             
-                  <!-- ===== ПЛАН ПОДГОТОВКИ (С КОНСТРУКТОРОМ) ===== -->
+                       <!-- ===== ПЛАН ПОДГОТОВКИ (СВЯЗКА С КАЛЕНДАРЁМ) ===== -->
             <div class="admin-content" id="tab-studyplan">
                 <h3 style="color: #f5a623; margin-bottom: 20px;">📚 Индивидуальный план подготовки</h3>
                 
                 <div class="plan-settings">
                     <div>
                         <label>👤 Ученик</label>
-                        <select id="planStudent" onchange="window.loadStudyPlan()">
+                        <select id="planStudent" onchange="window.loadStudentLessonsForPlan()">
                             <option value="">Выберите ученика</option>
                         </select>
                     </div>
@@ -1649,8 +1714,47 @@
                             <option value="70">📊 70+ баллов</option>
                         </select>
                     </div>
+                    <div style="display:flex; align-items:flex-end;">
+                        <button class="admin-btn success" onclick="window.savePlanFromLessons()" style="width:100%; padding:10px;">💾 Сохранить план</button>
+                    </div>
                 </div>
 
+                <!-- ===== ЗАНЯТИЯ ИЗ КАЛЕНДАРЯ ===== -->
+                <div style="background: rgba(255,255,255,0.03); border-radius: 16px; padding: 24px; border: 1px solid rgba(255,255,255,0.05); margin-bottom: 24px;">
+                    <h4 style="color: #f5a623; margin-bottom: 16px;">📅 Занятия из календаря</h4>
+                    <p style="color: #888; font-size: 14px; margin-bottom: 16px;">
+                        Здесь отображаются все занятия ученика из календаря. 
+                        Для каждого занятия выберите раздел, который будете проходить.
+                    </p>
+                    
+                    <div id="studentLessonsContainer" style="max-height: 500px; overflow-y: auto; border: 1px solid rgba(255,255,255,0.05); border-radius: 12px; padding: 12px; background: rgba(255,255,255,0.02);">
+                        <p style="color:#666; text-align:center; padding:30px;">Выберите ученика, чтобы загрузить его занятия</p>
+                    </div>
+                </div>
+                
+                <!-- ===== СТАТИСТИКА ПЛАНА ===== -->
+                <div id="planStats" style="display:none; background: rgba(255,255,255,0.03); border-radius: 16px; padding: 20px; border: 1px solid rgba(255,255,255,0.05); margin-bottom: 24px;">
+                    <h4 style="color: #f5a623; margin-bottom: 12px;">📊 Статистика плана</h4>
+                    <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:12px;">
+                        <div class="stat-card" style="padding:12px;">
+                            <div class="number" id="planTotalLessonsDisplay">0</div>
+                            <div class="label">Всего занятий</div>
+                        </div>
+                        <div class="stat-card" style="padding:12px;">
+                            <div class="number" id="planAssignedLessonsDisplay">0</div>
+                            <div class="label">Назначено разделов</div>
+                        </div>
+                        <div class="stat-card" style="padding:12px;">
+                            <div class="number" id="planProgressDisplay">0%</div>
+                            <div class="label">Прогресс</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="planContent">
+                    <p style="color:#666;">Выберите ученика и настройте план</p>
+                </div>
+            </div>
                 <!-- КОНСТРУКТОР ПЛАНА -->
                 <div class="plan-constructor-section">
                     <h4>🛠️ Конструктор плана</h4>
@@ -2046,7 +2150,291 @@
         var SUPABASE_URL = 'https://liqqdixrtvnrrvgkfvbn.supabase.co';
         var SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxpcXFkaXhydHZucnJ2Z2tmdmJuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODM4NTMzMzksImV4cCI6MjA5OTQyOTMzOX0.Jqrnt5DOKNURe5HERWIhMvc6KChurAg5iHkfMBw4P2A';
         var supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        // ==========================================
+        // ===== ПЛАН ИЗ КАЛЕНДАРЯ =====
+        // ==========================================
+        var currentPlanLessons = [];
+        var planSectionsCache = null;
 
+        // Загружаем разделы для выпадающего списка
+        function loadPlanSections() {
+            return new Promise(function(resolve) {
+                if (planSectionsCache) { resolve(planSectionsCache); return; }
+                supabase
+                    .from('video_sections')
+                    .select('id, name, order_num')
+                    .order('order_num', { ascending: true })
+                    .then(function(response) {
+                        if (!response.error) {
+                            planSectionsCache = response.data || [];
+                            resolve(planSectionsCache);
+                        } else {
+                            resolve([]);
+                        }
+                    });
+            });
+        }
+
+        // Загружаем занятия ученика из календаря
+        window.loadStudentLessonsForPlan = async function() {
+            var studentId = document.getElementById('planStudent').value;
+            var container = document.getElementById('studentLessonsContainer');
+            var statsDiv = document.getElementById('planStats');
+            
+            if (!studentId) {
+                container.innerHTML = '<p style="color:#666; text-align:center; padding:30px;">Выберите ученика, чтобы загрузить его занятия</p>';
+                statsDiv.style.display = 'none';
+                return;
+            }
+
+            container.innerHTML = '⏳ Загрузка занятий...';
+            
+            try {
+                // 1. Загружаем все занятия ученика из календаря
+                var { data: lessons, error } = await supabase
+                    .from('lesson_calendar')
+                    .select('*')
+                    .eq('student_id', studentId)
+                    .order('lesson_date', { ascending: true });
+                    
+                if (error) throw error;
+                
+                if (!lessons || lessons.length === 0) {
+                    container.innerHTML = '<p style="color:#666; text-align:center; padding:30px;">📭 У этого ученика нет занятий в календаре</p>';
+                    statsDiv.style.display = 'none';
+                    return;
+                }
+                
+                // 2. Загружаем существующий план (если есть)
+                var { data: existingPlan } = await supabase
+                    .from('study_plans')
+                    .select('id')
+                    .eq('student_id', studentId)
+                    .maybeSingle();
+                
+                var existingSections = {};
+                if (existingPlan) {
+                    var { data: sections } = await supabase
+                        .from('study_plan_sections')
+                        .select('section_id, deadline')
+                        .eq('plan_id', existingPlan.id);
+                    if (sections) {
+                        sections.forEach(function(s) {
+                            existingSections[s.deadline] = s.section_id;
+                        });
+                    }
+                }
+                
+                // 3. Загружаем разделы для выбора
+                var sections = await loadPlanSections();
+                
+                // 4. Формируем HTML для каждого занятия
+                var html = '';
+                var statusMap = {
+                    'completed': '✅ Проведено',
+                    'cancelled': '❌ Отменено',
+                    'planned': '📌 Запланировано'
+                };
+                
+                lessons.forEach(function(lesson, index) {
+                    var dateStr = lesson.lesson_date;
+                    var formattedDate = new Date(dateStr).toLocaleDateString('ru-RU');
+                    var statusClass = lesson.status || 'planned';
+                    var statusText = statusMap[statusClass] || '📌 Запланировано';
+                    
+                    // Проверяем, есть ли уже выбранный раздел
+                    var selectedSection = existingSections[dateStr] || '';
+                    
+                    // Формируем выпадающий список
+                    var optionsHtml = '<option value="">— Выберите раздел —</option>';
+                    sections.forEach(function(s) {
+                        var selected = s.id === selectedSection ? 'selected' : '';
+                        optionsHtml += '<option value="' + s.id + '" ' + selected + '>' + s.order_num + '. ' + s.name + '</option>';
+                    });
+                    
+                    html += `
+                        <div class="plan-lesson-item" data-lesson-id="${lesson.id}" data-lesson-date="${dateStr}">
+                            <span class="lesson-date">📅 ${formattedDate}</span>
+                            <span class="lesson-time">⏰ ${lesson.start_time || '18:00'}</span>
+                            <span class="lesson-status ${statusClass}">${statusText}</span>
+                            <select class="lesson-section-select" data-lesson-id="${lesson.id}" data-lesson-date="${dateStr}">
+                                ${optionsHtml}
+                            </select>
+                            ${selectedSection ? '<span class="lesson-topic-preview">✅ раздел выбран</span>' : ''}
+                            <input type="hidden" class="lesson-topic-input" value="${lesson.topic || ''}">
+                        </div>
+                    `;
+                });
+                
+                container.innerHTML = html;
+                currentPlanLessons = lessons;
+                
+                // Показываем статистику
+                statsDiv.style.display = 'block';
+                document.getElementById('planTotalLessonsDisplay').textContent = lessons.length;
+                
+                var assignedCount = Object.keys(existingSections).length;
+                document.getElementById('planAssignedLessonsDisplay').textContent = assignedCount;
+                
+                var progress = lessons.length > 0 ? Math.round((assignedCount / lessons.length) * 100) : 0;
+                document.getElementById('planProgressDisplay').textContent = progress + '%';
+                
+                // Сохраняем выбранные разделы при изменении
+                document.querySelectorAll('.lesson-section-select').forEach(function(select) {
+                    select.onchange = function() {
+                        var date = this.dataset.lessonDate;
+                        var sectionId = this.value;
+                        var preview = this.closest('.plan-lesson-item').querySelector('.lesson-topic-preview');
+                        if (sectionId) {
+                            if (!preview) {
+                                preview = document.createElement('span');
+                                preview.className = 'lesson-topic-preview';
+                                preview.textContent = '✅ раздел выбран';
+                                this.parentNode.appendChild(preview);
+                            } else {
+                                preview.textContent = '✅ раздел выбран';
+                            }
+                            updatePlanStats();
+                        } else {
+                            if (preview) preview.textContent = '';
+                        }
+                    };
+                });
+                
+                // Загружаем существующий план для отображения
+                window.loadStudyPlan();
+                
+            } catch (err) {
+                console.error('Ошибка загрузки занятий:', err);
+                container.innerHTML = '<p style="color:#666;">❌ Ошибка загрузки: ' + err.message + '</p>';
+            }
+        };
+
+        // Обновляем статистику плана
+        function updatePlanStats() {
+            var selects = document.querySelectorAll('.lesson-section-select');
+            var total = selects.length;
+            var assigned = 0;
+            selects.forEach(function(select) {
+                if (select.value) assigned++;
+            });
+            
+            document.getElementById('planTotalLessonsDisplay').textContent = total;
+            document.getElementById('planAssignedLessonsDisplay').textContent = assigned;
+            var progress = total > 0 ? Math.round((assigned / total) * 100) : 0;
+            document.getElementById('planProgressDisplay').textContent = progress + '%';
+        }
+
+        // Сохраняем план из занятий
+        window.savePlanFromLessons = async function() {
+            var studentId = document.getElementById('planStudent').value;
+            var examDate = document.getElementById('examDate').value;
+            var targetScore = parseInt(document.getElementById('targetScore').value);
+            
+            if (!studentId) { alert('❌ Выберите ученика'); return; }
+            if (!examDate) { alert('❌ Введите дату экзамена'); return; }
+            
+            // Собираем выбранные разделы
+            var selects = document.querySelectorAll('.lesson-section-select');
+            var assignments = [];
+            var hasEmpty = false;
+            
+            selects.forEach(function(select) {
+                var date = select.dataset.lessonDate;
+                var sectionId = select.value;
+                if (sectionId) {
+                    assignments.push({ date: date, section_id: sectionId });
+                } else {
+                    hasEmpty = true;
+                }
+            });
+            
+            if (hasEmpty) {
+                if (!confirm('⚠️ Не для всех занятий выбран раздел. Продолжить?')) {
+                    return;
+                }
+            }
+            
+            if (assignments.length === 0) {
+                alert('❌ Выберите хотя бы один раздел для занятий');
+                return;
+            }
+            
+            try {
+                // 1. Создаём или обновляем план
+                var planData = {
+                    student_id: studentId,
+                    exam_date: examDate,
+                    start_date: new Date().toISOString().split('T')[0],
+                    total_lessons_planned: selects.length,
+                    target_score: targetScore,
+                    current_level: targetScore >= 90 ? 'advanced' : (targetScore >= 80 ? 'intermediate' : 'beginner')
+                };
+                
+                // Проверяем, есть ли уже план
+                var { data: existingPlan, error: checkError } = await supabase
+                    .from('study_plans')
+                    .select('id')
+                    .eq('student_id', studentId)
+                    .maybeSingle();
+                
+                var plan;
+                var planError;
+                
+                if (existingPlan) {
+                    var { data, error } = await supabase
+                        .from('study_plans')
+                        .update(planData)
+                        .eq('student_id', studentId)
+                        .select();
+                    plan = data;
+                    planError = error;
+                } else {
+                    var { data, error } = await supabase
+                        .from('study_plans')
+                        .insert([planData])
+                        .select();
+                    plan = data;
+                    planError = error;
+                }
+                
+                if (planError) throw planError;
+                var planId = plan[0].id;
+                
+                // 2. Удаляем старые разделы
+                await supabase
+                    .from('study_plan_sections')
+                    .delete()
+                    .eq('plan_id', planId);
+                
+                // 3. Сохраняем новые разделы
+                var planSections = assignments.map(function(assignment, index) {
+                    return {
+                        plan_id: planId,
+                        section_id: assignment.section_id,
+                        order_num: index + 1,
+                        priority: 1,
+                        deadline: assignment.date,
+                        hours_needed: 2
+                    };
+                });
+                
+                var { error: insertError } = await supabase
+                    .from('study_plan_sections')
+                    .insert(planSections);
+                    
+                if (insertError) throw insertError;
+                
+                alert('✅ План подготовки сохранён!\n📚 Всего занятий: ' + assignments.length + '\n📖 Разделов назначено: ' + assignments.length);
+                
+                clearCache('study_plans');
+                window.loadStudyPlan();
+                
+            } catch (err) {
+                alert('❌ Ошибка сохранения плана: ' + err.message);
+                console.error(err);
+            }
+        };
         // ==========================================
         // ПЕРЕМЕННЫЕ
         // ==========================================
