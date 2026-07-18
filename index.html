@@ -1747,6 +1747,120 @@
                         <button class="admin-btn success" onclick="window.savePlanFromLessons()" style="width:100%; padding:10px;">💾 Сохранить план</button>
                     </div>
                 </div>
+                <!-- ===== ПЛАН ПОДГОТОВКИ (СВЯЗКА С КАЛЕНДАРЁМ) ===== -->
+<div class="admin-content" id="tab-studyplan">
+    <h3 style="color: #f5a623; margin-bottom: 20px;">📚 Индивидуальный план подготовки</h3>
+    
+    <div class="plan-settings">
+        <div>
+            <label>👤 Ученик</label>
+            <select id="planStudent" onchange="window.loadStudentLessonsForPlan()">
+                <option value="">Выберите ученика</option>
+            </select>
+        </div>
+        <div>
+            <label>📅 Дата экзамена</label>
+            <input type="date" id="examDate">
+        </div>
+        <div>
+            <label>🎯 Целевой балл</label>
+            <select id="targetScore">
+                <option value="100">💯 100 баллов</option>
+                <option value="90" selected>⭐ 90+ баллов</option>
+                <option value="80">📈 80+ баллов</option>
+                <option value="70">📊 70+ баллов</option>
+            </select>
+        </div>
+        <div style="display:flex; align-items:flex-end;">
+            <button class="admin-btn success" onclick="window.savePlanFromLessons()" style="width:100%; padding:10px;">💾 Сохранить план</button>
+        </div>
+    </div>
+
+    <!-- ===== ЗАНЯТИЯ ИЗ КАЛЕНДАРЯ ===== -->
+    <div style="background: rgba(255,255,255,0.03); border-radius: 16px; padding: 24px; border: 1px solid rgba(255,255,255,0.05); margin-bottom: 24px;">
+        <h4 style="color: #f5a623; margin-bottom: 16px;">📅 Занятия из календаря</h4>
+        <p style="color: #888; font-size: 14px; margin-bottom: 16px;">
+            Здесь отображаются все занятия ученика из календаря. 
+            Для каждого занятия выберите раздел, который будете проходить.
+        </p>
+        
+        <div id="studentLessonsContainer" style="max-height: 500px; overflow-y: auto; border: 1px solid rgba(255,255,255,0.05); border-radius: 12px; padding: 12px; background: rgba(255,255,255,0.02);">
+            <p style="color:#666; text-align:center; padding:30px;">Выберите ученика, чтобы загрузить его занятия</p>
+        </div>
+    </div>
+    
+    <!-- ===== СТАТИСТИКА ПЛАНА ===== -->
+    <div id="planStats" style="display:none; background: rgba(255,255,255,0.03); border-radius: 16px; padding: 20px; border: 1px solid rgba(255,255,255,0.05); margin-bottom: 24px;">
+        <h4 style="color: #f5a623; margin-bottom: 12px;">📊 Статистика плана</h4>
+        <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:12px;">
+            <div class="stat-card" style="padding:12px;">
+                <div class="number" id="planTotalLessonsDisplay">0</div>
+                <div class="label">Всего занятий</div>
+            </div>
+            <div class="stat-card" style="padding:12px;">
+                <div class="number" id="planAssignedLessonsDisplay">0</div>
+                <div class="label">Назначено разделов</div>
+            </div>
+            <div class="stat-card" style="padding:12px;">
+                <div class="number" id="planProgressDisplay">0%</div>
+                <div class="label">Прогресс</div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- ============================================================ -->
+    <!-- ===== ⬇️⬇️⬇️ СЮДА ВСТАВЛЯЕМ КОНСТРУКТОР ⬇️⬇️⬇️ ===== -->
+    <!-- ============================================================ -->
+    <div class="plan-constructor-section">
+        <h4>🛠️ Конструктор плана</h4>
+        
+        <div class="plan-constructor-grid">
+            <div>
+                <label>📅 Дни занятий</label>
+                <div class="days-checkboxes">
+                    <label class="plan-day-checkbox"><input type="checkbox" class="plan-day" value="1"> ПН</label>
+                    <label class="plan-day-checkbox"><input type="checkbox" class="plan-day" value="2"> ВТ</label>
+                    <label class="plan-day-checkbox"><input type="checkbox" class="plan-day" value="3"> СР</label>
+                    <label class="plan-day-checkbox"><input type="checkbox" class="plan-day" value="4"> ЧТ</label>
+                    <label class="plan-day-checkbox"><input type="checkbox" class="plan-day" value="5"> ПТ</label>
+                    <label class="plan-day-checkbox"><input type="checkbox" class="plan-day" value="6"> СБ</label>
+                    <label class="plan-day-checkbox"><input type="checkbox" class="plan-day" value="7"> ВС</label>
+                </div>
+            </div>
+            <div>
+                <label>📊 Количество занятий</label>
+                <input type="number" id="planTotalLessons" value="10" min="1" max="100">
+            </div>
+            <div>
+                <label>📅 Дата первого занятия</label>
+                <input type="date" id="planStartDate">
+            </div>
+        </div>
+        
+        <div style="margin-top: 16px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 12px;">
+                <span style="color: #b0c4de; font-weight: 600;">📖 Распределение разделов по занятиям</span>
+                <button class="admin-btn success" onclick="window.addPlanRow()">➕ Добавить занятие</button>
+            </div>
+            
+            <div class="plan-rows-container" id="planRowsContainer">
+                <!-- Сюда динамически добавляются строки -->
+            </div>
+            
+            <div style="margin-top: 16px; display: flex; gap: 12px; flex-wrap: wrap;">
+                <button class="admin-btn" onclick="window.clearPlanRows()">🗑 Очистить все</button>
+                <button class="admin-btn success" onclick="window.generatePlanFromConstructor()" style="background: linear-gradient(135deg, #27ae60, #2ecc71);">🎯 Создать план</button>
+                <button class="admin-btn" onclick="window.loadStudyPlan()">🔄 Обновить</button>
+            </div>
+        </div>
+    </div>
+    <!-- ===== ⬆️⬆️⬆️ КОНЕЦ КОНСТРУКТОРА ⬆️⬆️⬆️ ===== -->
+    <!-- ============================================================ -->
+    
+    <div id="planContent">
+        <p style="color:#666;">Выберите ученика и настройте план</p>
+    </div>
+</div>
 
                 <!-- ===== ЗАНЯТИЯ ИЗ КАЛЕНДАРЯ ===== -->
                 <div style="background: rgba(255,255,255,0.03); border-radius: 16px; padding: 24px; border: 1px solid rgba(255,255,255,0.05); margin-bottom: 24px;">
@@ -1776,55 +1890,6 @@
                         <div class="stat-card" style="padding:12px;">
                             <div class="number" id="planProgressDisplay">0%</div>
                             <div class="label">Прогресс</div>
-                        </div>
-                    </div>
-                </div>
-                
-                <div id="planContent">
-                    <p style="color:#666;">Выберите ученика и настройте план</p>
-                </div>
-            </div>
-                <!-- КОНСТРУКТОР ПЛАНА -->
-                <div class="plan-constructor-section">
-                    <h4>🛠️ Конструктор плана</h4>
-                    
-                    <div class="plan-constructor-grid">
-                        <div>
-                            <label>📅 Дни занятий</label>
-                            <div class="days-checkboxes">
-                                <label class="plan-day-checkbox"><input type="checkbox" class="plan-day" value="1"> ПН</label>
-                                <label class="plan-day-checkbox"><input type="checkbox" class="plan-day" value="2"> ВТ</label>
-                                <label class="plan-day-checkbox"><input type="checkbox" class="plan-day" value="3"> СР</label>
-                                <label class="plan-day-checkbox"><input type="checkbox" class="plan-day" value="4"> ЧТ</label>
-                                <label class="plan-day-checkbox"><input type="checkbox" class="plan-day" value="5"> ПТ</label>
-                                <label class="plan-day-checkbox"><input type="checkbox" class="plan-day" value="6"> СБ</label>
-                                <label class="plan-day-checkbox"><input type="checkbox" class="plan-day" value="7"> ВС</label>
-                            </div>
-                        </div>
-                        <div>
-                            <label>📊 Количество занятий</label>
-                            <input type="number" id="planTotalLessons" value="10" min="1" max="100">
-                        </div>
-                        <div>
-                            <label>📅 Дата первого занятия</label>
-                            <input type="date" id="planStartDate">
-                        </div>
-                    </div>
-                    
-                    <div style="margin-top: 16px;">
-                        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 12px;">
-                            <span style="color: #b0c4de; font-weight: 600;">📖 Распределение разделов по занятиям</span>
-                            <button class="admin-btn success" onclick="window.addPlanRow()">➕ Добавить занятие</button>
-                        </div>
-                        
-                        <div class="plan-rows-container" id="planRowsContainer">
-                            <!-- Сюда динамически добавляются строки -->
-                        </div>
-                        
-                        <div style="margin-top: 16px; display: flex; gap: 12px; flex-wrap: wrap;">
-                            <button class="admin-btn" onclick="window.clearPlanRows()">🗑 Очистить все</button>
-                            <button class="admin-btn success" onclick="window.generatePlanFromConstructor()" style="background: linear-gradient(135deg, #27ae60, #2ecc71);">🎯 Создать план</button>
-                            <button class="admin-btn" onclick="window.loadStudyPlan()">🔄 Обновить</button>
                         </div>
                     </div>
                 </div>
