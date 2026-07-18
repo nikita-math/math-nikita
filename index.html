@@ -287,53 +287,7 @@
             background: #1a1a2e;
             color: #fff;
         }
-
-        /* ===== МОДАЛКА ДЛЯ АДМИНА (управление занятием) ===== */
-           <!-- МОДАЛКА ДОБАВЛЕНИЯ ЗАНЯТИЯ НА ДАТУ -->
-    <div class="modal-overlay" id="addLessonOnDateModal">
-        <div class="modal-content">
-            <h3>📅 Добавить занятие</h3>
-            
-            <div class="form-group">
-                <label>📅 Дата:</label>
-                <input type="date" id="addLessonDate" readonly style="background:rgba(255,255,255,0.1);">
-            </div>
-            
-            <div class="form-group">
-                <label>👤 Ученик:</label>
-                <select id="addLessonStudent">
-                    <option value="">Выберите ученика</option>
-                </select>
-            </div>
-            
-            <div class="form-group">
-                <label>📚 Раздел (тема):</label>
-                <select id="addLessonSection">
-                    <option value="">Без раздела</option>
-                </select>
-            </div>
-            
-            <div class="form-group">
-                <label>⏰ Время начала:</label>
-                <input type="time" id="addLessonStartTime" value="18:00">
-            </div>
-            
-            <div class="form-group">
-                <label>⏰ Время окончания:</label>
-                <input type="time" id="addLessonEndTime" value="19:30">
-            </div>
-            
-            <div class="form-group">
-                <label>📝 Заметки (необязательно):</label>
-                <input type="text" id="addLessonNotes" placeholder="Дополнительные заметки...">
-            </div>
-            
-            <div class="modal-actions">
-                <button class="cancel-btn" onclick="closeAddLessonOnDateModal()">Отмена</button>
-                <button class="submit-btn" onclick="saveLessonOnDate()">✅ Создать занятие</button>
-            </div>
-        </div>
-    </div>
+        
         #adminLessonModal .modal-content {
             max-width: 450px;
         }
@@ -2188,6 +2142,51 @@
                 <button class="cancel-btn" onclick="window.closeAdminLessonModal()" style="flex:1;">Закрыть</button>
                 <button class="admin-btn danger" onclick="window.deleteAdminLesson()" style="flex:1;">🗑 Удалить занятие</button>
                 <button class="admin-btn danger" onclick="window.deleteSeriesFromModal()" style="flex:1; background:#e67e22;">🔁 Удалить серию</button>
+            </div>
+        </div>
+    </div>
+        <!-- ===== МОДАЛКА ДОБАВЛЕНИЯ ЗАНЯТИЯ НА ДАТУ ===== -->
+    <div class="modal-overlay" id="addLessonOnDateModal">
+        <div class="modal-content">
+            <h3>📅 Добавить занятие</h3>
+            
+            <div class="form-group">
+                <label>📅 Дата:</label>
+                <input type="date" id="addLessonDate" readonly style="background:rgba(255,255,255,0.1);">
+            </div>
+            
+            <div class="form-group">
+                <label>👤 Ученик:</label>
+                <select id="addLessonStudent">
+                    <option value="">Выберите ученика</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label>📚 Раздел (тема):</label>
+                <select id="addLessonSection">
+                    <option value="">Без раздела</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label>⏰ Время начала:</label>
+                <input type="time" id="addLessonStartTime" value="18:00">
+            </div>
+            
+            <div class="form-group">
+                <label>⏰ Время окончания:</label>
+                <input type="time" id="addLessonEndTime" value="19:30">
+            </div>
+            
+            <div class="form-group">
+                <label>📝 Заметки (необязательно):</label>
+                <input type="text" id="addLessonNotes" placeholder="Дополнительные заметки...">
+            </div>
+            
+            <div class="modal-actions">
+                <button class="cancel-btn" onclick="closeAddLessonOnDateModal()">Отмена</button>
+                <button class="submit-btn" onclick="saveLessonOnDate()">✅ Создать занятие</button>
             </div>
         </div>
     </div>
