@@ -2191,6 +2191,7 @@
             </div>
         </div>
     </div>
+    
 
     <footer>
         © 2026 Математика с Никитой. Все права защищены.
@@ -7299,6 +7300,110 @@ if (existingPlan) {
                     alert('✅ Серия успешно удалена!');
                     window.closeAdminLessonModal();
                     window.renderCalendar(currentMonth);
+                })
+                .catch(function(err) {
+                    alert('❌ Ошибка: ' + err.message);
+                });
+        };
+                // ==========================================
+        // ДОБАВЛЕНИЕ ЗАНЯТИЯ НА ДАТУ
+        // ==========================================
+        window.showAddLessonOnDateModal = function(dateStr) {
+            // Загружаем учеников
+            supabase
+                .from('students')
+                .select('id, name')
+                .eq('role', 'student')
+                .order('name')
+                .then(function(response) {
+                    if (response.error) return;
+                    var select = document.getElementById('addLessonStudent');
+                    select.innerHTML = '<option value="">Выберите ученика</option>';
+                    response.data.forEach(function(s) {
+                        select.innerHTML += '<option value="' + s.id + '">' + s.name + '</option>';
+                    });
+                });
+            
+            // Загружаем разделы
+            supabase
+                .from('video_sections')
+                .select('id, name, order_num')
+                .order('order_num', { ascending: true })
+                .then(function(response) {
+                    if (response.error) return;
+                    var select = document.getElementById('addLessonSection');
+                    select.innerHTML = '<option value="">Без раздела</option>';
+                    response.data.forEach(function(s) {
+                        select.innerHTML += '<option value="' + s.id + '">' + s.name + '</option>';
+                    });
+                });
+            
+            // Устанавливаем дату
+            document.getElementById('addLessonDate').value = dateStr;
+            
+            // Открываем модалку
+            document.getElementById('addLessonOnDateModal').classList.add('active');
+        };
+
+        window.closeAddLessonOnDateModal = function() {
+            document.getElementById('addLessonOnDateModal').classList.remove('active');
+            document.getElementById('addLessonStudent').value = '';
+            document.getElementById('addLessonSection').value = '';
+            document.getElementById('addLessonStartTime').value = '18:00';
+            document.getElementById('addLessonEndTime').value = '19:30';
+            document.getElementById('addLessonNotes').value = '';
+        };
+
+        window.saveLessonOnDate = function() {
+            var date = document.getElementById('addLessonDate').value;
+            var studentId = document.getElementById('addLessonStudent').value;
+            var sectionId = document.getElementById('addLessonSection').value;
+            var startTime = document.getElementById('addLessonStartTime').value;
+            var endTime = document.getElementById('addLessonEndTime').value;
+            var notes = document.getElementById('addLessonNotes').value.trim();
+            
+            if (!studentId) { alert('❌ Выберите ученика'); return; }
+            if (!startTime) { alert('❌ Введите время начала'); return; }
+            if (!date) { alert('❌ Дата не указана'); return; }
+            
+            // Получаем тему раздела
+            var topic = null;
+            if (sectionId) {
+                var sectionSelect = document.getElementById('addLessonSection');
+                var option = sectionSelect.querySelector('option[value="' + sectionId + '"]');
+                if (option) topic = option.textContent;
+            }
+            
+            // Если раздел не выбран, спрашиваем тему
+            if (!topic) {
+                topic = prompt('Введите тему занятия (или оставьте пустым):') || null;
+            }
+            
+            supabase
+                .from('lesson_calendar')
+                .insert([{
+                    student_id: studentId,
+                    section_id: sectionId || null,
+                    lesson_date: date,
+                    topic: topic,
+                    start_time: startTime,
+                    end_time: endTime || null,
+                    notes: notes || null,
+                    status: 'planned'
+                }])
+                .then(function(response) {
+                    if (response.error) {
+                        alert('❌ Ошибка создания занятия: ' + response.error.message);
+                        return;
+                    }
+                    alert('✅ Занятие создано!');
+                    window.closeAddLessonOnDateModal();
+                    window.renderCalendar(currentMonth);
+                    // Если выбран тот же ученик, обновляем список занятий на день
+                    if (selectedStudentId === studentId) {
+                        var dateStr = date;
+                        window.handleAdminDayClick(dateStr);
+                    }
                 })
                 .catch(function(err) {
                     alert('❌ Ошибка: ' + err.message);
