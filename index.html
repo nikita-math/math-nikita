@@ -2140,10 +2140,12 @@
                 <p id="adminLessonNotes" style="color:#888; font-size:13px;">📝 Заметки: <span id="adminLessonNotesValue">—</span></p>
             </div>
             
-            <div class="action-buttons">
-                <button class="btn-completed" onclick="window.updateAdminLessonStatus('completed')">✅ Проведено</button>
-                <button class="btn-cancelled" onclick="window.updateAdminLessonStatus('cancelled')">❌ Отменено</button>
-                <button class="btn-planned" onclick="window.updateAdminLessonStatus('planned')">📌 Вернуть</button>
+                      <!-- ===== КНОПКИ ДЛЯ СЕРИИ ===== -->
+            <div id="seriesActions" style="display:none; margin-top: 12px; padding-top: 12px; border-top: 1px solid rgba(255,255,255,0.05);">
+                <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                    <button class="admin-btn" onclick="window.editSeriesFromModal()" style="flex:1; background:#667eea;">✏️ Редактировать серию</button>
+                    <button class="admin-btn" onclick="window.splitSeriesFromModal()" style="flex:1; background:#f39c12;">✂️ Разделить серию</button>
+                </div>
             </div>
             
             <div class="move-section">
@@ -4893,7 +4895,6 @@
         // ==========================================
         // МОДАЛКА УПРАВЛЕНИЯ ЗАНЯТИЕМ ДЛЯ АДМИНА
         // ==========================================
-
         window.openAdminLessonModal = function(lessonId) {
             adminCurrentLessonId = lessonId;
             
@@ -4929,45 +4930,15 @@
                     
                     document.getElementById('moveLessonDate').value = formatDateSQL(new Date());
                     
-                    document.getElementById('adminLessonModal').classList.add('active');
-                })
-                .catch(function(err) {
-                    alert('❌ Ошибка: ' + err.message);
-                });
-        };
-
-        window.closeAdminLessonModal = function() {
-            document.getElementById('adminLessonModal').classList.remove('active');
-            adminCurrentLessonId = null;
-            adminCurrentLessonData = null;
-        };
-
-        window.updateAdminLessonStatus = function(status) {
-            if (!adminCurrentLessonId) {
-                alert('❌ Ошибка: занятие не выбрано');
-                return;
-            }
-            
-            var statusLabels = {
-                'completed': '✅ Проведено',
-                'cancelled': '❌ Отменено',
-                'planned': '📌 Запланировано'
-            };
-            
-            if (!confirm('Изменить статус на "' + statusLabels[status] + '"?')) return;
-            
-            supabase
-                .from('lesson_calendar')
-                .update({ status: status })
-                .eq('id', adminCurrentLessonId)
-                .then(function(response) {
-                    if (response.error) {
-                        alert('❌ Ошибка обновления статуса: ' + response.error.message);
-                        return;
+                    // 👇 ПОКАЗЫВАЕМ КНОПКИ ДЛЯ СЕРИИ, ЕСЛИ ОНА ЕСТЬ
+                    var seriesActions = document.getElementById('seriesActions');
+                    if (lesson.series_id) {
+                        seriesActions.style.display = 'block';
+                    } else {
+                        seriesActions.style.display = 'none';
                     }
-                    alert('✅ Статус изменён на "' + statusLabels[status] + '"');
-                    window.closeAdminLessonModal();
-                    window.renderCalendar(currentMonth);
+                    
+                    document.getElementById('adminLessonModal').classList.add('active');
                 })
                 .catch(function(err) {
                     alert('❌ Ошибка: ' + err.message);
@@ -7425,6 +7396,45 @@ if (existingPlan) {
                 .catch(function(err) {
                     alert('❌ Ошибка: ' + err.message);
                 });
+        };
+                // ==========================================
+        // РЕДАКТИРОВАНИЕ СЕРИИ ИЗ МОДАЛКИ
+        // ==========================================
+        window.editSeriesFromModal = function() {
+            if (!adminCurrentLessonData) {
+                alert('❌ Нет данных о занятии');
+                return;
+            }
+            
+            var seriesId = adminCurrentLessonData.series_id;
+            if (!seriesId) {
+                alert('❌ Это занятие не принадлежит серии');
+                return;
+            }
+            
+            // Закрываем модалку управления и открываем редактирование
+            window.closeAdminLessonModal();
+            window.editSeries(seriesId);
+        };
+
+        // ==========================================
+        // РАЗДЕЛЕНИЕ СЕРИИ ИЗ МОДАЛКИ
+        // ==========================================
+        window.splitSeriesFromModal = function() {
+            if (!adminCurrentLessonData) {
+                alert('❌ Нет данных о занятии');
+                return;
+            }
+            
+            var seriesId = adminCurrentLessonData.series_id;
+            if (!seriesId) {
+                alert('❌ Это занятие не принадлежит серии');
+                return;
+            }
+            
+            // Закрываем модалку управления и открываем разделение
+            window.closeAdminLessonModal();
+            window.showSplitSeriesModal(seriesId);
         };
 
         // ==========================================
