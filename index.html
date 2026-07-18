@@ -2078,6 +2078,7 @@
     </div>
 
     <!-- МОДАЛКА ДОБАВЛЕНИЯ СЕРИИ ЗАНЯТИЙ -->
+        <!-- МОДАЛКА ДОБАВЛЕНИЯ СЕРИИ ЗАНЯТИЙ (С ВЫБОРОМ НЕСКОЛЬКИХ ДНЕЙ) -->
     <div class="modal-overlay" id="addLessonModal">
         <div class="modal-content">
             <h3>📅 Добавить серию занятий</h3>
@@ -2097,16 +2098,30 @@
             </div>
             
             <div class="form-group">
-                <label>📅 День недели:</label>
-                <select id="lessonDayOfWeek">
-                    <option value="1">Понедельник</option>
-                    <option value="2">Вторник</option>
-                    <option value="3">Среда</option>
-                    <option value="4">Четверг</option>
-                    <option value="5">Пятница</option>
-                    <option value="6">Суббота</option>
-                    <option value="7">Воскресенье</option>
-                </select>
+                <label>📅 Дни недели (можно выбрать несколько):</label>
+                <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-top: 4px;">
+                    <label style="color: #b0c4de; font-size: 14px; cursor: pointer; display: flex; align-items: center; gap: 4px;">
+                        <input type="checkbox" class="series-day" value="1"> ПН
+                    </label>
+                    <label style="color: #b0c4de; font-size: 14px; cursor: pointer; display: flex; align-items: center; gap: 4px;">
+                        <input type="checkbox" class="series-day" value="2"> ВТ
+                    </label>
+                    <label style="color: #b0c4de; font-size: 14px; cursor: pointer; display: flex; align-items: center; gap: 4px;">
+                        <input type="checkbox" class="series-day" value="3"> СР
+                    </label>
+                    <label style="color: #b0c4de; font-size: 14px; cursor: pointer; display: flex; align-items: center; gap: 4px;">
+                        <input type="checkbox" class="series-day" value="4"> ЧТ
+                    </label>
+                    <label style="color: #b0c4de; font-size: 14px; cursor: pointer; display: flex; align-items: center; gap: 4px;">
+                        <input type="checkbox" class="series-day" value="5"> ПТ
+                    </label>
+                    <label style="color: #b0c4de; font-size: 14px; cursor: pointer; display: flex; align-items: center; gap: 4px;">
+                        <input type="checkbox" class="series-day" value="6"> СБ
+                    </label>
+                    <label style="color: #b0c4de; font-size: 14px; cursor: pointer; display: flex; align-items: center; gap: 4px;">
+                        <input type="checkbox" class="series-day" value="7"> ВС
+                    </label>
+                </div>
             </div>
             
             <div class="form-group">
@@ -2140,7 +2155,6 @@
             </div>
         </div>
     </div>
-
     <!-- МОДАЛКА ДЛЯ АДМИНА (УПРАВЛЕНИЕ ЗАНЯТИЕМ) -->
     <div class="modal-overlay" id="adminLessonModal">
         <div class="modal-content">
@@ -4348,13 +4362,13 @@
                     var topicText = lesson && lesson.topic ? lesson.topic.substring(0, 15) : '';
                     var seriesBadge = lesson && lesson.series_id ? '<span class="series-badge">🔁</span>' : '';
                     
-                                     html += `
+                                              html += `
                         <div class="calendar-day${statusClass}" onclick="window.handleAdminDayClick('${dateStr}')">
                             <span class="day-number">${day}</span>
                             ${statusText ? '<span class="lesson-indicator">' + statusText + '</span>' : ''}
                             ${topicText ? '<span class="lesson-topic">' + topicText + '</span>' : ''}
                             ${seriesBadge}
-                            <span style="font-size:10px; color:#667eea; cursor:pointer; margin-top:2px;" onclick="event.stopPropagation(); window.showAddLessonOnDateModal('${dateStr}')">➕</span>
+                            <span style="font-size:10px; color:#667eea; cursor:pointer; margin-top:2px; display:block;" onclick="event.stopPropagation(); window.showAddLessonOnDateModal('${dateStr}')">➕</span>
                         </div>
                     `;
                 }
@@ -4539,17 +4553,24 @@
             document.getElementById('addLessonModal').classList.remove('active');
         };
 
-        window.saveLessonSeries = function() {
+          window.saveLessonSeries = function() {
             var studentId = document.getElementById('lessonStudent').value;
             var sectionId = document.getElementById('lessonSection').value || null;
-            var dayOfWeek = parseInt(document.getElementById('lessonDayOfWeek').value);
             var startTime = document.getElementById('lessonStartTime').value;
             var endTime = document.getElementById('lessonEndTime').value || null;
             var startDate = document.getElementById('lessonStartDate').value;
             var endDate = document.getElementById('lessonEndDate').value;
             var notes = document.getElementById('lessonNotes').value || null;
             
+            // Получаем выбранные дни недели (несколько)
+            var dayCheckboxes = document.querySelectorAll('.series-day:checked');
+            var selectedDays = [];
+            dayCheckboxes.forEach(function(cb) {
+                selectedDays.push(parseInt(cb.value));
+            });
+            
             if (!studentId) { alert('❌ Выберите ученика'); return; }
+            if (selectedDays.length === 0) { alert('❌ Выберите хотя бы один день недели'); return; }
             if (!startTime) { alert('❌ Введите время начала'); return; }
             if (!startDate) { alert('❌ Введите дату первого занятия'); return; }
             if (!endDate) { alert('❌ Введите дату последнего занятия'); return; }
@@ -4572,7 +4593,7 @@
                 topic = prompt('Введите тему занятия (или оставьте пустым):') || null;
             }
             
-            // Проверяем, нет ли уже занятий на эти даты (чтобы избежать дублирования)
+            // Проверяем, нет ли уже занятий на эти даты
             supabase
                 .from('lesson_calendar')
                 .select('id, lesson_date')
@@ -4585,36 +4606,39 @@
                         return;
                     }
                     
-                    // Если есть существующие занятия, предупреждаем
                     if (checkRes.data && checkRes.data.length > 0) {
                         if (!confirm('⚠️ На этот период уже есть занятия у ученика. Продолжить? (будут созданы только новые занятия)')) {
                             return;
                         }
                     }
                     
-                    supabase
-                        .from('lesson_series')
-                        .insert([{
-                            student_id: studentId,
-                            day_of_week: dayOfWeek,
-                            start_time: startTime,
-                            end_time: endTime,
-                            section_id: sectionId,
-                            topic: topic,
-                            start_date: startDate,
-                            end_date: endDate
-                        }])
-                        .then(function(response) {
-                            if (response.error) {
-                                // Если ошибка дублирования, показываем понятное сообщение
-                                if (response.error.message && response.error.message.includes('duplicate key value')) {
-                                    alert('❌ У этого ученика уже есть занятия на выбранные даты и время.\nПожалуйста, выберите другое время или даты.');
-                                } else {
-                                    alert('❌ Ошибка: ' + response.error.message);
-                                }
+                    // Для каждого выбранного дня создаём отдельную серию
+                    var promises = [];
+                    selectedDays.forEach(function(dayOfWeek) {
+                        promises.push(
+                            supabase
+                                .from('lesson_series')
+                                .insert([{
+                                    student_id: studentId,
+                                    day_of_week: dayOfWeek,
+                                    start_time: startTime,
+                                    end_time: endTime,
+                                    section_id: sectionId,
+                                    topic: topic,
+                                    start_date: startDate,
+                                    end_date: endDate
+                                }])
+                        );
+                    });
+                    
+                    Promise.all(promises)
+                        .then(function(results) {
+                            var errors = results.filter(function(r) { return r.error; });
+                            if (errors.length > 0) {
+                                alert('❌ Ошибка при создании серий: ' + errors[0].error.message);
                                 return;
                             }
-                            alert('✅ Серия занятий создана!');
+                            alert('✅ Серии занятий созданы! (' + selectedDays.length + ' серий)');
                             window.closeAddLessonModal();
                             window.renderCalendar(currentMonth);
                         })
@@ -4627,21 +4651,30 @@
                 });
         };
 
-        window.editSeries = function(seriesId) {
+              window.editSeries = function(seriesId) {
+            if (!seriesId) {
+                alert('❌ Ошибка: ID серии не указан');
+                return;
+            }
+            
             supabase
                 .from('lesson_series')
                 .select('*')
                 .eq('id', seriesId)
-                .single()
                 .then(function(response) {
                     if (response.error) {
                         alert('❌ Ошибка: ' + response.error.message);
                         return;
                     }
-                    var series = response.data;
+                    
+                    if (!response.data || response.data.length === 0) {
+                        alert('❌ Серия не найдена');
+                        return;
+                    }
+                    
+                    var series = response.data[0];
                     
                     document.getElementById('lessonStudent').value = series.student_id;
-                    document.getElementById('lessonDayOfWeek').value = series.day_of_week;
                     document.getElementById('lessonStartTime').value = series.start_time;
                     document.getElementById('lessonEndTime').value = series.end_time || '';
                     document.getElementById('lessonStartDate').value = series.start_date;
@@ -4651,6 +4684,11 @@
                     if (series.section_id) {
                         document.getElementById('lessonSection').value = series.section_id;
                     }
+                    
+                    // Отмечаем выбранный день недели
+                    document.querySelectorAll('.series-day').forEach(function(cb) {
+                        cb.checked = parseInt(cb.value) === series.day_of_week;
+                    });
                     
                     document.querySelector('#addLessonModal h3').textContent = '✏️ Редактировать серию';
                     document.querySelector('#addLessonModal .submit-btn').textContent = '💾 Сохранить';
@@ -4671,6 +4709,9 @@
                     actionsDiv.prepend(splitBtn);
                     
                     document.getElementById('addLessonModal').classList.add('active');
+                })
+                .catch(function(err) {
+                    alert('❌ Ошибка: ' + err.message);
                 });
         };
 
