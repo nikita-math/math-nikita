@@ -7411,43 +7411,7 @@ if (existingPlan) {
         };
                 // ==========================================
         // ДОБАВЛЕНИЕ ЗАНЯТИЯ НА ДАТУ
-        // ==========================================
-        window.showAddLessonOnDateModal = function(dateStr) {
-            // Загружаем учеников
-            supabase
-                .from('students')
-                .select('id, name')
-                .eq('role', 'student')
-                .order('name')
-                .then(function(response) {
-                    if (response.error) return;
-                    var select = document.getElementById('addLessonStudent');
-                    select.innerHTML = '<option value="">Выберите ученика</option>';
-                    response.data.forEach(function(s) {
-                        select.innerHTML += '<option value="' + s.id + '">' + s.name + '</option>';
-                    });
-                });
-            
-            // Загружаем разделы
-            supabase
-                .from('video_sections')
-                .select('id, name, order_num')
-                .order('order_num', { ascending: true })
-                .then(function(response) {
-                    if (response.error) return;
-                    var select = document.getElementById('addLessonSection');
-                    select.innerHTML = '<option value="">Без раздела</option>';
-                    response.data.forEach(function(s) {
-                        select.innerHTML += '<option value="' + s.id + '">' + s.name + '</option>';
-                    });
-                });
-            
-            // Устанавливаем дату
-            document.getElementById('addLessonDate').value = dateStr;
-            
-            // Открываем модалку
-            document.getElementById('addLessonOnDateModal').classList.add('active');
-        };
+        // =========================================
 
         window.closeAddLessonOnDateModal = function() {
             document.getElementById('addLessonOnDateModal').classList.remove('active');
