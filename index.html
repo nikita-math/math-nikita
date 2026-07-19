@@ -7745,8 +7745,97 @@ if (existingPlan) {
                 window.renderStudentCalendar(studentMonth);
             }
         };
+        // ==========================================
+// ===== ИЗМЕНЕНИЕ СТАТУСА ЗАНЯТИЯ =====
+// ==========================================
+
+window.setLessonStatus = function(status) {
+    if (!adminCurrentLessonId) {
+        alert('❌ Ошибка: занятие не выбрано');
+        return;
+    }
+    
+    var statusMap = {
+        'planned': 'Запланировано',
+        'completed': 'Проведено',
+        'cancelled': 'Отменено'
+    };
+    
+    if (!confirm('Изменить статус на "' + statusMap[status] + '"?')) return;
+    
+    supabase
+        .from('lesson_calendar')
+        .update({ status: status })
+        .eq('id', adminCurrentLessonId)
+        .then(function(response) {
+            if (response.error) {
+                alert('❌ Ошибка изменения статуса: ' + response.error.message);
+                return;
+            }
+            alert('✅ Статус изменён на "' + statusMap[status] + '"');
+            window.closeAdminLessonModal();
+            window.renderCalendar(currentMonth);
+            // Обновляем список занятий на день
+            if (adminCurrentLessonData && adminCurrentLessonData.lesson_date) {
+                window.handleAdminDayClick(adminCurrentLessonData.lesson_date);
+            }
+        })
+        .catch(function(err) {
+            alert('❌ Ошибка: ' + err.message);
+        });
+};
         
     </script>
+    <!-- ===== МОДАЛКА УПРАВЛЕНИЯ ЗАНЯТИЕМ ===== -->
+    <div class="modal-overlay" id="adminLessonModal">
+        <div class="modal-content">
+            <h3 style="color: #f5a623;">⚙️ Управление занятием</h3>
+            
+            <div class="lesson-info">
+                <p><strong>📚 Тема:</strong> <span id="adminLessonTopic">—</span></p>
+                <p><strong>👤 Ученик:</strong> <span id="adminLessonStudentName">—</span></p>
+                <p><strong>⏰ Время:</strong> <span id="adminLessonTimeValue">—</span></p>
+                <p><strong>📅 Дата:</strong> <span id="adminLessonDateValue">—</span></p>
+                <p><strong>📖 Раздел:</strong> <span id="adminLessonSectionValue">—</span></p>
+                <p><strong>📝 Заметки:</strong> <span id="adminLessonNotesValue">—</span></p>
+                <p><strong>Статус:</strong> <span class="status-badge planned" id="adminLessonStatusBadge">📌 Запланировано</span></p>
+            </div>
+            
+            <!-- Кнопки изменения статуса -->
+            <div class="action-buttons">
+                <button class="btn-planned" onclick="window.setLessonStatus('planned')">📌 Запланировать</button>
+                <button class="btn-completed" onclick="window.setLessonStatus('completed')">✅ Провести</button>
+                <button class="btn-cancelled" onclick="window.setLessonStatus('cancelled')">❌ Отменить</button>
+            </div>
+            
+            <!-- Кнопки для работы с серией -->
+            <div id="seriesActions" style="display:none; margin-top: 12px; padding-top: 12px; border-top: 1px solid rgba(255,255,255,0.05);">
+                <p style="color: #888; font-size: 13px; margin-bottom: 8px;">🔁 Это занятие из серии:</p>
+                <div class="action-buttons">
+                    <button class="admin-btn" onclick="window.editSeriesFromModal()" style="background: #667eea; color: #fff;">✏️ Редактировать серию</button>
+                    <button class="admin-btn" onclick="window.splitSeriesFromModal()" style="background: #f39c12; color: #fff;">✂️ Разделить серию</button>
+                    <button class="admin-btn danger" onclick="window.deleteSeriesFromModal()">🗑 Удалить серию</button>
+                </div>
+            </div>
+            
+            <!-- Перенос занятия -->
+            <div class="move-section">
+                <label>📅 Перенести на дату:</label>
+                <div class="move-row">
+                    <input type="date" id="moveLessonDate">
+                    <button onclick="window.moveAdminLesson()">↪ Перенести</button>
+                </div>
+            </div>
+            
+            <!-- Кнопки -->
+            <div class="modal-actions" style="margin-top: 16px; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 16px;">
+                <button class="cancel-btn" onclick="window.closeAdminLessonModal()">✕ Закрыть</button>
+                <button class="admin-btn danger" onclick="window.deleteAdminLesson()">🗑 Удалить занятие</button>
+            </div>
+        </div>
+    </div>
 
 </body>
 </html>
+
+
