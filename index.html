@@ -7132,29 +7132,43 @@
         window.loadTeacherSettings();
         window.loadTemplatesForSelect();
         
-        // Инициализация конструктора плана при загрузке вкладки studyplan
-        var originalSwitchAdminTab = window.switchAdminTab;
-        window.switchAdminTab = function(tab) {
-            originalSwitchAdminTab(tab);
-            if (tab === 'studyplan') {
-                setTimeout(function() {
-                    if (!document.getElementById('planRowsContainer').children.length) {
-                        // Добавляем 10 строк по умолчанию
-                        for (var i = 0; i < 10; i++) {
+ 
+// ==========================================
+// ИНИЦИАЛИЗАЦИЯ КОНСТРУКТОРА ПЛАНА
+// ==========================================
+var originalSwitchAdminTab = window.switchAdminTab;
+window.switchAdminTab = function(tab) {
+    // Вызываем оригинальную функцию
+    if (typeof originalSwitchAdminTab === 'function') {
+        originalSwitchAdminTab(tab);
+    }
+    
+    // Дополнительная инициализация для вкладки studyplan
+    if (tab === 'studyplan') {
+        setTimeout(function() {
+            try {
+                var container = document.getElementById('planRowsContainer');
+                if (container && container.children.length === 0) {
+                    // Добавляем 10 строк по умолчанию
+                    for (var i = 0; i < 10; i++) {
+                        if (typeof window.addPlanRow === 'function') {
                             window.addPlanRow();
                         }
                     }
-                    var startDateInput = document.getElementById('planStartDate');
-                    if (!startDateInput.value) {
-                        var tomorrow = new Date();
-                        tomorrow.setDate(tomorrow.getDate() + 1);
-                        startDateInput.value = formatDateSQL(tomorrow);
-                    }
-                }, 300);
+                }
+                
+                var startDateInput = document.getElementById('planStartDate');
+                if (startDateInput && !startDateInput.value) {
+                    var tomorrow = new Date();
+                    tomorrow.setDate(tomorrow.getDate() + 1);
+                    startDateInput.value = formatDateSQL(tomorrow);
+                }
+            } catch (error) {
+                console.log('Ошибка инициализации плана:', error);
             }
-        };
-    });
-
+        }, 300);
+    }
+};
     console.log('✅ Сайт полностью загружен!');
     console.log('📊 Используемые таблицы:');
     console.log('  📋 my_students - ваш личный список учеников');
