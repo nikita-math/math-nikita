@@ -6707,15 +6707,15 @@ if (existingPlan) {
                         document.getElementById('dashboard').style.display = 'block';
                         document.getElementById('welcomeMessage').textContent = '👋 Привет, ' + user.name + '!';
                         
-                        if (user.role === 'admin') {
-                            document.getElementById('adminPanel').style.display = 'block';
-                            document.getElementById('adminTheoryControls').style.display = 'block';
-                            window.loadAdminData();
-                            window.loadTeacherSettings();
-                        } else {
-                            document.getElementById('adminTheoryControls').style.display = 'none';
-                        }
-                        
+                       if (user.role === 'admin') {
+    document.getElementById('adminPanel').style.display = 'block';
+    document.getElementById('adminTheoryControls').style.display = 'block';
+    // window.loadAdminData();  // 👈 ЗАКОММЕНТИРОВАНО для ускорения
+    window.fastLoad();  // 👈 ВМЕСТО НЕЁ (быстрая загрузка)
+    window.loadTeacherSettings();
+} else {
+    document.getElementById('adminTheoryControls').style.display = 'none';
+}
                         window.loadWhiteboard();
                         window.loadTheory();
                         window.loadHomework(user.id);
