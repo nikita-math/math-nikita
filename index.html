@@ -7727,6 +7727,24 @@ if (existingPlan) {
         console.log('✅ Добавлена возможность менять статус занятия');
         console.log('✅ Добавлена функция разделения серий');
         console.log('✅ Добавлена проверка дублирования занятий при создании серии');
+                // ==========================================
+        // ===== УСКОРЕННАЯ ЗАГРУЗКА =====
+        // ==========================================
+        
+        // Ускоренная загрузка
+        window.fastLoad = function() {
+            // Отключаем автообновление
+            if (refreshInterval) clearInterval(refreshInterval);
+            
+            // Показываем сообщение
+            console.log('⚡ Быстрая загрузка включена');
+            
+            // Загружаем только самое нужное
+            if (currentUser) {
+                window.loadDashboardOverview(currentUser.id);
+                window.renderStudentCalendar(studentMonth);
+            }
+        };
         
     </script>
 
