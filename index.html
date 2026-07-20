@@ -2548,8 +2548,8 @@
         // ==========================================
         // КЕШИРОВАНИЕ
         // ==========================================
-        function getCache(key, ttl) {
-            ttl = ttl || 300000;
+       function getCache(key, ttl) {
+    ttl = ttl || 1800000;  // 👈 30 МИНУТ (в 6 раз больше!)
             var item = localStorage.getItem('cache_' + key);
             if (!item) return null;
             try {
@@ -2649,7 +2649,7 @@
                         updateDataSilently();
                     }
                 }
-            }, 30000);
+            }, 120000);
         }
 
         function updateDataSilently() {
@@ -7960,6 +7960,12 @@ window.loadStudentProgress = async function() {
         return;
     }
     
+   var cached = getCache('progress_' + studentId);
+    if (cached) {
+        renderProgressTable(cached, container);
+        return;
+    }
+    
     currentProgressStudentId = studentId;
     container.innerHTML = '⏳ Загрузка...';
     
@@ -8086,7 +8092,9 @@ window.loadStudentProgress = async function() {
             </div>
         `;
         
-        container.innerHTML = html;
+// 👇 СОХРАНЯЕМ В КЕШ
+setCache('progress_' + studentId, html);
+container.innerHTML = html;
         
     } catch (err) {
         console.error('Ошибка загрузки прогресса:', err);
@@ -8157,6 +8165,11 @@ window.saveStudentProgress = async function() {
         console.error(err);
     }
 };
+        // Рендерим таблицу из кеша
+function renderProgressTable(html, container) {
+    container.innerHTML = html;
+    console.log('⚡ Прогресс загружен из кеша');
+}
 
 // Загружаем учеников при открытии вкладки
 var originalSwitchAdminTab = window.switchAdminTab;
