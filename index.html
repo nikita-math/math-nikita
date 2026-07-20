@@ -1274,7 +1274,93 @@
         .split-series-btn:hover {
             background: #e67e22 !important;
             transform: scale(1.02);
-        }    
+        }  
+        /* ===== ПРОГРЕСС УЧЕНИКОВ ===== */
+.progress-table-wrap { overflow-x: auto; margin-top: 16px; }
+.progress-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: rgba(255,255,255,0.03);
+    border-radius: 12px;
+    overflow: hidden;
+    font-size: 14px;
+}
+.progress-table th,
+.progress-table td {
+    border: 1px solid rgba(255,255,255,0.08);
+    padding: 10px 12px;
+    text-align: center;
+    vertical-align: middle;
+}
+.progress-table th {
+    background: rgba(255,255,255,0.06);
+    color: var(--accent);
+    font-weight: 700;
+    font-size: 14px;
+}
+.progress-table td {
+    color: var(--text-light);
+}
+.progress-table .section-name {
+    text-align: left;
+    color: var(--text-white);
+    font-weight: 600;
+}
+.progress-table .section-num {
+    color: #888;
+    font-weight: 700;
+    min-width: 40px;
+}
+.progress-table .checkbox-cell {
+    text-align: center;
+}
+.progress-table input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+    accent-color: #667eea;
+    transform: scale(1.1);
+}
+.progress-table input[type="checkbox"]:checked {
+    accent-color: #2ecc71;
+}
+.progress-table .checkbox-cell.done {
+    background: rgba(46,204,113,0.08);
+}
+.progress-table .section-row {
+    transition: 0.3s;
+}
+.progress-table .section-row:hover {
+    background: rgba(255,255,255,0.05);
+}
+.progress-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 16px;
+    margin-bottom: 20px;
+}
+.progress-stats .stat-card {
+    background: rgba(255,255,255,0.03);
+    padding: 16px;
+    border-radius: 12px;
+    text-align: center;
+    border: 1px solid rgba(255,255,255,0.05);
+}
+.progress-stats .stat-card .number {
+    font-size: 28px;
+    font-weight: 900;
+    color: var(--text-white);
+}
+.progress-stats .stat-card .label {
+    color: #888;
+    font-size: 13px;
+    margin-top: 4px;
+}
+.progress-stats .stat-card .icon {
+    font-size: 24px;
+    display: block;
+    margin-bottom: 6px;
+}
     </style>
 </head>
 <body>
@@ -1623,6 +1709,7 @@
                 <button data-tab="schedule" onclick="window.switchAdminTab('schedule')">📅 Расписание</button>
                 <button data-tab="calendar" onclick="window.switchAdminTab('calendar')">📅 Календарь</button>
                 <button data-tab="studyplan" onclick="window.switchAdminTab('studyplan')">📚 План подготовки</button>
+                <button data-tab="progress" onclick="window.switchAdminTab('progress')">📊 Прогресс</button>
                 <button data-tab="templates" onclick="window.switchAdminTab('templates')">📚 Шаблоны</button>
                 <button data-tab="stats" onclick="window.switchAdminTab('stats')">📊 Статистика</button>
                 <button data-tab="settings" onclick="window.switchAdminTab('settings')">⚙️ Настройки</button>
@@ -1790,6 +1877,27 @@
     
 </div>
 <!-- ===== КОНЕЦ ПЛАН ПОДГОТОВКИ ===== -->
+        <!-- ===== ПРОГРЕСС УЧЕНИКОВ ===== -->
+<div class="admin-content" id="tab-progress">
+    <h3 style="color: #f5a623; margin-bottom: 20px;">📊 Прогресс учеников</h3>
+    
+    <div style="margin-bottom: 20px;">
+        <label style="color: #b0c4de; font-weight: 600; display: block; margin-bottom: 8px;">👤 Выберите ученика:</label>
+        <select id="progressStudent" onchange="window.loadStudentProgress()" style="width: 100%; max-width: 400px; padding: 10px 14px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; color: #fff; font-size: 15px; font-family: Arial, sans-serif;">
+            <option value="">Загрузка...</option>
+        </select>
+    </div>
+    
+    <div id="progressTableContainer">
+        <p style="color:#666; text-align:center; padding:30px;">Выберите ученика, чтобы увидеть его прогресс</p>
+    </div>
+    
+    <div style="margin-top: 16px;">
+        <button class="admin-btn success" onclick="window.saveStudentProgress()">💾 Сохранить прогресс</button>
+        <button class="admin-btn" onclick="window.loadStudentProgress()">🔄 Обновить</button>
+    </div>
+</div>
+<!-- ===== КОНЕЦ ПРОГРЕСС УЧЕНИКОВ ===== -->
             <!-- ===== ШАБЛОНЫ ===== -->
             <div class="admin-content" id="tab-templates">
                 <h3 style="color: #f5a623; margin-bottom: 20px;">📚 Шаблоны планов подготовки</h3>
@@ -7783,6 +7891,285 @@ window.setLessonStatus = function(status) {
         .catch(function(err) {
             alert('❌ Ошибка: ' + err.message);
         });
+};
+        // ==========================================
+// ===== ПРОГРЕСС УЧЕНИКОВ =====
+// ==========================================
+
+var currentProgressStudentId = null;
+var progressSectionsCache = null;
+
+// Загружаем учеников для выпадающего списка
+window.loadProgressStudents = async function() {
+    var select = document.getElementById('progressStudent');
+    if (!select) return;
+    
+    try {
+        var { data, error } = await supabase
+            .from('students')
+            .select('id, name')
+            .eq('role', 'student')
+            .order('name');
+            
+        if (error) throw error;
+        
+        select.innerHTML = '<option value="">Выберите ученика</option>';
+        data.forEach(function(student) {
+            select.innerHTML += '<option value="' + student.id + '">' + student.name + '</option>';
+        });
+        
+        // Если есть сохранённый ID, выбираем его
+        if (currentProgressStudentId) {
+            select.value = currentProgressStudentId;
+        }
+        
+    } catch (err) {
+        console.error('Ошибка загрузки учеников:', err);
+        select.innerHTML = '<option value="">Ошибка загрузки</option>';
+    }
+};
+
+// Загружаем разделы
+window.loadProgressSections = async function() {
+    if (progressSectionsCache) return progressSectionsCache;
+    
+    try {
+        var { data, error } = await supabase
+            .from('video_sections')
+            .select('id, name, order_num')
+            .order('order_num', { ascending: true });
+            
+        if (error) throw error;
+        
+        progressSectionsCache = data || [];
+        return progressSectionsCache;
+        
+    } catch (err) {
+        console.error('Ошибка загрузки разделов:', err);
+        return [];
+    }
+};
+
+// Загружаем прогресс ученика
+window.loadStudentProgress = async function() {
+    var studentId = document.getElementById('progressStudent').value;
+    var container = document.getElementById('progressTableContainer');
+    
+    if (!studentId) {
+        container.innerHTML = '<p style="color:#666; text-align:center; padding:30px;">Выберите ученика, чтобы увидеть его прогресс</p>';
+        return;
+    }
+    
+    currentProgressStudentId = studentId;
+    container.innerHTML = '⏳ Загрузка...';
+    
+    try {
+        // Загружаем разделы
+        var sections = await window.loadProgressSections();
+        
+        if (!sections || sections.length === 0) {
+            container.innerHTML = '<p style="color:#666; text-align:center; padding:30px;">📭 Нет разделов. Добавьте их в видео-разделах.</p>';
+            return;
+        }
+        
+        // Загружаем существующий прогресс ученика
+        var { data: progressData, error: progressError } = await supabase
+            .from('student_progress')
+            .select('*')
+            .eq('student_id', studentId);
+            
+        if (progressError) throw progressError;
+        
+        // Создаём карту прогресса для быстрого доступа
+        var progressMap = {};
+        if (progressData) {
+            progressData.forEach(function(p) {
+                var key = p.section_id + '_' + p.type;
+                progressMap[key] = p.completed;
+            });
+        }
+        
+        // Строим таблицу
+        var html = '';
+        
+        // Статистика
+        var totalSections = sections.length;
+        var doneBasic = 0;
+        var doneRepeat = 0;
+        var doneIntensive = 0;
+        
+        sections.forEach(function(section) {
+            if (progressMap[section.id + '_basic']) doneBasic++;
+            if (progressMap[section.id + '_repeat']) doneRepeat++;
+            if (progressMap[section.id + '_intensive']) doneIntensive++;
+        });
+        
+        html += `
+            <div class="progress-stats">
+                <div class="stat-card">
+                    <span class="icon">📚</span>
+                    <div class="number">${totalSections}</div>
+                    <div class="label">Всего разделов</div>
+                </div>
+                <div class="stat-card" style="border-color: rgba(46,204,113,0.2);">
+                    <span class="icon">✅</span>
+                    <div class="number">${doneBasic}</div>
+                    <div class="label">Пройдено (база)</div>
+                </div>
+                <div class="stat-card" style="border-color: rgba(245,166,35,0.2);">
+                    <span class="icon">🔄</span>
+                    <div class="number">${doneRepeat}</div>
+                    <div class="label">Повторение</div>
+                </div>
+                <div class="stat-card" style="border-color: rgba(231,76,60,0.2);">
+                    <span class="icon">🔥</span>
+                    <div class="number">${doneIntensive}</div>
+                    <div class="label">Интенсив</div>
+                </div>
+            </div>
+        `;
+        
+        // Таблица
+        html += `
+            <div class="progress-table-wrap">
+                <table class="progress-table">
+                    <thead>
+                        <tr>
+                            <th style="min-width: 50px;">№</th>
+                            <th style="text-align: left;">Раздел</th>
+                            <th style="min-width: 80px;">✅ Пройдено</th>
+                            <th style="min-width: 80px;">🔄 Повторение</th>
+                            <th style="min-width: 80px;">🔥 Интенсив</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+        `;
+        
+        sections.forEach(function(section) {
+            var basicChecked = progressMap[section.id + '_basic'] ? 'checked' : '';
+            var repeatChecked = progressMap[section.id + '_repeat'] ? 'checked' : '';
+            var intensiveChecked = progressMap[section.id + '_intensive'] ? 'checked' : '';
+            
+            var basicClass = progressMap[section.id + '_basic'] ? 'checkbox-cell done' : 'checkbox-cell';
+            var repeatClass = progressMap[section.id + '_repeat'] ? 'checkbox-cell done' : 'checkbox-cell';
+            var intensiveClass = progressMap[section.id + '_intensive'] ? 'checkbox-cell done' : 'checkbox-cell';
+            
+            html += `
+                <tr class="section-row">
+                    <td class="section-num">${section.order_num}</td>
+                    <td class="section-name">${section.name}</td>
+                    <td class="${basicClass}">
+                        <input type="checkbox" class="progress-checkbox" 
+                               data-section="${section.id}" data-type="basic" 
+                               ${basicChecked} 
+                               onchange="window.updateProgressCheckbox('${section.id}', 'basic', this.checked)">
+                    </td>
+                    <td class="${repeatClass}">
+                        <input type="checkbox" class="progress-checkbox" 
+                               data-section="${section.id}" data-type="repeat" 
+                               ${repeatChecked} 
+                               onchange="window.updateProgressCheckbox('${section.id}', 'repeat', this.checked)">
+                    </td>
+                    <td class="${intensiveClass}">
+                        <input type="checkbox" class="progress-checkbox" 
+                               data-section="${section.id}" data-type="intensive" 
+                               ${intensiveChecked} 
+                               onchange="window.updateProgressCheckbox('${section.id}', 'intensive', this.checked)">
+                    </td>
+                </tr>
+            `;
+        });
+        
+        html += `
+                    </tbody>
+                </table>
+            </div>
+        `;
+        
+        container.innerHTML = html;
+        
+    } catch (err) {
+        console.error('Ошибка загрузки прогресса:', err);
+        container.innerHTML = '<p style="color:#666;">❌ Ошибка загрузки: ' + err.message + '</p>';
+    }
+};
+
+// Обновляем состояние чекбокса (сохраняем в память)
+var progressChanges = {};
+
+window.updateProgressCheckbox = function(sectionId, type, checked) {
+    var key = sectionId + '_' + type;
+    progressChanges[key] = checked;
+    console.log('📝 Изменение:', key, checked);
+};
+
+// Сохраняем прогресс в базу
+window.saveStudentProgress = async function() {
+    var studentId = document.getElementById('progressStudent').value;
+    
+    if (!studentId) {
+        alert('❌ Выберите ученика');
+        return;
+    }
+    
+    if (Object.keys(progressChanges).length === 0) {
+        alert('⚠️ Нет изменений для сохранения');
+        return;
+    }
+    
+    if (!confirm('Сохранить изменения прогресса для ученика?')) return;
+    
+    try {
+        var records = [];
+        for (var key in progressChanges) {
+            var parts = key.split('_');
+            var sectionId = parts[0];
+            var type = parts[1];
+            var completed = progressChanges[key];
+            
+            records.push({
+                student_id: studentId,
+                section_id: sectionId,
+                type: type,
+                completed: completed
+            });
+        }
+        
+        // Удаляем старые записи для этого ученика
+        await supabase
+            .from('student_progress')
+            .delete()
+            .eq('student_id', studentId);
+        
+        // Вставляем новые
+        var { error } = await supabase
+            .from('student_progress')
+            .insert(records);
+            
+        if (error) throw error;
+        
+        progressChanges = {};
+        alert('✅ Прогресс сохранён!');
+        window.loadStudentProgress();
+        
+    } catch (err) {
+        alert('❌ Ошибка сохранения: ' + err.message);
+        console.error(err);
+    }
+};
+
+// Загружаем учеников при открытии вкладки
+var originalSwitchAdminTab = window.switchAdminTab;
+window.switchAdminTab = function(tab) {
+    originalSwitchAdminTab(tab);
+    if (tab === 'progress') {
+        window.loadProgressStudents();
+        // Если уже выбран ученик, загружаем его прогресс
+        var select = document.getElementById('progressStudent');
+        if (select && select.value) {
+            window.loadStudentProgress();
+        }
+    }
 };
         
     </script>
