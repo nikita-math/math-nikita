@@ -7102,23 +7102,62 @@ if (existingPlan) {
             } catch (err) { alert('❌ Ошибка: ' + err.message); console.error(err); }
         };
         // Модифицируем switchAdminTab для инициализации конструктора
-        var originalSwitchAdminTab = window.switchAdminTab;
-        window.switchAdminTab = function(tab) {
-            originalSwitchAdminTab(tab);
-            if (tab === 'studyplan') {
-                setTimeout(function() {
-                    if (!document.getElementById('planRowsContainer').children.length) {
-                        initPlanRows(10);
-                    }
-                    var startDateInput = document.getElementById('planStartDate');
-                    if (!startDateInput.value) {
-                        var tomorrow = new Date();
-                        tomorrow.setDate(tomorrow.getDate() + 1);
-                        startDateInput.value = formatDateSQL(tomorrow);
-                    }
-                }, 300);
+        // ==========================================
+// ===== ОБНОВЛЕННАЯ ФУНКЦИЯ ПЕРЕКЛЮЧЕНИЯ ВКЛАДОК =====
+// ==========================================
+
+window.switchAdminTab = function(tab) {
+    // Переключаем вкладки
+    document.querySelectorAll('.admin-tabs button').forEach(function(btn) {
+        btn.classList.remove('active');
+    });
+    var targetBtn = document.querySelector('.admin-tabs button[data-tab="' + tab + '"]');
+    if (targetBtn) targetBtn.classList.add('active');
+    document.querySelectorAll('.admin-content').forEach(function(c) { c.classList.remove('active'); });
+    var targetContent = document.getElementById('tab-' + tab);
+    if (targetContent) targetContent.classList.add('active');
+    
+    // Загружаем данные для вкладок
+    if (tab === 'students') window.loadStudents();
+    else if (tab === 'mystudents') window.loadMyStudents();
+    else if (tab === 'whiteboard') window.loadWhiteboardAdmin();
+    else if (tab === 'theory') window.loadAdminTheory();
+    else if (tab === 'homeworks') window.loadAllHomeworks();
+    else if (tab === 'videos') window.loadVideosAdmin();
+    else if (tab === 'schedule') window.loadScheduleAdmin();
+    else if (tab === 'calendar') { 
+        window.loadCalendarStudents(); 
+        window.renderCalendar(currentMonth);
+    }
+    else if (tab === 'studyplan') { 
+        window.loadCalendarStudents();
+        window.loadStudyPlan();
+        window.loadTemplatesForSelect();
+        
+        // 👇 ЛОГИКА ДЛЯ STUDYPLAN (БЫЛА В ДОПОЛНИТЕЛЬНОЙ ФУНКЦИИ)
+        setTimeout(function() {
+            if (!document.getElementById('planRowsContainer').children.length) {
+                initPlanRows(10);
             }
-        };
+            var startDateInput = document.getElementById('planStartDate');
+            if (!startDateInput.value) {
+                var tomorrow = new Date();
+                tomorrow.setDate(tomorrow.getDate() + 1);
+                startDateInput.value = formatDateSQL(tomorrow);
+            }
+        }, 300);
+    }
+    else if (tab === 'progress') { 
+        window.loadProgressStudents();
+        var select = document.getElementById('progressStudent');
+        if (select && select.value) {
+            window.loadStudentProgress();
+        }
+    }
+    else if (tab === 'templates') window.loadTemplates();
+    else if (tab === 'stats') window.loadStats();
+    else if (tab === 'settings') window.loadTeacherSettings();
+};
                 // ==========================================
         // УДАЛЕНИЕ СЕРИИ ИЗ МОДАЛКИ
         // ==========================================
@@ -8172,18 +8211,6 @@ function renderProgressTable(html, container) {
 }
 
 // Загружаем учеников при открытии вкладки
-var originalSwitchAdminTab = window.switchAdminTab;
-window.switchAdminTab = function(tab) {
-    originalSwitchAdminTab(tab);
-    if (tab === 'progress') {
-        window.loadProgressStudents();
-        // Если уже выбран ученик, загружаем его прогресс
-        var select = document.getElementById('progressStudent');
-        if (select && select.value) {
-            window.loadStudentProgress();
-        }
-    }
-};
         
     </script>
     <!-- ===== МОДАЛКА УПРАВЛЕНИЯ ЗАНЯТИЕМ ===== -->
