@@ -6616,34 +6616,34 @@ if (existingPlan) {
         // НАВИГАЦИЯ
         // ==========================================
 
-        window.switchDashboardPage = function(page) {
-            currentDashboardPage = page;
-            document.querySelectorAll('.dashboard-sidebar button').forEach(function(btn) {
-                btn.classList.remove('active');
-                if (btn.dataset.page === page) btn.classList.add('active');
-            });
-            document.querySelectorAll('.dashboard-page').forEach(function(p) { p.style.display = 'none'; });
-            var target = document.getElementById('page-' + page);
-            if (page === 'myprogress' && currentUser) {
-    window.loadStudentMyProgress();
-}
-            if (target) target.style.display = 'block';
-            if (page === 'whiteboard') window.loadWhiteboard();
-            if (page === 'theory') window.loadTheory();
-            if (page === 'stats' && currentUser) window.loadStatistics(currentUser.id);
-            if (page === 'settings' && currentUser) window.loadSettings();
-            if (page === 'messages' && currentUser) {
-                if (chatInterval) clearInterval(chatInterval);
-                loadChatList();
-            }
-            if (page === 'homeworks' && currentUser) {
-                window.loadHomework(currentUser.id);
-            }
-            if (page === 'myplan' && currentUser) {
-                window.renderStudentCalendar(studentMonth);
-            }
-        };
-
+       window.switchDashboardPage = function(page) {
+    currentDashboardPage = page;
+    document.querySelectorAll('.dashboard-sidebar button').forEach(function(btn) {
+        btn.classList.remove('active');
+        if (btn.dataset.page === page) btn.classList.add('active');
+    });
+    document.querySelectorAll('.dashboard-page').forEach(function(p) { p.style.display = 'none'; });
+    var target = document.getElementById('page-' + page);
+    if (target) target.style.display = 'block';
+    
+    if (page === 'whiteboard') window.loadWhiteboard();
+    else if (page === 'theory') window.loadTheory();
+    else if (page === 'stats' && currentUser) window.loadStatistics(currentUser.id);
+    else if (page === 'settings' && currentUser) window.loadSettings();
+    else if (page === 'messages' && currentUser) {
+        if (chatInterval) clearInterval(chatInterval);
+        loadChatList();
+    }
+    else if (page === 'homeworks' && currentUser) {
+        window.loadHomework(currentUser.id);
+    }
+    else if (page === 'myplan' && currentUser) {
+        window.renderStudentCalendar(studentMonth);
+    }
+    else if (page === 'myprogress' && currentUser) {
+        window.loadStudentMyProgress();
+    }
+};
         window.openSection = function(sectionId) {
             mainContent.style.display = 'none';
             dashboard.style.display = 'none';
