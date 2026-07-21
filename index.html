@@ -1891,10 +1891,53 @@
             </div>
         </div>
     </div>
+    <!-- ===== ЗАНЯТИЯ ИЗ КАЛЕНДАРЯ ===== -->
+<div style="background: rgba(255,255,255,0.03); border-radius: 16px; padding: 24px; border: 1px solid rgba(255,255,255,0.05); margin-bottom: 24px;">
+    <h4 style="color: #f5a623; margin-bottom: 16px;">📅 Занятия из календаря</h4>
+    <p style="color: #888; font-size: 14px; margin-bottom: 16px;">
+        Здесь отображаются все занятия ученика из календаря. 
+        Для каждого занятия выберите раздел, который будете проходить.
+    </p>
+    
+    <!-- ВЫБОР УЧЕНИКА -->
+    <div style="margin-bottom: 16px;">
+        <label style="color: #b0c4de; font-weight: 600; display: block; margin-bottom: 8px;">👤 Выберите ученика:</label>
+        <select id="planStudent" onchange="window.loadStudentLessonsForPlan()" style="width: 100%; max-width: 400px; padding: 10px 14px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; color: #fff; font-size: 15px; font-family: Arial, sans-serif;">
+            <option value="">Загрузка...</option>
+        </select>
+    </div>
+    
+    <div id="studentLessonsContainer" style="max-height: 500px; overflow-y: auto; border: 1px solid rgba(255,255,255,0.05); border-radius: 12px; padding: 12px; background: rgba(255,255,255,0.02);">
+        <p style="color:#666; text-align:center; padding:30px;">Выберите ученика, чтобы загрузить его занятия</p>
+    </div>
+</div>
+
+<!-- ===== СТАТИСТИКА ПЛАНА ===== -->
+<div id="planStats" style="display:none; background: rgba(255,255,255,0.03); border-radius: 16px; padding: 20px; border: 1px solid rgba(255,255,255,0.05); margin-bottom: 24px;">
+    <h4 style="color: #f5a623; margin-bottom: 12px;">📊 Статистика плана</h4>
+    <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:12px;">
+        <div class="stat-card" style="padding:12px;">
+            <div class="number" id="planTotalLessonsDisplay">0</div>
+            <div class="label">Всего занятий</div>
+        </div>
+        <div class="stat-card" style="padding:12px;">
+            <div class="number" id="planAssignedLessonsDisplay">0</div>
+            <div class="label">Назначено разделов</div>
+        </div>
+        <div class="stat-card" style="padding:12px;">
+            <div class="number" id="planProgressDisplay">0%</div>
+            <div class="label">Прогресс</div>
+        </div>
+    </div>
+</div>
     
     <div id="planContent">
         <p style="color:#666;">Выберите ученика и настройте план</p>
     </div>
+    <div style="margin-top: 16px; display: flex; gap: 12px; flex-wrap: wrap;">
+    <button class="admin-btn success" onclick="window.savePlanFromLessons()" style="background: linear-gradient(135deg, #27ae60, #2ecc71);">💾 Сохранить план</button>
+    <button class="admin-btn" onclick="window.loadStudentLessonsForPlan()">🔄 Обновить</button>
+</div>
     
 </div>
 <!-- ===== КОНЕЦ ПЛАН ПОДГОТОВКИ ===== -->
