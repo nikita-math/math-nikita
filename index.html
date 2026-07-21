@@ -1440,6 +1440,8 @@
                     <button data-page="myplan" onclick="window.switchDashboardPage('myplan')">
                         📅 Мой календарь
                     </button>
+                     <button data-page="myprogress" onclick="window.switchDashboardPage('myprogress')">📊 Мой прогресс
+                     </button>
                     <button data-page="settings" onclick="window.switchDashboardPage('settings')">
                         ⚙️ Настройки
                     </button>
@@ -1449,8 +1451,8 @@
                     <!-- ===== ОБЗОР ===== -->
                     <div id="page-overview" class="dashboard-page">
                         <div class="section-title">🏠 Обзор</div>
-                        <div class="stats-grid" id="statsGrid">
-                            <div class="stat-card">
+                            <div class="stats-grid" id="statsGrid">
+                                <div class="stat-card">
                                 <div class="icon">📝</div>
                                 <div class="number" id="statTotal">0</div>
                                 <div class="label">Всего ДЗ</div>
@@ -1674,6 +1676,25 @@
                         <div>
                             <button class="admin-btn danger" onclick="window.logout()" style="width:100%; padding:12px;">🚪 Выйти из аккаунта</button>
                         </div>
+                                            <!-- ===== МОЙ ПРОГРЕСС ===== -->
+                    <div id="page-myprogress" class="dashboard-page" style="display:none;">
+                        <div class="section-title">📊 Мой прогресс</div>
+                        
+                        <div style="display:flex; justify-content:flex-end; margin-bottom:16px;">
+                            <button class="admin-btn" onclick="window.loadStudentMyProgress()">🔄 Обновить</button>
+                        </div>
+                        
+                        <div style="margin-bottom: 16px; background: rgba(255,255,255,0.03); padding: 16px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05);">
+                            <p style="color: #888; font-size: 14px;">
+                                Здесь отображается твой прогресс по разделам. 
+                                ✅ — тема пройдена, ☐ — ещё нет.
+                            </p>
+                        </div>
+                        
+                        <div id="studentProgressContainer">
+                            <p style="color:#666; text-align:center; padding:30px;">⏳ Загрузка...</p>
+                        </div>
+                    </div>
                     </div>
                 </div>
             </div>
@@ -6603,6 +6624,9 @@ if (existingPlan) {
             });
             document.querySelectorAll('.dashboard-page').forEach(function(p) { p.style.display = 'none'; });
             var target = document.getElementById('page-' + page);
+            if (page === 'myprogress' && currentUser) {
+    window.loadStudentMyProgress();
+}
             if (target) target.style.display = 'block';
             if (page === 'whiteboard') window.loadWhiteboard();
             if (page === 'theory') window.loadTheory();
@@ -8211,7 +8235,149 @@ function renderProgressTable(html, container) {
 }
 
 // Загружаем учеников при открытии вкладки
+        // ==========================================
+// ===== МОЙ ПРОГРЕСС (ДЛЯ УЧЕНИКА) =====
+// ==========================================
+
+window.loadStudentMyProgress = async function() {
+    if (!currentUser) {
+        console.log('❌ Пользователь не авторизован');
+        return;
+    }
+    
+    var container = document.getElementById('studentProgressContainer');
+    if (!container) return;
+    
+    container.innerHTML = '⏳ Загрузка...';
+    
+    try {
+        // 1. Загружаем все разделы
+        var { data: sections, error: sectionsError } = await supabase
+            .from('video_sections')
+            .select('id, name, order_num')
+            .order('order_num', { ascending: true });
+            
+        if (sectionsError) throw sectionsError;
         
+        if (!sections || sections.length === 0) {
+            container.innerHTML = '<p style="color:#666; text-align:center; padding:30px;">📭 Разделы ещё не добавлены</p>';
+            return;
+        }
+        
+        // 2. Загружаем прогресс ученика
+        var { data: progress, error: progressError } = await supabase
+            .from('student_progress')
+            .select('*')
+            .eq('student_id', currentUser.id);
+            
+        if (progressError) throw progressError;
+        
+        // 3. Создаём карту прогресса для быстрого доступа
+        var progressMap = {};
+        if (progress) {
+            progress.forEach(function(p) {
+                var key = p.section_id + '_' + p.type;
+                progressMap[key] = p.completed;
+            });
+        }
+        
+        // 4. Считаем статистику
+        var totalSections = sections.length;
+        var doneBasic = 0;
+        var doneRepeat = 0;
+        var doneIntensive = 0;
+        
+        sections.forEach(function(section) {
+            if (progressMap[section.id + '_basic']) doneBasic++;
+            if (progressMap[section.id + '_repeat']) doneRepeat++;
+            if (progressMap[section.id + '_intensive']) doneIntensive++;
+        });
+        
+        var progressPercent = totalSections > 0 ? Math.round((doneBasic / totalSections) * 100) : 0;
+        
+        // 5. Строим HTML
+        var html = '';
+        
+        // Статистика
+        html += `
+            <div class="progress-stats">
+                <div class="stat-card">
+                    <span class="icon">📚</span>
+                    <div class="number">${totalSections}</div>
+                    <div class="label">Всего разделов</div>
+                </div>
+                <div class="stat-card" style="border-color: rgba(46,204,113,0.2);">
+                    <span class="icon">✅</span>
+                    <div class="number">${doneBasic}</div>
+                    <div class="label">Пройдено (база)</div>
+                </div>
+                <div class="stat-card" style="border-color: rgba(245,166,35,0.2);">
+                    <span class="icon">🔄</span>
+                    <div class="number">${doneRepeat}</div>
+                    <div class="label">На повторении</div>
+                </div>
+                <div class="stat-card" style="border-color: rgba(231,76,60,0.2);">
+                    <span class="icon">🔥</span>
+                    <div class="number">${doneIntensive}</div>
+                    <div class="label">Интенсив</div>
+                </div>
+                <div class="stat-card" style="border-color: rgba(102,126,234,0.2);">
+                    <span class="icon">📊</span>
+                    <div class="number">${progressPercent}%</div>
+                    <div class="label">Общий прогресс</div>
+                </div>
+            </div>
+        `;
+        
+        // Таблица
+        html += `
+            <div class="progress-table-wrap">
+                <table class="progress-table">
+                    <thead>
+                        <tr>
+                            <th style="min-width: 50px;">№</th>
+                            <th style="text-align: left;">Раздел</th>
+                            <th style="min-width: 80px;">✅ Пройдено</th>
+                            <th style="min-width: 80px;">🔄 Повторение</th>
+                            <th style="min-width: 80px;">🔥 Интенсив</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+        `;
+        
+        sections.forEach(function(section) {
+            var basicChecked = progressMap[section.id + '_basic'] ? '✅' : '☐';
+            var repeatChecked = progressMap[section.id + '_repeat'] ? '✅' : '☐';
+            var intensiveChecked = progressMap[section.id + '_intensive'] ? '✅' : '☐';
+            
+            var basicClass = progressMap[section.id + '_basic'] ? 'checkbox-cell done' : 'checkbox-cell';
+            var repeatClass = progressMap[section.id + '_repeat'] ? 'checkbox-cell done' : 'checkbox-cell';
+            var intensiveClass = progressMap[section.id + '_intensive'] ? 'checkbox-cell done' : 'checkbox-cell';
+            
+            html += `
+                <tr class="section-row">
+                    <td class="section-num">${section.order_num}</td>
+                    <td class="section-name">${section.name}</td>
+                    <td class="${basicClass}">${basicChecked}</td>
+                    <td class="${repeatClass}">${repeatChecked}</td>
+                    <td class="${intensiveClass}">${intensiveChecked}</td>
+                </tr>
+            `;
+        });
+        
+        html += `
+                    </tbody>
+                </table>
+            </div>
+        `;
+        
+        container.innerHTML = html;
+        
+    } catch (err) {
+        console.error('Ошибка загрузки прогресса:', err);
+        container.innerHTML = '<p style="color:#666; text-align:center; padding:30px;">❌ Ошибка загрузки: ' + err.message + '</p>';
+    }
+};
     </script>
     <!-- ===== МОДАЛКА УПРАВЛЕНИЯ ЗАНЯТИЕМ ===== -->
     <div class="modal-overlay" id="adminLessonModal">
