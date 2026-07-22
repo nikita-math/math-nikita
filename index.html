@@ -1440,6 +1440,7 @@
                     <button data-page="myplan" onclick="window.switchDashboardPage('myplan')">
                         📅 Мой календарь
                     </button>
+                    <button data-page="mystudyplan" onclick="window.switchDashboardPage('mystudyplan')">📚 Мой план подготовки</button>
                      <button data-page="myprogress" onclick="window.switchDashboardPage('myprogress')">📊 Мой прогресс
                      </button>
                     <button data-page="settings" onclick="window.switchDashboardPage('settings')">
@@ -1695,6 +1696,18 @@
                         <div id="studentProgressContainer">
                             <p style="color:#666; text-align:center; padding:30px;">⏳ Загрузка...</p>
                         </div>
+                        <!-- ===== МОЙ ПЛАН ПОДГОТОВКИ ===== -->
+<div id="page-mystudyplan" class="dashboard-page" style="display:none;">
+    <div class="section-title">📚 Мой план подготовки</div>
+    
+    <div style="display:flex; justify-content:flex-end; margin-bottom:16px;">
+        <button class="admin-btn" onclick="window.loadStudentStudyPlan()">🔄 Обновить</button>
+    </div>
+    
+    <div id="studentStudyPlanContainer">
+        <p style="color:#666; text-align:center; padding:30px;">⏳ Загрузка...</p>
+    </div>
+</div>
                     </div>
                 </div>
             </div>
@@ -6648,6 +6661,9 @@ if (existingPlan) {
     else if (page === 'myplan' && currentUser) {
         window.renderStudentCalendar(studentMonth);
     }
+         else if (page === 'mystudyplan' && currentUser) {  // 👈 ДОБАВЬ ЭТО
+        window.loadStudentStudyPlan();
+    }
     else if (page === 'myprogress' && currentUser) {
         window.loadStudentMyProgress();
     }
@@ -8383,6 +8399,148 @@ window.loadStudentMyProgress = async function() {
         
     } catch (err) {
         console.error('Ошибка загрузки прогресса:', err);
+        container.innerHTML = '<p style="color:#666; text-align:center; padding:30px;">❌ Ошибка загрузки: ' + err.message + '</p>';
+    }
+};
+        // ==========================================
+// ===== ПЛАН ПОДГОТОВКИ ДЛЯ УЧЕНИКА =====
+// ==========================================
+
+window.loadStudentStudyPlan = async function() {
+    if (!currentUser) {
+        console.log('❌ Пользователь не авторизован');
+        return;
+    }
+    
+    var container = document.getElementById('studentStudyPlanContainer');
+    if (!container) return;
+    
+    container.innerHTML = '⏳ Загрузка...';
+    
+    try {
+        // 1. Загружаем план ученика
+        var { data: plan, error: planError } = await supabase
+            .from('study_plans')
+            .select('*')
+            .eq('student_id', currentUser.id)
+            .maybeSingle();
+            
+        if (planError) throw planError;
+        
+        if (!plan) {
+            container.innerHTML = `
+                <div class="empty-state">
+                    <span class="icon">📭</span>
+                    <div class="title">План ещё не создан</div>
+                    <div class="desc">Преподаватель ещё не составил для тебя план подготовки</div>
+                </div>
+            `;
+            return;
+        }
+        
+        // 2. Загружаем разделы плана
+        var { data: sections, error: sectionsError } = await supabase
+            .from('study_plan_sections')
+            .select('*, video_sections(id, name, order_num)')
+            .eq('plan_id', plan.id)
+            .order('order_num', { ascending: true });
+            
+        if (sectionsError) throw sectionsError;
+        
+        // 3. Считаем статистику
+        var totalSections = sections ? sections.length : 0;
+        var completedSections = sections ? sections.filter(function(s) { return s.completed === true; }).length : 0;
+        var progress = totalSections > 0 ? Math.round((completedSections / totalSections) * 100) : 0;
+        
+        var examDate = new Date(plan.exam_date);
+        var today = new Date();
+        var daysLeft = Math.ceil((examDate - today) / (1000 * 60 * 60 * 24));
+        
+        // 4. Строим HTML
+        var html = '';
+        
+        // Статистика
+        html += `
+            <div class="progress-stats">
+                <div class="stat-card">
+                    <span class="icon">🎯</span>
+                    <div class="number">${plan.target_score}</div>
+                    <div class="label">Целевой балл</div>
+                </div>
+                <div class="stat-card">
+                    <span class="icon">📚</span>
+                    <div class="number">${totalSections}</div>
+                    <div class="label">Всего разделов</div>
+                </div>
+                <div class="stat-card" style="border-color: rgba(46,204,113,0.2);">
+                    <span class="icon">✅</span>
+                    <div class="number">${completedSections}</div>
+                    <div class="label">Пройдено</div>
+                </div>
+                <div class="stat-card" style="border-color: rgba(102,126,234,0.2);">
+                    <span class="icon">📊</span>
+                    <div class="number">${progress}%</div>
+                    <div class="label">Прогресс</div>
+                </div>
+                <div class="stat-card" style="border-color: rgba(245,166,35,0.2);">
+                    <span class="icon">📅</span>
+                    <div class="number">${daysLeft > 0 ? daysLeft : '0'}</div>
+                    <div class="label">Дней до экзамена</div>
+                </div>
+            </div>
+        `;
+        
+        // Таблица с разделами
+        if (sections && sections.length > 0) {
+            html += `
+                <div class="progress-table-wrap">
+                    <table class="progress-table">
+                        <thead>
+                            <tr>
+                                <th style="min-width:50px;">№</th>
+                                <th style="text-align:left;">Раздел</th>
+                                <th style="min-width:100px;">Дедлайн</th>
+                                <th style="min-width:80px;">Статус</th>
+                                <th style="min-width:80px;">📝 Комментарий</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+            `;
+            
+            sections.forEach(function(section) {
+                var sectionName = section.video_sections ? section.video_sections.name : 'Раздел';
+                var orderNum = section.video_sections ? section.video_sections.order_num : '—';
+                var deadline = section.deadline ? new Date(section.deadline).toLocaleDateString('ru-RU') : '—';
+                var isCompleted = section.completed === true;
+                var statusIcon = isCompleted ? '✅' : '⏳';
+                var statusText = isCompleted ? 'Выполнено' : 'В процессе';
+                var statusClass = isCompleted ? 'completed' : 'planned';
+                var comment = section.comment || '';
+                
+                html += `
+                    <tr class="section-row">
+                        <td class="section-num">${orderNum}</td>
+                        <td class="section-name">${sectionName}</td>
+                        <td>${deadline}</td>
+                        <td><span class="status-badge ${statusClass}">${statusIcon} ${statusText}</span></td>
+                        <td style="color:#888; font-size:13px; text-align:left;">${comment}</td>
+                    </tr>
+                `;
+            });
+            
+            html += `
+                        </tbody>
+                    </table>
+                </div>
+            `;
+        } else {
+            html += '<p style="color:#666; text-align:center; padding:20px;">📭 Нет разделов в плане</p>';
+        }
+        
+        container.innerHTML = html;
+        
+    } catch (err) {
+        console.error('Ошибка загрузки плана:', err);
         container.innerHTML = '<p style="color:#666; text-align:center; padding:30px;">❌ Ошибка загрузки: ' + err.message + '</p>';
     }
 };
