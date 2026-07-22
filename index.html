@@ -8407,7 +8407,9 @@ window.loadStudentMyProgress = async function() {
 // ==========================================
 
 window.loadStudentStudyPlan = async function() {
-    if (!currentUser) {
+    console.log('🔥 loadStudentStudyPlan вызвана!');
+    console.log('👤 currentUser:', currentUser);
+        if (!currentUser) {
         console.log('❌ Пользователь не авторизован');
         return;
     }
