@@ -1827,117 +1827,73 @@
                 </div>
             </div>
                </div>
-        <!-- ===== ПЛАН ПОДГОТОВКИ ===== -->
+ <!-- ===== ПЛАН ПОДГОТОВКИ ===== -->
 <div class="admin-content" id="tab-studyplan">
     
-    <!-- КОНСТРУКТОР ПЛАНА -->
-    <div class="plan-constructor-section">
-        <h4>🛠️ Конструктор плана</h4>
-        
-        <!-- ВЫБОР УЧЕНИКА -->
-        <div style="margin-bottom: 16px; background: rgba(255,255,255,0.03); padding: 16px; border-radius: 12px;">
-            <label style="color: #b0c4de; font-weight: 600; display: block; margin-bottom: 8px;">👤 Выберите ученика:</label>
-            <select id="planStudent" style="width: 100%; max-width: 400px; padding: 10px 14px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; color: #fff; font-size: 15px; font-family: Arial, sans-serif;">
-                <option value="">Загрузка...</option>
-            </select>
-        </div>
-        
-        <!-- ОСТАЛЬНОЙ КОНСТРУКТОР -->
-        <div class="plan-constructor-grid">
-            <div>
-                <label>📅 Дни занятий</label>
-                <div class="days-checkboxes">
-                    <label class="plan-day-checkbox"><input type="checkbox" class="plan-day" value="1"> ПН</label>
-                    <label class="plan-day-checkbox"><input type="checkbox" class="plan-day" value="2"> ВТ</label>
-                    <label class="plan-day-checkbox"><input type="checkbox" class="plan-day" value="3"> СР</label>
-                    <label class="plan-day-checkbox"><input type="checkbox" class="plan-day" value="4"> ЧТ</label>
-                    <label class="plan-day-checkbox"><input type="checkbox" class="plan-day" value="5"> ПТ</label>
-                    <label class="plan-day-checkbox"><input type="checkbox" class="plan-day" value="6"> СБ</label>
-                    <label class="plan-day-checkbox"><input type="checkbox" class="plan-day" value="7"> ВС</label>
-                </div>
-            </div>
-            <div>
-                <label>📊 Количество занятий</label>
-                <input type="number" id="planTotalLessons" value="10" min="1" max="100">
-            </div>
-            <div>
-                <label>📅 Дата первого занятия</label>
-                <input type="date" id="planStartDate">
-            </div>
-            <div>
-                <label>🎯 Целевой балл:</label>
-                <input type="number" id="targetScore" value="90" min="0" max="100">
-            </div>
-            <div>
-                <label>📅 Дата экзамена:</label>
-                <input type="date" id="examDate">
-            </div>
-        </div>
-        
-        <div style="margin-top: 16px;">
-            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 12px;">
-                <span style="color: #b0c4de; font-weight: 600;">📖 Распределение разделов по занятиям</span>
-                <button class="admin-btn success" onclick="window.addPlanRow()">➕ Добавить занятие</button>
-            </div>
-            
-            <div class="plan-rows-container" id="planRowsContainer">
-                <!-- Сюда динамически добавляются строки -->
-            </div>
-            
-            <div style="margin-top: 16px; display: flex; gap: 12px; flex-wrap: wrap;">
-                <button class="admin-btn" onclick="window.clearPlanRows()">🗑 Очистить все</button>
-                <button class="admin-btn success" onclick="window.generatePlanFromConstructor()" style="background: linear-gradient(135deg, #27ae60, #2ecc71);">🎯 Создать план</button>
-                <button class="admin-btn" onclick="window.loadStudyPlan()">🔄 Обновить</button>
-            </div>
-        </div>
-    </div>
-    <!-- ===== ЗАНЯТИЯ ИЗ КАЛЕНДАРЯ ===== -->
-<div style="background: rgba(255,255,255,0.03); border-radius: 16px; padding: 24px; border: 1px solid rgba(255,255,255,0.05); margin-bottom: 24px;">
-    <h4 style="color: #f5a623; margin-bottom: 16px;">📅 Занятия из календаря</h4>
-    <p style="color: #888; font-size: 14px; margin-bottom: 16px;">
-        Здесь отображаются все занятия ученика из календаря. 
-        Для каждого занятия выберите раздел, который будете проходить.
-    </p>
-    
-    <!-- ВЫБОР УЧЕНИКА -->
-    <div style="margin-bottom: 16px;">
+    <!-- ВЫБОР УЧЕНИКА И НАСТРОЙКИ -->
+    <div style="margin-bottom: 20px; background: rgba(255,255,255,0.03); padding: 20px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.05);">
         <label style="color: #b0c4de; font-weight: 600; display: block; margin-bottom: 8px;">👤 Выберите ученика:</label>
         <select id="planStudent" onchange="window.loadStudentLessonsForPlan()" style="width: 100%; max-width: 400px; padding: 10px 14px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; color: #fff; font-size: 15px; font-family: Arial, sans-serif;">
             <option value="">Загрузка...</option>
         </select>
+        
+        <div style="display: flex; gap: 20px; flex-wrap: wrap; margin-top: 16px;">
+            <div>
+                <label style="color: #888; font-size: 13px; display: block; margin-bottom: 4px;">🎯 Целевой балл:</label>
+                <input type="number" id="targetScore" value="90" min="0" max="100" style="width: 150px; padding: 8px 12px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; color: #fff; font-size: 14px;">
+            </div>
+            <div>
+                <label style="color: #888; font-size: 13px; display: block; margin-bottom: 4px;">📅 Дата экзамена:</label>
+                <input type="date" id="examDate" style="width: 180px; padding: 8px 12px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; color: #fff; font-size: 14px;">
+            </div>
+        </div>
     </div>
     
-    <div id="studentLessonsContainer" style="max-height: 500px; overflow-y: auto; border: 1px solid rgba(255,255,255,0.05); border-radius: 12px; padding: 12px; background: rgba(255,255,255,0.02);">
-        <p style="color:#666; text-align:center; padding:30px;">Выберите ученика, чтобы загрузить его занятия</p>
-    </div>
-</div>
-
-<!-- ===== СТАТИСТИКА ПЛАНА ===== -->
-<div id="planStats" style="display:none; background: rgba(255,255,255,0.03); border-radius: 16px; padding: 20px; border: 1px solid rgba(255,255,255,0.05); margin-bottom: 24px;">
-    <h4 style="color: #f5a623; margin-bottom: 12px;">📊 Статистика плана</h4>
-    <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:12px;">
-        <div class="stat-card" style="padding:12px;">
-            <div class="number" id="planTotalLessonsDisplay">0</div>
-            <div class="label">Всего занятий</div>
+    <!-- ===== ЗАНЯТИЯ ИЗ КАЛЕНДАРЯ ===== -->
+    <div style="background: rgba(255,255,255,0.03); border-radius: 16px; padding: 24px; border: 1px solid rgba(255,255,255,0.05); margin-bottom: 24px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 16px;">
+            <h4 style="color: #f5a623; margin: 0;">📅 Занятия из календаря</h4>
+            <div style="display: flex; gap: 10px;">
+                <button class="admin-btn" onclick="window.loadStudentLessonsForPlan()" style="background: #2a2a4a;">🔄 Обновить</button>
+            </div>
         </div>
-        <div class="stat-card" style="padding:12px;">
-            <div class="number" id="planAssignedLessonsDisplay">0</div>
-            <div class="label">Назначено разделов</div>
-        </div>
-        <div class="stat-card" style="padding:12px;">
-            <div class="number" id="planProgressDisplay">0%</div>
-            <div class="label">Прогресс</div>
+        <p style="color: #888; font-size: 14px; margin-bottom: 16px;">
+            Для каждого занятия выберите раздел. При желании можно добавить комментарий.
+        </p>
+        
+        <div id="studentLessonsContainer" style="max-height: 500px; overflow-y: auto; border: 1px solid rgba(255,255,255,0.05); border-radius: 12px; padding: 12px; background: rgba(255,255,255,0.02);">
+            <p style="color:#666; text-align:center; padding:30px;">Выберите ученика, чтобы загрузить его занятия</p>
         </div>
     </div>
-</div>
     
-    <div id="planContent">
+    <!-- ===== СТАТИСТИКА ПЛАНА ===== -->
+    <div id="planStats" style="display:none; background: rgba(255,255,255,0.03); border-radius: 16px; padding: 20px; border: 1px solid rgba(255,255,255,0.05); margin-bottom: 24px;">
+        <h4 style="color: #f5a623; margin-bottom: 12px;">📊 Статистика плана</h4>
+        <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:12px;">
+            <div class="stat-card" style="padding:12px;">
+                <div class="number" id="planTotalLessonsDisplay">0</div>
+                <div class="label">Всего занятий</div>
+            </div>
+            <div class="stat-card" style="padding:12px;">
+                <div class="number" id="planAssignedLessonsDisplay">0</div>
+                <div class="label">Назначено разделов</div>
+            </div>
+            <div class="stat-card" style="padding:12px;">
+                <div class="number" id="planProgressDisplay">0%</div>
+                <div class="label">Прогресс</div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- КНОПКИ СОХРАНЕНИЯ -->
+    <div style="display: flex; gap: 12px; flex-wrap: wrap; margin-top: 16px;">
+        <button class="admin-btn success" onclick="window.savePlanFromLessons()" style="background: linear-gradient(135deg, #27ae60, #2ecc71); padding: 12px 32px;">💾 Сохранить план</button>
+        <button class="admin-btn" onclick="window.loadStudentLessonsForPlan()" style="background: #2a2a4a;">🔄 Обновить</button>
+    </div>
+    
+    <div id="planContent" style="margin-top: 20px;">
         <p style="color:#666;">Выберите ученика и настройте план</p>
     </div>
-    <div style="margin-top: 16px; display: flex; gap: 12px; flex-wrap: wrap;">
-    <button class="admin-btn success" onclick="window.savePlanFromLessons()" style="background: linear-gradient(135deg, #27ae60, #2ecc71);">💾 Сохранить план</button>
-    <button class="admin-btn" onclick="window.loadStudentLessonsForPlan()">🔄 Обновить</button>
-</div>
     
 </div>
 <!-- ===== КОНЕЦ ПЛАН ПОДГОТОВКИ ===== -->
@@ -2464,114 +2420,123 @@
 
         // Сохраняем план из занятий
         window.savePlanFromLessons = async function() {
-            var studentId = document.getElementById('planStudent').value;
-            var examDate = document.getElementById('examDate').value;
-            var targetScore = parseInt(document.getElementById('targetScore').value);
-            
-            if (!studentId) { alert('❌ Выберите ученика'); return; }
-            if (!examDate) { alert('❌ Введите дату экзамена'); return; }
-            
-            // Собираем выбранные разделы
-            var selects = document.querySelectorAll('.lesson-section-select');
-            var assignments = [];
-            var hasEmpty = false;
-            
-            selects.forEach(function(select) {
-                var date = select.dataset.lessonDate;
-                var sectionId = select.value;
-                if (sectionId) {
-                    assignments.push({ date: date, section_id: sectionId });
-                } else {
-                    hasEmpty = true;
-                }
+    var studentId = document.getElementById('planStudent').value;
+    var examDate = document.getElementById('examDate').value;
+    var targetScore = parseInt(document.getElementById('targetScore').value);
+    
+    if (!studentId) { alert('❌ Выберите ученика'); return; }
+    if (!examDate) { alert('❌ Введите дату экзамена'); return; }
+    
+    // Собираем выбранные разделы и комментарии
+    var items = document.querySelectorAll('.plan-lesson-item');
+    var assignments = [];
+    var hasEmpty = false;
+    
+    items.forEach(function(item) {
+        var select = item.querySelector('.lesson-section-select');
+        var commentInput = item.querySelector('.lesson-comment-input');
+        var date = select ? select.dataset.lessonDate : '';
+        var sectionId = select ? select.value : '';
+        var comment = commentInput ? commentInput.value.trim() : '';
+        
+        if (sectionId) {
+            assignments.push({ 
+                date: date, 
+                section_id: sectionId,
+                comment: comment || null
             });
-            
-            if (hasEmpty) {
-                if (!confirm('⚠️ Не для всех занятий выбран раздел. Продолжить?')) {
-                    return;
-                }
-            }
-            
-            if (assignments.length === 0) {
-                alert('❌ Выберите хотя бы один раздел для занятий');
-                return;
-            }
-            
-            try {
-                // 1. Создаём или обновляем план
-                var planData = {
-                    student_id: studentId,
-                    exam_date: examDate,
-                    start_date: new Date().toISOString().split('T')[0],
-                    total_lessons_planned: selects.length,
-                    target_score: targetScore,
-                    current_level: targetScore >= 90 ? 'advanced' : (targetScore >= 80 ? 'intermediate' : 'beginner')
-                };
-                
-                // Проверяем, есть ли уже план
-                var { data: existingPlan, error: checkError } = await supabase
-                    .from('study_plans')
-                    .select('id')
-                    .eq('student_id', studentId)
-                    .maybeSingle();
-                
-                var plan;
-                var planError;
-                
-                if (existingPlan) {
-                    var { data, error } = await supabase
-                        .from('study_plans')
-                        .update(planData)
-                        .eq('student_id', studentId)
-                        .select();
-                    plan = data;
-                    planError = error;
-                } else {
-                    var { data, error } = await supabase
-                        .from('study_plans')
-                        .insert([planData])
-                        .select();
-                    plan = data;
-                    planError = error;
-                }
-                
-                if (planError) throw planError;
-                var planId = plan[0].id;
-                
-                // 2. Удаляем старые разделы
-                await supabase
-                    .from('study_plan_sections')
-                    .delete()
-                    .eq('plan_id', planId);
-                
-                // 3. Сохраняем новые разделы
-                var planSections = assignments.map(function(assignment, index) {
-                    return {
-                        plan_id: planId,
-                        section_id: assignment.section_id,
-                        order_num: index + 1,
-                        priority: 1,
-                        deadline: assignment.date,
-                        hours_needed: 2
-                    };
-                });
-                
-                var { error: insertError } = await supabase
-                    .from('study_plan_sections')
-                    .insert(planSections);
-                    
-                if (insertError) throw insertError;
-                
-                alert('✅ План подготовки сохранён!\n📚 Всего занятий: ' + assignments.length + '\n📖 Разделов назначено: ' + assignments.length);
-                
-                clearCache('study_plans');
-                window.loadStudyPlan();
-                
-            } catch (err) {
-                alert('❌ Ошибка сохранения плана: ' + err.message);
-                console.error(err);
-            }
+        } else {
+            hasEmpty = true;
+        }
+    });
+    
+    if (hasEmpty) {
+        if (!confirm('⚠️ Не для всех занятий выбран раздел. Продолжить?')) {
+            return;
+        }
+    }
+    
+    if (assignments.length === 0) {
+        alert('❌ Выберите хотя бы один раздел для занятий');
+        return;
+    }
+    
+    try {
+        // 1. Создаём или обновляем план
+        var planData = {
+            student_id: studentId,
+            exam_date: examDate,
+            start_date: new Date().toISOString().split('T')[0],
+            total_lessons_planned: items.length,
+            target_score: targetScore,
+            current_level: targetScore >= 90 ? 'advanced' : (targetScore >= 80 ? 'intermediate' : 'beginner')
         };
+        
+        // Проверяем, есть ли уже план
+        var { data: existingPlan, error: checkError } = await supabase
+            .from('study_plans')
+            .select('id')
+            .eq('student_id', studentId)
+            .maybeSingle();
+        
+        var plan;
+        var planError;
+        
+        if (existingPlan) {
+            var { data, error } = await supabase
+                .from('study_plans')
+                .update(planData)
+                .eq('student_id', studentId)
+                .select();
+            plan = data;
+            planError = error;
+        } else {
+            var { data, error } = await supabase
+                .from('study_plans')
+                .insert([planData])
+                .select();
+            plan = data;
+            planError = error;
+        }
+        
+        if (planError) throw planError;
+        var planId = plan[0].id;
+        
+        // 2. Удаляем старые разделы
+        await supabase
+            .from('study_plan_sections')
+            .delete()
+            .eq('plan_id', planId);
+        
+        // 3. Сохраняем новые разделы с комментариями
+        var planSections = assignments.map(function(assignment, index) {
+            return {
+                plan_id: planId,
+                section_id: assignment.section_id,
+                order_num: index + 1,
+                priority: 1,
+                deadline: assignment.date,
+                hours_needed: 2,
+                comment: assignment.comment || null
+            };
+        });
+        
+        var { error: insertError } = await supabase
+            .from('study_plan_sections')
+            .insert(planSections);
+            
+        if (insertError) throw insertError;
+        
+        alert('✅ План подготовки сохранён!\n📚 Всего занятий: ' + assignments.length + '\n📖 Разделов назначено: ' + assignments.length);
+        
+        clearCache('study_plans');
+        window.loadStudyPlan();
+        
+    } catch (err) {
+        alert('❌ Ошибка сохранения плана: ' + err.message);
+        console.error(err);
+    }
+};
         // ==========================================
         // ПЕРЕМЕННЫЕ
         // ==========================================
