@@ -8348,6 +8348,7 @@ window.updateProgressCheckbox = function(sectionId, type, checked) {
 };
 
 // Сохраняем прогресс в базу
+// Сохраняем прогресс в базу (обновляем, а не удаляем)
 window.saveStudentProgress = async function() {
     var studentId = document.getElementById('progressStudent').value;
     
@@ -8364,33 +8365,46 @@ window.saveStudentProgress = async function() {
     if (!confirm('Сохранить изменения прогресса для ученика?')) return;
     
     try {
-        var records = [];
+        // Обновляем каждую запись по отдельности
         for (var key in progressChanges) {
             var parts = key.split('_');
             var sectionId = parts[0];
             var type = parts[1];
             var completed = progressChanges[key];
             
-            records.push({
-                student_id: studentId,
-                section_id: sectionId,
-                type: type,
-                completed: completed
-            });
-        }
-        
-        // Удаляем старые записи для этого ученика
-        await supabase
-            .from('student_progress')
-            .delete()
-            .eq('student_id', studentId);
-        
-        // Вставляем новые
-        var { error } = await supabase
-            .from('student_progress')
-            .insert(records);
+            // Проверяем, есть ли запись
+            var { data: existing, error: findError } = await supabase
+                .from('student_progress')
+                .select('id')
+                .eq('student_id', studentId)
+                .eq('section_id', sectionId)
+                .eq('type', type)
+                .maybeSingle();
+                
+            if (findError) throw findError;
             
-        if (error) throw error;
+            if (existing) {
+                // Обновляем существующую запись
+                var { error: updateError } = await supabase
+                    .from('student_progress')
+                    .update({ completed: completed })
+                    .eq('id', existing.id);
+                    
+                if (updateError) throw updateError;
+            } else {
+                // Создаём новую запись
+                var { error: insertError } = await supabase
+                    .from('student_progress')
+                    .insert([{
+                        student_id: studentId,
+                        section_id: sectionId,
+                        type: type,
+                        completed: completed
+                    }]);
+                    
+                if (insertError) throw insertError;
+            }
+        }
         
         progressChanges = {};
         alert('✅ Прогресс сохранён!');
@@ -8401,12 +8415,6 @@ window.saveStudentProgress = async function() {
         console.error(err);
     }
 };
-        // Рендерим таблицу из кеша
-function renderProgressTable(html, container) {
-    container.innerHTML = html;
-    console.log('⚡ Прогресс загружен из кеша');
-}
-
 // Загружаем учеников при открытии вкладки
         // ==========================================
 // ===== МОЙ ПРОГРЕСС (ДЛЯ УЧЕНИКА) =====
@@ -8876,6 +8884,7 @@ window.updatePaymentCheckbox = function(lessonId, checked) {
 };
 
 // Сохраняем статус оплаты в базу
+// Сохраняем статус оплаты (обновляем, а не удаляем)
 window.savePaymentStatus = async function() {
     var studentId = document.getElementById('paymentStudent').value;
     
@@ -8892,27 +8901,41 @@ window.savePaymentStatus = async function() {
     if (!confirm('Сохранить изменения оплаты для ученика?')) return;
     
     try {
-        var records = [];
+        // Обновляем каждую запись по отдельности
         for (var lessonId in paymentChanges) {
-            records.push({
-                student_id: studentId,
-                lesson_id: lessonId,
-                paid: paymentChanges[lessonId]
-            });
-        }
-        
-        // Удаляем старые записи
-        await supabase
-            .from('lesson_payments')
-            .delete()
-            .eq('student_id', studentId);
-        
-        // Вставляем новые
-        var { error } = await supabase
-            .from('lesson_payments')
-            .insert(records);
+            var paid = paymentChanges[lessonId];
             
-        if (error) throw error;
+            // Проверяем, есть ли запись
+            var { data: existing, error: findError } = await supabase
+                .from('lesson_payments')
+                .select('id')
+                .eq('student_id', studentId)
+                .eq('lesson_id', lessonId)
+                .maybeSingle();
+                
+            if (findError) throw findError;
+            
+            if (existing) {
+                // Обновляем существующую запись
+                var { error: updateError } = await supabase
+                    .from('lesson_payments')
+                    .update({ paid: paid })
+                    .eq('id', existing.id);
+                    
+                if (updateError) throw updateError;
+            } else {
+                // Создаём новую запись
+                var { error: insertError } = await supabase
+                    .from('lesson_payments')
+                    .insert([{
+                        student_id: studentId,
+                        lesson_id: lessonId,
+                        paid: paid
+                    }]);
+                    
+                if (insertError) throw insertError;
+            }
+        }
         
         paymentChanges = {};
         alert('✅ Статус оплаты сохранён!');
@@ -8921,19 +8944,6 @@ window.savePaymentStatus = async function() {
     } catch (err) {
         alert('❌ Ошибка сохранения: ' + err.message);
         console.error(err);
-    }
-};
-
-// Добавляем в switchAdminTab
-var originalSwitchAdminTab = window.switchAdminTab;
-window.switchAdminTab = function(tab) {
-    originalSwitchAdminTab(tab);
-    if (tab === 'payments') {
-        window.loadPaymentStudents();
-        var select = document.getElementById('paymentStudent');
-        if (select && select.value) {
-            window.loadPaymentLessons();
-        }
     }
 };
                                 // ==========================================
