@@ -1787,7 +1787,7 @@
     <div class="section-title">💰 Мои оплаты</div>
     
     <div style="display:flex; justify-content:flex-end; margin-bottom:16px;">
-        <button class="admin-btn" onclick="window.loadStudentPayments()">🔄 Обновить</button>
+       <button class="admin-btn" onclick="window.loadStudentPayments()" style="opacity:0.5; pointer-events:none;">🔄 Обновить</button>
     </div>
     
     <div style="margin-bottom: 16px; background: rgba(255,255,255,0.03); padding: 16px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05);">
@@ -8936,6 +8936,157 @@ window.switchAdminTab = function(tab) {
         }
     }
 };
+                                // ==========================================
+// ===== МОИ ОПЛАТЫ (ДЛЯ УЧЕНИКА) =====
+// ==========================================
+
+window.loadStudentPayments = async function() {
+    console.log('🔥 loadStudentPayments вызвана!');
+    
+    if (!currentUser) {
+        console.log('❌ Пользователь не авторизован');
+        return;
+    }
+    
+    var container = document.getElementById('studentPaymentsContainer');
+    console.log('📦 Контейнер:', container);
+    
+    if (!container) {
+        console.log('❌ Контейнер studentPaymentsContainer не найден!');
+        return;
+    }
+    
+    container.innerHTML = '⏳ Загрузка...';
+    
+    try {
+        // 1. Загружаем все занятия ученика из календаря
+        var { data: lessons, error: lessonsError } = await supabase
+            .from('lesson_calendar')
+            .select('*')
+            .eq('student_id', currentUser.id)
+            .order('lesson_date', { ascending: true });
+            
+        console.log('📊 Загружено занятий:', lessons ? lessons.length : 0);
+            
+        if (lessonsError) throw lessonsError;
+        
+        if (!lessons || lessons.length === 0) {
+            container.innerHTML = '<p style="color:#666; text-align:center; padding:30px;">📭 У тебя пока нет занятий</p>';
+            return;
+        }
+        
+        // 2. Загружаем статусы оплаты
+        var { data: payments, error: paymentsError } = await supabase
+            .from('lesson_payments')
+            .select('*')
+            .eq('student_id', currentUser.id);
+            
+        console.log('💰 Загружено оплат:', payments ? payments.length : 0);
+            
+        if (paymentsError) throw paymentsError;
+        
+        // Создаём карту оплат
+        var paymentMap = {};
+        if (payments) {
+            payments.forEach(function(p) {
+                paymentMap[p.lesson_id] = p.paid;
+            });
+        }
+        
+        // 3. Считаем статистику
+        var total = lessons.length;
+        var paidCount = 0;
+        lessons.forEach(function(lesson) {
+            if (paymentMap[lesson.id]) paidCount++;
+        });
+        var unpaidCount = total - paidCount;
+        var progress = total > 0 ? Math.round((paidCount / total) * 100) : 0;
+        
+        // 4. Строим HTML
+        var html = '';
+        
+        // Статистика
+        html += `
+            <div class="payment-stats">
+                <div class="stat-card">
+                    <span class="icon">📅</span>
+                    <div class="number">${total}</div>
+                    <div class="label">Всего занятий</div>
+                </div>
+                <div class="stat-card" style="border-color: rgba(46,204,113,0.2);">
+                    <span class="icon">✅</span>
+                    <div class="number paid">${paidCount}</div>
+                    <div class="label">Оплачено</div>
+                </div>
+                <div class="stat-card" style="border-color: rgba(231,76,60,0.2);">
+                    <span class="icon">❌</span>
+                    <div class="number unpaid">${unpaidCount}</div>
+                    <div class="label">Не оплачено</div>
+                </div>
+                <div class="stat-card" style="border-color: rgba(102,126,234,0.2);">
+                    <span class="icon">📊</span>
+                    <div class="number">${progress}%</div>
+                    <div class="label">Оплачено</div>
+                </div>
+            </div>
+        `;
+        
+        // Таблица
+        html += `
+            <div class="payment-table-wrap">
+                <table class="payment-table">
+                    <thead>
+                        <tr>
+                            <th style="text-align:left;">Дата</th>
+                            <th style="text-align:left;">Тема</th>
+                            <th>Статус занятия</th>
+                            <th>💰 Оплата</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+        `;
+        
+        lessons.forEach(function(lesson) {
+            var dateStr = new Date(lesson.lesson_date).toLocaleDateString('ru-RU');
+            var topic = lesson.topic || 'Занятие';
+            var isPaid = paymentMap[lesson.id] || false;
+            
+            var statusMap = {
+                'planned': '📌 Запланировано',
+                'completed': '✅ Проведено',
+                'cancelled': '❌ Отменено'
+            };
+            var statusText = statusMap[lesson.status] || '📌 Запланировано';
+            var statusClass = lesson.status || 'planned';
+            
+            html += `
+                <tr class="section-row ${isPaid ? 'row-paid' : 'row-unpaid'}">
+                    <td style="text-align:left;">${dateStr}</td>
+                    <td style="text-align:left; color:var(--text-white);">${topic}</td>
+                    <td><span class="status-badge ${statusClass}">${statusText}</span></td>
+                    <td style="color:${isPaid ? '#2ecc71' : '#e74c3c'}; font-weight:700; font-size:16px;">
+                        ${isPaid ? '✅ Оплачено' : '❌ Не оплачено'}
+                    </td>
+                </tr>
+            `;
+        });
+        
+        html += `
+                    </tbody>
+                </table>
+            </div>
+        `;
+        
+        container.innerHTML = html;
+        console.log('✅ Таблица оплат загружена!');
+        
+    } catch (err) {
+        console.error('❌ Ошибка загрузки оплат:', err);
+        container.innerHTML = '<p style="color:#666; text-align:center; padding:30px;">❌ Ошибка загрузки: ' + err.message + '</p>';
+    }
+};
+
+console.log('✅ Функция loadStudentPayments добавлена!');
     </script>
     <!-- ===== МОДАЛКА УПРАВЛЕНИЯ ЗАНЯТИЕМ ===== -->
     <div class="modal-overlay" id="adminLessonModal">
