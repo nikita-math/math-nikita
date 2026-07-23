@@ -7351,6 +7351,13 @@ window.switchAdminTab = function(tab) {
             window.loadStudentProgress();
         }
     }
+        else if (tab === 'payments') { 
+    window.loadPaymentStudents();
+    var select = document.getElementById('paymentStudent');
+    if (select && select.value) {
+        window.loadPaymentLessons();
+    }
+}
     else if (tab === 'templates') window.loadTemplates();
     else if (tab === 'stats') window.loadStats();
     else if (tab === 'settings') window.loadTeacherSettings();
