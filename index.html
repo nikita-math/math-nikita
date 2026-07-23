@@ -7043,13 +7043,18 @@ window.addPlanRow = function() {
         };
 
         function initPlanRows(count) {
-            var container = document.getElementById('planRowsContainer');
-            if (!container) return;
-            container.innerHTML = '';
-            planRowCounter = 0;
-            for (var i = 0; i < count; i++) { window.addPlanRow(); }
-        }
-
+    var container = document.getElementById('planRowsContainer');
+    // 👇 ДОБАВЛЯЕМ ПРОВЕРКУ
+    if (!container) {
+        console.log('❌ Контейнер planRowsContainer не найден');
+        return;
+    }
+    container.innerHTML = '';
+    planRowCounter = 0;
+    for (var i = 0; i < count; i++) { 
+        window.addPlanRow(); 
+    }
+}
         function getSelectedDays() {
             var checkboxes = document.querySelectorAll('.plan-day:checked');
             var days = [];
@@ -8613,6 +8618,56 @@ window.loadStudentStudyPlan = async function() {
             </div>
         </div>
     </div>
+    <!-- ===== МОДАЛКА ДОБАВЛЕНИЯ ЗАНЯТИЯ НА ДАТУ ===== -->
+<div class="modal-overlay" id="addLessonOnDateModal">
+    <div class="modal-content">
+        <h3 style="color: #f5a623;">➕ Добавить занятие на дату</h3>
+        
+        <div class="form-group">
+            <label>👤 Ученик:</label>
+            <select id="addLessonStudent" style="width:100%; padding:10px 14px; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); border-radius:10px; color:#fff; font-size:15px; font-family:Arial,sans-serif;">
+                <option value="">Выберите ученика</option>
+            </select>
+        </div>
+        
+        <div class="form-group">
+            <label>📚 Раздел (необязательно):</label>
+            <select id="addLessonSection" style="width:100%; padding:10px 14px; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); border-radius:10px; color:#fff; font-size:15px; font-family:Arial,sans-serif;">
+                <option value="">Без раздела</option>
+            </select>
+        </div>
+        
+        <div class="form-group">
+            <label>📝 Тема занятия:</label>
+            <input type="text" id="addLessonTopic" placeholder="Введите тему..." style="width:100%; padding:10px 14px; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); border-radius:10px; color:#fff; font-size:15px; font-family:Arial,sans-serif;">
+        </div>
+        
+        <div class="form-group">
+            <label>📅 Дата:</label>
+            <input type="date" id="addLessonDate" style="width:100%; padding:10px 14px; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); border-radius:10px; color:#fff; font-size:15px; font-family:Arial,sans-serif;">
+        </div>
+        
+        <div class="form-group">
+            <label>⏰ Время начала:</label>
+            <input type="time" id="addLessonStartTime" value="18:00" style="width:100%; padding:10px 14px; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); border-radius:10px; color:#fff; font-size:15px; font-family:Arial,sans-serif;">
+        </div>
+        
+        <div class="form-group">
+            <label>⏰ Время окончания:</label>
+            <input type="time" id="addLessonEndTime" value="19:30" style="width:100%; padding:10px 14px; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); border-radius:10px; color:#fff; font-size:15px; font-family:Arial,sans-serif;">
+        </div>
+        
+        <div class="form-group">
+            <label>📝 Заметки:</label>
+            <input type="text" id="addLessonNotes" placeholder="Дополнительные заметки..." style="width:100%; padding:10px 14px; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); border-radius:10px; color:#fff; font-size:15px; font-family:Arial,sans-serif;">
+        </div>
+        
+        <div class="modal-actions">
+            <button class="cancel-btn" onclick="window.closeAddLessonOnDateModal()">✕ Отмена</button>
+            <button class="submit-btn" onclick="window.saveLessonOnDate()">✅ Добавить занятие</button>
+        </div>
+    </div>
+</div>
 
 </body>
 </html>
