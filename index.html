@@ -6985,8 +6985,7 @@ if (existingPlan) {
                     });
             });
         }
-
-       window.addPlanRow = function() {
+window.addPlanRow = function() {
     var container = document.getElementById('planRowsContainer');
     if (!container) {
         console.log('❌ Контейнер planRowsContainer не найден');
@@ -6996,57 +6995,44 @@ if (existingPlan) {
     planRowCounter++;
     console.log('➕ Добавляем занятие #' + planRowCounter);
     
-    getSectionsForPlan().then(function(sections) {
-        console.log('📚 Загружено разделов:', sections.length);
-        
-        var row = document.createElement('div');
-        row.className = 'plan-row';
-        row.id = 'planRow_' + planRowCounter;
-        
-        var numSpan = document.createElement('span');
-        numSpan.className = 'row-number';
-        numSpan.textContent = 'Занятие #' + planRowCounter;
-        row.appendChild(numSpan);
-        
-        var select = document.createElement('select');
-        select.className = 'plan-section-select';
-        select.id = 'planSection_' + planRowCounter;
-        
-        var emptyOption = document.createElement('option');
-        emptyOption.value = '';
-        emptyOption.textContent = '— Выберите раздел —';
-        select.appendChild(emptyOption);
-        
-        if (sections && sections.length > 0) {
-            sections.forEach(function(section) {
-                var option = document.createElement('option');
-                option.value = section.id;
-                option.textContent = section.order_num + '. ' + section.name;
-                select.appendChild(option);
-            });
-        } else {
-            console.warn('⚠️ Нет разделов для выбора');
-            var noOption = document.createElement('option');
-            noOption.value = '';
-            noOption.textContent = '⚠️ Нет разделов';
-            select.appendChild(noOption);
+    var row = document.createElement('div');
+    row.className = 'plan-row';
+    row.id = 'planRow_' + planRowCounter;
+    
+    var numSpan = document.createElement('span');
+    numSpan.className = 'row-number';
+    numSpan.textContent = 'Занятие #' + planRowCounter;
+    row.appendChild(numSpan);
+    
+    // 👇 ПОЛЕ ДЛЯ ВВОДА НАЗВАНИЯ (БЕЗ РАЗДЕЛОВ)
+    var input = document.createElement('input');
+    input.type = 'text';
+    input.className = 'plan-lesson-input';
+    input.placeholder = 'Введите тему занятия...';
+    input.style.cssText = 'flex:1; min-width:150px; padding:6px 12px; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); border-radius:8px; color:#fff; font-size:14px; font-family:Arial,sans-serif;';
+    row.appendChild(input);
+    
+    // 👇 ПОЛЕ ДЛЯ КОММЕНТАРИЯ
+    var commentInput = document.createElement('input');
+    commentInput.type = 'text';
+    commentInput.className = 'plan-lesson-comment';
+    commentInput.placeholder = '📝 Комментарий...';
+    commentInput.style.cssText = 'flex:1; min-width:150px; padding:6px 12px; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); border-radius:8px; color:#fff; font-size:13px; font-family:Arial,sans-serif;';
+    row.appendChild(commentInput);
+    
+    // 👇 КНОПКА УДАЛЕНИЯ
+    var deleteBtn = document.createElement('button');
+    deleteBtn.className = 'delete-row-btn';
+    deleteBtn.textContent = '✕';
+    deleteBtn.style.cssText = 'padding:4px 12px; font-size:12px; background:rgba(231,76,60,0.2); color:#e74c3c; border:1px solid rgba(231,76,60,0.2); border-radius:6px; cursor:pointer; font-family:Arial,sans-serif;';
+    deleteBtn.onclick = function() {
+        if (confirm('Удалить занятие #' + planRowCounter + '?')) {
+            row.remove();
         }
-        
-        row.appendChild(select);
-        
-        var deleteBtn = document.createElement('button');
-        deleteBtn.className = 'delete-row-btn';
-        deleteBtn.textContent = '✕';
-        deleteBtn.onclick = function() {
-            if (confirm('Удалить занятие #' + planRowCounter + '?')) {
-                row.remove();
-            }
-        };
-        row.appendChild(deleteBtn);
-        container.appendChild(row);
-    }).catch(function(err) {
-        console.error('❌ Ошибка загрузки разделов:', err);
-    });
+    };
+    row.appendChild(deleteBtn);
+    
+    container.appendChild(row);
 };
         window.clearPlanRows = function() {
             var container = document.getElementById('planRowsContainer');
@@ -7082,12 +7068,18 @@ if (existingPlan) {
             if (!startDate) { alert('❌ Введите дату первого занятия'); return; }
             var selectedDays = getSelectedDays();
             if (selectedDays.length === 0) { alert('❌ Выберите хотя бы один день недели'); return; }
-            var rows = document.querySelectorAll('.plan-row');
-            var assignments = [];
-            rows.forEach(function(row) {
-                var select = row.querySelector('.plan-section-select');
-                if (select && select.value) { assignments.push(select.value); }
-            });
+           var rows = document.querySelectorAll('.plan-row');
+var assignments = [];
+rows.forEach(function(row) {
+    var input = row.querySelector('.plan-lesson-input');
+    var comment = row.querySelector('.plan-lesson-comment');
+    if (input && input.value.trim()) {
+        assignments.push({
+            topic: input.value.trim(),
+            comment: comment ? comment.value.trim() : ''
+        });
+    }
+});
             if (assignments.length === 0) { alert('❌ Добавьте хотя бы одно занятие с разделом'); return; }
             if (assignments.length !== totalLessons) {
                 if (!confirm('⚠️ Количество занятий в расписании (' + assignments.length + ') не совпадает с указанным (' + totalLessons + '). Продолжить?')) { return; }
