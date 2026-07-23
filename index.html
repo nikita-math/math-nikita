@@ -1361,6 +1361,88 @@
     display: block;
     margin-bottom: 6px;
 }
+        /* ===== ОПЛАТА ЗАНЯТИЙ ===== */
+.payment-table-wrap { overflow-x: auto; margin-top: 16px; }
+.payment-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: rgba(255,255,255,0.03);
+    border-radius: 12px;
+    overflow: hidden;
+    font-size: 14px;
+}
+.payment-table th,
+.payment-table td {
+    border: 1px solid rgba(255,255,255,0.08);
+    padding: 10px 12px;
+    text-align: center;
+    vertical-align: middle;
+}
+.payment-table th {
+    background: rgba(255,255,255,0.06);
+    color: var(--accent);
+    font-weight: 700;
+    font-size: 14px;
+}
+.payment-table td {
+    color: var(--text-light);
+}
+.payment-table .payment-checkbox-cell {
+    text-align: center;
+}
+.payment-table input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+    accent-color: #667eea;
+    transform: scale(1.1);
+}
+.payment-table input[type="checkbox"]:checked {
+    accent-color: #2ecc71;
+}
+.payment-table .payment-checkbox-cell.paid {
+    background: rgba(46,204,113,0.08);
+}
+.payment-table .row-paid {
+    background: rgba(46,204,113,0.05);
+}
+.payment-table .row-unpaid {
+    background: rgba(231,76,60,0.03);
+}
+.payment-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 16px;
+    margin-bottom: 20px;
+}
+.payment-stats .stat-card {
+    background: rgba(255,255,255,0.03);
+    padding: 16px;
+    border-radius: 12px;
+    text-align: center;
+    border: 1px solid rgba(255,255,255,0.05);
+}
+.payment-stats .stat-card .number {
+    font-size: 28px;
+    font-weight: 900;
+    color: var(--text-white);
+}
+.payment-stats .stat-card .label {
+    color: #888;
+    font-size: 13px;
+    margin-top: 4px;
+}
+.payment-stats .stat-card .icon {
+    font-size: 24px;
+    display: block;
+    margin-bottom: 6px;
+}
+.payment-stats .stat-card .number.paid {
+    color: #2ecc71;
+}
+.payment-stats .stat-card .number.unpaid {
+    color: #e74c3c;
+}
     </style>
 </head>
 <body>
@@ -1443,6 +1525,7 @@
                     <button data-page="mystudyplan" onclick="window.switchDashboardPage('mystudyplan')">📚 Мой план подготовки</button>
                      <button data-page="myprogress" onclick="window.switchDashboardPage('myprogress')">📊 Мой прогресс
                      </button>
+                    <button data-page="mypayments" onclick="window.switchDashboardPage('mypayments')">💰 Мои оплаты</button>
                     <button data-page="settings" onclick="window.switchDashboardPage('settings')">
                         ⚙️ Настройки
                     </button>
@@ -1699,6 +1782,24 @@
                       
                     </div>
                 </div>
+                <!-- ===== МОИ ОПЛАТЫ ===== -->
+<div id="page-mypayments" class="dashboard-page" style="display:none;">
+    <div class="section-title">💰 Мои оплаты</div>
+    
+    <div style="display:flex; justify-content:flex-end; margin-bottom:16px;">
+        <button class="admin-btn" onclick="window.loadStudentPayments()">🔄 Обновить</button>
+    </div>
+    
+    <div style="margin-bottom: 16px; background: rgba(255,255,255,0.03); padding: 16px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05);">
+        <p style="color: #888; font-size: 14px;">
+            ✅ — занятие оплачено, ❌ — ещё не оплачено.
+        </p>
+    </div>
+    
+    <div id="studentPaymentsContainer">
+        <p style="color:#666; text-align:center; padding:30px;">⏳ Загрузка...</p>
+    </div>
+</div>
                   <!-- ===== МОЙ ПЛАН ПОДГОТОВКИ ===== -->
 <div id="page-mystudyplan" class="dashboard-page" style="display:none;">
     <div class="section-title">📚 Мой план подготовки</div>
@@ -1745,6 +1846,7 @@
                 <button data-tab="calendar" onclick="window.switchAdminTab('calendar')">📅 Календарь</button>
                 <button data-tab="studyplan" onclick="window.switchAdminTab('studyplan')">📚 План подготовки</button>
                 <button data-tab="progress" onclick="window.switchAdminTab('progress')">📊 Прогресс</button>
+                <button data-tab="payments" onclick="window.switchAdminTab('payments')">💰 Оплата</button>
                 <button data-tab="templates" onclick="window.switchAdminTab('templates')">📚 Шаблоны</button>
                 <button data-tab="stats" onclick="window.switchAdminTab('stats')">📊 Статистика</button>
                 <button data-tab="settings" onclick="window.switchAdminTab('settings')">⚙️ Настройки</button>
@@ -1932,6 +2034,27 @@
     </div>
 </div>
 <!-- ===== КОНЕЦ ПРОГРЕСС УЧЕНИКОВ ===== -->
+        <!-- ===== ОПЛАТА ЗАНЯТИЙ ===== -->
+<div class="admin-content" id="tab-payments">
+    <h3 style="color: #f5a623; margin-bottom: 20px;">💰 Оплата занятий</h3>
+    
+    <div style="margin-bottom: 20px;">
+        <label style="color: #b0c4de; font-weight: 600; display: block; margin-bottom: 8px;">👤 Выберите ученика:</label>
+        <select id="paymentStudent" onchange="window.loadPaymentLessons()" style="width: 100%; max-width: 400px; padding: 10px 14px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; color: #fff; font-size: 15px; font-family: Arial, sans-serif;">
+            <option value="">Загрузка...</option>
+        </select>
+    </div>
+    
+    <div id="paymentContainer">
+        <p style="color:#666; text-align:center; padding:30px;">Выберите ученика, чтобы увидеть его занятия</p>
+    </div>
+    
+    <div style="margin-top: 16px; display: flex; gap: 12px; flex-wrap: wrap;">
+        <button class="admin-btn success" onclick="window.savePaymentStatus()" style="background: linear-gradient(135deg, #27ae60, #2ecc71);">💾 Сохранить оплату</button>
+        <button class="admin-btn" onclick="window.loadPaymentLessons()" style="background: #2a2a4a;">🔄 Обновить</button>
+    </div>
+</div>
+<!-- ===== КОНЕЦ ОПЛАТА ЗАНЯТИЙ ===== -->
             <!-- ===== ШАБЛОНЫ ===== -->
             <div class="admin-content" id="tab-templates">
                 <h3 style="color: #f5a623; margin-bottom: 20px;">📚 Шаблоны планов подготовки</h3>
@@ -6656,6 +6779,9 @@ if (existingPlan) {
         if (chatInterval) clearInterval(chatInterval);
         loadChatList();
     }
+        else if (page === 'mypayments' && currentUser) {
+    window.loadStudentPayments();
+}
     else if (page === 'homeworks' && currentUser) {
         window.loadHomework(currentUser.id);
     }
@@ -8567,6 +8693,247 @@ window.loadStudentStudyPlan = async function() {
     } catch (err) {
         console.error('Ошибка загрузки плана:', err);
         container.innerHTML = '<p style="color:#666; text-align:center; padding:30px;">❌ Ошибка загрузки: ' + err.message + '</p>';
+    }
+};
+        // ==========================================
+// ===== ОПЛАТА ЗАНЯТИЙ =====
+// ==========================================
+
+var paymentChanges = {};
+var paymentSectionsCache = null;
+
+// Загружаем учеников для выпадающего списка
+window.loadPaymentStudents = async function() {
+    var select = document.getElementById('paymentStudent');
+    if (!select) return;
+    
+    try {
+        var { data, error } = await supabase
+            .from('students')
+            .select('id, name')
+            .eq('role', 'student')
+            .order('name');
+            
+        if (error) throw error;
+        
+        select.innerHTML = '<option value="">Выберите ученика</option>';
+        data.forEach(function(student) {
+            select.innerHTML += '<option value="' + student.id + '">' + student.name + '</option>';
+        });
+        
+    } catch (err) {
+        console.error('Ошибка загрузки учеников:', err);
+        select.innerHTML = '<option value="">Ошибка загрузки</option>';
+    }
+};
+
+// Загружаем занятия ученика для оплаты
+window.loadPaymentLessons = async function() {
+    var studentId = document.getElementById('paymentStudent').value;
+    var container = document.getElementById('paymentContainer');
+    
+    if (!studentId) {
+        container.innerHTML = '<p style="color:#666; text-align:center; padding:30px;">Выберите ученика, чтобы увидеть его занятия</p>';
+        return;
+    }
+    
+    container.innerHTML = '⏳ Загрузка...';
+    
+    try {
+        // 1. Загружаем все занятия ученика из календаря
+        var { data: lessons, error } = await supabase
+            .from('lesson_calendar')
+            .select('*')
+            .eq('student_id', studentId)
+            .order('lesson_date', { ascending: true });
+            
+        if (error) throw error;
+        
+        if (!lessons || lessons.length === 0) {
+            container.innerHTML = '<p style="color:#666; text-align:center; padding:30px;">📭 У этого ученика нет занятий в календаре</p>';
+            return;
+        }
+        
+        // 2. Загружаем существующий статус оплаты
+        var { data: paymentData, error: paymentError } = await supabase
+            .from('lesson_payments')
+            .select('*')
+            .eq('student_id', studentId);
+            
+        if (paymentError) throw paymentError;
+        
+        // Создаём карту оплат
+        var paymentMap = {};
+        if (paymentData) {
+            paymentData.forEach(function(p) {
+                paymentMap[p.lesson_id] = p.paid;
+            });
+        }
+        
+        // 3. Строим HTML
+        var html = '';
+        
+        // Статистика
+        var total = lessons.length;
+        var paidCount = 0;
+        lessons.forEach(function(lesson) {
+            if (paymentMap[lesson.id]) paidCount++;
+        });
+        var unpaidCount = total - paidCount;
+        var progress = total > 0 ? Math.round((paidCount / total) * 100) : 0;
+        
+        html += `
+            <div class="payment-stats">
+                <div class="stat-card">
+                    <span class="icon">📅</span>
+                    <div class="number">${total}</div>
+                    <div class="label">Всего занятий</div>
+                </div>
+                <div class="stat-card" style="border-color: rgba(46,204,113,0.2);">
+                    <span class="icon">✅</span>
+                    <div class="number paid">${paidCount}</div>
+                    <div class="label">Оплачено</div>
+                </div>
+                <div class="stat-card" style="border-color: rgba(231,76,60,0.2);">
+                    <span class="icon">❌</span>
+                    <div class="number unpaid">${unpaidCount}</div>
+                    <div class="label">Не оплачено</div>
+                </div>
+                <div class="stat-card" style="border-color: rgba(102,126,234,0.2);">
+                    <span class="icon">📊</span>
+                    <div class="number">${progress}%</div>
+                    <div class="label">Оплачено</div>
+                </div>
+            </div>
+        `;
+        
+        // Таблица
+        html += `
+            <div class="payment-table-wrap">
+                <table class="payment-table">
+                    <thead>
+                        <tr>
+                            <th style="min-width:50px;">№</th>
+                            <th style="text-align:left;">Дата</th>
+                            <th style="text-align:left;">Тема</th>
+                            <th style="min-width:100px;">Статус</th>
+                            <th style="min-width:80px;">💰 Оплачено</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+        `;
+        
+        lessons.forEach(function(lesson, index) {
+            var dateStr = new Date(lesson.lesson_date).toLocaleDateString('ru-RU');
+            var topic = lesson.topic || 'Занятие';
+            var isPaid = paymentMap[lesson.id] || false;
+            var statusClass = lesson.status || 'planned';
+            var statusMap = {
+                'planned': '📌 Запланировано',
+                'completed': '✅ Проведено',
+                'cancelled': '❌ Отменено'
+            };
+            var statusText = statusMap[statusClass] || '📌 Запланировано';
+            
+            var rowClass = isPaid ? 'row-paid' : 'row-unpaid';
+            var paidClass = isPaid ? 'payment-checkbox-cell paid' : 'payment-checkbox-cell';
+            
+            html += `
+                <tr class="section-row ${rowClass}">
+                    <td class="section-num">${index + 1}</td>
+                    <td style="text-align:left;">${dateStr}</td>
+                    <td style="text-align:left; color:var(--text-white);">${topic}</td>
+                    <td><span class="status-badge ${statusClass}">${statusText}</span></td>
+                    <td class="${paidClass}">
+                        <input type="checkbox" class="payment-checkbox" 
+                               data-lesson-id="${lesson.id}" 
+                               ${isPaid ? 'checked' : ''} 
+                               onchange="window.updatePaymentCheckbox('${lesson.id}', this.checked)">
+                    </td>
+                </tr>
+            `;
+        });
+        
+        html += `
+                    </tbody>
+                </table>
+            </div>
+        `;
+        
+        container.innerHTML = html;
+        paymentChanges = {};
+        
+    } catch (err) {
+        console.error('Ошибка загрузки оплат:', err);
+        container.innerHTML = '<p style="color:#666;">❌ Ошибка загрузки: ' + err.message + '</p>';
+    }
+};
+
+// Обновляем состояние чекбокса
+window.updatePaymentCheckbox = function(lessonId, checked) {
+    paymentChanges[lessonId] = checked;
+    console.log('💰 Изменение оплаты:', lessonId, checked);
+};
+
+// Сохраняем статус оплаты в базу
+window.savePaymentStatus = async function() {
+    var studentId = document.getElementById('paymentStudent').value;
+    
+    if (!studentId) {
+        alert('❌ Выберите ученика');
+        return;
+    }
+    
+    if (Object.keys(paymentChanges).length === 0) {
+        alert('⚠️ Нет изменений для сохранения');
+        return;
+    }
+    
+    if (!confirm('Сохранить изменения оплаты для ученика?')) return;
+    
+    try {
+        var records = [];
+        for (var lessonId in paymentChanges) {
+            records.push({
+                student_id: studentId,
+                lesson_id: lessonId,
+                paid: paymentChanges[lessonId]
+            });
+        }
+        
+        // Удаляем старые записи
+        await supabase
+            .from('lesson_payments')
+            .delete()
+            .eq('student_id', studentId);
+        
+        // Вставляем новые
+        var { error } = await supabase
+            .from('lesson_payments')
+            .insert(records);
+            
+        if (error) throw error;
+        
+        paymentChanges = {};
+        alert('✅ Статус оплаты сохранён!');
+        window.loadPaymentLessons();
+        
+    } catch (err) {
+        alert('❌ Ошибка сохранения: ' + err.message);
+        console.error(err);
+    }
+};
+
+// Добавляем в switchAdminTab
+var originalSwitchAdminTab = window.switchAdminTab;
+window.switchAdminTab = function(tab) {
+    originalSwitchAdminTab(tab);
+    if (tab === 'payments') {
+        window.loadPaymentStudents();
+        var select = document.getElementById('paymentStudent');
+        if (select && select.value) {
+            window.loadPaymentLessons();
+        }
     }
 };
     </script>
