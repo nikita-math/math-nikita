@@ -3262,18 +3262,45 @@
             container.innerHTML = html;
         }
 
-        window.deleteStudent = function(id) {
-            if (!confirm('Удалить ученика?')) return;
-            supabase
-                .from('students')
-                .delete()
-                .eq('id', id)
-                .then(function(response) {
-                    if (response.error) alert('❌ Ошибка: ' + response.error.message);
-                    else { alert('✅ Ученик удалён'); clearCache('students'); window.loadStudents(); }
-                })
-                .catch(function(err) { alert('❌ Ошибка: ' + err.message); });
-        };
+       window.deleteStudent = function(id) {
+    if (!confirm('Удалить ученика? Будут удалены все его занятия, оплаты и прогресс.')) return;
+    
+    // Удаляем всё связанное
+    supabase
+        .from('lesson_calendar')
+        .delete()
+        .eq('student_id', id)
+        .then(function() {
+            return supabase.from('lesson_payments').delete().eq('student_id', id);
+        })
+        .then(function() {
+            return supabase.from('student_progress').delete().eq('student_id', id);
+        })
+        .then(function() {
+            return supabase.from('study_plans').delete().eq('student_id', id);
+        })
+        .then(function() {
+            return supabase.from('homeworks').delete().eq('student_id', id);
+        })
+        .then(function() {
+            return supabase.from('messages').delete().or('sender_id.eq.' + id + ',receiver_id.eq.' + id);
+        })
+        .then(function() {
+            return supabase.from('students').delete().eq('id', id);
+        })
+        .then(function(response) {
+            if (response.error) {
+                alert('❌ Ошибка удаления: ' + response.error.message);
+                return;
+            }
+            alert('✅ Ученик и все его данные удалены!');
+            clearCache('students');
+            window.loadStudents();
+        })
+        .catch(function(err) {
+            alert('❌ Ошибка: ' + err.message);
+        });
+};
 
         // ==========================================
         // ===== ОНЛАЙН-ДОСКИ (students) =====
