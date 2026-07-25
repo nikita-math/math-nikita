@@ -2191,24 +2191,34 @@
     </div>
     
     <!-- Статистика -->
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; margin-bottom: 24px;">
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 16px; margin-bottom: 24px;">
         <div class="stat-card" style="border-color: rgba(46,204,113,0.2);">
             <span class="icon">💰</span>
             <div class="number" id="totalIncome" style="color: #2ecc71;">0 ₽</div>
-            <div class="label">Общий доход за месяц</div>
+            <div class="label">Оплачено</div>
+        </div>
+        <div class="stat-card" style="border-color: rgba(245,166,35,0.2);">
+            <span class="icon">💵</span>
+            <div class="number" id="totalPotentialIncome" style="color: #f5a623;">0 ₽</div>
+            <div class="label">Потенциальный доход (все занятия)</div>
+        </div>
+        <div class="stat-card" style="border-color: rgba(231,76,60,0.2);">
+            <span class="icon">❌</span>
+            <div class="number" id="totalUnpaidIncome" style="color: #e74c3c;">0 ₽</div>
+            <div class="label">Не оплачено</div>
         </div>
         <div class="stat-card" style="border-color: rgba(102,126,234,0.2);">
             <span class="icon">📅</span>
             <div class="number" id="totalLessonsIncome">0</div>
             <div class="label">Всего занятий</div>
         </div>
-        <div class="stat-card" style="border-color: rgba(245,166,35,0.2);">
+        <div class="stat-card" style="border-color: rgba(46,204,113,0.2);">
             <span class="icon">✅</span>
             <div class="number" id="paidLessonsIncome">0</div>
             <div class="label">Оплачено</div>
         </div>
         <div class="stat-card" style="border-color: rgba(231,76,60,0.2);">
-            <span class="icon">❌</span>
+            <span class="icon">⏳</span>
             <div class="number" id="unpaidLessonsIncome" style="color: #e74c3c;">0</div>
             <div class="label">Не оплачено</div>
         </div>
@@ -2220,7 +2230,6 @@
     </div>
 </div>
 <!-- ===== КОНЕЦ ДОХОД ===== -->
-
     <!-- МОДАЛКА ТЕОРИИ -->
     <div class="modal-overlay" id="theoryModal">
         <div class="modal-content">
@@ -9416,7 +9425,9 @@ window.loadIncome = async function() {
         }
         
         var studentStats = [];
-        var totalIncome = 0;
+        var totalIncome = 0;          // Оплачено
+        var totalPotentialIncome = 0; // Все занятия (потенциальный доход)
+        var totalUnpaidIncome = 0;    // Не оплачено
         var totalLessons = 0;
         var totalPaid = 0;
         var totalUnpaid = 0;
@@ -9428,23 +9439,32 @@ window.loadIncome = async function() {
             
             var paidCount = 0;
             var unpaidCount = 0;
-            var studentIncome = 0;
+            var studentIncome = 0;        // Оплачено
+            var studentPotential = 0;     // Потенциальный доход (все занятия)
+            var studentUnpaid = 0;        // Не оплачено
             var price = priceMap[student.id] || 1500;
             
             lessons.forEach(function(lesson) {
                 var key = student.id + '_' + lesson.id;
                 var isPaid = paymentMap[key] || false;
+                
+                // Каждое занятие приносит price
+                studentPotential += price;
+                
                 if (isPaid) {
                     paidCount++;
                     studentIncome += price;
                 } else {
                     unpaidCount++;
+                    studentUnpaid += price;
                 }
             });
             
             var total = lessons.length;
             
             totalIncome += studentIncome;
+            totalPotentialIncome += studentPotential;
+            totalUnpaidIncome += studentUnpaid;
             totalLessons += total;
             totalPaid += paidCount;
             totalUnpaid += unpaidCount;
@@ -9456,13 +9476,18 @@ window.loadIncome = async function() {
                 total: total,
                 paid: paidCount,
                 unpaid: unpaidCount,
-                income: studentIncome
+                income: studentIncome,       // Оплачено
+                potential: studentPotential, // Все занятия
+                unpaidSum: studentUnpaid     // Не оплачено
             });
         });
         
         studentStats.sort(function(a, b) { return b.income - a.income; });
         
+        // Обновляем статистику
         document.getElementById('totalIncome').textContent = totalIncome + ' ₽';
+        document.getElementById('totalPotentialIncome').textContent = totalPotentialIncome + ' ₽';
+        document.getElementById('totalUnpaidIncome').textContent = totalUnpaidIncome + ' ₽';
         document.getElementById('totalLessonsIncome').textContent = totalLessons;
         document.getElementById('paidLessonsIncome').textContent = totalPaid;
         document.getElementById('unpaidLessonsIncome').textContent = totalUnpaid;
@@ -9483,7 +9508,8 @@ window.loadIncome = async function() {
                             <th>📅 Занятий</th>
                             <th>✅ Оплачено</th>
                             <th>❌ Не оплачено</th>
-                            <th>💰 Доход</th>
+                            <th>💰 Доход (оплачено)</th>
+                            <th>💵 Потенциальный доход</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -9491,9 +9517,10 @@ window.loadIncome = async function() {
         
         var hasData = false;
         studentStats.forEach(function(student) {
-            if (student.total === 0 && student.income === 0) return;
+            if (student.total === 0 && student.income === 0 && student.potential === 0) return;
             hasData = true;
             var incomeColor = student.income > 0 ? 'income-paid' : 'income-unpaid';
+            var potentialColor = student.potential > 0 ? 'income-paid' : 'income-unpaid';
             html += `
                 <tr class="income-row">
                     <td class="student-name">${student.name}</td>
@@ -9502,6 +9529,7 @@ window.loadIncome = async function() {
                     <td class="income-paid">${student.paid}</td>
                     <td class="income-unpaid">${student.unpaid}</td>
                     <td class="${incomeColor}">${student.income} ₽</td>
+                    <td style="color: #f5a623; font-weight: 600;">${student.potential} ₽</td>
                 </tr>
             `;
         });
@@ -9509,7 +9537,7 @@ window.loadIncome = async function() {
         if (!hasData) {
             html += `
                 <tr>
-                    <td colspan="6" style="text-align:center; color:#666; padding:30px;">
+                    <td colspan="7" style="text-align:center; color:#666; padding:30px;">
                         📭 Нет занятий за ${monthName} ${year}
                     </td>
                 </tr>
@@ -9523,7 +9551,8 @@ window.loadIncome = async function() {
                             <td style="font-weight:700; color:var(--text-white);">${totalLessons}</td>
                             <td style="font-weight:700; color:#2ecc71;">${totalPaid}</td>
                             <td style="font-weight:700; color:#e74c3c;">${totalUnpaid}</td>
-                            <td style="font-weight:700; color:var(--accent); font-size: 18px;">${totalIncome} ₽</td>
+                            <td style="font-weight:700; color:#2ecc71; font-size: 18px;">${totalIncome} ₽</td>
+                            <td style="font-weight:700; color:var(--accent); font-size: 18px;">${totalPotentialIncome} ₽</td>
                         </tr>
             `;
         }
@@ -9541,6 +9570,8 @@ window.loadIncome = async function() {
         container.innerHTML = '<p style="color:#666; text-align:center; padding:30px;">❌ Ошибка загрузки: ' + err.message + '</p>';
     }
 };
+
+
     </script>
     <!-- ===== МОДАЛКА УПРАВЛЕНИЯ ЗАНЯТИЕМ ===== -->
     <div class="modal-overlay" id="adminLessonModal">
