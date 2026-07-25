@@ -2102,6 +2102,45 @@
     </div>
 </div>
 <!-- ===== КОНЕЦ ОПЛАТА ЗАНЯТИЙ ===== -->
+
+<!-- ===== ДОХОД ===== -->
+<div class="admin-content" id="tab-income">
+    <h3 style="color: #f5a623; margin-bottom: 20px;">💰 Доход</h3>
+    
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 24px;">
+        <div class="stat-card" style="border-color: rgba(46,204,113,0.2);">
+            <span class="icon">💰</span>
+            <div class="number" id="totalIncome" style="color: #2ecc71;">0 ₽</div>
+            <div class="label">Общий доход</div>
+        </div>
+        <div class="stat-card" style="border-color: rgba(102,126,234,0.2);">
+            <span class="icon">📅</span>
+            <div class="number" id="totalLessonsIncome">0</div>
+            <div class="label">Всего занятий</div>
+        </div>
+        <div class="stat-card" style="border-color: rgba(245,166,35,0.2);">
+            <span class="icon">✅</span>
+            <div class="number" id="paidLessonsIncome">0</div>
+            <div class="label">Оплачено</div>
+        </div>
+        <div class="stat-card" style="border-color: rgba(231,76,60,0.2);">
+            <span class="icon">❌</span>
+            <div class="number" id="unpaidLessonsIncome" style="color: #e74c3c;">0</div>
+            <div class="label">Не оплачено</div>
+        </div>
+    </div>
+    
+    <div style="margin-bottom: 16px; display: flex; gap: 12px; flex-wrap: wrap; align-items: center;">
+        <label style="color: #b0c4de; font-weight: 600;">💰 Стоимость занятия (₽):</label>
+        <input type="number" id="lessonPrice" value="1500" min="0" step="100" style="width: 150px; padding: 8px 12px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; color: #fff; font-size: 14px;">
+        <button class="admin-btn success" onclick="window.updateIncome()" style="background: linear-gradient(135deg, #27ae60, #2ecc71);">🔄 Обновить</button>
+    </div>
+    
+    <div id="incomeContainer">
+        <p style="color:#666; text-align:center; padding:30px;">⏳ Загрузка...</p>
+    </div>
+</div>
+<!-- ===== КОНЕЦ ДОХОД ===== -->
             <!-- ===== ШАБЛОНЫ ===== -->
             <div class="admin-content" id="tab-templates">
                 <h3 style="color: #f5a623; margin-bottom: 20px;">📚 Шаблоны планов подготовки</h3>
