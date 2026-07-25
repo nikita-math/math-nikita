@@ -2103,44 +2103,24 @@
 </div>
 <!-- ===== КОНЕЦ ОПЛАТА ЗАНЯТИЙ ===== -->
 
-<!-- ===== ДОХОД ===== -->
-<div class="admin-content" id="tab-income">
-    <h3 style="color: #f5a623; margin-bottom: 20px;">💰 Доход</h3>
-    
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 24px;">
-        <div class="stat-card" style="border-color: rgba(46,204,113,0.2);">
-            <span class="icon">💰</span>
-            <div class="number" id="totalIncome" style="color: #2ecc71;">0 ₽</div>
-            <div class="label">Общий доход</div>
+<!-- ===== МОДАЛКА РЕДАКТИРОВАНИЯ ЦЕН ===== -->
+<div class="modal-overlay" id="priceEditorModal">
+    <div class="modal-content" style="max-width: 500px;">
+        <h3 style="color: #f5a623;">✏️ Цены занятий по ученикам</h3>
+        <p style="color: #888; font-size: 14px; margin-bottom: 16px;">
+            Укажите стоимость одного занятия для каждого ученика (₽).
+        </p>
+        
+        <div id="priceEditorList" style="max-height: 400px; overflow-y: auto;">
+            <p style="color:#666; text-align:center; padding:20px;">⏳ Загрузка...</p>
         </div>
-        <div class="stat-card" style="border-color: rgba(102,126,234,0.2);">
-            <span class="icon">📅</span>
-            <div class="number" id="totalLessonsIncome">0</div>
-            <div class="label">Всего занятий</div>
+        
+        <div class="modal-actions" style="margin-top: 16px; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 16px;">
+            <button class="cancel-btn" onclick="window.closePriceEditor()">✕ Отмена</button>
+            <button class="submit-btn" onclick="window.saveAllPrices()">💾 Сохранить все цены</button>
         </div>
-        <div class="stat-card" style="border-color: rgba(245,166,35,0.2);">
-            <span class="icon">✅</span>
-            <div class="number" id="paidLessonsIncome">0</div>
-            <div class="label">Оплачено</div>
-        </div>
-        <div class="stat-card" style="border-color: rgba(231,76,60,0.2);">
-            <span class="icon">❌</span>
-            <div class="number" id="unpaidLessonsIncome" style="color: #e74c3c;">0</div>
-            <div class="label">Не оплачено</div>
-        </div>
-    </div>
-    
-    <div style="margin-bottom: 16px; display: flex; gap: 12px; flex-wrap: wrap; align-items: center;">
-        <label style="color: #b0c4de; font-weight: 600;">💰 Стоимость занятия (₽):</label>
-        <input type="number" id="lessonPrice" value="1500" min="0" step="100" style="width: 150px; padding: 8px 12px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; color: #fff; font-size: 14px;">
-        <button class="admin-btn success" onclick="window.updateIncome()" style="background: linear-gradient(135deg, #27ae60, #2ecc71);">🔄 Обновить</button>
-    </div>
-    
-    <div id="incomeContainer">
-        <p style="color:#666; text-align:center; padding:30px;">⏳ Загрузка...</p>
     </div>
 </div>
-<!-- ===== КОНЕЦ ДОХОД ===== -->
             <!-- ===== ШАБЛОНЫ ===== -->
             <div class="admin-content" id="tab-templates">
                 <h3 style="color: #f5a623; margin-bottom: 20px;">📚 Шаблоны планов подготовки</h3>
@@ -2196,15 +2176,26 @@
         </div>
 
     </div>
-    <!-- ===== ДОХОД ===== -->
+<!-- ===== ДОХОД ===== -->
 <div class="admin-content" id="tab-income">
     <h3 style="color: #f5a623; margin-bottom: 20px;">💰 Доход</h3>
     
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 24px;">
+    <!-- Выбор месяца и кнопки -->
+    <div style="display: flex; gap: 16px; flex-wrap: wrap; align-items: center; margin-bottom: 20px; background: rgba(255,255,255,0.03); padding: 16px 20px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05);">
+        <div>
+            <label style="color: #888; font-size: 13px; display: block; margin-bottom: 4px;">📅 Месяц:</label>
+            <input type="month" id="incomeMonth" style="padding: 8px 14px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; color: #fff; font-size: 14px; font-family: Arial, sans-serif;">
+        </div>
+        <button class="admin-btn success" onclick="window.loadIncome()" style="background: linear-gradient(135deg, #27ae60, #2ecc71); padding: 10px 24px; margin-top: 18px;">📊 Показать</button>
+        <button class="admin-btn" onclick="window.openPriceEditor()" style="background: #667eea; padding: 10px 24px; margin-top: 18px;">✏️ Редактировать цены</button>
+    </div>
+    
+    <!-- Статистика -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; margin-bottom: 24px;">
         <div class="stat-card" style="border-color: rgba(46,204,113,0.2);">
             <span class="icon">💰</span>
             <div class="number" id="totalIncome" style="color: #2ecc71;">0 ₽</div>
-            <div class="label">Общий доход</div>
+            <div class="label">Общий доход за месяц</div>
         </div>
         <div class="stat-card" style="border-color: rgba(102,126,234,0.2);">
             <span class="icon">📅</span>
@@ -2223,12 +2214,7 @@
         </div>
     </div>
     
-    <div style="margin-bottom: 16px; display: flex; gap: 12px; flex-wrap: wrap; align-items: center;">
-        <label style="color: #b0c4de; font-weight: 600;">💰 Стоимость занятия (₽):</label>
-        <input type="number" id="lessonPrice" value="1500" min="0" step="100" style="width: 150px; padding: 8px 12px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; color: #fff; font-size: 14px;">
-        <button class="admin-btn success" onclick="window.updateIncome()" style="background: linear-gradient(135deg, #27ae60, #2ecc71);">🔄 Обновить</button>
-    </div>
-    
+    <!-- Таблица по ученикам -->
     <div id="incomeContainer">
         <p style="color:#666; text-align:center; padding:30px;">⏳ Загрузка...</p>
     </div>
@@ -8164,6 +8150,104 @@ window.switchAdminTab = function(tab) {
             // Открываем разделение серии
             window.showSplitSeriesModal(seriesId);
         };
+        // ==========================================
+// ===== РЕДАКТИРОВАНИЕ ЦЕН УЧЕНИКОВ =====
+// ==========================================
+
+var priceChanges = {};
+
+window.openPriceEditor = async function() {
+    var modal = document.getElementById('priceEditorModal');
+    var list = document.getElementById('priceEditorList');
+    
+    modal.classList.add('active');
+    list.innerHTML = '⏳ Загрузка...';
+    priceChanges = {};
+    
+    try {
+        var { data: students, error } = await supabase
+            .from('students')
+            .select('id, name, lesson_price')
+            .eq('role', 'student')
+            .order('name');
+            
+        if (error) throw error;
+        
+        if (!students || students.length === 0) {
+            list.innerHTML = '<p style="color:#666; text-align:center; padding:20px;">📭 Нет учеников</p>';
+            return;
+        }
+        
+        var html = '';
+        students.forEach(function(student) {
+            var price = student.lesson_price || 1500;
+            html += `
+                <div style="display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.05);">
+                    <span style="color: #b0c4de; font-weight: 600; min-width: 120px;">${student.name}</span>
+                    <span style="color: #888; font-size: 13px;">💰</span>
+                    <input type="number" id="price_${student.id}" value="${price}" 
+                           min="0" step="100" 
+                           style="width: 120px; padding: 6px 12px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; color: #fff; font-size: 14px; font-family: Arial, sans-serif;"
+                           onchange="window.priceChanges['${student.id}'] = parseInt(this.value)">
+                    <span style="color: #888; font-size: 13px;">₽</span>
+                </div>
+            `;
+        });
+        
+        list.innerHTML = html;
+        
+    } catch (err) {
+        list.innerHTML = '<p style="color:#666; text-align:center; padding:20px;">❌ Ошибка: ' + err.message + '</p>';
+    }
+};
+
+window.closePriceEditor = function() {
+    document.getElementById('priceEditorModal').classList.remove('active');
+    priceChanges = {};
+};
+
+window.saveAllPrices = async function() {
+    if (Object.keys(priceChanges).length === 0) {
+        alert('⚠️ Нет изменений для сохранения');
+        window.closePriceEditor();
+        return;
+    }
+    
+    if (!confirm('Сохранить новые цены для ' + Object.keys(priceChanges).length + ' учеников?')) return;
+    
+    try {
+        for (var studentId in priceChanges) {
+            var newPrice = priceChanges[studentId];
+            var { error } = await supabase
+                .from('students')
+                .update({ lesson_price: newPrice })
+                .eq('id', studentId);
+                
+            if (error) throw error;
+        }
+        
+        alert('✅ Цены успешно сохранены!');
+        priceChanges = {};
+        window.closePriceEditor();
+        window.loadIncome();
+        
+    } catch (err) {
+        alert('❌ Ошибка сохранения: ' + err.message);
+        console.error(err);
+    }
+};
+
+// Обновляем доход при смене месяца
+document.addEventListener('DOMContentLoaded', function() {
+    var monthInput = document.getElementById('incomeMonth');
+    if (monthInput) {
+        var now = new Date();
+        monthInput.value = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0');
+        monthInput.addEventListener('change', function() {
+            window.loadIncome();
+        });
+    }
+});
 
         console.log('✅ Функции для модалки управления занятием добавлены!');
 
@@ -9232,21 +9316,40 @@ window.loadStudentPayments = async function() {
 
 console.log('✅ Функция loadStudentPayments добавлена!');
         // ==========================================
-// ===== ДОХОД =====
+// ==========================================
+// ===== ДОХОД ПО МЕСЯЦАМ (С ИНДИВИДУАЛЬНЫМИ ЦЕНАМИ) =====
 // ==========================================
 
-// Загружаем доход
 window.loadIncome = async function() {
     var container = document.getElementById('incomeContainer');
     if (!container) return;
     
+    var monthInput = document.getElementById('incomeMonth');
+    if (!monthInput.value) {
+        var now = new Date();
+        monthInput.value = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0');
+    }
+    
+    var selectedMonth = monthInput.value;
+    if (!selectedMonth) {
+        container.innerHTML = '<p style="color:#666; text-align:center; padding:30px;">❌ Выберите месяц</p>';
+        return;
+    }
+    
+    var parts = selectedMonth.split('-');
+    var year = parseInt(parts[0]);
+    var month = parseInt(parts[1]);
+    
+    var startDate = year + '-' + String(month).padStart(2, '0') + '-01';
+    var lastDay = new Date(year, month, 0).getDate();
+    var endDate = year + '-' + String(month).padStart(2, '0') + '-' + String(lastDay).padStart(2, '0');
+    
     container.innerHTML = '⏳ Загрузка...';
     
     try {
-        // 1. Загружаем всех учеников
         var { data: students, error: studentsError } = await supabase
             .from('students')
-            .select('id, name')
+            .select('id, name, lesson_price')
             .eq('role', 'student')
             .order('name');
             
@@ -9257,22 +9360,26 @@ window.loadIncome = async function() {
             return;
         }
         
-        // 2. Загружаем все занятия из календаря
+        var priceMap = {};
+        students.forEach(function(s) {
+            priceMap[s.id] = s.lesson_price || 1500;
+        });
+        
         var { data: allLessons, error: lessonsError } = await supabase
             .from('lesson_calendar')
             .select('*')
+            .gte('lesson_date', startDate)
+            .lte('lesson_date', endDate)
             .order('lesson_date', { ascending: true });
             
         if (lessonsError) throw lessonsError;
         
-        // 3. Загружаем статусы оплаты
         var { data: allPayments, error: paymentsError } = await supabase
             .from('lesson_payments')
             .select('*');
             
         if (paymentsError) throw paymentsError;
         
-        // Создаём карту оплат: student_id + lesson_id -> paid
         var paymentMap = {};
         if (allPayments) {
             allPayments.forEach(function(p) {
@@ -9281,14 +9388,11 @@ window.loadIncome = async function() {
             });
         }
         
-        // 4. Считаем статистику по каждому ученику
-        var lessonPrice = parseInt(document.getElementById('lessonPrice').value) || 1500;
+        var studentStats = [];
         var totalIncome = 0;
         var totalLessons = 0;
         var totalPaid = 0;
         var totalUnpaid = 0;
-        
-        var studentStats = [];
         
         students.forEach(function(student) {
             var lessons = allLessons ? allLessons.filter(function(l) { 
@@ -9297,21 +9401,23 @@ window.loadIncome = async function() {
             
             var paidCount = 0;
             var unpaidCount = 0;
+            var studentIncome = 0;
+            var price = priceMap[student.id] || 1500;
             
             lessons.forEach(function(lesson) {
                 var key = student.id + '_' + lesson.id;
                 var isPaid = paymentMap[key] || false;
                 if (isPaid) {
                     paidCount++;
+                    studentIncome += price;
                 } else {
                     unpaidCount++;
                 }
             });
             
             var total = lessons.length;
-            var income = paidCount * lessonPrice;
             
-            totalIncome += income;
+            totalIncome += studentIncome;
             totalLessons += total;
             totalPaid += paidCount;
             totalUnpaid += unpaidCount;
@@ -9319,27 +9425,35 @@ window.loadIncome = async function() {
             studentStats.push({
                 id: student.id,
                 name: student.name,
+                price: price,
                 total: total,
                 paid: paidCount,
                 unpaid: unpaidCount,
-                income: income
+                income: studentIncome
             });
         });
         
-        // 5. Обновляем статистику
+        studentStats.sort(function(a, b) { return b.income - a.income; });
+        
         document.getElementById('totalIncome').textContent = totalIncome + ' ₽';
         document.getElementById('totalLessonsIncome').textContent = totalLessons;
         document.getElementById('paidLessonsIncome').textContent = totalPaid;
         document.getElementById('unpaidLessonsIncome').textContent = totalUnpaid;
         
-        // 6. Строим таблицу
+        var monthName = ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 
+                         'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'][month - 1];
+        
         var html = `
+            <div style="margin-bottom: 12px; color: #888; font-size: 14px;">
+                📅 ${monthName} ${year}
+            </div>
             <div class="income-table-wrap">
                 <table class="income-table">
                     <thead>
                         <tr>
-                            <th style="text-align:left;">Ученик</th>
-                            <th>Всего занятий</th>
+                            <th style="text-align:left;">👤 Ученик</th>
+                            <th>💰 Цена</th>
+                            <th>📅 Занятий</th>
                             <th>✅ Оплачено</th>
                             <th>❌ Не оплачено</th>
                             <th>💰 Доход</th>
@@ -9348,11 +9462,15 @@ window.loadIncome = async function() {
                     <tbody>
         `;
         
+        var hasData = false;
         studentStats.forEach(function(student) {
+            if (student.total === 0 && student.income === 0) return;
+            hasData = true;
             var incomeColor = student.income > 0 ? 'income-paid' : 'income-unpaid';
             html += `
                 <tr class="income-row">
                     <td class="student-name">${student.name}</td>
+                    <td style="color: #f5a623; font-weight: 600;">${student.price} ₽</td>
                     <td>${student.total}</td>
                     <td class="income-paid">${student.paid}</td>
                     <td class="income-unpaid">${student.unpaid}</td>
@@ -9361,16 +9479,27 @@ window.loadIncome = async function() {
             `;
         });
         
-        // Итоговая строка
-        html += `
-                    <tr style="background: rgba(245,166,35,0.1); border-top: 2px solid rgba(245,166,35,0.3);">
-                        <td class="student-name" style="color: var(--accent);">📊 ИТОГО</td>
-                        <td style="font-weight:700; color:var(--text-white);">${totalLessons}</td>
-                        <td style="font-weight:700; color:#2ecc71;">${totalPaid}</td>
-                        <td style="font-weight:700; color:#e74c3c;">${totalUnpaid}</td>
-                        <td style="font-weight:700; color:var(--accent);">${totalIncome} ₽</td>
-                    </tr>
-        `;
+        if (!hasData) {
+            html += `
+                <tr>
+                    <td colspan="6" style="text-align:center; color:#666; padding:30px;">
+                        📭 Нет занятий за ${monthName} ${year}
+                    </td>
+                </tr>
+            `;
+        }
+        
+        if (hasData) {
+            html += `
+                        <tr style="background: rgba(245,166,35,0.15); border-top: 2px solid rgba(245,166,35,0.3);">
+                            <td class="student-name" style="color: var(--accent); font-weight: 700;" colspan="2">📊 ИТОГО</td>
+                            <td style="font-weight:700; color:var(--text-white);">${totalLessons}</td>
+                            <td style="font-weight:700; color:#2ecc71;">${totalPaid}</td>
+                            <td style="font-weight:700; color:#e74c3c;">${totalUnpaid}</td>
+                            <td style="font-weight:700; color:var(--accent); font-size: 18px;">${totalIncome} ₽</td>
+                        </tr>
+            `;
+        }
         
         html += `
                     </tbody>
@@ -9384,11 +9513,6 @@ window.loadIncome = async function() {
         console.error('Ошибка загрузки дохода:', err);
         container.innerHTML = '<p style="color:#666; text-align:center; padding:30px;">❌ Ошибка загрузки: ' + err.message + '</p>';
     }
-};
-
-// Обновляем доход (с новой ценой)
-window.updateIncome = function() {
-    window.loadIncome();
 };
     </script>
     <!-- ===== МОДАЛКА УПРАВЛЕНИЯ ЗАНЯТИЕМ ===== -->
@@ -9486,6 +9610,22 @@ window.updateIncome = function() {
         <div class="modal-actions">
             <button class="cancel-btn" onclick="window.closeAddLessonOnDateModal()">✕ Отмена</button>
             <button class="submit-btn" onclick="window.saveLessonOnDate()">✅ Добавить занятие</button>
+        </div>
+    </div>
+</div>
+ <!-- ===== МОДАЛКА РЕДАКТИРОВАНИЯ ЦЕН ===== -->
+<div class="modal-overlay" id="priceEditorModal">
+    <div class="modal-content" style="max-width: 500px;">
+        <h3 style="color: #f5a623;">✏️ Цены занятий по ученикам</h3>
+        <p style="color: #888; font-size: 14px; margin-bottom: 16px;">
+            Укажите стоимость одного занятия для каждого ученика (₽).
+        </p>
+        <div id="priceEditorList" style="max-height: 400px; overflow-y: auto;">
+            <p style="color:#666; text-align:center; padding:20px;">⏳ Загрузка...</p>
+        </div>
+        <div class="modal-actions" style="margin-top: 16px; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 16px;">
+            <button class="cancel-btn" onclick="window.closePriceEditor()">✕ Отмена</button>
+            <button class="submit-btn" onclick="window.saveAllPrices()">💾 Сохранить все цены</button>
         </div>
     </div>
 </div>
