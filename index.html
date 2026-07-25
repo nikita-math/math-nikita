@@ -1443,6 +1443,52 @@
 .payment-stats .stat-card .number.unpaid {
     color: #e74c3c;
 }
+        /* ===== ДОХОД ===== */
+.income-table-wrap { overflow-x: auto; margin-top: 16px; }
+.income-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: rgba(255,255,255,0.03);
+    border-radius: 12px;
+    overflow: hidden;
+    font-size: 14px;
+}
+.income-table th,
+.income-table td {
+    border: 1px solid rgba(255,255,255,0.08);
+    padding: 10px 12px;
+    text-align: center;
+    vertical-align: middle;
+}
+.income-table th {
+    background: rgba(255,255,255,0.06);
+    color: var(--accent);
+    font-weight: 700;
+    font-size: 14px;
+}
+.income-table td {
+    color: var(--text-light);
+}
+.income-table .student-name {
+    text-align: left;
+    color: var(--text-white);
+    font-weight: 600;
+}
+.income-table .income-paid {
+    color: #2ecc71;
+    font-weight: 700;
+}
+.income-table .income-unpaid {
+    color: #e74c3c;
+    font-weight: 700;
+}
+.income-table .income-total {
+    color: var(--accent);
+    font-weight: 700;
+}
+.income-row:hover {
+    background: rgba(255,255,255,0.05);
+}
     </style>
 </head>
 <body>
@@ -1847,6 +1893,7 @@
                 <button data-tab="studyplan" onclick="window.switchAdminTab('studyplan')">📚 План подготовки</button>
                 <button data-tab="progress" onclick="window.switchAdminTab('progress')">📊 Прогресс</button>
                 <button data-tab="payments" onclick="window.switchAdminTab('payments')">💰 Оплата</button>
+                <button data-tab="income" onclick="window.switchAdminTab('income')">💰 Доход</button>
                 <button data-tab="templates" onclick="window.switchAdminTab('templates')">📚 Шаблоны</button>
                 <button data-tab="stats" onclick="window.switchAdminTab('stats')">📊 Статистика</button>
                 <button data-tab="settings" onclick="window.switchAdminTab('settings')">⚙️ Настройки</button>
@@ -2110,6 +2157,44 @@
         </div>
 
     </div>
+    <!-- ===== ДОХОД ===== -->
+<div class="admin-content" id="tab-income">
+    <h3 style="color: #f5a623; margin-bottom: 20px;">💰 Доход</h3>
+    
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 24px;">
+        <div class="stat-card" style="border-color: rgba(46,204,113,0.2);">
+            <span class="icon">💰</span>
+            <div class="number" id="totalIncome" style="color: #2ecc71;">0 ₽</div>
+            <div class="label">Общий доход</div>
+        </div>
+        <div class="stat-card" style="border-color: rgba(102,126,234,0.2);">
+            <span class="icon">📅</span>
+            <div class="number" id="totalLessonsIncome">0</div>
+            <div class="label">Всего занятий</div>
+        </div>
+        <div class="stat-card" style="border-color: rgba(245,166,35,0.2);">
+            <span class="icon">✅</span>
+            <div class="number" id="paidLessonsIncome">0</div>
+            <div class="label">Оплачено</div>
+        </div>
+        <div class="stat-card" style="border-color: rgba(231,76,60,0.2);">
+            <span class="icon">❌</span>
+            <div class="number" id="unpaidLessonsIncome" style="color: #e74c3c;">0</div>
+            <div class="label">Не оплачено</div>
+        </div>
+    </div>
+    
+    <div style="margin-bottom: 16px; display: flex; gap: 12px; flex-wrap: wrap; align-items: center;">
+        <label style="color: #b0c4de; font-weight: 600;">💰 Стоимость занятия (₽):</label>
+        <input type="number" id="lessonPrice" value="1500" min="0" step="100" style="width: 150px; padding: 8px 12px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; color: #fff; font-size: 14px;">
+        <button class="admin-btn success" onclick="window.updateIncome()" style="background: linear-gradient(135deg, #27ae60, #2ecc71);">🔄 Обновить</button>
+    </div>
+    
+    <div id="incomeContainer">
+        <p style="color:#666; text-align:center; padding:30px;">⏳ Загрузка...</p>
+    </div>
+</div>
+<!-- ===== КОНЕЦ ДОХОД ===== -->
 
     <!-- МОДАЛКА ТЕОРИИ -->
     <div class="modal-overlay" id="theoryModal">
@@ -7358,6 +7443,9 @@ window.switchAdminTab = function(tab) {
         window.loadPaymentLessons();
     }
 }
+            else if (tab === 'income') { 
+    window.loadIncome();
+}
     else if (tab === 'templates') window.loadTemplates();
     else if (tab === 'stats') window.loadStats();
     else if (tab === 'settings') window.loadTeacherSettings();
@@ -9104,6 +9192,165 @@ window.loadStudentPayments = async function() {
 };
 
 console.log('✅ Функция loadStudentPayments добавлена!');
+        // ==========================================
+// ===== ДОХОД =====
+// ==========================================
+
+// Загружаем доход
+window.loadIncome = async function() {
+    var container = document.getElementById('incomeContainer');
+    if (!container) return;
+    
+    container.innerHTML = '⏳ Загрузка...';
+    
+    try {
+        // 1. Загружаем всех учеников
+        var { data: students, error: studentsError } = await supabase
+            .from('students')
+            .select('id, name')
+            .eq('role', 'student')
+            .order('name');
+            
+        if (studentsError) throw studentsError;
+        
+        if (!students || students.length === 0) {
+            container.innerHTML = '<p style="color:#666; text-align:center; padding:30px;">📭 Нет учеников</p>';
+            return;
+        }
+        
+        // 2. Загружаем все занятия из календаря
+        var { data: allLessons, error: lessonsError } = await supabase
+            .from('lesson_calendar')
+            .select('*')
+            .order('lesson_date', { ascending: true });
+            
+        if (lessonsError) throw lessonsError;
+        
+        // 3. Загружаем статусы оплаты
+        var { data: allPayments, error: paymentsError } = await supabase
+            .from('lesson_payments')
+            .select('*');
+            
+        if (paymentsError) throw paymentsError;
+        
+        // Создаём карту оплат: student_id + lesson_id -> paid
+        var paymentMap = {};
+        if (allPayments) {
+            allPayments.forEach(function(p) {
+                var key = p.student_id + '_' + p.lesson_id;
+                paymentMap[key] = p.paid;
+            });
+        }
+        
+        // 4. Считаем статистику по каждому ученику
+        var lessonPrice = parseInt(document.getElementById('lessonPrice').value) || 1500;
+        var totalIncome = 0;
+        var totalLessons = 0;
+        var totalPaid = 0;
+        var totalUnpaid = 0;
+        
+        var studentStats = [];
+        
+        students.forEach(function(student) {
+            var lessons = allLessons ? allLessons.filter(function(l) { 
+                return l.student_id === student.id; 
+            }) : [];
+            
+            var paidCount = 0;
+            var unpaidCount = 0;
+            
+            lessons.forEach(function(lesson) {
+                var key = student.id + '_' + lesson.id;
+                var isPaid = paymentMap[key] || false;
+                if (isPaid) {
+                    paidCount++;
+                } else {
+                    unpaidCount++;
+                }
+            });
+            
+            var total = lessons.length;
+            var income = paidCount * lessonPrice;
+            
+            totalIncome += income;
+            totalLessons += total;
+            totalPaid += paidCount;
+            totalUnpaid += unpaidCount;
+            
+            studentStats.push({
+                id: student.id,
+                name: student.name,
+                total: total,
+                paid: paidCount,
+                unpaid: unpaidCount,
+                income: income
+            });
+        });
+        
+        // 5. Обновляем статистику
+        document.getElementById('totalIncome').textContent = totalIncome + ' ₽';
+        document.getElementById('totalLessonsIncome').textContent = totalLessons;
+        document.getElementById('paidLessonsIncome').textContent = totalPaid;
+        document.getElementById('unpaidLessonsIncome').textContent = totalUnpaid;
+        
+        // 6. Строим таблицу
+        var html = `
+            <div class="income-table-wrap">
+                <table class="income-table">
+                    <thead>
+                        <tr>
+                            <th style="text-align:left;">Ученик</th>
+                            <th>Всего занятий</th>
+                            <th>✅ Оплачено</th>
+                            <th>❌ Не оплачено</th>
+                            <th>💰 Доход</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+        `;
+        
+        studentStats.forEach(function(student) {
+            var incomeColor = student.income > 0 ? 'income-paid' : 'income-unpaid';
+            html += `
+                <tr class="income-row">
+                    <td class="student-name">${student.name}</td>
+                    <td>${student.total}</td>
+                    <td class="income-paid">${student.paid}</td>
+                    <td class="income-unpaid">${student.unpaid}</td>
+                    <td class="${incomeColor}">${student.income} ₽</td>
+                </tr>
+            `;
+        });
+        
+        // Итоговая строка
+        html += `
+                    <tr style="background: rgba(245,166,35,0.1); border-top: 2px solid rgba(245,166,35,0.3);">
+                        <td class="student-name" style="color: var(--accent);">📊 ИТОГО</td>
+                        <td style="font-weight:700; color:var(--text-white);">${totalLessons}</td>
+                        <td style="font-weight:700; color:#2ecc71;">${totalPaid}</td>
+                        <td style="font-weight:700; color:#e74c3c;">${totalUnpaid}</td>
+                        <td style="font-weight:700; color:var(--accent);">${totalIncome} ₽</td>
+                    </tr>
+        `;
+        
+        html += `
+                    </tbody>
+                </table>
+            </div>
+        `;
+        
+        container.innerHTML = html;
+        
+    } catch (err) {
+        console.error('Ошибка загрузки дохода:', err);
+        container.innerHTML = '<p style="color:#666; text-align:center; padding:30px;">❌ Ошибка загрузки: ' + err.message + '</p>';
+    }
+};
+
+// Обновляем доход (с новой ценой)
+window.updateIncome = function() {
+    window.loadIncome();
+};
     </script>
     <!-- ===== МОДАЛКА УПРАВЛЕНИЯ ЗАНЯТИЕМ ===== -->
     <div class="modal-overlay" id="adminLessonModal">
