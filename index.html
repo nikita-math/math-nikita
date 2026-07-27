@@ -8336,7 +8336,183 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
         console.log('✅ Функции для модалки управления занятием добавлены!');
+// ==========================================
+// ===== ПРОБНИКИ ДЛЯ УЧЕНИКА =====
+// ==========================================
 
+window.loadStudentMockTests = async function() {
+    console.log('🔥 loadStudentMockTests вызвана!');
+    
+    if (!currentUser) {
+        console.log('❌ Пользователь не авторизован');
+        return;
+    }
+    
+    var container = document.getElementById('studentMockTestsContainer');
+    console.log('📦 Контейнер:', container);
+    
+    if (!container) {
+        console.log('❌ Контейнер не найден!');
+        return;
+    }
+    
+    container.innerHTML = '⏳ Загрузка...';
+    
+    try {
+        console.log('🔍 Загружаем для student_id:', currentUser.id);
+        
+        var { data: results, error: resultsError } = await supabase
+            .from('mock_test_results')
+            .select('*, mock_tests(*)')
+            .eq('student_id', currentUser.id)
+            .order('created_at', { ascending: false });
+            
+        console.log('📊 Получено результатов:', results ? results.length : 0);
+        
+        if (resultsError) {
+            console.error('❌ Ошибка запроса:', resultsError);
+            throw resultsError;
+        }
+        
+        if (!results || results.length === 0) {
+            container.innerHTML = `
+                <div class="empty-state">
+                    <span class="icon">📝</span>
+                    <div class="title">Нет пробников</div>
+                    <div class="desc">Преподаватель ещё не выдал тебе пробники</div>
+                </div>
+            `;
+            return;
+        }
+        
+        var html = '<div style="display:grid; grid-template-columns:repeat(auto-fill,minmax(320px,1fr)); gap:16px;">';
+        
+        for (var r = 0; r < results.length; r++) {
+            var result = results[r];
+            var test = result.mock_tests;
+            
+            if (!test) {
+                console.log('⚠️ Нет данных о пробнике для результата:', result);
+                continue;
+            }
+            
+            var statusMap = {
+                'pending': { text: '⏳ Ожидает выполнения', color: '#888' },
+                'submitted': { text: '📤 Сдан на проверку', color: '#f5a623' },
+                'checked': { text: '✅ Проверен', color: '#2ecc71' }
+            };
+            var statusInfo = statusMap[result.status] || statusMap['pending'];
+            
+            var scores = result.scores || {};
+            var primary = result.primary_score;
+            var secondary = result.secondary_score;
+            
+            var tasksHtml = '';
+            if (result.status === 'checked' && primary !== null) {
+                tasksHtml = `
+                    <div style="margin-top:12px; background:rgba(255,255,255,0.03); border-radius:8px; padding:12px; overflow-x:auto;">
+                        <div style="display:flex; gap:4px; flex-wrap:wrap; justify-content:center;">
+                `;
+                for (var i = 1; i <= 19; i++) {
+                    var val = scores[i] !== undefined ? scores[i] : '—';
+                    var maxScore = 1;
+                    if (i >= 13 && i <= 16) maxScore = 2;
+                    if (i === 14 || i === 17) maxScore = 3;
+                    if (i >= 18) maxScore = 4;
+                    var isCorrect = (val === maxScore);
+                    tasksHtml += `
+                        <div style="text-align:center; min-width:32px; padding:4px 2px; background:rgba(255,255,255,0.03); border-radius:4px; border:1px solid ${isCorrect ? 'rgba(46,204,113,0.3)' : 'rgba(255,255,255,0.05)'};">
+                            <div style="font-size:9px; color:#666;">№${i}</div>
+                            <div style="font-size:14px; font-weight:700; color:${isCorrect ? '#2ecc71' : '#888'};">${val}</div>
+                            <div style="font-size:8px; color:#444;">/${maxScore}</div>
+                        </div>
+                    `;
+                }
+                tasksHtml += `
+                        </div>
+                        <div style="display:flex; justify-content:center; gap:24px; margin-top:10px; padding-top:10px; border-top:1px solid rgba(255,255,255,0.05);">
+                            <div style="text-align:center;">
+                                <div style="font-size:20px; font-weight:900; color:#f5a623;">${primary}</div>
+                                <div style="font-size:11px; color:#888;">Первичные / 32</div>
+                            </div>
+                            <div style="text-align:center;">
+                                <div style="font-size:20px; font-weight:900; color:#f5a623;">${secondary}</div>
+                                <div style="font-size:11px; color:#888;">Вторичные / 100</div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            var submitBtn = '';
+            if (result.status === 'pending') {
+                submitBtn = `
+                    <button class="admin-btn success" onclick="window.submitMockTest('${result.id}')" style="padding:8px 20px;">
+                        📤 Сдал
+                    </button>
+                `;
+            }
+            
+            html += `
+                <div class="template-card" style="padding:20px;">
+                    <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+                        <div>
+                            <div class="template-name" style="font-size:18px;">${test.title}</div>
+                            <div style="color:#888; font-size:13px; margin-top:4px;">
+                                📅 Дедлайн: ${new Date(test.deadline).toLocaleDateString('ru-RU')}
+                            </div>
+                        </div>
+                        <div style="font-size:14px; font-weight:600; color:${statusInfo.color};">${statusInfo.text}</div>
+                    </div>
+                    
+                    <div style="margin-top:8px;">
+                        <a href="${test.link}" target="_blank" style="color:#88ccff; text-decoration:none; font-size:14px; display:inline-block; padding:4px 12px; background:rgba(102,126,234,0.15); border-radius:8px;">
+                            🔗 Перейти к заданиям
+                        </a>
+                    </div>
+                    
+                    ${tasksHtml}
+                    
+                    <div style="margin-top:12px; display:flex; gap:8px; flex-wrap:wrap;">
+                        ${submitBtn}
+                    </div>
+                </div>
+            `;
+        }
+        
+        html += '</div>';
+        container.innerHTML = html;
+        console.log('✅ Пробники загружены!');
+        
+    } catch (err) {
+        console.error('❌ Ошибка загрузки пробников:', err);
+        container.innerHTML = '<p style="color:#666; text-align:center; padding:30px;">❌ Ошибка загрузки: ' + err.message + '</p>';
+    }
+};
+
+// Отправить пробник на проверку
+window.submitMockTest = async function(resultId) {
+    if (!confirm('Отправить пробник на проверку? Вы уверены, что выполнили все задания?')) return;
+    
+    try {
+        var { error } = await supabase
+            .from('mock_test_results')
+            .update({ 
+                status: 'submitted',
+                submitted_at: new Date().toISOString()
+            })
+            .eq('id', resultId);
+            
+        if (error) throw error;
+        
+        alert('✅ Пробник отправлен на проверку!');
+        window.loadStudentMockTests();
+        
+    } catch (err) {
+        alert('❌ Ошибка: ' + err.message);
+        console.error(err);
+    }
+};
     
 
         console.log('✅ Сайт полностью загружен!');
