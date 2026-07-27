@@ -1572,6 +1572,10 @@
                      <button data-page="myprogress" onclick="window.switchDashboardPage('myprogress')">📊 Мой прогресс
                      </button>
                     <button data-page="mypayments" onclick="window.switchDashboardPage('mypayments')">💰 Мои оплаты</button>
+                    <button data-page="mymocktests" onclick="window.switchDashboardPage('mymocktests')">
+    📝 Мои пробники
+    <span class="badge" id="mockBadge">0</span>
+</button>
                     <button data-page="settings" onclick="window.switchDashboardPage('settings')">
                         ⚙️ Настройки
                     </button>
@@ -1859,6 +1863,18 @@
     </div>
 </div>
             </div>
+                    <!-- ===== МОИ ПРОБНИКИ ===== -->
+<div id="page-mymocktests" class="dashboard-page" style="display:none;">
+    <div class="section-title">📝 Мои пробники</div>
+    
+    <div style="display:flex; justify-content:flex-end; margin-bottom:16px;">
+        <button class="admin-btn" onclick="window.loadStudentMockTests()">🔄 Обновить</button>
+    </div>
+    
+    <div id="studentMockTestsContainer">
+        <p style="color:#666; text-align:center; padding:30px;">⏳ Загрузка...</p>
+    </div>
+</div>
 
             <!-- ВИДЕОУРОКИ -->
             <div class="video-section" style="margin-top:40px;">
@@ -1894,6 +1910,7 @@
                 <button data-tab="progress" onclick="window.switchAdminTab('progress')">📊 Прогресс</button>
                 <button data-tab="payments" onclick="window.switchAdminTab('payments')">💰 Оплата</button>
                 <button data-tab="income" onclick="window.switchAdminTab('income')">💰 Доход</button>
+                <button data-tab="mocktests" onclick="window.switchAdminTab('mocktests')">📝 Пробники</button>
                 <button data-tab="templates" onclick="window.switchAdminTab('templates')">📚 Шаблоны</button>
                 <button data-tab="stats" onclick="window.switchAdminTab('stats')">📊 Статистика</button>
                 <button data-tab="settings" onclick="window.switchAdminTab('settings')">⚙️ Настройки</button>
@@ -2230,6 +2247,32 @@
     </div>
 </div>
 <!-- ===== КОНЕЦ ДОХОД ===== -->
+    <!-- ===== ПРОБНИКИ ===== -->
+<div class="admin-content" id="tab-mocktests">
+    <h3 style="color: #f5a623; margin-bottom: 20px;">📝 Пробники</h3>
+    
+    <div style="display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 20px;">
+        <button class="admin-btn success" onclick="window.showMockTestModal()">➕ Создать пробник</button>
+        <button class="admin-btn" onclick="window.loadMockTests()">🔄 Обновить</button>
+    </div>
+    
+    <!-- Список пробников -->
+    <div id="mockTestsList">
+        <p style="color:#666; text-align:center; padding:30px;">⏳ Загрузка...</p>
+    </div>
+    
+    <!-- Детали пробника (таблица с учениками) -->
+    <div id="mockTestDetails" style="display:none; margin-top: 30px; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 20px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 16px;">
+            <h4 id="mockTestDetailTitle" style="color: #f5a623; margin: 0;">📝 Пробник №1</h4>
+            <button class="admin-btn" onclick="window.closeMockTestDetails()">✕ Закрыть</button>
+        </div>
+        <div id="mockTestDetailContent">
+            <p style="color:#666; text-align:center; padding:20px;">Загрузка...</p>
+        </div>
+    </div>
+</div>
+<!-- ===== КОНЕЦ ПРОБНИКИ ===== -->
     <!-- МОДАЛКА ТЕОРИИ -->
     <div class="modal-overlay" id="theoryModal">
         <div class="modal-content">
@@ -3010,6 +3053,7 @@
                 window.loadCalendarStudents(); 
                 window.renderCalendar(currentMonth);
             }
+                
             else if (tab === 'studyplan') { 
                 window.loadCalendarStudents();
                 window.loadStudyPlan();
@@ -6940,6 +6984,9 @@ if (existingPlan) {
     else if (page === 'myprogress' && currentUser) {
         window.loadStudentMyProgress();
     }
+           else if (page === 'mymocktests' && currentUser) {
+    window.loadStudentMockTests();
+}
 };
         window.openSection = function(sectionId) {
             mainContent.style.display = 'none';
@@ -7506,6 +7553,9 @@ window.switchAdminTab = function(tab) {
 }
             else if (tab === 'income') { 
     window.loadIncome();
+}
+                else if (tab === 'mocktests') { 
+    window.loadMockTests();
 }
     else if (tab === 'templates') window.loadTemplates();
     else if (tab === 'stats') window.loadStats();
@@ -8958,6 +9008,499 @@ window.loadStudentStudyPlan = async function() {
     }
 };
         // ==========================================
+// ===== ПРОБНИКИ =====
+// ==========================================
+
+// Функция перевода первичных баллов во вторичные
+function getSecondaryScore(primary) {
+    var table = {
+        0: 0, 1: 6, 2: 11, 3: 17, 4: 22, 5: 27, 6: 34, 7: 40, 8: 46,
+        9: 52, 10: 58, 11: 64, 12: 70, 13: 72, 14: 74, 15: 76, 16: 78,
+        17: 80, 18: 82, 19: 84, 20: 86, 21: 88, 22: 90, 23: 92, 24: 94,
+        25: 95, 26: 96, 27: 97, 28: 98, 29: 99, 30: 100, 31: 100, 32: 100
+    };
+    return table[primary] !== undefined ? table[primary] : 0;
+}
+
+// Загружаем список пробников
+window.loadMockTests = async function() {
+    var container = document.getElementById('mockTestsList');
+    if (!container) return;
+    
+    container.innerHTML = '⏳ Загрузка...';
+    
+    try {
+        // Загружаем пробники
+        var { data: tests, error } = await supabase
+            .from('mock_tests')
+            .select('*')
+            .order('created_at', { ascending: false });
+            
+        if (error) throw error;
+        
+        if (!tests || tests.length === 0) {
+            container.innerHTML = `
+                <div class="empty-state">
+                    <span class="icon">📝</span>
+                    <div class="title">Нет пробников</div>
+                    <div class="desc">Создайте первый пробник, нажав "➕ Создать пробник"</div>
+                </div>
+            `;
+            return;
+        }
+        
+        // Загружаем результаты для подсчёта статистики
+        var { data: results } = await supabase
+            .from('mock_test_results')
+            .select('*');
+            
+        var resultsMap = {};
+        if (results) {
+            results.forEach(function(r) {
+                if (!resultsMap[r.mock_test_id]) resultsMap[r.mock_test_id] = [];
+                resultsMap[r.mock_test_id].push(r);
+            });
+        }
+        
+        var html = '<div style="display:grid; grid-template-columns:repeat(auto-fill,minmax(300px,1fr)); gap:16px;">';
+        
+        tests.forEach(function(test) {
+            var testResults = resultsMap[test.id] || [];
+            var total = testResults.length;
+            var submitted = testResults.filter(function(r) { return r.status === 'submitted' || r.status === 'checked'; }).length;
+            var checked = testResults.filter(function(r) { return r.status === 'checked'; }).length;
+            
+            html += `
+                <div class="template-card" style="cursor:pointer;" onclick="window.openMockTestDetails('${test.id}')">
+                    <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+                        <div>
+                            <div class="template-name">${test.title}</div>
+                            <div style="color:#888; font-size:13px; margin-top:4px;">
+                                📅 Дедлайн: ${new Date(test.deadline).toLocaleDateString('ru-RU')}
+                            </div>
+                        </div>
+                        <button class="admin-btn danger" onclick="event.stopPropagation(); window.deleteMockTest('${test.id}')" style="font-size:12px; padding:4px 12px;">🗑</button>
+                    </div>
+                    <div class="template-meta">
+                        👥 Учеников: ${total} &nbsp;|&nbsp; 📤 Сдали: ${submitted} &nbsp;|&nbsp; ✅ Проверено: ${checked}
+                    </div>
+                    <div style="margin-top:8px;">
+                        <button class="admin-btn" onclick="event.stopPropagation(); window.openMockTestDetails('${test.id}')" style="font-size:13px; padding:6px 16px;">📊 Посмотреть результаты</button>
+                    </div>
+                </div>
+            `;
+        });
+        
+        html += '</div>';
+        container.innerHTML = html;
+        
+    } catch (err) {
+        console.error('Ошибка загрузки пробников:', err);
+        container.innerHTML = '<p style="color:#666; text-align:center; padding:30px;">❌ Ошибка загрузки: ' + err.message + '</p>';
+    }
+};
+
+// Открыть модалку создания пробника
+window.showMockTestModal = async function() {
+    document.getElementById('mockTestModal').classList.add('active');
+    document.getElementById('mockTestTitle').value = '';
+    document.getElementById('mockTestLink').value = '';
+    document.getElementById('mockTestDeadline').value = '';
+    document.getElementById('mockTestStudentSelect').style.display = 'none';
+    
+    // Загружаем учеников для выбора
+    try {
+        var { data: students, error } = await supabase
+            .from('students')
+            .select('id, name')
+            .eq('role', 'student')
+            .order('name');
+            
+        if (error) throw error;
+        
+        var select = document.getElementById('mockTestStudentList');
+        select.innerHTML = '';
+        students.forEach(function(s) {
+            var option = document.createElement('option');
+            option.value = s.id;
+            option.textContent = s.name;
+            select.appendChild(option);
+        });
+        
+    } catch (err) {
+        console.error('Ошибка загрузки учеников:', err);
+    }
+};
+
+// Закрыть модалку
+window.closeMockTestModal = function() {
+    document.getElementById('mockTestModal').classList.remove('active');
+};
+
+// Переключение выбора учеников
+document.addEventListener('DOMContentLoaded', function() {
+    var select = document.getElementById('mockTestStudents');
+    if (select) {
+        select.addEventListener('change', function() {
+            var wrapper = document.getElementById('mockTestStudentSelect');
+            wrapper.style.display = this.value === 'selected' ? 'block' : 'none';
+        });
+    }
+});
+
+// Сохранить пробник
+window.saveMockTest = async function() {
+    var title = document.getElementById('mockTestTitle').value.trim();
+    var link = document.getElementById('mockTestLink').value.trim();
+    var deadline = document.getElementById('mockTestDeadline').value;
+    var studentMode = document.getElementById('mockTestStudents').value;
+    
+    if (!title) { alert('❌ Введите название пробника'); return; }
+    if (!link) { alert('❌ Введите ссылку на задания'); return; }
+    if (!deadline) { alert('❌ Выберите дедлайн'); return; }
+    
+    try {
+        // 1. Создаём пробник
+        var { data: testData, error: testError } = await supabase
+            .from('mock_tests')
+            .insert([{ title: title, link: link, deadline: deadline }])
+            .select();
+            
+        if (testError) throw testError;
+        
+        var testId = testData[0].id;
+        
+        // 2. Получаем список учеников
+        var students = [];
+        if (studentMode === 'all') {
+            var { data: allStudents } = await supabase
+                .from('students')
+                .select('id')
+                .eq('role', 'student');
+            students = allStudents || [];
+        } else {
+            var select = document.getElementById('mockTestStudentList');
+            var selectedOptions = select.selectedOptions;
+            for (var i = 0; i < selectedOptions.length; i++) {
+                students.push({ id: selectedOptions[i].value });
+            }
+        }
+        
+        if (students.length === 0) {
+            alert('❌ Выберите хотя бы одного ученика');
+            // Удаляем созданный пробник
+            await supabase.from('mock_tests').delete().eq('id', testId);
+            return;
+        }
+        
+        // 3. Создаём записи результатов для каждого ученика
+        var results = students.map(function(s) {
+            return {
+                student_id: s.id,
+                mock_test_id: testId,
+                status: 'pending',
+                scores: {}
+            };
+        });
+        
+        var { error: resultsError } = await supabase
+            .from('mock_test_results')
+            .insert(results);
+            
+        if (resultsError) throw resultsError;
+        
+        alert('✅ Пробник "' + title + '" создан и выдан ' + students.length + ' ученикам!');
+        window.closeMockTestModal();
+        window.loadMockTests();
+        
+    } catch (err) {
+        alert('❌ Ошибка: ' + err.message);
+        console.error(err);
+    }
+};
+
+// Удалить пробник
+window.deleteMockTest = async function(testId) {
+    if (!confirm('Удалить пробник и все результаты?')) return;
+    
+    try {
+        var { error } = await supabase
+            .from('mock_tests')
+            .delete()
+            .eq('id', testId);
+            
+        if (error) throw error;
+        
+        alert('✅ Пробник удалён');
+        window.loadMockTests();
+        document.getElementById('mockTestDetails').style.display = 'none';
+        
+    } catch (err) {
+        alert('❌ Ошибка: ' + err.message);
+        console.error(err);
+    }
+};
+
+// Открыть детали пробника (таблица с учениками)
+window.openMockTestDetails = async function(testId) {
+    var detailsDiv = document.getElementById('mockTestDetails');
+    var content = document.getElementById('mockTestDetailContent');
+    var titleEl = document.getElementById('mockTestDetailTitle');
+    
+    detailsDiv.style.display = 'block';
+    content.innerHTML = '⏳ Загрузка...';
+    
+    try {
+        // Загружаем информацию о пробнике
+        var { data: test, error: testError } = await supabase
+            .from('mock_tests')
+            .select('*')
+            .eq('id', testId)
+            .single();
+            
+        if (testError) throw testError;
+        
+        titleEl.textContent = '📝 ' + test.title + ' (Дедлайн: ' + new Date(test.deadline).toLocaleDateString('ru-RU') + ')';
+        
+        // Загружаем всех учеников с их результатами
+        var { data: students, error: studentsError } = await supabase
+            .from('students')
+            .select('id, name')
+            .eq('role', 'student')
+            .order('name');
+            
+        if (studentsError) throw studentsError;
+        
+        var { data: results, error: resultsError } = await supabase
+            .from('mock_test_results')
+            .select('*')
+            .eq('mock_test_id', testId);
+            
+        if (resultsError) throw resultsError;
+        
+        // Создаём карту результатов
+        var resultsMap = {};
+        results.forEach(function(r) {
+            resultsMap[r.student_id] = r;
+        });
+        
+        // Строим таблицу
+        var html = `
+            <div style="overflow-x: auto;">
+                <table class="progress-table" style="font-size:13px;">
+                    <thead>
+                        <tr>
+                            <th style="min-width:80px; text-align:left;">Ученик</th>
+                            <th>Статус</th>
+        `;
+        
+        // Добавляем заголовки для 19 заданий
+        for (var i = 1; i <= 19; i++) {
+            html += `<th style="min-width:45px;">№${i}</th>`;
+        }
+        
+        html += `
+                            <th style="min-width:70px; color:#f5a623;">Первичные</th>
+                            <th style="min-width:70px; color:#f5a623;">Вторичные</th>
+                            <th style="min-width:80px;">Действия</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+        `;
+        
+        // Проходим по ученикам
+        students.forEach(function(student) {
+            var result = resultsMap[student.id];
+            var scores = result && result.scores ? result.scores : {};
+            var status = result ? result.status : 'pending';
+            var primary = result ? result.primary_score : null;
+            var secondary = result ? result.secondary_score : null;
+            
+            var statusMap = {
+                'pending': '<span style="color:#888;">⏳ Ожидает</span>',
+                'submitted': '<span style="color:#f5a623;">📤 Сдан</span>',
+                'checked': '<span style="color:#2ecc71;">✅ Проверен</span>'
+            };
+            
+            html += `
+                <tr id="mockRow_${student.id}">
+                    <td style="text-align:left; font-weight:600; color:var(--text-white);">${student.name}</td>
+                    <td>${statusMap[status] || statusMap['pending']}</td>
+            `;
+            
+            // Поля для ввода баллов за каждое задание
+            for (var j = 1; j <= 19; j++) {
+                var maxScore = 1;
+                if (j >= 13 && j <= 16) maxScore = 2;
+                if (j === 14 || j === 17) maxScore = 3;
+                if (j >= 18) maxScore = 4;
+                
+                var value = scores[j] !== undefined ? scores[j] : '';
+                html += `
+                    <td>
+                        <input type="number" 
+                               class="mock-score-input" 
+                               data-student="${student.id}" 
+                               data-task="${j}" 
+                               value="${value}" 
+                               min="0" max="${maxScore}" 
+                               style="width:40px; padding:4px 2px; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); border-radius:4px; color:#fff; font-size:13px; text-align:center; font-family:Arial,sans-serif;"
+                               onchange="window.calculateMockScore('${student.id}', '${testId}')">
+                    </td>
+                `;
+            }
+            
+            html += `
+                    <td style="font-weight:700; color:#f5a623;" id="primary_${student.id}">${primary !== null ? primary : '—'}</td>
+                    <td style="font-weight:700; color:#f5a623;" id="secondary_${student.id}">${secondary !== null ? secondary : '—'}</td>
+                    <td>
+                        <button class="admin-btn success" onclick="window.saveMockStudentScore('${student.id}', '${testId}')" style="font-size:11px; padding:4px 10px;">💾</button>
+                    </td>
+                </tr>
+            `;
+        });
+        
+        html += `
+                    </tbody>
+                </table>
+            </div>
+            <div style="margin-top:12px; color:#888; font-size:13px; display:flex; gap:20px; flex-wrap:wrap;">
+                <span>📌 Максимальные баллы за задания:</span>
+                <span>№1-12: по 1 баллу</span>
+                <span>№13,15,16: по 2 балла</span>
+                <span>№14,17: по 3 балла</span>
+                <span>№18,19: по 4 балла</span>
+                <span style="color:#f5a623;">🎯 Максимум: 32 балла</span>
+            </div>
+        `;
+        
+        content.innerHTML = html;
+        
+        // Сохраняем testId для использования в других функциях
+        window.currentMockTestId = testId;
+        
+    } catch (err) {
+        console.error('Ошибка загрузки деталей:', err);
+        content.innerHTML = '<p style="color:#666; text-align:center; padding:30px;">❌ Ошибка загрузки: ' + err.message + '</p>';
+    }
+};
+
+// Закрыть детали пробника
+window.closeMockTestDetails = function() {
+    document.getElementById('mockTestDetails').style.display = 'none';
+};
+
+// Рассчитать первичные и вторичные баллы (автоматически)
+window.calculateMockScore = function(studentId, testId) {
+    var inputs = document.querySelectorAll('.mock-score-input[data-student="' + studentId + '"]');
+    var total = 0;
+    var allFilled = true;
+    
+    inputs.forEach(function(input) {
+        var val = parseInt(input.value);
+        if (isNaN(val) || val < 0) {
+            allFilled = false;
+            return;
+        }
+        var max = parseInt(input.max);
+        if (val > max) {
+            input.value = max;
+            val = max;
+        }
+        total += val;
+    });
+    
+    // Обновляем отображение
+    var primaryEl = document.getElementById('primary_' + studentId);
+    var secondaryEl = document.getElementById('secondary_' + studentId);
+    
+    if (allFilled) {
+        primaryEl.textContent = total;
+        var secondary = getSecondaryScore(total);
+        secondaryEl.textContent = secondary;
+    } else {
+        primaryEl.textContent = '—';
+        secondaryEl.textContent = '—';
+    }
+};
+
+// Сохранить результат ученика
+window.saveMockStudentScore = async function(studentId, testId) {
+    var inputs = document.querySelectorAll('.mock-score-input[data-student="' + studentId + '"]');
+    var scores = {};
+    var total = 0;
+    var allFilled = true;
+    
+    inputs.forEach(function(input) {
+        var task = input.dataset.task;
+        var val = parseInt(input.value);
+        if (isNaN(val) || val < 0) {
+            allFilled = false;
+            return;
+        }
+        scores[task] = val;
+        total += val;
+    });
+    
+    if (!allFilled) {
+        alert('❌ Заполните все поля для ученика');
+        return;
+    }
+    
+    var secondary = getSecondaryScore(total);
+    
+    try {
+        // Проверяем, есть ли запись
+        var { data: existing, error: findError } = await supabase
+            .from('mock_test_results')
+            .select('id')
+            .eq('student_id', studentId)
+            .eq('mock_test_id', testId)
+            .maybeSingle();
+            
+        if (findError) throw findError;
+        
+        var data = {
+            scores: scores,
+            primary_score: total,
+            secondary_score: secondary,
+            status: 'checked',
+            checked_at: new Date().toISOString()
+        };
+        
+        var result;
+        if (existing) {
+            result = await supabase
+                .from('mock_test_results')
+                .update(data)
+                .eq('id', existing.id);
+        } else {
+            data.student_id = studentId;
+            data.mock_test_id = testId;
+            result = await supabase
+                .from('mock_test_results')
+                .insert([data]);
+        }
+        
+        if (result.error) throw result.error;
+        
+        // Обновляем статус в таблице
+        var statusCell = document.querySelector('#mockRow_' + studentId + ' td:nth-child(2)');
+        if (statusCell) {
+            statusCell.innerHTML = '<span style="color:#2ecc71;">✅ Проверен</span>';
+        }
+        
+        alert('✅ Результаты сохранены!\nПервичные: ' + total + '\nВторичные: ' + secondary);
+        
+        // Обновляем список пробников
+        window.loadMockTests();
+        
+    } catch (err) {
+        alert('❌ Ошибка сохранения: ' + err.message);
+        console.error(err);
+    }
+};    
+        // ==========================================
 // ===== ОПЛАТА ЗАНЯТИЙ =====
 // ==========================================
 
@@ -9684,6 +10227,48 @@ window.loadIncome = async function() {
         <div class="modal-actions" style="margin-top: 16px; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 16px;">
             <button class="cancel-btn" onclick="window.closePriceEditor()">✕ Отмена</button>
             <button class="submit-btn" onclick="window.saveAllPrices()">💾 Сохранить все цены</button>
+        </div>
+    </div>
+</div>
+    <!-- ===== МОДАЛКА СОЗДАНИЯ ПРОБНИКА ===== -->
+<div class="modal-overlay" id="mockTestModal">
+    <div class="modal-content" style="max-width: 500px;">
+        <h3 style="color: #f5a623;">📝 Создать пробник</h3>
+        
+        <div class="form-group">
+            <label>Название пробника:</label>
+            <input type="text" id="mockTestTitle" placeholder="Например: Пробник №1" style="width:100%; padding:10px 14px; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); border-radius:10px; color:#fff; font-size:15px; font-family:Arial,sans-serif;">
+        </div>
+        
+        <div class="form-group">
+            <label>🔗 Ссылка на задания:</label>
+            <input type="text" id="mockTestLink" placeholder="https://example.com/test" style="width:100%; padding:10px 14px; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); border-radius:10px; color:#fff; font-size:15px; font-family:Arial,sans-serif;">
+        </div>
+        
+        <div class="form-group">
+            <label>📅 Дедлайн:</label>
+            <input type="date" id="mockTestDeadline" style="width:100%; padding:10px 14px; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); border-radius:10px; color:#fff; font-size:15px; font-family:Arial,sans-serif;">
+        </div>
+        
+        <div class="form-group">
+            <label>👥 Выдать ученикам:</label>
+            <select id="mockTestStudents" style="width:100%; padding:10px 14px; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); border-radius:10px; color:#fff; font-size:15px; font-family:Arial,sans-serif;">
+                <option value="all">👥 Всем ученикам</option>
+                <option value="selected">📌 Выбрать конкретных</option>
+            </select>
+        </div>
+        
+        <div id="mockTestStudentSelect" style="display:none; margin-top: 8px;">
+            <label style="color: #888; font-size: 13px;">Выберите учеников:</label>
+            <select id="mockTestStudentList" multiple style="width:100%; padding:10px 14px; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); border-radius:10px; color:#fff; font-size:14px; font-family:Arial,sans-serif; min-height:100px;">
+                <option value="">Загрузка...</option>
+            </select>
+            <p style="color:#666; font-size:12px; margin-top:4px;">💡 Зажмите Ctrl (или Cmd) для выбора нескольких учеников</p>
+        </div>
+        
+        <div class="modal-actions" style="margin-top: 16px; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 16px;">
+            <button class="cancel-btn" onclick="window.closeMockTestModal()">✕ Отмена</button>
+            <button class="submit-btn" onclick="window.saveMockTest()">✅ Создать</button>
         </div>
     </div>
 </div>
