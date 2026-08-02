@@ -1911,6 +1911,10 @@
                 <button data-tab="payments" onclick="window.switchAdminTab('payments')">💰 Оплата</button>
                 <button data-tab="income" onclick="window.switchAdminTab('income')">💰 Доход</button>
                 <button data-tab="mocktests" onclick="window.switchAdminTab('mocktests')">📝 Пробники</button>
+                <button data-tab="reminders" onclick="window.switchAdminTab('reminders')">
+    🔔 Напоминания
+    <span class="badge" id="reminderBadge" style="background: #e74c3c; color: white; display: none;">0</span>
+</button>
                 <button data-tab="templates" onclick="window.switchAdminTab('templates')">📚 Шаблоны</button>
                 <button data-tab="stats" onclick="window.switchAdminTab('stats')">📊 Статистика</button>
                 <button data-tab="settings" onclick="window.switchAdminTab('settings')">⚙️ Настройки</button>
@@ -2273,6 +2277,25 @@
     </div>
 </div>
 <!-- ===== КОНЕЦ ПРОБНИКИ ===== -->
+    <!-- ===== НАПОМИНАНИЯ ===== -->
+<div class="admin-content" id="tab-reminders">
+    <h3 style="color: #f5a623; margin-bottom: 20px;">🔔 Напоминания и задачи</h3>
+    
+    <div style="display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 20px;">
+        <button class="admin-btn success" onclick="window.generateReminders()">🔄 Сгенерировать напоминания</button>
+        <button class="admin-btn" onclick="window.loadReminders()">🔄 Обновить</button>
+        <button class="admin-btn" onclick="window.markAllRemindersDone()" style="background: #2a2a4a;">✅ Всё сделано</button>
+    </div>
+    
+    <!-- Сводка -->
+    <div id="remindersSummary" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-bottom: 24px;"></div>
+    
+    <!-- Список напоминаний -->
+    <div id="remindersList">
+        <p style="color:#666; text-align:center; padding:30px;">⏳ Загрузка...</p>
+    </div>
+</div>
+<!-- ===== КОНЕЦ НАПОМИНАНИЯ ===== -->
     <!-- МОДАЛКА ТЕОРИИ -->
     <div class="modal-overlay" id="theoryModal">
         <div class="modal-content">
@@ -7189,6 +7212,10 @@ if (existingPlan) {
     // window.loadAdminData();  // 👈 ЗАКОММЕНТИРОВАНО для ускорения
     window.fastLoad();  // 👈 ВМЕСТО НЕЁ (быстрая загрузка)
     window.loadTeacherSettings();
+                           // Автоматически генерируем напоминания при входе
+setTimeout(function() {
+    window.generateReminders();
+}, 3000);
 } else {
     document.getElementById('adminTheoryControls').style.display = 'none';
 }
@@ -7556,6 +7583,9 @@ window.switchAdminTab = function(tab) {
 }
                 else if (tab === 'mocktests') { 
     window.loadMockTests();
+}
+                    else if (tab === 'reminders') { 
+    window.loadReminders();
 }
     else if (tab === 'templates') window.loadTemplates();
     else if (tab === 'stats') window.loadStats();
@@ -8511,6 +8541,446 @@ window.submitMockTest = async function(resultId) {
     } catch (err) {
         alert('❌ Ошибка: ' + err.message);
         console.error(err);
+    }
+};
+        // ==========================================
+// ===== НАПОМИНАНИЯ ДЛЯ АДМИНА =====
+// ==========================================
+
+// Загружаем напоминания
+window.loadReminders = async function() {
+    var container = document.getElementById('remindersList');
+    var summary = document.getElementById('remindersSummary');
+    if (!container) return;
+    
+    container.innerHTML = '⏳ Загрузка...';
+    
+    try {
+        var today = new Date().toISOString().split('T')[0];
+        
+        var { data: reminders, error } = await supabase
+            .from('admin_reminders')
+            .select('*, students(name)')
+            .eq('is_done', false)
+            .gte('reminder_date', today)
+            .order('reminder_date', { ascending: true })
+            .order('is_urgent', { ascending: false });
+            
+        if (error) throw error;
+        
+        var urgentCount = reminders ? reminders.filter(function(r) { return r.is_urgent; }).length : 0;
+        var todayCount = reminders ? reminders.filter(function(r) { return r.reminder_date === today; }).length : 0;
+        var futureCount = reminders ? reminders.filter(function(r) { return r.reminder_date > today; }).length : 0;
+        var totalCount = reminders ? reminders.length : 0;
+        
+        summary.innerHTML = `
+            <div class="stat-card" style="border-color: rgba(231,76,60,0.3);">
+                <div class="number" style="color: #e74c3c;">${urgentCount}</div>
+                <div class="label">🔴 Срочных задач</div>
+            </div>
+            <div class="stat-card" style="border-color: rgba(245,166,35,0.3);">
+                <div class="number" style="color: #f5a623;">${todayCount}</div>
+                <div class="label">📅 На сегодня</div>
+            </div>
+            <div class="stat-card" style="border-color: rgba(102,126,234,0.3);">
+                <div class="number" style="color: #88ccff;">${futureCount}</div>
+                <div class="label">📆 На будущее</div>
+            </div>
+            <div class="stat-card" style="border-color: rgba(46,204,113,0.3);">
+                <div class="number" style="color: #2ecc71;">${totalCount}</div>
+                <div class="label">📋 Всего задач</div>
+            </div>
+        `;
+        
+        if (!reminders || reminders.length === 0) {
+            container.innerHTML = `
+                <div class="empty-state">
+                    <span class="icon">🎉</span>
+                    <div class="title">Все задачи выполнены!</div>
+                    <div class="desc">Отличная работа! Вы ничего не забыли.</div>
+                </div>
+            `;
+            return;
+        }
+        
+        var grouped = {};
+        reminders.forEach(function(r) {
+            if (!grouped[r.reminder_date]) grouped[r.reminder_date] = [];
+            grouped[r.reminder_date].push(r);
+        });
+        
+        var html = '';
+        var sortedDates = Object.keys(grouped).sort();
+        var todayStr = today;
+        
+        sortedDates.forEach(function(dateStr) {
+            var dateLabel = dateStr === todayStr ? '🔥 СЕГОДНЯ' : new Date(dateStr).toLocaleDateString('ru-RU', { weekday: 'long', day: 'numeric', month: 'long' });
+            var items = grouped[dateStr];
+            
+            html += `
+                <div style="margin-bottom: 16px; background: rgba(255,255,255,0.02); border-radius: 12px; padding: 16px; border: 1px solid rgba(255,255,255,0.05);">
+                    <div style="font-size: 16px; font-weight: 700; color: ${dateStr === todayStr ? '#f5a623' : '#888'}; margin-bottom: 10px;">
+                        ${dateLabel} (${items.length})
+                    </div>
+            `;
+            
+            items.forEach(function(reminder) {
+                var typeIcons = {
+                    'lesson': '📅',
+                    'payment': '💰',
+                    'homework': '📝',
+                    'mock_test': '📊',
+                    'system': '⚙️'
+                };
+                var typeIcon = typeIcons[reminder.type] || '🔔';
+                var studentName = reminder.students ? reminder.students.name : '—';
+                var urgency = reminder.is_urgent ? '🔴' : '';
+                
+                html += `
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px 14px; background: rgba(255,255,255,0.03); border-radius: 8px; margin-bottom: 6px; border-left: 3px solid ${reminder.is_urgent ? '#e74c3c' : '#667eea'};">
+                        <div style="flex: 1;">
+                            <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                                <span style="font-size: 18px;">${typeIcon}</span>
+                                <span style="font-weight: 600; color: var(--text-white);">${reminder.title}</span>
+                                ${urgency ? '<span style="color: #e74c3c; font-size: 12px; font-weight: 700;">🔴 СРОЧНО!</span>' : ''}
+                            </div>
+                            <div style="color: #888; font-size: 13px; margin-top: 4px;">
+                                ${reminder.description || ''}
+                                ${studentName !== '—' ? ' • 👤 ' + studentName : ''}
+                                ${reminder.link ? ' • <a href="' + reminder.link + '" style="color: #88ccff; text-decoration: none;">Перейти</a>' : ''}
+                            </div>
+                        </div>
+                        <div style="display: flex; gap: 6px; flex-shrink: 0;">
+                            <button class="admin-btn success" onclick="window.markReminderDone('${reminder.id}')" style="font-size: 11px; padding: 4px 12px;">✅ Готово</button>
+                            <button class="admin-btn danger" onclick="window.deleteReminder('${reminder.id}')" style="font-size: 11px; padding: 4px 12px;">🗑</button>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            html += '</div>';
+        });
+        
+        container.innerHTML = html;
+        
+        // Обновляем бейдж
+        updateReminderBadge();
+        
+    } catch (err) {
+        console.error('Ошибка загрузки напоминаний:', err);
+        container.innerHTML = '<p style="color:#666; text-align:center; padding:30px;">❌ Ошибка загрузки: ' + err.message + '</p>';
+    }
+};
+
+// ==========================================
+// ГЕНЕРАЦИЯ НАПОМИНАНИЙ
+// ==========================================
+
+window.generateReminders = async function() {
+    if (!confirm('Сгенерировать новые напоминания на основе текущих данных?')) return;
+    
+    try {
+        var today = new Date();
+        var todayStr = today.toISOString().split('T')[0];
+        var threeDaysLater = new Date(today);
+        threeDaysLater.setDate(threeDaysLater.getDate() + 3);
+        var threeDaysStr = threeDaysLater.toISOString().split('T')[0];
+        
+        // 1. Проверяем занятия: напоминание после занятия
+        var { data: pastLessons, error: lessonsError } = await supabase
+            .from('lesson_calendar')
+            .select('*, students(id, name)')
+            .lt('lesson_date', todayStr)
+            .neq('status', 'completed')
+            .limit(30);
+            
+        if (lessonsError) throw lessonsError;
+        
+        if (pastLessons && pastLessons.length > 0) {
+            for (var i = 0; i < pastLessons.length; i++) {
+                var lesson = pastLessons[i];
+                var studentName = lesson.students ? lesson.students.name : 'Ученик';
+                
+                var { data: existing } = await supabase
+                    .from('admin_reminders')
+                    .select('id')
+                    .eq('type', 'lesson')
+                    .eq('student_id', lesson.student_id)
+                    .eq('reminder_date', todayStr)
+                    .maybeSingle();
+                    
+                if (!existing) {
+                    await supabase.from('admin_reminders').insert([{
+                        type: 'lesson',
+                        title: '📅 Прошло занятие с ' + studentName,
+                        description: 'Занятие было ' + new Date(lesson.lesson_date).toLocaleDateString('ru-RU') + '. Провели?',
+                        student_id: lesson.student_id,
+                        link: '#tab-calendar',
+                        reminder_date: todayStr,
+                        is_urgent: true
+                    }]);
+                }
+            }
+        }
+        
+        // 2. Проверяем оплаты: кому пора платить
+        var { data: paymentStudents, error: paymentError } = await supabase
+            .from('students')
+            .select('id, name')
+            .eq('role', 'student');
+            
+        if (paymentError) throw paymentError;
+        
+        if (paymentStudents) {
+            for (var i = 0; i < paymentStudents.length; i++) {
+                var student = paymentStudents[i];
+                
+                var { data: existingPayment } = await supabase
+                    .from('admin_reminders')
+                    .select('id')
+                    .eq('type', 'payment')
+                    .eq('student_id', student.id)
+                    .eq('reminder_date', threeDaysStr)
+                    .maybeSingle();
+                    
+                if (!existingPayment) {
+                    var { data: lastPayment } = await supabase
+                        .from('lesson_payments')
+                        .select('updated_at')
+                        .eq('student_id', student.id)
+                        .eq('paid', true)
+                        .order('updated_at', { ascending: false })
+                        .limit(1);
+                        
+                    var needPayment = true;
+                    if (lastPayment && lastPayment.length > 0) {
+                        var lastDate = new Date(lastPayment[0].updated_at);
+                        var daysDiff = Math.floor((today - lastDate) / (1000 * 60 * 60 * 24));
+                        if (daysDiff < 25) needPayment = false;
+                    }
+                    
+                    if (needPayment) {
+                        await supabase.from('admin_reminders').insert([{
+                            type: 'payment',
+                            title: '💰 Напомнить об оплате ' + student.name,
+                            description: 'Пора напомнить об оплате занятий',
+                            student_id: student.id,
+                            link: '#tab-payments',
+                            reminder_date: threeDaysStr,
+                            is_urgent: false
+                        }]);
+                    }
+                }
+            }
+        }
+        
+        // 3. Проверяем пробники: проверка после сдачи
+        var { data: submittedMocks, error: mockError } = await supabase
+            .from('mock_test_results')
+            .select('*, students(name), mock_tests(title)')
+            .eq('status', 'submitted')
+            .lt('submitted_at', todayStr)
+            .limit(30);
+            
+        if (mockError) throw mockError;
+        
+        if (submittedMocks && submittedMocks.length > 0) {
+            for (var i = 0; i < submittedMocks.length; i++) {
+                var mock = submittedMocks[i];
+                var studentName = mock.students ? mock.students.name : 'Ученик';
+                var testName = mock.mock_tests ? mock.mock_tests.title : 'Пробник';
+                
+                var { data: existing } = await supabase
+                    .from('admin_reminders')
+                    .select('id')
+                    .eq('type', 'mock_test')
+                    .eq('student_id', mock.student_id)
+                    .eq('reminder_date', todayStr)
+                    .maybeSingle();
+                    
+                if (!existing) {
+                    await supabase.from('admin_reminders').insert([{
+                        type: 'mock_test',
+                        title: '📊 Проверить пробник ' + studentName,
+                        description: 'Ученик сдал "' + testName + '". Пора проверить!',
+                        student_id: mock.student_id,
+                        link: '#tab-mocktests',
+                        reminder_date: todayStr,
+                        is_urgent: true
+                    }]);
+                }
+            }
+        }
+        
+        // 4. Проверяем ДЗ: кому пора выдать
+        var { data: studentsNoHomework, error: hwError } = await supabase
+            .from('students')
+            .select('id, name')
+            .eq('role', 'student')
+            .limit(20);
+            
+        if (hwError) throw hwError;
+        
+        if (studentsNoHomework) {
+            for (var i = 0; i < studentsNoHomework.length; i++) {
+                var student = studentsNoHomework[i];
+                
+                var { data: lastHomework } = await supabase
+                    .from('homeworks')
+                    .select('created_at')
+                    .eq('student_id', student.id)
+                    .order('created_at', { ascending: false })
+                    .limit(1);
+                    
+                var needHomework = true;
+                if (lastHomework && lastHomework.length > 0) {
+                    var lastDate = new Date(lastHomework[0].created_at);
+                    var daysDiff = Math.floor((today - lastDate) / (1000 * 60 * 60 * 24));
+                    if (daysDiff < 7) needHomework = false;
+                }
+                
+                if (needHomework) {
+                    var { data: existing } = await supabase
+                        .from('admin_reminders')
+                        .select('id')
+                        .eq('type', 'homework')
+                        .eq('student_id', student.id)
+                        .eq('reminder_date', threeDaysStr)
+                        .maybeSingle();
+                        
+                    if (!existing) {
+                        await supabase.from('admin_reminders').insert([{
+                            type: 'homework',
+                            title: '📝 Выдать ДЗ ' + student.name,
+                            description: 'Пора выдать новое домашнее задание',
+                            student_id: student.id,
+                            link: '#tab-homeworks',
+                            reminder_date: threeDaysStr,
+                            is_urgent: false
+                        }]);
+                    }
+                }
+            }
+        }
+        
+        alert('✅ Напоминания сгенерированы!');
+        window.loadReminders();
+        
+    } catch (err) {
+        alert('❌ Ошибка: ' + err.message);
+        console.error(err);
+    }
+};
+
+// ==========================================
+// ОТМЕТИТЬ НАПОМИНАНИЕ КАК ВЫПОЛНЕННОЕ
+// ==========================================
+
+window.markReminderDone = async function(id) {
+    if (!confirm('Отметить задачу как выполненную?')) return;
+    
+    try {
+        var { error } = await supabase
+            .from('admin_reminders')
+            .update({ is_done: true })
+            .eq('id', id);
+            
+        if (error) throw error;
+        
+        window.loadReminders();
+        
+    } catch (err) {
+        alert('❌ Ошибка: ' + err.message);
+        console.error(err);
+    }
+};
+
+// ==========================================
+// УДАЛИТЬ НАПОМИНАНИЕ
+// ==========================================
+
+window.deleteReminder = async function(id) {
+    if (!confirm('Удалить напоминание?')) return;
+    
+    try {
+        var { error } = await supabase
+            .from('admin_reminders')
+            .delete()
+            .eq('id', id);
+            
+        if (error) throw error;
+        
+        window.loadReminders();
+        
+    } catch (err) {
+        alert('❌ Ошибка: ' + err.message);
+        console.error(err);
+    }
+};
+
+// ==========================================
+// ОТМЕТИТЬ ВСЁ КАК СДЕЛАННОЕ
+// ==========================================
+
+window.markAllRemindersDone = async function() {
+    if (!confirm('Отметить ВСЕ задачи как выполненные?')) return;
+    
+    try {
+        var { error } = await supabase
+            .from('admin_reminders')
+            .update({ is_done: true })
+            .eq('is_done', false);
+            
+        if (error) throw error;
+        
+        alert('✅ Все задачи отмечены как выполненные!');
+        window.loadReminders();
+        
+    } catch (err) {
+        alert('❌ Ошибка: ' + err.message);
+        console.error(err);
+    }
+};
+
+// ==========================================
+// ОБНОВЛЕНИЕ БЕЙДЖА
+// ==========================================
+
+async function updateReminderBadge() {
+    try {
+        var today = new Date().toISOString().split('T')[0];
+        var { data, error } = await supabase
+            .from('admin_reminders')
+            .select('id')
+            .eq('is_done', false)
+            .gte('reminder_date', today);
+            
+        if (error) throw error;
+        
+        var count = data ? data.length : 0;
+        var badge = document.getElementById('reminderBadge');
+        if (badge) {
+            badge.textContent = count;
+            badge.style.display = count > 0 ? 'inline-block' : 'none';
+        }
+    } catch (err) {
+        console.error('Ошибка обновления бейджа:', err);
+    }
+}
+
+// Автоматическое обновление бейджа каждые 5 минут
+setInterval(updateReminderBadge, 300000);
+
+// ==========================================
+// АВТОГЕНЕРАЦИЯ ПРИ ЗАГРУЗКЕ (ДЛЯ АДМИНА)
+// ==========================================
+
+// Загружаем напоминания при открытии вкладки
+var originalSwitchAdminTab = window.switchAdminTab;
+window.switchAdminTab = function(tab) {
+    originalSwitchAdminTab(tab);
+    if (tab === 'reminders') {
+        window.loadReminders();
     }
 };
     
