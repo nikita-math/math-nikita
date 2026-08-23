@@ -2898,12 +2898,12 @@
         };
         var daysArray = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'];
 
-        var loginSection = document.getElementById('loginSection');
+       var loginPage = document.getElementById('loginPage');
         var dashboard = document.getElementById('dashboard');
         var adminPanel = document.getElementById('adminPanel');
         var resultDiv = document.getElementById('result');
         var welcomeMessage = document.getElementById('welcomeMessage');
-        var mainContent = document.getElementById('mainContent');
+        var appContent = document.getElementById('appContent');
         var sectionPage = document.getElementById('sectionPage');
 
         // ==========================================
@@ -6834,7 +6834,6 @@ if (existingPlan) {
     document.getElementById('homeworkLink3').value = '';
 };
             
-        };
 
         window.loadStudentsForSelect = async function() {
             var select = document.getElementById('studentSelect');
@@ -7212,7 +7211,7 @@ if (existingPlan) {
                         
                         document.getElementById('profileBlock').style.display = 'none';
                         document.getElementById('contactsBlock').style.display = 'none';
-                        document.getElementById('loginSection').style.display = 'none';
+                        document.getElementById('loginPage').style.display = 'none';
                         document.getElementById('dashboard').style.display = 'block';
                         document.getElementById('welcomeMessage').textContent = '👋 Привет, ' + user.name + '!';
                         
