@@ -4,9 +4,6 @@
 
 let currentUser = null;
 
-// ==========================================
-// ИНИЦИАЛИЗАЦИЯ
-// ==========================================
 document.addEventListener('DOMContentLoaded', async function() {
     console.log('🚀 Загрузка приложения...');
     
@@ -24,9 +21,6 @@ document.addEventListener('DOMContentLoaded', async function() {
     setupEventListeners();
 });
 
-// ==========================================
-// НАСТРОЙКА СОБЫТИЙ
-// ==========================================
 function setupEventListeners() {
     const loginBtn = document.getElementById('loginBtn');
     const registerBtn = document.getElementById('registerBtn');
@@ -40,9 +34,6 @@ function setupEventListeners() {
     }
 }
 
-// ==========================================
-// ПОКАЗ СТРАНИЦ
-// ==========================================
 function showLogin() {
     const loginPage = document.getElementById('loginPage');
     const appContent = document.getElementById('appContent');
@@ -67,9 +58,6 @@ function showDashboard() {
     }
 }
 
-// ==========================================
-// ОБРАБОТКА ВХОДА
-// ==========================================
 async function handleLogin() {
     const email = document.getElementById('loginEmail').value.trim();
     const password = document.getElementById('loginPassword').value.trim();
@@ -98,9 +86,6 @@ async function handleLogin() {
     }
 }
 
-// ==========================================
-// ОБРАБОТКА РЕГИСТРАЦИИ
-// ==========================================
 async function handleRegister() {
     const email = document.getElementById('loginEmail').value.trim();
     const password = document.getElementById('loginPassword').value.trim();
@@ -136,13 +121,13 @@ async function handleRegister() {
 }
 
 // ==========================================
-// ЗАГРУЗКА ДАННЫХ ПОЛЬЗОВАТЕЛЯ
+// ЗАГРУЗКА ДАННЫХ (ГЛАВНОЕ ИСПРАВЛЕНИЕ!)
 // ==========================================
 async function loadUserData() {
     if (!currentUser) return;
     
     try {
-        // 👇 ИСПОЛЬЗУЕМ supabaseClient ИЗ auth.js
+        // 👇 ВОТ ЭТО ГЛАВНОЕ!
         const supabase = window.supabaseClient;
         
         const { data: homeworks, error: hwError } = await supabase
@@ -156,10 +141,8 @@ async function loadUserData() {
             renderHomeworks(homeworks);
         }
         
-        // Загружаем статистику
         loadStatistics();
         
-        // Если админ — загружаем админ-данные
         if (currentUser.role === 'admin') {
             loadAdminData();
         }
@@ -169,16 +152,12 @@ async function loadUserData() {
     }
 }
 
-// ==========================================
-// ЗАГРУЗКА АДМИН-ДАННЫХ
-// ==========================================
 async function loadAdminData() {
     if (currentUser.role !== 'admin') return;
     
     try {
         const supabase = window.supabaseClient;
         
-        // Все ученики
         const { data: students, error: sError } = await supabase
             .from('profiles')
             .select('*')
@@ -202,9 +181,6 @@ async function loadAdminData() {
     }
 }
 
-// ==========================================
-// ОТРИСОВКА ДОМАШНИХ ЗАДАНИЙ
-// ==========================================
 function renderHomeworks(homeworks) {
     const container = document.getElementById('homeworkList');
     if (!container) return;
@@ -236,9 +212,6 @@ function renderHomeworks(homeworks) {
     container.innerHTML = html;
 }
 
-// ==========================================
-// СТАТИСТИКА
-// ==========================================
 async function loadStatistics() {
     try {
         const supabase = window.supabaseClient;
@@ -270,9 +243,6 @@ async function loadStatistics() {
     }
 }
 
-// ==========================================
-// ОТМЕТКА ДЗ КАК ВЫПОЛНЕННОГО
-// ==========================================
 window.markHomeworkDone = async function(id) {
     if (!currentUser) return;
     
@@ -294,9 +264,6 @@ window.markHomeworkDone = async function(id) {
     }
 };
 
-// ==========================================
-// БЕЗОПАСНЫЙ ВЫХОД
-// ==========================================
 window.logout = async function() {
     if (confirm('Вы уверены, что хотите выйти?')) {
         await window.secureLogout();
