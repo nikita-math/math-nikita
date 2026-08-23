@@ -1527,16 +1527,88 @@
                 <a href="mailto:nlysi6233@gmail.com">📧 nlysi6233@gmail.com</a>
             </div>
 
-            <div class="login-section" id="loginSection">
-                <h3>🔐 Войти в личный кабинет</h3>
-                <input type="email" id="email" placeholder="Email" value="">
-                <input type="password" id="password" placeholder="Пароль" value="">
-                <button id="loginBtn">Войти</button>
-                <div id="result"></div>
-                <p style="margin-top: 14px; font-size: 14px; color: #888;">
-                    *Нет аккаунта? Напиши мне в Telegram — я добавлю тебя!
-                </p>
-            </div>
+           <div id="loginPage">
+    <div class="login-section">
+        <h3>🔐 Войти</h3>
+        <div id="loginMessage" style="color: #f5a623; margin-bottom: 12px;"></div>
+        
+        <input type="email" id="loginEmail" placeholder="Email">
+        <input type="password" id="loginPassword" placeholder="Пароль">
+        
+        <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+            <button id="loginBtn" style="flex:1;">Войти</button>
+            <button id="registerBtn" style="flex:1; background: #2a2a4a;">Регистрация</button>
+        </div>
+        
+        <div id="result"></div>
+        <p style="margin-top: 14px; font-size: 14px; color: #888;">
+            *Нет аккаунта? Нажми "Регистрация"
+        </p>
+    </div>
+</div>
+            <!-- ===== ОСНОВНОЙ КОНТЕНТ (скрыт до входа) ===== -->
+<div id="appContent" style="display:none;">
+    <!-- ===== ПРОФИЛЬ ===== -->
+    <div class="profile" id="profileBlock">
+        <div class="profile-avatar" id="profileAvatar">
+            <img id="profileAvatarImg" style="display:none; width:100%; height:100%; object-fit:cover; border-radius:50%;" alt="Аватар">
+            <span class="avatar-emoji" id="profileAvatarEmoji">👨‍🏫</span>
+        </div>
+        <div class="profile-info">
+            <h2 id="teacherNameDisplay">Никита</h2>
+            <span class="badge">⭐ Репетитор со стажем 1.5 года</span>
+            <p id="teacherDescDisplay">Учусь в Московском энергетическом институте (МЭИ)...</p>
+            <ul>
+                <li>10+ выпущенных учеников</li>
+                <li>3 ученика набрали 100 баллов</li>
+                <li>Автор собственной методики подготовки</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- ===== КОНТАКТЫ ===== -->
+    <div class="contacts" id="contactsBlock">
+        <h3>📬 Связаться со мной</h3>
+        <a href="tel:+79916834922">📞 +7 991 683-49-22</a>
+        <a href="https://t.me/Nikita_Lysikov" target="_blank">💬 Telegram</a>
+        <a href="mailto:nlysi6233@gmail.com">📧 nlysi6233@gmail.com</a>
+    </div>
+
+    <!-- ===== ДАШБОРД ===== -->
+    <div id="dashboard">
+        <div class="header">
+            <h3 id="welcomeMessage">👋 Привет!</h3>
+            <button class="admin-btn danger" onclick="window.logout()">🚪 Выйти</button>
+        </div>
+        
+        <!-- ВСЁ СОДЕРЖИМОЕ ДАШБОРДА -->
+        <!-- (ваши страницы: overview, theory, homeworks, stats, messages, myplan, settings и т.д.) -->
+    </div>
+
+    <!-- ===== АДМИН-ПАНЕЛЬ ===== -->
+    <div id="adminPanel">
+        <h3>🔧 Панель управления</h3>
+        <!-- Все админ-вкладки -->
+    </div>
+
+    <!-- ===== ВИДЕОУРОКИ ===== -->
+    <div class="video-section" style="margin-top:40px;">
+        <h3>🎥 Видеоуроки по темам</h3>
+        <div class="part-divider">📘 Первая часть</div>
+        <div class="video-tabs" id="videoTabsPart1"></div>
+        <div class="part-divider">📗 Вторая часть</div>
+        <div class="video-tabs" id="videoTabsPart2"></div>
+    </div>
+
+    <!-- ===== СТРАНИЦА РАЗДЕЛА ===== -->
+    <div id="sectionPage">
+        <button class="back-btn" id="backToDashboard">← Назад к списку разделов</button>
+        <div id="sectionContent">
+            <div class="loading">⏳ Загрузка...</div>
+        </div>
+    </div>
+
+</div> <!-- ЗАКРЫВАЕМ appContent -->
         </div>
                 <div id="dashboard">
             <div class="header">
@@ -10918,7 +10990,10 @@ window.loadIncome = async function() {
         </div>
     </div>
 </div>
-
+        <!-- ===== ПОДКЛЮЧАЕМ НОВЫЕ СКРИПТЫ ===== -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="auth.js"></script>
+    <script src="app.js"></script>
 </body>
 </html>
 
