@@ -7162,8 +7162,7 @@ if (existingPlan) {
         // ==========================================
         // АВТОРИЗАЦИЯ
         // ==========================================
-
-     async function handleLogin() {
+async function handleLogin() {
     var emailInput = document.getElementById('email');
     var passwordInput = document.getElementById('password');
     var resultDiv = document.getElementById('result');
@@ -7181,7 +7180,7 @@ if (existingPlan) {
     resultDiv.innerHTML = '⏳ Проверяю...';
     
     try {
-        // 👇 ПРАВИЛЬНЫЙ ЗАПРОС
+        // ПРОВЕРЯЕМ ПОЛЬЗОВАТЕЛЯ ПО EMAIL И ПАРОЛЮ
         const { data, error } = await supabase
             .from('students')
             .select('*')
