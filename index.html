@@ -3249,7 +3249,7 @@
             }
             html += '</table>';
             container.innerHTML = html;
-        }
+        };
 
         window.toggleMyStudentStatus = function(id, currentStatus) {
             var newStatus = currentStatus === 'active' ? 'inactive' : 'active';
@@ -6819,7 +6819,6 @@ if (existingPlan) {
         };
 
         window.closeAssignmentModal = function() {
-           window.closeAssignmentModal = function() {
     document.getElementById('assignmentModal').classList.remove('active');
     document.getElementById('sectionNumber').value = '';
     document.getElementById('homeworkTitle').value = '';
@@ -6833,7 +6832,7 @@ if (existingPlan) {
     document.getElementById('homeworkLink2').value = '';
     document.getElementById('homeworkLink3').value = '';
 };
-        };
+        
             
 
         window.loadStudentsForSelect = async function() {
