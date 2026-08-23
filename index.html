@@ -7163,97 +7163,84 @@ if (existingPlan) {
         // АВТОРИЗАЦИЯ
         // ==========================================
 
-      async  function handleLogin() {
-            var emailInput = document.getElementById('email');
-            var passwordInput = document.getElementById('password');
-            var resultDiv = document.getElementById('result');
+     async function handleLogin() {
+    var emailInput = document.getElementById('email');
+    var passwordInput = document.getElementById('password');
+    var resultDiv = document.getElementById('result');
+    
+    var email = emailInput ? emailInput.value.trim() : '';
+    var password = passwordInput ? passwordInput.value.trim() : '';
+    
+    if (!email || !password) {
+        resultDiv.className = 'result-error';
+        resultDiv.innerHTML = '❌ Введите email и пароль';
+        return;
+    }
+    
+    resultDiv.className = 'result-info';
+    resultDiv.innerHTML = '⏳ Проверяю...';
+    
+    try {
+        // 👇 ПРАВИЛЬНЫЙ ЗАПРОС
+        const { data, error } = await supabase
+            .from('students')
+            .select('*')
+            .eq('email', email)
+            .eq('password', password);
+        
+        if (error) {
+            resultDiv.className = 'result-error';
+            resultDiv.innerHTML = '❌ Ошибка: ' + error.message;
+            console.error('Ошибка Supabase:', error);
+            return;
+        }
+        
+        if (data && data.length > 0) {
+            var user = data[0];
+            currentUser = user;
             
-            var email = emailInput ? emailInput.value.trim() : '';
-            var password = passwordInput ? passwordInput.value.trim() : '';
+            resultDiv.className = 'result-success';
+            resultDiv.innerHTML = '✅ Привет, ' + user.name + '!';
             
-            if (!email || !password) {
-                resultDiv.className = 'result-error';
-                resultDiv.innerHTML = '❌ Введите email и пароль';
-                return;
+            document.getElementById('profileBlock').style.display = 'none';
+            document.getElementById('contactsBlock').style.display = 'none';
+            document.getElementById('loginSection').style.display = 'none';
+            document.getElementById('dashboard').style.display = 'block';
+            document.getElementById('welcomeMessage').textContent = '👋 Привет, ' + user.name + '!';
+            
+            if (user.role === 'admin') {
+                document.getElementById('adminPanel').style.display = 'block';
+                document.getElementById('adminTheoryControls').style.display = 'block';
+                window.fastLoad();
+                window.loadTeacherSettings();
+                setTimeout(function() {
+                    window.generateReminders();
+                }, 3000);
+            } else {
+                document.getElementById('adminTheoryControls').style.display = 'none';
             }
             
-            resultDiv.className = 'result-info';
-            resultDiv.innerHTML = '⏳ Проверяю...';
+            window.loadWhiteboard();
+            window.loadTheory();
+            window.loadHomework(user.id);
+            window.loadDashboardOverview(user.id);
+            window.loadSectionsAndVideos();
+            window.loadSettings();
+            window.renderStudentCalendar(studentMonth);
             
-    // Проверяем пользователя по email
-const { data: users, error } = await supabase
-    .from('students')
-    .select('*')
-    .eq('email', email);
-
-if (error) { /* показать ошибку */ }
-
-if (users && users.length > 0) {
-    const user = users[0];
-    // СРАВНИВАЕМ ПАРОЛЬ ВРУЧНУЮ
-    if (user.password === password) {
-        // ВХОД УСПЕШЕН
-    } else {
-        // НЕВЕРНЫЙ ПАРОЛЬ
+            startAutoRefresh();
+            
+            console.log('✅ Вход выполнен:', user.name);
+        } else {
+            resultDiv.className = 'result-error';
+            resultDiv.innerHTML = '❌ Неверный логин или пароль.';
+        }
+    } catch (err) {
+        resultDiv.className = 'result-error';
+        resultDiv.innerHTML = '❌ Ошибка: ' + err.message;
+        console.error('Ошибка авторизации:', err);
     }
 }
-                .then(function(response) {
-                    if (response.error) {
-                        resultDiv.className = 'result-error';
-                        resultDiv.innerHTML = '❌ Ошибка: ' + response.error.message;
-                        console.error('Ошибка Supabase:', response.error);
-                        return;
-                    }
-                    
-                    if (response.data && response.data.length > 0) {
-                        var user = response.data[0];
-                        currentUser = user;
-                        
-                        resultDiv.className = 'result-success';
-                        resultDiv.innerHTML = '✅ Привет, ' + user.name + '!';
-                        
-                        document.getElementById('profileBlock').style.display = 'none';
-                        document.getElementById('contactsBlock').style.display = 'none';
-                        document.getElementById('loginSection').style.display = 'none';
-                        document.getElementById('dashboard').style.display = 'block';
-                        document.getElementById('welcomeMessage').textContent = '👋 Привет, ' + user.name + '!';
-                        
-                       if (user.role === 'admin') {
-    document.getElementById('adminPanel').style.display = 'block';
-    document.getElementById('adminTheoryControls').style.display = 'block';
-    // window.loadAdminData();  // 👈 ЗАКОММЕНТИРОВАНО для ускорения
-    window.fastLoad();  // 👈 ВМЕСТО НЕЁ (быстрая загрузка)
-    window.loadTeacherSettings();
-                           // Автоматически генерируем напоминания при входе
-setTimeout(function() {
-    window.generateReminders();
-}, 3000);
-} else {
-    document.getElementById('adminTheoryControls').style.display = 'none';
-}
-                        window.loadWhiteboard();
-                        window.loadTheory();
-                        window.loadHomework(user.id);
-                        window.loadDashboardOverview(user.id);
-                        window.loadSectionsAndVideos();
-                        window.loadSettings();
-                        window.renderStudentCalendar(studentMonth);
-                        
-                        startAutoRefresh();
-                        
-                        console.log('✅ Вход выполнен:', user.name);
-                    } else {
-                        resultDiv.className = 'result-error';
-                        resultDiv.innerHTML = '❌ Неверный логин или пароль.';
-                    }
-                })
-                .catch(function(err) {
-                    resultDiv.className = 'result-error';
-                    resultDiv.innerHTML = '❌ Ошибка: ' + err.message;
-                    console.error('Ошибка авторизации:', err);
-                });
-        }
-
         window.handleLogin = handleLogin;
 
         document.addEventListener('DOMContentLoaded', function() {
