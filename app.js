@@ -7,7 +7,8 @@ let currentUser = null;
 document.addEventListener('DOMContentLoaded', async function() {
     console.log('🚀 Загрузка приложения...');
     
-    currentUser = await checkSession();
+    // ИСПОЛЬЗУЕМ ГЛОБАЛЬНЫЕ ФУНКЦИИ
+    currentUser = await window.checkSession();
     
     if (currentUser) {
         console.log('👤 Пользователь найден:', currentUser.name);
@@ -72,7 +73,7 @@ async function handleLogin() {
     resultDiv.className = 'result-info';
     resultDiv.innerHTML = '⏳ Проверка...';
     
-    const result = await secureLogin(email, password);
+    const result = await window.secureLogin(email, password);
     
     if (result.success) {
         currentUser = result.user;
@@ -109,7 +110,7 @@ async function handleRegister() {
     resultDiv.className = 'result-info';
     resultDiv.innerHTML = '⏳ Создание аккаунта...';
     
-    const result = await secureRegister(email, password, name);
+    const result = await window.secureRegister(email, password, name);
     
     if (result.success) {
         resultDiv.className = 'result-success';
@@ -124,8 +125,7 @@ async function loadUserData() {
     if (!currentUser) return;
     
     try {
-        // 👇 ИСПОЛЬЗУЕМ ГЛОБАЛЬНЫЙ supabase
-        const { data: homeworks, error: hwError } = await supabase
+        const { data: homeworks, error: hwError } = await window.supabase
             .from('homeworks')
             .select('*, video_sections(name, order_num)')
             .eq('student_id', currentUser.id)
@@ -151,7 +151,7 @@ async function loadAdminData() {
     if (currentUser.role !== 'admin') return;
     
     try {
-        const { data: students, error: sError } = await supabase
+        const { data: students, error: sError } = await window.supabase
             .from('profiles')
             .select('*')
             .eq('role', 'student')
@@ -197,7 +197,7 @@ function renderHomeworks(homeworks) {
                 <div class="status ${statusClass}">${status}</div>
                 ${hw.file_url ? `<div class="meta">📎 <a href="${hw.file_url}" target="_blank">Скачать PDF</a></div>` : ''}
                 ${hw.attached_file_url ? `<div class="meta">📎 Ваш файл: <a href="${hw.attached_file_url}" target="_blank">Скачать</a></div>` : ''}
-                ${hw.status !== 'done' ? `<button class="admin-btn success" onclick="markHomeworkDone('${hw.id}')">✅ Отметить выполненным</button>` : ''}
+                ${hw.status !== 'done' ? `<button class="admin-btn success" onclick="window.markHomeworkDone('${hw.id}')">✅ Отметить выполненным</button>` : ''}
             </div>
         `;
     });
@@ -207,7 +207,7 @@ function renderHomeworks(homeworks) {
 
 async function loadStatistics() {
     try {
-        const { data, error } = await supabase
+        const { data, error } = await window.supabase
             .from('homeworks')
             .select('status')
             .eq('student_id', currentUser.id);
@@ -234,31 +234,28 @@ async function loadStatistics() {
     }
 }
 
-function markHomeworkDone(id) {
+window.markHomeworkDone = async function(id) {
     if (!currentUser) return;
     
-    supabase
-        .from('homeworks')
-        .update({ status: 'done' })
-        .eq('id', id)
-        .eq('student_id', currentUser.id)
-        .then(function(response) {
-            if (response.error) {
-                alert('❌ Ошибка: ' + response.error.message);
-                return;
-            }
-            loadUserData();
-        })
-        .catch(function(error) {
-            alert('❌ Ошибка: ' + error.message);
-        });
-}
-
-window.markHomeworkDone = markHomeworkDone;
+    try {
+        const { error } = await window.supabase
+            .from('homeworks')
+            .update({ status: 'done' })
+            .eq('id', id)
+            .eq('student_id', currentUser.id);
+        
+        if (error) throw error;
+        
+        loadUserData();
+        
+    } catch (error) {
+        alert('❌ Ошибка: ' + error.message);
+    }
+};
 
 window.logout = async function() {
     if (confirm('Вы уверены, что хотите выйти?')) {
-        await secureLogout();
+        await window.secureLogout();
     }
 };
 
