@@ -7180,11 +7180,11 @@ if (existingPlan) {
             resultDiv.className = 'result-info';
             resultDiv.innerHTML = '⏳ Проверяю...';
             
-            supabase
-                .from('students')
-                .select('*')
-                .eq('email', email)
-                .eq('password', password)
+          supabase
+    .from('students')
+    .select('*')
+    .eq('email', email)
+    .eq('password', password)
                 .then(function(response) {
                     if (response.error) {
                         resultDiv.className = 'result-error';
