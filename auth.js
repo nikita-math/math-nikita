@@ -1,22 +1,23 @@
 // ==========================================
-// auth.js — БЕЗОПАСНАЯ АВТОРИЗАЦИЯ
+// auth.js — БЕЗОПАСНАЯ АВТОРИЗАЦИЯ (ФИКС)
 // ==========================================
 
 const SUPABASE_URL = 'https://liqqdixrtvnrrvgkfvbn.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxpcXFkaXhydHZucnJ2Z2tmdmJuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODM4NTMzMzksImV4cCI6MjA5OTQyOTMzOX0.Jqrnt5DOKNURe5HERWIhMvc6KChurAg5iHkfMBw4P2A';
 
-const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+// 👇 ИЗМЕНЕНО: используем другое имя, чтобы не конфликтовать
+const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 async function secureLogin(email, password) {
     try {
-        const { data, error } = await supabase.auth.signInWithPassword({
+        const { data, error } = await supabaseClient.auth.signInWithPassword({
             email: email,
             password: password
         });
 
         if (error) throw error;
 
-        const { data: profile, error: profileError } = await supabase
+        const { data: profile, error: profileError } = await supabaseClient
             .from('profiles')
             .select('*')
             .eq('id', data.user.id)
@@ -41,7 +42,7 @@ async function secureLogin(email, password) {
 
 async function secureRegister(email, password, name) {
     try {
-        const { data, error } = await supabase.auth.signUp({
+        const { data, error } = await supabaseClient.auth.signUp({
             email: email,
             password: password,
             options: {
@@ -64,11 +65,11 @@ async function secureRegister(email, password, name) {
 }
 
 async function checkSession() {
-    const { data: { session } } = await supabase.auth.getSession();
+    const { data: { session } } = await supabaseClient.auth.getSession();
     
     if (!session) return null;
     
-    const { data: profile } = await supabase
+    const { data: profile } = await supabaseClient
         .from('profiles')
         .select('*')
         .eq('id', session.user.id)
@@ -84,7 +85,7 @@ async function checkSession() {
 }
 
 async function secureLogout() {
-    await supabase.auth.signOut();
+    await supabaseClient.auth.signOut();
     sessionStorage.removeItem('currentUser');
     window.location.reload();
 }
