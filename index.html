@@ -3343,9 +3343,9 @@
     
     // Удаляем всё связанное
     supabase
-        .from('lesson_calendar')
-        .delete()
-        .eq('student_id', id)
+    .from('lesson_calendar')
+    .select('*')
+    .eq('student_id', selectedStudentId)
         .then(function() {
             return supabase.from('lesson_payments').delete().eq('student_id', id);
         })
@@ -4774,10 +4774,11 @@
             container.style.display = 'block';
             
             supabase
-                .from('lesson_calendar')
-                .select('*, lesson_series(id, day_of_week, start_date, end_date)')
-                .eq('student_id', selectedStudentId)
-                .eq('lesson_date', dateStr)
+               supabase
+    .from('lesson_calendar')
+    .select('*')
+    .eq('student_id', selectedStudentId)
+    .eq('lesson_date', dateStr)
                 .then(function(response) {
                     if (response.error) {
                         list.innerHTML = '<p style="color:#666;">Ошибка загрузки</p>';
@@ -7995,10 +7996,11 @@ window.switchAdminTab = function(tab) {
             adminCurrentLessonId = lessonId;
             
             supabase
-                .from('lesson_calendar')
-                .select('*, students(id, name), video_sections(id, name), lesson_series(id, day_of_week)')
-                .eq('id', lessonId)
-                .single()
+               supabase
+    .from('lesson_calendar')
+    .select('*')
+    .eq('id', lessonId)
+    .single()
                 .then(function(response) {
                     if (response.error) {
                         alert('❌ Ошибка загрузки занятия: ' + response.error.message);
