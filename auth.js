@@ -2,16 +2,11 @@
 // auth.js — БЕЗОПАСНАЯ АВТОРИЗАЦИЯ
 // ==========================================
 
-// КОНФИГУРАЦИЯ
 const SUPABASE_URL = 'https://liqqdixrtvnrrvgkfvbn.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxpcXFkaXhydHZucnJ2Z2tmdmJuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODM4NTMzMzksImV4cCI6MjA5OTQyOTMzOX0.Jqrnt5DOKNURe5HERWIhMvc6KChurAg5iHkfMBw4P2A';
 
-// СОЗДАЁМ КЛИЕНТ
 const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-// ==========================================
-// ВХОД
-// ==========================================
 async function secureLogin(email, password) {
     try {
         const { data, error } = await supabase.auth.signInWithPassword({
@@ -44,9 +39,6 @@ async function secureLogin(email, password) {
     }
 }
 
-// ==========================================
-// РЕГИСТРАЦИЯ
-// ==========================================
 async function secureRegister(email, password, name) {
     try {
         const { data, error } = await supabase.auth.signUp({
@@ -71,9 +63,6 @@ async function secureRegister(email, password, name) {
     }
 }
 
-// ==========================================
-// ПРОВЕРКА СЕССИИ
-// ==========================================
 async function checkSession() {
     const { data: { session } } = await supabase.auth.getSession();
     
@@ -94,18 +83,12 @@ async function checkSession() {
     };
 }
 
-// ==========================================
-// ВЫХОД
-// ==========================================
 async function secureLogout() {
     await supabase.auth.signOut();
     sessionStorage.removeItem('currentUser');
     window.location.reload();
 }
 
-// ==========================================
-// ПОЛУЧЕНИЕ ТЕКУЩЕГО ПОЛЬЗОВАТЕЛЯ
-// ==========================================
 function getCurrentUser() {
     try {
         return JSON.parse(sessionStorage.getItem('currentUser'));
@@ -114,7 +97,4 @@ function getCurrentUser() {
     }
 }
 
-function isAdmin() {
-    const user = getCurrentUser();
-    return user && user.role === 'admin';
-}
+console.log('✅ auth.js загружен!');
