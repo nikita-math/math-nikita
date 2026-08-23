@@ -7159,9 +7159,90 @@ if (existingPlan) {
                 .catch(function(err) { alert('❌ Ошибка: ' + err.message); });
         };
 
-        // ==========================================
+      
+                // ==========================================
         // АВТОРИЗАЦИЯ
         // ==========================================
+        
+        async function handleLogin() {
+            var emailInput = document.getElementById('email');
+            var passwordInput = document.getElementById('password');
+            var resultDiv = document.getElementById('result');
+            
+            var email = emailInput ? emailInput.value.trim() : '';
+            var password = passwordInput ? passwordInput.value.trim() : '';
+            
+            if (!email || !password) {
+                resultDiv.className = 'result-error';
+                resultDiv.innerHTML = '❌ Введите email и пароль';
+                return;
+            }
+            
+            resultDiv.className = 'result-info';
+            resultDiv.innerHTML = '⏳ Проверяю...';
+            
+            try {
+                const { data, error } = await supabase
+                    .from('students')
+                    .select('*')
+                    .eq('email', email)
+                    .eq('password', password);
+                
+                if (error) {
+                    resultDiv.className = 'result-error';
+                    resultDiv.innerHTML = '❌ Ошибка: ' + error.message;
+                    console.error('Ошибка Supabase:', error);
+                    return;
+                }
+                
+                if (data && data.length > 0) {
+                    var user = data[0];
+                    currentUser = user;
+                    
+                    resultDiv.className = 'result-success';
+                    resultDiv.innerHTML = '✅ Привет, ' + user.name + '!';
+                    
+                    document.getElementById('profileBlock').style.display = 'none';
+                    document.getElementById('contactsBlock').style.display = 'none';
+                    document.getElementById('loginSection').style.display = 'none';
+                    document.getElementById('dashboard').style.display = 'block';
+                    document.getElementById('welcomeMessage').textContent = '👋 Привет, ' + user.name + '!';
+                    
+                    if (user.role === 'admin') {
+                        document.getElementById('adminPanel').style.display = 'block';
+                        document.getElementById('adminTheoryControls').style.display = 'block';
+                        window.fastLoad();
+                        window.loadTeacherSettings();
+                        setTimeout(function() {
+                            window.generateReminders();
+                        }, 3000);
+                    } else {
+                        document.getElementById('adminTheoryControls').style.display = 'none';
+                    }
+                    
+                    window.loadWhiteboard();
+                    window.loadTheory();
+                    window.loadHomework(user.id);
+                    window.loadDashboardOverview(user.id);
+                    window.loadSectionsAndVideos();
+                    window.loadSettings();
+                    window.renderStudentCalendar(studentMonth);
+                    
+                    startAutoRefresh();
+                    
+                    console.log('✅ Вход выполнен:', user.name);
+                } else {
+                    resultDiv.className = 'result-error';
+                    resultDiv.innerHTML = '❌ Неверный логин или пароль.';
+                }
+            } catch (err) {
+                resultDiv.className = 'result-error';
+                resultDiv.innerHTML = '❌ Ошибка: ' + err.message;
+                console.error('Ошибка авторизации:', err);
+            }
+        }
+        
+        window.handleLogin = handleLogin;
 
         window.handleLogin = handleLogin;
 
