@@ -1,13 +1,16 @@
 // ==========================================
-// app.js — ЛОГИКА ПРИЛОЖЕНИЯ
+// app.js — ЛОГИКА ПРИЛОЖЕНИЯ (ИСПРАВЛЕННЫЙ)
 // ==========================================
 
 let currentUser = null;
 
+// ==========================================
+// ИНИЦИАЛИЗАЦИЯ
+// ==========================================
 document.addEventListener('DOMContentLoaded', async function() {
     console.log('🚀 Загрузка приложения...');
     
-    currentUser = await checkSession();
+    currentUser = await window.checkSession();
     
     if (currentUser) {
         console.log('👤 Пользователь найден:', currentUser.name);
@@ -21,6 +24,9 @@ document.addEventListener('DOMContentLoaded', async function() {
     setupEventListeners();
 });
 
+// ==========================================
+// НАСТРОЙКА СОБЫТИЙ
+// ==========================================
 function setupEventListeners() {
     const loginBtn = document.getElementById('loginBtn');
     const registerBtn = document.getElementById('registerBtn');
@@ -34,6 +40,9 @@ function setupEventListeners() {
     }
 }
 
+// ==========================================
+// ПОКАЗ СТРАНИЦ
+// ==========================================
 function showLogin() {
     const loginPage = document.getElementById('loginPage');
     const appContent = document.getElementById('appContent');
@@ -58,6 +67,9 @@ function showDashboard() {
     }
 }
 
+// ==========================================
+// ОБРАБОТКА ВХОДА
+// ==========================================
 async function handleLogin() {
     const email = document.getElementById('loginEmail').value.trim();
     const password = document.getElementById('loginPassword').value.trim();
@@ -72,7 +84,7 @@ async function handleLogin() {
     resultDiv.className = 'result-info';
     resultDiv.innerHTML = '⏳ Проверка...';
     
-    const result = await secureLogin(email, password);
+    const result = await window.secureLogin(email, password);
     
     if (result.success) {
         currentUser = result.user;
@@ -86,6 +98,9 @@ async function handleLogin() {
     }
 }
 
+// ==========================================
+// ОБРАБОТКА РЕГИСТРАЦИИ
+// ==========================================
 async function handleRegister() {
     const email = document.getElementById('loginEmail').value.trim();
     const password = document.getElementById('loginPassword').value.trim();
@@ -109,7 +124,7 @@ async function handleRegister() {
     resultDiv.className = 'result-info';
     resultDiv.innerHTML = '⏳ Создание аккаунта...';
     
-    const result = await secureRegister(email, password, name);
+    const result = await window.secureRegister(email, password, name);
     
     if (result.success) {
         resultDiv.className = 'result-success';
@@ -120,10 +135,16 @@ async function handleRegister() {
     }
 }
 
+// ==========================================
+// ЗАГРУЗКА ДАННЫХ ПОЛЬЗОВАТЕЛЯ
+// ==========================================
 async function loadUserData() {
     if (!currentUser) return;
     
     try {
+        // 👇 ИСПОЛЬЗУЕМ supabaseClient ИЗ auth.js
+        const supabase = window.supabaseClient;
+        
         const { data: homeworks, error: hwError } = await supabase
             .from('homeworks')
             .select('*, video_sections(name, order_num)')
@@ -134,11 +155,56 @@ async function loadUserData() {
         if (!hwError && homeworks) {
             renderHomeworks(homeworks);
         }
+        
+        // Загружаем статистику
+        loadStatistics();
+        
+        // Если админ — загружаем админ-данные
+        if (currentUser.role === 'admin') {
+            loadAdminData();
+        }
+        
     } catch (error) {
         console.error('Ошибка загрузки данных:', error);
     }
 }
 
+// ==========================================
+// ЗАГРУЗКА АДМИН-ДАННЫХ
+// ==========================================
+async function loadAdminData() {
+    if (currentUser.role !== 'admin') return;
+    
+    try {
+        const supabase = window.supabaseClient;
+        
+        // Все ученики
+        const { data: students, error: sError } = await supabase
+            .from('profiles')
+            .select('*')
+            .eq('role', 'student')
+            .order('name');
+        
+        if (!sError && students) {
+            const container = document.getElementById('studentsList');
+            if (container) {
+                let html = '<table class="admin-table"><tr><th>Имя</th><th>Email</th><th>Роль</th></tr>';
+                students.forEach(s => {
+                    html += `<tr><td>${s.name}</td><td>${s.email || '—'}</td><td>${s.role}</td></tr>`;
+                });
+                html += '</table>';
+                container.innerHTML = html;
+            }
+        }
+        
+    } catch (error) {
+        console.error('Ошибка загрузки админ-данных:', error);
+    }
+}
+
+// ==========================================
+// ОТРИСОВКА ДОМАШНИХ ЗАДАНИЙ
+// ==========================================
 function renderHomeworks(homeworks) {
     const container = document.getElementById('homeworkList');
     if (!container) return;
@@ -170,10 +236,49 @@ function renderHomeworks(homeworks) {
     container.innerHTML = html;
 }
 
+// ==========================================
+// СТАТИСТИКА
+// ==========================================
+async function loadStatistics() {
+    try {
+        const supabase = window.supabaseClient;
+        
+        const { data, error } = await supabase
+            .from('homeworks')
+            .select('status')
+            .eq('student_id', currentUser.id);
+        
+        if (error) throw error;
+        
+        const total = data.length;
+        const done = data.filter(h => h.status === 'done').length;
+        const pending = total - done;
+        const percent = total > 0 ? Math.round((done / total) * 100) : 0;
+        
+        const statTotal = document.getElementById('statTotal');
+        const statDone = document.getElementById('statDone');
+        const statPending = document.getElementById('statPending');
+        const statPercent = document.getElementById('statPercent');
+        
+        if (statTotal) statTotal.textContent = total;
+        if (statDone) statDone.textContent = done;
+        if (statPending) statPending.textContent = pending;
+        if (statPercent) statPercent.textContent = percent + '%';
+        
+    } catch (error) {
+        console.error('Ошибка загрузки статистики:', error);
+    }
+}
+
+// ==========================================
+// ОТМЕТКА ДЗ КАК ВЫПОЛНЕННОГО
+// ==========================================
 window.markHomeworkDone = async function(id) {
     if (!currentUser) return;
     
     try {
+        const supabase = window.supabaseClient;
+        
         const { error } = await supabase
             .from('homeworks')
             .update({ status: 'done' })
@@ -189,9 +294,12 @@ window.markHomeworkDone = async function(id) {
     }
 };
 
+// ==========================================
+// БЕЗОПАСНЫЙ ВЫХОД
+// ==========================================
 window.logout = async function() {
     if (confirm('Вы уверены, что хотите выйти?')) {
-        await secureLogout();
+        await window.secureLogout();
     }
 };
 
