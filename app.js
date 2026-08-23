@@ -1,5 +1,5 @@
 // ==========================================
-// app.js — ЛОГИКА ПРИЛОЖЕНИЯ (ИСПРАВЛЕННЫЙ)
+// app.js — ЛОГИКА ПРИЛОЖЕНИЯ
 // ==========================================
 
 let currentUser = null;
@@ -7,7 +7,7 @@ let currentUser = null;
 document.addEventListener('DOMContentLoaded', async function() {
     console.log('🚀 Загрузка приложения...');
     
-    currentUser = await window.checkSession();
+    currentUser = await checkSession();
     
     if (currentUser) {
         console.log('👤 Пользователь найден:', currentUser.name);
@@ -72,7 +72,7 @@ async function handleLogin() {
     resultDiv.className = 'result-info';
     resultDiv.innerHTML = '⏳ Проверка...';
     
-    const result = await window.secureLogin(email, password);
+    const result = await secureLogin(email, password);
     
     if (result.success) {
         currentUser = result.user;
@@ -109,7 +109,7 @@ async function handleRegister() {
     resultDiv.className = 'result-info';
     resultDiv.innerHTML = '⏳ Создание аккаунта...';
     
-    const result = await window.secureRegister(email, password, name);
+    const result = await secureRegister(email, password, name);
     
     if (result.success) {
         resultDiv.className = 'result-success';
@@ -120,16 +120,11 @@ async function handleRegister() {
     }
 }
 
-// ==========================================
-// ЗАГРУЗКА ДАННЫХ (ГЛАВНОЕ ИСПРАВЛЕНИЕ!)
-// ==========================================
 async function loadUserData() {
     if (!currentUser) return;
     
     try {
-        // 👇 ВОТ ЭТО ГЛАВНОЕ!
-        const supabase = window.supabaseClient;
-        
+        // 👇 ИСПОЛЬЗУЕМ ГЛОБАЛЬНЫЙ supabase
         const { data: homeworks, error: hwError } = await supabase
             .from('homeworks')
             .select('*, video_sections(name, order_num)')
@@ -156,8 +151,6 @@ async function loadAdminData() {
     if (currentUser.role !== 'admin') return;
     
     try {
-        const supabase = window.supabaseClient;
-        
         const { data: students, error: sError } = await supabase
             .from('profiles')
             .select('*')
@@ -204,7 +197,7 @@ function renderHomeworks(homeworks) {
                 <div class="status ${statusClass}">${status}</div>
                 ${hw.file_url ? `<div class="meta">📎 <a href="${hw.file_url}" target="_blank">Скачать PDF</a></div>` : ''}
                 ${hw.attached_file_url ? `<div class="meta">📎 Ваш файл: <a href="${hw.attached_file_url}" target="_blank">Скачать</a></div>` : ''}
-                ${hw.status !== 'done' ? `<button class="admin-btn success" onclick="window.markHomeworkDone('${hw.id}')">✅ Отметить выполненным</button>` : ''}
+                ${hw.status !== 'done' ? `<button class="admin-btn success" onclick="markHomeworkDone('${hw.id}')">✅ Отметить выполненным</button>` : ''}
             </div>
         `;
     });
@@ -214,8 +207,6 @@ function renderHomeworks(homeworks) {
 
 async function loadStatistics() {
     try {
-        const supabase = window.supabaseClient;
-        
         const { data, error } = await supabase
             .from('homeworks')
             .select('status')
@@ -243,30 +234,31 @@ async function loadStatistics() {
     }
 }
 
-window.markHomeworkDone = async function(id) {
+function markHomeworkDone(id) {
     if (!currentUser) return;
     
-    try {
-        const supabase = window.supabaseClient;
-        
-        const { error } = await supabase
-            .from('homeworks')
-            .update({ status: 'done' })
-            .eq('id', id)
-            .eq('student_id', currentUser.id);
-        
-        if (error) throw error;
-        
-        loadUserData();
-        
-    } catch (error) {
-        alert('❌ Ошибка: ' + error.message);
-    }
-};
+    supabase
+        .from('homeworks')
+        .update({ status: 'done' })
+        .eq('id', id)
+        .eq('student_id', currentUser.id)
+        .then(function(response) {
+            if (response.error) {
+                alert('❌ Ошибка: ' + response.error.message);
+                return;
+            }
+            loadUserData();
+        })
+        .catch(function(error) {
+            alert('❌ Ошибка: ' + error.message);
+        });
+}
+
+window.markHomeworkDone = markHomeworkDone;
 
 window.logout = async function() {
     if (confirm('Вы уверены, что хотите выйти?')) {
-        await window.secureLogout();
+        await secureLogout();
     }
 };
 
