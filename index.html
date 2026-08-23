@@ -1502,7 +1502,7 @@
             <p>Подготовка к ЕГЭ по профильной математике на 90+ баллов</p>
         </header>
 
-        <div id="mainContent">
+        <div id="appContent" style="display:none;">
             <div class="profile" id="profileBlock">
                 <div class="profile-avatar" id="profileAvatar">
                     <img id="profileAvatarImg" style="display:none; width:100%; height:100%; object-fit:cover; border-radius:50%;" alt="Аватар">
@@ -1527,16 +1527,25 @@
                 <a href="mailto:nlysi6233@gmail.com">📧 nlysi6233@gmail.com</a>
             </div>
 
-            <div class="login-section" id="loginSection">
-                <h3>🔐 Войти в личный кабинет</h3>
-                <input type="email" id="email" placeholder="Email" value="">
-                <input type="password" id="password" placeholder="Пароль" value="">
-                <button id="loginBtn">Войти</button>
-                <div id="result"></div>
-                <p style="margin-top: 14px; font-size: 14px; color: #888;">
-                    *Нет аккаунта? Напиши мне в Telegram — я добавлю тебя!
-                </p>
-            </div>
+           <div id="loginPage">
+    <div class="login-section">
+        <h3>🔐 Войти</h3>
+        <div id="loginMessage" style="color: #f5a623; margin-bottom: 12px;"></div>
+        
+        <input type="email" id="loginEmail" placeholder="Email">
+        <input type="password" id="loginPassword" placeholder="Пароль">
+        
+        <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+            <button id="loginBtn" style="flex:1;">Войти</button>
+            <button id="registerBtn" style="flex:1; background: #2a2a4a;">Регистрация</button>
+        </div>
+        
+        <div id="result"></div>
+        <p style="margin-top: 14px; font-size: 14px; color: #888;">
+            *Нет аккаунта? Нажми "Регистрация"
+        </p>
+    </div>
+</div>
         </div>
                 <div id="dashboard">
             <div class="header">
@@ -2532,6 +2541,7 @@
             </div>
         </div>
     </div>
+        </div>
         
 
     <footer>
@@ -10918,6 +10928,10 @@ window.loadIncome = async function() {
         </div>
     </div>
 </div>
+     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="auth.js"></script>
+    <script src="app.js"></script>
+
 
 </body>
 </html>
