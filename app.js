@@ -4,9 +4,6 @@
 
 let currentUser = null;
 
-// ==========================================
-// ИНИЦИАЛИЗАЦИЯ
-// ==========================================
 document.addEventListener('DOMContentLoaded', async function() {
     console.log('🚀 Загрузка приложения...');
     
@@ -24,9 +21,6 @@ document.addEventListener('DOMContentLoaded', async function() {
     setupEventListeners();
 });
 
-// ==========================================
-// НАСТРОЙКА СОБЫТИЙ
-// ==========================================
 function setupEventListeners() {
     const loginBtn = document.getElementById('loginBtn');
     const registerBtn = document.getElementById('registerBtn');
@@ -38,22 +32,8 @@ function setupEventListeners() {
     if (registerBtn) {
         registerBtn.addEventListener('click', handleRegister);
     }
-    
-    // Enter для входа
-    document.addEventListener('keypress', function(e) {
-        if (e.key === 'Enter') {
-            const email = document.getElementById('loginEmail');
-            const password = document.getElementById('loginPassword');
-            if (document.activeElement === email || document.activeElement === password) {
-                handleLogin();
-            }
-        }
-    });
 }
 
-// ==========================================
-// ПОКАЗ СТРАНИЦ
-// ==========================================
 function showLogin() {
     const loginPage = document.getElementById('loginPage');
     const appContent = document.getElementById('appContent');
@@ -72,16 +52,12 @@ function showDashboard() {
         welcome.textContent = '👋 Привет, ' + (currentUser.name || 'Пользователь') + '!';
     }
     
-    // Показываем админ-панель если есть права
     if (currentUser && currentUser.role === 'admin') {
         const adminPanel = document.getElementById('adminPanel');
         if (adminPanel) adminPanel.style.display = 'block';
     }
 }
 
-// ==========================================
-// ОБРАБОТКА ВХОДА
-// ==========================================
 async function handleLogin() {
     const email = document.getElementById('loginEmail').value.trim();
     const password = document.getElementById('loginPassword').value.trim();
@@ -110,9 +86,6 @@ async function handleLogin() {
     }
 }
 
-// ==========================================
-// ОБРАБОТКА РЕГИСТРАЦИИ
-// ==========================================
 async function handleRegister() {
     const email = document.getElementById('loginEmail').value.trim();
     const password = document.getElementById('loginPassword').value.trim();
@@ -147,14 +120,10 @@ async function handleRegister() {
     }
 }
 
-// ==========================================
-// ЗАГРУЗКА ДАННЫХ ПОЛЬЗОВАТЕЛЯ
-// ==========================================
 async function loadUserData() {
     if (!currentUser) return;
     
     try {
-        // Загружаем ДЗ
         const { data: homeworks, error: hwError } = await supabase
             .from('homeworks')
             .select('*, video_sections(name, order_num)')
@@ -165,54 +134,11 @@ async function loadUserData() {
         if (!hwError && homeworks) {
             renderHomeworks(homeworks);
         }
-        
-        // Загружаем статистику
-        loadStatistics();
-        
-        // Если админ — загружаем админ-данные
-        if (currentUser.role === 'admin') {
-            loadAdminData();
-        }
-        
     } catch (error) {
         console.error('Ошибка загрузки данных:', error);
     }
 }
 
-// ==========================================
-// ЗАГРУЗКА АДМИН-ДАННЫХ
-// ==========================================
-async function loadAdminData() {
-    if (currentUser.role !== 'admin') return;
-    
-    try {
-        // Все ученики
-        const { data: students, error: sError } = await supabase
-            .from('profiles')
-            .select('*')
-            .eq('role', 'student')
-            .order('name');
-        
-        if (!sError && students) {
-            const container = document.getElementById('studentsList');
-            if (container) {
-                let html = '<table class="admin-table"><tr><th>Имя</th><th>Email</th><th>Роль</th></tr>';
-                students.forEach(s => {
-                    html += `<tr><td>${s.name}</td><td>${s.email || '—'}</td><td>${s.role}</td></tr>`;
-                });
-                html += '</table>';
-                container.innerHTML = html;
-            }
-        }
-        
-    } catch (error) {
-        console.error('Ошибка загрузки админ-данных:', error);
-    }
-}
-
-// ==========================================
-// ОТРИСОВКА ДОМАШНИХ ЗАДАНИЙ
-// ==========================================
 function renderHomeworks(homeworks) {
     const container = document.getElementById('homeworkList');
     if (!container) return;
@@ -236,7 +162,7 @@ function renderHomeworks(homeworks) {
                 <div class="status ${statusClass}">${status}</div>
                 ${hw.file_url ? `<div class="meta">📎 <a href="${hw.file_url}" target="_blank">Скачать PDF</a></div>` : ''}
                 ${hw.attached_file_url ? `<div class="meta">📎 Ваш файл: <a href="${hw.attached_file_url}" target="_blank">Скачать</a></div>` : ''}
-                ${hw.status !== 'done' ? `<button class="admin-btn success" onclick="markHomeworkDone('${hw.id}')">✅ Отметить выполненным</button>` : ''}
+                ${hw.status !== 'done' ? `<button class="admin-btn success" onclick="window.markHomeworkDone('${hw.id}')">✅ Отметить выполненным</button>` : ''}
             </div>
         `;
     });
@@ -244,41 +170,6 @@ function renderHomeworks(homeworks) {
     container.innerHTML = html;
 }
 
-// ==========================================
-// СТАТИСТИКА
-// ==========================================
-async function loadStatistics() {
-    try {
-        const { data, error } = await supabase
-            .from('homeworks')
-            .select('status')
-            .eq('student_id', currentUser.id);
-        
-        if (error) throw error;
-        
-        const total = data.length;
-        const done = data.filter(h => h.status === 'done').length;
-        const pending = total - done;
-        const percent = total > 0 ? Math.round((done / total) * 100) : 0;
-        
-        const statTotal = document.getElementById('statTotal');
-        const statDone = document.getElementById('statDone');
-        const statPending = document.getElementById('statPending');
-        const statPercent = document.getElementById('statPercent');
-        
-        if (statTotal) statTotal.textContent = total;
-        if (statDone) statDone.textContent = done;
-        if (statPending) statPending.textContent = pending;
-        if (statPercent) statPercent.textContent = percent + '%';
-        
-    } catch (error) {
-        console.error('Ошибка загрузки статистики:', error);
-    }
-}
-
-// ==========================================
-// ОТМЕТКА ДЗ КАК ВЫПОЛНЕННОГО
-// ==========================================
 window.markHomeworkDone = async function(id) {
     if (!currentUser) return;
     
@@ -298,9 +189,6 @@ window.markHomeworkDone = async function(id) {
     }
 };
 
-// ==========================================
-// БЕЗОПАСНЫЙ ВЫХОД
-// ==========================================
 window.logout = async function() {
     if (confirm('Вы уверены, что хотите выйти?')) {
         await secureLogout();
