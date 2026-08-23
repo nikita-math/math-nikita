@@ -7,8 +7,12 @@ let currentUser = null;
 document.addEventListener('DOMContentLoaded', async function() {
     console.log('🚀 Загрузка приложения...');
     
-    // ИСПОЛЬЗУЕМ ГЛОБАЛЬНЫЕ ФУНКЦИИ
-    currentUser = await window.checkSession();
+    try {
+        currentUser = await window.checkSession();
+    } catch (error) {
+        console.error('Ошибка проверки сессии:', error);
+        currentUser = null;
+    }
     
     if (currentUser) {
         console.log('👤 Пользователь найден:', currentUser.name);
@@ -73,17 +77,22 @@ async function handleLogin() {
     resultDiv.className = 'result-info';
     resultDiv.innerHTML = '⏳ Проверка...';
     
-    const result = await window.secureLogin(email, password);
-    
-    if (result.success) {
-        currentUser = result.user;
-        resultDiv.className = 'result-success';
-        resultDiv.innerHTML = '✅ Привет, ' + (currentUser.name || 'Пользователь') + '!';
-        showDashboard();
-        loadUserData();
-    } else {
+    try {
+        const result = await window.secureLogin(email, password);
+        
+        if (result.success) {
+            currentUser = result.user;
+            resultDiv.className = 'result-success';
+            resultDiv.innerHTML = '✅ Привет, ' + (currentUser.name || 'Пользователь') + '!';
+            showDashboard();
+            loadUserData();
+        } else {
+            resultDiv.className = 'result-error';
+            resultDiv.innerHTML = '❌ ' + result.error;
+        }
+    } catch (error) {
         resultDiv.className = 'result-error';
-        resultDiv.innerHTML = '❌ ' + result.error;
+        resultDiv.innerHTML = '❌ Ошибка: ' + error.message;
     }
 }
 
@@ -110,14 +119,19 @@ async function handleRegister() {
     resultDiv.className = 'result-info';
     resultDiv.innerHTML = '⏳ Создание аккаунта...';
     
-    const result = await window.secureRegister(email, password, name);
-    
-    if (result.success) {
-        resultDiv.className = 'result-success';
-        resultDiv.innerHTML = '✅ Аккаунт создан! Теперь войдите.';
-    } else {
+    try {
+        const result = await window.secureRegister(email, password, name);
+        
+        if (result.success) {
+            resultDiv.className = 'result-success';
+            resultDiv.innerHTML = '✅ Аккаунт создан! Теперь войдите.';
+        } else {
+            resultDiv.className = 'result-error';
+            resultDiv.innerHTML = '❌ ' + result.error;
+        }
+    } catch (error) {
         resultDiv.className = 'result-error';
-        resultDiv.innerHTML = '❌ ' + result.error;
+        resultDiv.innerHTML = '❌ Ошибка: ' + error.message;
     }
 }
 
