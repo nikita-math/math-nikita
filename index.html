@@ -1197,9 +1197,25 @@ header p {
             .deadline-row input[type="date"] { width: 100%; }
             .settings-avatar-container .btn-group .admin-btn { flex: 1; }
             .dashboard-layout { flex-direction: column; }
-            .dashboard-sidebar { width: 100%; flex-direction: row; flex-wrap: wrap; }
-            .dashboard-sidebar button { flex: 1; min-width: 120px; justify-content: center; font-size: 13px; padding: 10px 14px; }
-            .dashboard-sidebar button .badge { margin-left: 6px; }
+.dashboard-sidebar { 
+    width: 100%; 
+    flex-direction: row; 
+    flex-wrap: wrap; 
+    gap: 6px;
+}
+.dashboard-sidebar button { 
+    flex: 1; 
+    min-width: 100px; 
+    justify-content: center; 
+    font-size: 13px; 
+    padding: 10px 12px;
+    border-radius: 10px;
+}
+.dashboard-sidebar button .badge { 
+    margin-left: 6px; 
+    font-size: 10px;
+    padding: 0 8px;
+}
             .deadline-card { flex-direction: column; text-align: center; }
             .stats-grid { grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); }
             .section-progress { flex-direction: column; align-items: stretch; text-align: center; }
