@@ -1489,6 +1489,433 @@
 .income-row:hover {
     background: rgba(255,255,255,0.05);
 }
+                /* ============================================================
+           НОВЫЙ СОВРЕМЕННЫЙ ДИЗАЙН — ДОБАВЛЕНО 2026
+           ============================================================ */
+
+        /* ----- КАРТОЧКИ РАЗДЕЛОВ (КАК НА ТВОЁМ СКРИНШОТЕ) ----- */
+        .section-card-modern {
+            background: linear-gradient(135deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02));
+            border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 16px;
+            padding: 18px 22px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .section-card-modern::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: linear-gradient(180deg, #667eea, #764ba2);
+            border-radius: 0 4px 4px 0;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .section-card-modern:hover {
+            background: rgba(255,255,255,0.08);
+            border-color: rgba(102,126,234,0.3);
+            transform: translateX(6px);
+            box-shadow: 0 8px 30px rgba(0,0,0,0.3);
+        }
+
+        .section-card-modern:hover::before {
+            opacity: 1;
+        }
+
+        .section-card-modern .section-left {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            flex: 1;
+            min-width: 120px;
+        }
+
+        .section-card-modern .section-number {
+            font-size: 13px;
+            font-weight: 900;
+            color: #667eea;
+            background: rgba(102,126,234,0.15);
+            padding: 4px 12px;
+            border-radius: 20px;
+            min-width: 40px;
+            text-align: center;
+            white-space: nowrap;
+        }
+
+        .section-card-modern .section-name {
+            font-size: 16px;
+            font-weight: 600;
+            color: #ffffff;
+            transition: color 0.3s ease;
+        }
+
+        .section-card-modern:hover .section-name {
+            color: #ffffff;
+        }
+
+        .section-card-modern .section-right {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            flex-wrap: wrap;
+        }
+
+        .section-card-modern .section-stats {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #888;
+            font-size: 13px;
+        }
+
+        .section-card-modern .section-stats .count {
+            background: rgba(255,255,255,0.05);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-weight: 600;
+            color: #b0c4de;
+        }
+
+        .section-card-modern .section-stats .count.done {
+            color: #2ecc71;
+            background: rgba(46,204,113,0.15);
+        }
+
+        .section-card-modern .section-stats .count.pending {
+            color: #f39c12;
+            background: rgba(243,156,18,0.15);
+        }
+
+        .section-card-modern .section-stats .count.empty {
+            color: #666;
+            background: rgba(255,255,255,0.03);
+        }
+
+        .section-card-modern .section-progress {
+            width: 80px;
+            height: 4px;
+            background: rgba(255,255,255,0.06);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .section-card-modern .section-progress .fill {
+            height: 100%;
+            border-radius: 10px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            transition: width 0.8s ease;
+        }
+
+        .section-card-modern .section-progress .fill.green {
+            background: linear-gradient(90deg, #27ae60, #2ecc71);
+        }
+
+        .section-card-modern .section-progress .fill.yellow {
+            background: linear-gradient(90deg, #f39c12, #f1c40f);
+        }
+
+        .section-card-modern .section-btn {
+            background: linear-gradient(135deg, #302b63, #667eea);
+            color: white;
+            border: none;
+            padding: 6px 18px;
+            border-radius: 30px;
+            font-weight: 600;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: Arial, sans-serif;
+            white-space: nowrap;
+        }
+
+        .section-card-modern .section-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 20px rgba(102,126,234,0.4);
+        }
+
+        .section-card-modern .section-btn.done {
+            background: rgba(46,204,113,0.2);
+            color: #2ecc71;
+            border: 1px solid rgba(46,204,113,0.15);
+        }
+
+        .section-card-modern .section-btn.done:hover {
+            background: #2ecc71;
+            color: #fff;
+        }
+
+        .section-card-modern .section-btn.empty {
+            background: rgba(255,255,255,0.05);
+            color: #666;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .section-card-modern .section-btn.empty:hover {
+            background: rgba(255,255,255,0.1);
+            color: #b0c4de;
+        }
+
+        /* ----- АНИМАЦИЯ ПОЯВЛЕНИЯ КАРТОЧЕК ----- */
+        .section-card-modern {
+            animation: slideUp 0.4s ease forwards;
+            opacity: 0;
+        }
+
+        .section-card-modern:nth-child(1) { animation-delay: 0.05s; }
+        .section-card-modern:nth-child(2) { animation-delay: 0.10s; }
+        .section-card-modern:nth-child(3) { animation-delay: 0.15s; }
+        .section-card-modern:nth-child(4) { animation-delay: 0.20s; }
+        .section-card-modern:nth-child(5) { animation-delay: 0.25s; }
+        .section-card-modern:nth-child(6) { animation-delay: 0.30s; }
+        .section-card-modern:nth-child(7) { animation-delay: 0.35s; }
+        .section-card-modern:nth-child(8) { animation-delay: 0.40s; }
+        .section-card-modern:nth-child(9) { animation-delay: 0.45s; }
+        .section-card-modern:nth-child(10) { animation-delay: 0.50s; }
+        .section-card-modern:nth-child(11) { animation-delay: 0.55s; }
+        .section-card-modern:nth-child(12) { animation-delay: 0.60s; }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* ----- КРАСИВЫЙ ЗАГОЛОВОК РАЗДЕЛОВ ----- */
+        .sections-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .sections-header h2 {
+            font-size: 22px;
+            font-weight: 700;
+            color: #ffffff;
+        }
+
+        .sections-header h2 span {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .sections-header .badge-total {
+            background: rgba(255,255,255,0.05);
+            padding: 6px 18px;
+            border-radius: 30px;
+            font-size: 13px;
+            color: #888;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        /* ----- КАРТОЧКИ ДЗ (ОБНОВЛЁННЫЕ) ----- */
+        .homework-card-modern {
+            background: linear-gradient(135deg, rgba(255,255,255,0.04), rgba(255,255,255,0.01));
+            border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 14px;
+            padding: 16px 20px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: all 0.3s ease;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .homework-card-modern:hover {
+            background: rgba(255,255,255,0.07);
+            border-color: rgba(102,126,234,0.2);
+            transform: translateX(4px);
+        }
+
+        .homework-card-modern .hw-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex: 1;
+            min-width: 150px;
+        }
+
+        .homework-card-modern .hw-status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        .homework-card-modern .hw-status-dot.pending {
+            background: #f39c12;
+            box-shadow: 0 0 12px rgba(243,156,18,0.3);
+        }
+
+        .homework-card-modern .hw-status-dot.done {
+            background: #2ecc71;
+            box-shadow: 0 0 12px rgba(46,204,113,0.3);
+        }
+
+        .homework-card-modern .hw-title {
+            font-weight: 600;
+            color: #ffffff;
+            font-size: 15px;
+        }
+
+        .homework-card-modern .hw-meta {
+            color: #888;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .homework-card-modern .hw-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .homework-card-modern .hw-btn {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.08);
+            color: #b0c4de;
+            padding: 5px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: Arial, sans-serif;
+        }
+
+        .homework-card-modern .hw-btn:hover {
+            background: rgba(255,255,255,0.1);
+            border-color: rgba(102,126,234,0.3);
+            color: #ffffff;
+        }
+
+        .homework-card-modern .hw-btn.success {
+            background: rgba(46,204,113,0.15);
+            border-color: rgba(46,204,113,0.2);
+            color: #2ecc71;
+        }
+
+        .homework-card-modern .hw-btn.success:hover {
+            background: #2ecc71;
+            color: #fff;
+        }
+
+        /* ----- СТАТИСТИКА В КРАСИВЫХ КАРТОЧКАХ ----- */
+        .stats-grid-modern {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .stat-card-modern {
+            background: linear-gradient(135deg, rgba(255,255,255,0.04), rgba(255,255,255,0.01));
+            border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 16px;
+            padding: 20px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .stat-card-modern:hover {
+            transform: translateY(-4px);
+            border-color: rgba(102,126,234,0.2);
+            box-shadow: 0 8px 30px rgba(0,0,0,0.2);
+        }
+
+        .stat-card-modern .icon {
+            font-size: 28px;
+            display: block;
+            margin-bottom: 6px;
+        }
+
+        .stat-card-modern .number {
+            font-size: 28px;
+            font-weight: 900;
+            color: #ffffff;
+        }
+
+        .stat-card-modern .number.green { color: #2ecc71; }
+        .stat-card-modern .number.yellow { color: #f39c12; }
+        .stat-card-modern .number.purple { color: #667eea; }
+
+        .stat-card-modern .label {
+            color: #888;
+            font-size: 13px;
+            margin-top: 4px;
+        }
+
+        /* ----- АДАПТИВНОСТЬ ДЛЯ ТЕЛЕФОНОВ ----- */
+        @media (max-width: 700px) {
+            .section-card-modern {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 10px;
+                padding: 16px;
+            }
+            
+            .section-card-modern .section-left {
+                flex-wrap: wrap;
+            }
+            
+            .section-card-modern .section-right {
+                justify-content: space-between;
+                width: 100%;
+            }
+            
+            .section-card-modern .section-stats {
+                flex-wrap: wrap;
+            }
+            
+            .homework-card-modern {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 10px;
+            }
+            
+            .homework-card-modern .hw-left {
+                flex-wrap: wrap;
+            }
+            
+            .homework-card-modern .hw-actions {
+                justify-content: flex-end;
+            }
+            
+            .stats-grid-modern {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 400px) {
+            .stats-grid-modern {
+                grid-template-columns: 1fr;
+            }
+        }
     </style>
 </head>
 <body>
@@ -1623,6 +2050,17 @@
                             <button class="admin-btn" onclick="window.refreshData()">🔄 Обновить данные</button>
                         </div>
                     </div>
+                                        <!-- ===== КРАСИВЫЕ КАРТОЧКИ РАЗДЕЛОВ ===== -->
+                    <div style="margin-top: 30px;">
+                        <div class="sections-header">
+                            <h2>📚 <span>Разделы подготовки</span></h2>
+                            <span class="badge-total">Всего: <span id="totalSectionsCount">0</span> | ✅ Выполнено: <span id="doneSectionsCount">0</span></span>
+                        </div>
+                        
+                        <div id="sectionsModernContainer">
+                            <p style="color:#666; text-align:center; padding:20px;">⏳ Загрузка...</p>
+                        </div>
+                    </div>
 
                     <!-- ===== ОНЛАЙН-ДОСКА ===== -->
                     <div id="page-whiteboard" class="dashboard-page" style="display:none;">
@@ -1655,6 +2093,17 @@
                             <button class="admin-btn" onclick="window.refreshData()" style="margin-left:auto;">🔄 Обновить</button>
                         </div>
                         <div id="homeworkList"><p>Загрузка...</p></div>
+                            <!-- ===== НОВЫЙ БЛОК С КРАСИВЫМИ КАРТОЧКАМИ ДЗ ===== -->
+    <div style="margin-top: 30px; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 20px;">
+        <div class="sections-header">
+            <h2>📝 <span>Все задания</span></h2>
+            <span class="badge-total">Всего: <span id="totalHomeworksCount">0</span> | ✅ Выполнено: <span id="doneHomeworksCount">0</span></span>
+        </div>
+        
+        <div id="homeworksModernContainer">
+            <p style="color:#666; text-align:center; padding:20px;">⏳ Загрузка...</p>
+        </div>
+    </div>
                     </div>
 
                     <!-- ===== СТАТИСТИКА ===== -->
@@ -3963,6 +4412,7 @@
             if (cached) {
                 sections = cached;
                 renderVideoTabs();
+                 renderModernSections(sections, []);
                 return;
             }
             
@@ -3979,12 +4429,115 @@
                     if (sections.length === 0) {
                         tabsContainer1.innerHTML = '📭 Нет разделов. Добавьте их в базе.';
                         tabsContainer2.innerHTML = '📭 Нет разделов. Добавьте их в базе.';
+                              renderModernSections(sections, []);
                         return;
                     }
                     renderVideoTabs();
+                    renderModernSections(sections, []);
                 })
                 .catch(function(err) { tabsContainer1.innerHTML = '❌ Ошибка: ' + err.message; });
         };
+                // ==========================================
+        // НОВОЕ ОТОБРАЖЕНИЕ РАЗДЕЛОВ (КРАСИВЫЕ КАРТОЧКИ)
+        // ==========================================
+
+        function renderModernSections(sections, homeworks) {
+            var container = document.getElementById('sectionsModernContainer');
+            if (!container) return;
+            
+            if (!sections || sections.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <span class="icon">📭</span>
+                        <div class="title">Нет разделов</div>
+                        <div class="desc">Разделы появятся здесь, когда ты их добавишь</div>
+                    </div>
+                `;
+                return;
+            }
+            
+            var html = '';
+            var totalSections = sections.length;
+            var totalDone = 0;
+            
+            sections.forEach(function(section, index) {
+                var sectionHomeworks = homeworks ? homeworks.filter(function(h) { 
+                    return h.section_id === section.id; 
+                }) : [];
+                
+                var total = sectionHomeworks.length;
+                var done = sectionHomeworks.filter(function(h) { 
+                    return h.status === 'done'; 
+                }).length;
+                
+                if (done === total && total > 0) totalDone++;
+                
+                var percent = total > 0 ? Math.round((done / total) * 100) : 0;
+                
+                var statusText = '';
+                var statusClass = '';
+                var btnClass = '';
+                var btnText = '';
+                var progressClass = '';
+                
+                if (total === 0) {
+                    statusText = 'Нет ДЗ';
+                    statusClass = 'empty';
+                    btnClass = 'empty';
+                    btnText = '📖 Перейти';
+                    progressClass = '';
+                } else if (done === total) {
+                    statusText = '✅ Выполнено';
+                    statusClass = 'done';
+                    btnClass = 'done';
+                    btnText = '✅ Выполнено';
+                    progressClass = 'green';
+                } else {
+                    statusText = done + '/' + total + ' выполнено';
+                    statusClass = 'pending';
+                    btnClass = '';
+                    btnText = '▶️ Продолжить';
+                    progressClass = 'yellow';
+                }
+                
+                var progressBar = '';
+                if (total > 0) {
+                    progressBar = `
+                        <div class="section-progress">
+                            <div class="fill ${progressClass}" style="width:${percent}%;"></div>
+                        </div>
+                    `;
+                }
+                
+                html += `
+                    <div class="section-card-modern" onclick="window.openSection('${section.id}')">
+                        <div class="section-left">
+                            <span class="section-number">№${section.order_num || index + 1}</span>
+                            <span class="section-name">${section.name}</span>
+                        </div>
+                        <div class="section-right">
+                            <div class="section-stats">
+                                <span class="count ${statusClass}">${statusText}</span>
+                                ${progressBar}
+                            </div>
+                            <button class="section-btn ${btnClass}" onclick="event.stopPropagation(); window.openSection('${section.id}')">
+                                ${btnText}
+                            </button>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            container.innerHTML = html;
+            
+            // Обновляем общее количество
+            var totalEl = document.getElementById('totalSectionsCount');
+            if (totalEl) totalEl.textContent = totalSections;
+            
+            // Обновляем выполненные
+            var doneEl = document.getElementById('doneSectionsCount');
+            if (doneEl) doneEl.textContent = totalDone;
+        }
 
         window.renderVideoTabs = function() {
             var tabsContainer1 = document.getElementById('videoTabsPart1');
@@ -4167,6 +4720,87 @@
             }
             container.innerHTML = html;
             window.updateProgress(data.length, done);
+            renderModernHomeworks(data);
+        }
+                // ==========================================
+        // НОВОЕ ОТОБРАЖЕНИЕ ДЗ (КРАСИВЫЕ КАРТОЧКИ)
+        // ==========================================
+
+        function renderModernHomeworks(homeworks) {
+            var container = document.getElementById('homeworksModernContainer');
+            if (!container) {
+                console.log('❌ Контейнер homeworksModernContainer не найден');
+                return;
+            }
+            
+            if (!homeworks || homeworks.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <span class="icon">📭</span>
+                        <div class="title">Нет домашних заданий</div>
+                        <div class="desc">Когда появятся ДЗ, они будут здесь</div>
+                    </div>
+                `;
+                return;
+            }
+            
+            var html = '';
+            var total = homeworks.length;
+            var done = 0;
+            
+            homeworks.forEach(function(hw) {
+                if (hw.status === 'done') done++;
+                
+                var isDone = hw.status === 'done';
+                var dotClass = isDone ? 'done' : 'pending';
+                var statusText = isDone ? '✅ Выполнено' : '⏳ В процессе';
+                var deadlineText = hw.deadline ? '📅 ' + hw.deadline : '📅 Без срока';
+                var sectionName = hw.video_sections ? hw.video_sections.name : 'Раздел';
+                
+                // Кнопки для ДЗ
+                var actionButtons = '';
+                if (!isDone) {
+                    actionButtons += `<button class="hw-btn success" onclick="window.markDone('${hw.id}')">✅ Отметить</button>`;
+                } else {
+                    actionButtons += `<button class="hw-btn" onclick="window.unmarkDone('${hw.id}')">↩️ Вернуть</button>`;
+                }
+                
+                if (hw.file_url) {
+                    actionButtons += `<a href="${hw.file_url}" target="_blank" class="hw-btn">📎 Скачать</a>`;
+                }
+                
+                // Если есть прикреплённый файл от ученика
+                if (hw.attached_file_url) {
+                    actionButtons += `<a href="${hw.attached_file_url}" target="_blank" class="hw-btn" style="background:rgba(46,204,113,0.1); border-color:rgba(46,204,113,0.2); color:#2ecc71;">📤 Мой файл</a>`;
+                }
+                
+                html += `
+                    <div class="homework-card-modern">
+                        <div class="hw-left">
+                            <span class="hw-status-dot ${dotClass}"></span>
+                            <span class="hw-title">${hw.title}</span>
+                            <span style="color:#888; font-size:12px;">📺 ${sectionName}</span>
+                        </div>
+                        <div class="hw-meta">
+                            <span>${deadlineText}</span>
+                            <span style="color:${isDone ? '#2ecc71' : '#f39c12'};">${statusText}</span>
+                        </div>
+                        <div class="hw-actions">
+                            ${actionButtons}
+                        </div>
+                    </div>
+                `;
+            });
+            
+            container.innerHTML = html;
+            
+            // Обновляем счётчик
+            var totalEl = document.getElementById('totalHomeworksCount');
+            if (totalEl) totalEl.textContent = total;
+            
+            // Обновляем выполненные
+            var doneEl = document.getElementById('doneHomeworksCount');
+            if (doneEl) doneEl.textContent = done;
         }
 
         window.updateProgress = function(total, done) {
