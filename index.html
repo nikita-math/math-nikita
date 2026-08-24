@@ -65,11 +65,21 @@ body {
 }
 
 .container {
-    max-width: 1100px;
+    max-width: 1140px;
     margin: 0 auto;
-    padding: 40px 20px;
+    padding: 30px 20px;
     position: relative;
     z-index: 1;
+    background: rgba(255, 255, 255, 0.6);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-radius: 32px;
+    border: 1px solid rgba(255, 255, 255, 0.8);
+    box-shadow: 
+        0 8px 40px rgba(79, 110, 247, 0.08),
+        inset 0 1px 0 rgba(255, 255, 255, 0.9);
+    margin-top: 20px;
+    margin-bottom: 20px;
 }
 
         /* ===== КОМПОНЕНТЫ ===== */
@@ -260,7 +270,7 @@ header p {
     box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
     display: none;
     margin-top: 40px;
-    border: none;
+    border: 1px solid rgba(79, 110, 247, 0.08);
 }
         /* ===== ВКЛАДКИ ДЗ ===== */
         .hw-tabs { display: flex; gap: 10px; margin-bottom: 16px; flex-wrap: wrap; }
@@ -1688,181 +1698,177 @@ header p {
            ============================================================ */
 
         /* ----- КАРТОЧКИ РАЗДЕЛОВ (КАК НА ТВОЁМ СКРИНШОТЕ) ----- */
-        .section-card-modern {
-            background: linear-gradient(135deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02));
-            border: 1px solid rgba(255,255,255,0.06);
-            border-radius: 16px;
-            padding: 18px 22px;
-            margin-bottom: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            transition: all 0.3s ease;
-            cursor: pointer;
-            position: relative;
-            overflow: hidden;
-            flex-wrap: wrap;
-            gap: 12px;
-            width: 100%;
-        }
+       .section-card-modern {
+    background: #ffffff;
+    border: 1px solid rgba(79, 110, 247, 0.10);
+    border-radius: 16px;
+    padding: 18px 24px;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    flex-wrap: wrap;
+    gap: 12px;
+    width: 100%;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
 
-        .section-card-modern::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 4px;
-            height: 100%;
-            background: linear-gradient(180deg, #667eea, #764ba2);
-            border-radius: 0 4px 4px 0;
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
+.section-card-modern::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 4px;
+    height: 100%;
+    background: linear-gradient(180deg, #4f6ef7, #6c5ce7);
+    border-radius: 0 4px 4px 0;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
 
-        .section-card-modern:hover {
-            background: rgba(255,255,255,0.08);
-            border-color: rgba(102,126,234,0.3);
-            transform: translateX(6px);
-            box-shadow: 0 8px 30px rgba(0,0,0,0.3);
-        }
+.section-card-modern:hover {
+    background: #f8faff;
+    border-color: #4f6ef7;
+    transform: translateX(6px);
+    box-shadow: 0 8px 30px rgba(79, 110, 247, 0.12);
+}
 
-        .section-card-modern:hover::before {
-            opacity: 1;
-        }
+.section-card-modern:hover::before {
+    opacity: 1;
+}
 
-        .section-card-modern .section-left {
-            display: flex;
-            align-items: center;
-            gap: 14px;
-            flex: 1;
-            min-width: 120px;
-        }
+.section-card-modern .section-left {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex: 1;
+    min-width: 120px;
+}
 
-        .section-card-modern .section-number {
-            font-size: 13px;
-            font-weight: 900;
-            color: #667eea;
-            background: rgba(102,126,234,0.15);
-            padding: 4px 12px;
-            border-radius: 20px;
-            min-width: 40px;
-            text-align: center;
-            white-space: nowrap;
-        }
+.section-card-modern .section-number {
+    font-size: 13px;
+    font-weight: 900;
+    color: #4f6ef7;
+    background: rgba(79, 110, 247, 0.12);
+    padding: 4px 14px;
+    border-radius: 20px;
+    min-width: 40px;
+    text-align: center;
+    white-space: nowrap;
+}
 
-        .section-card-modern .section-name {
-            font-size: 16px;
-            font-weight: 600;
-            color: #ffffff;
-            transition: color 0.3s ease;
-        }
+.section-card-modern .section-name {
+    font-size: 16px;
+    font-weight: 600;
+    color: #1a1a2e;
+}
 
-        .section-card-modern:hover .section-name {
-            color: #ffffff;
-        }
+.section-card-modern .section-right {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex-wrap: wrap;
+}
 
-        .section-card-modern .section-right {
-            display: flex;
-            align-items: center;
-            gap: 14px;
-            flex-wrap: wrap;
-        }
+.section-card-modern .section-stats {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #8888aa;
+    font-size: 13px;
+}
 
-        .section-card-modern .section-stats {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            color: #888;
-            font-size: 13px;
-        }
+.section-card-modern .section-stats .count {
+    background: #f0f4ff;
+    padding: 4px 14px;
+    border-radius: 20px;
+    font-weight: 600;
+    color: #4a4a6a;
+}
 
-        .section-card-modern .section-stats .count {
-            background: rgba(255,255,255,0.05);
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-weight: 600;
-            color: #b0c4de;
-        }
+.section-card-modern .section-stats .count.done {
+    color: #2ecc71;
+    background: rgba(46, 204, 113, 0.12);
+}
 
-        .section-card-modern .section-stats .count.done {
-            color: #2ecc71;
-            background: rgba(46,204,113,0.15);
-        }
+.section-card-modern .section-stats .count.pending {
+    color: #f39c12;
+    background: rgba(243, 156, 18, 0.12);
+}
 
-        .section-card-modern .section-stats .count.pending {
-            color: #f39c12;
-            background: rgba(243,156,18,0.15);
-        }
+.section-card-modern .section-stats .count.empty {
+    color: #8888aa;
+    background: #f0f4ff;
+}
 
-        .section-card-modern .section-stats .count.empty {
-            color: #666;
-            background: rgba(255,255,255,0.03);
-        }
+.section-card-modern .section-progress {
+    width: 80px;
+    height: 4px;
+    background: #eef2f7;
+    border-radius: 10px;
+    overflow: hidden;
+}
 
-        .section-card-modern .section-progress {
-            width: 80px;
-            height: 4px;
-            background: rgba(255,255,255,0.06);
-            border-radius: 10px;
-            overflow: hidden;
-        }
+.section-card-modern .section-progress .fill {
+    height: 100%;
+    border-radius: 10px;
+    background: linear-gradient(90deg, #4f6ef7, #6c5ce7);
+    transition: width 0.8s ease;
+}
 
-        .section-card-modern .section-progress .fill {
-            height: 100%;
-            border-radius: 10px;
-            background: linear-gradient(90deg, #667eea, #764ba2);
-            transition: width 0.8s ease;
-        }
+.section-card-modern .section-progress .fill.green {
+    background: linear-gradient(90deg, #27ae60, #2ecc71);
+}
 
-        .section-card-modern .section-progress .fill.green {
-            background: linear-gradient(90deg, #27ae60, #2ecc71);
-        }
+.section-card-modern .section-progress .fill.yellow {
+    background: linear-gradient(90deg, #f39c12, #f1c40f);
+}
 
-        .section-card-modern .section-progress .fill.yellow {
-            background: linear-gradient(90deg, #f39c12, #f1c40f);
-        }
+.section-card-modern .section-btn {
+    background: linear-gradient(135deg, #4f6ef7, #6c5ce7);
+    color: white;
+    border: none;
+    padding: 6px 20px;
+    border-radius: 30px;
+    font-weight: 600;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-family: Arial, sans-serif;
+    white-space: nowrap;
+}
 
-        .section-card-modern .section-btn {
-            background: linear-gradient(135deg, #302b63, #667eea);
-            color: white;
-            border: none;
-            padding: 6px 18px;
-            border-radius: 30px;
-            font-weight: 600;
-            font-size: 13px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-family: Arial, sans-serif;
-            white-space: nowrap;
-        }
+.section-card-modern .section-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 20px rgba(79, 110, 247, 0.3);
+}
 
-        .section-card-modern .section-btn:hover {
-            transform: scale(1.05);
-            box-shadow: 0 4px 20px rgba(102,126,234,0.4);
-        }
+.section-card-modern .section-btn.done {
+    background: rgba(46, 204, 113, 0.15);
+    color: #2ecc71;
+    border: 1px solid rgba(46, 204, 113, 0.15);
+}
 
-        .section-card-modern .section-btn.done {
-            background: rgba(46,204,113,0.2);
-            color: #2ecc71;
-            border: 1px solid rgba(46,204,113,0.15);
-        }
+.section-card-modern .section-btn.done:hover {
+    background: #2ecc71;
+    color: #fff;
+}
 
-        .section-card-modern .section-btn.done:hover {
-            background: #2ecc71;
-            color: #fff;
-        }
+.section-card-modern .section-btn.empty {
+    background: #f0f4ff;
+    color: #4a4a6a;
+    border: 1px solid #e8ecf4;
+}
 
-        .section-card-modern .section-btn.empty {
-            background: rgba(255,255,255,0.05);
-            color: #666;
-            border: 1px solid rgba(255,255,255,0.05);
-        }
-
-        .section-card-modern .section-btn.empty:hover {
-            background: rgba(255,255,255,0.1);
-            color: #b0c4de;
-        }
-
+.section-card-modern .section-btn.empty:hover {
+    background: #4f6ef7;
+    color: #fff;
+    border-color: #4f6ef7;
+}
         /* ----- АНИМАЦИЯ ПОЯВЛЕНИЯ КАРТОЧЕК ----- */
         .section-card-modern {
             animation: slideUp 0.4s ease forwards;
