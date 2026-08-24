@@ -8,7 +8,7 @@
     <link rel="preconnect" href="https://cdn.jsdelivr.net">
     <link rel="dns-prefetch" href="https://liqqdixrtvnrrvgkfvbn.supabase.co">
     <style>
-        /* ===== CSS ПЕРЕМЕННЫЕ ===== */
+        /* ===== CSS ПЕРЕМЕНФНЫЕ ===== */
         :root {
             --primary: #667eea;
             --primary-dark: #302b63;
@@ -3342,10 +3342,11 @@
     if (!confirm('Удалить ученика? Будут удалены все его занятия, оплаты и прогресс.')) return;
     
     // Удаляем всё связанное
-    supabase
+  supabase
     .from('lesson_calendar')
-    .select('*')
-    .eq('student_id', selectedStudentId)
+    .delete()
+    .eq('student_id', id)
+    .then(function() {
         .then(function() {
             return supabase.from('lesson_payments').delete().eq('student_id', id);
         })
@@ -4773,7 +4774,7 @@
             
             container.style.display = 'block';
             
-            supabase
+            
                supabase
     .from('lesson_calendar')
     .select('*')
@@ -7243,7 +7244,7 @@ if (existingPlan) {
             }
         }
         
-        window.handleLogin = handleLogin;
+        
 
         window.handleLogin = handleLogin;
 
@@ -9035,7 +9036,7 @@ window.switchAdminTab = function(tab) {
     console.log('⚡ Быстрая загрузка включена');
     if (currentUser) {
         window.loadDashboardOverview(currentUser.id);
-        // window.renderStudentCalendar(studentMonth);  // ← ВРЕМЕННО ОТКЛЮЧИЛИ
+        window.renderStudentCalendar(studentMonth);
     }
 };
         // ==========================================
