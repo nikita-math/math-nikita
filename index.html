@@ -34,7 +34,7 @@
 
 body {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    background: #f0f4ff;
+    background: #eef2f7;
     color: #1a1a2e;
     line-height: 1.6;
     min-height: 100vh;
@@ -253,11 +253,12 @@ header p {
 }
 
         /* ===== ДАШБОРД ===== */
-      #dashboard {
-    background: var(--bg-card);
+   
+#dashboard {
+    background: #ffffff;
     border-radius: var(--radius);
     padding: 30px 40px;
-    box-shadow: var(--shadow);
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
     display: none;
     margin-top: 40px;
     border: none;
@@ -2139,18 +2140,18 @@ header p {
         /* ===== НОВЫЕ СТИЛИ ДЛЯ КРАСОТЫ ===== */
 
 /* Заголовки */
-.section-title {
+.dashboard-content .section-title {
     font-size: 24px;
     font-weight: 700;
-    color: var(--text-primary);
+    color: #1a1a2e;
     margin-bottom: 20px;
 }
-.section-title::before {
+.dashboard-content .section-title::before {
     content: '';
     display: inline-block;
     width: 4px;
     height: 24px;
-    background: linear-gradient(180deg, var(--primary), #6c5ce7);
+    background: linear-gradient(180deg, #4f6ef7, #6c5ce7);
     border-radius: 4px;
     margin-right: 12px;
     vertical-align: middle;
@@ -2158,26 +2159,26 @@ header p {
 
 /* Статистика */
 .stats-grid .stat-card {
-    background: var(--bg-card);
+    background: #ffffff;
     padding: 20px;
     border-radius: 16px;
-    border: 1px solid #e8ecf4;
+    border: 1px solid #eef2f7;
     text-align: center;
     box-shadow: 0 2px 8px rgba(0,0,0,0.04);
     transition: var(--transition);
 }
 .stats-grid .stat-card:hover {
     transform: translateY(-4px);
-    box-shadow: var(--shadow-hover);
-    border-color: var(--primary);
+    box-shadow: 0 8px 30px rgba(79, 110, 247, 0.1);
+    border-color: #4f6ef7;
 }
 .stats-grid .stat-card .number {
     font-size: 32px;
     font-weight: 900;
-    color: var(--text-primary);
+    color: #1a1a2e;
 }
 .stats-grid .stat-card .label {
-    color: var(--text-light);
+    color: #8888aa;
     font-size: 13px;
     margin-top: 4px;
 }
@@ -2244,31 +2245,100 @@ header p {
 
 /* Сайдбар */
 .dashboard-sidebar button {
-    background: var(--bg);
-    border: 1px solid #e8ecf4;
+    background: transparent;
+    border: none;
     padding: 12px 18px;
     border-radius: var(--radius-sm);
     cursor: pointer;
     font-weight: 600;
     transition: var(--transition);
-    color: var(--text-secondary);
+    color: #4a4a6a;
     text-align: left;
     font-size: 15px;
     display: flex;
     align-items: center;
     gap: 12px;
+    width: 100%;
 }
 .dashboard-sidebar button:hover {
-    background: var(--primary);
-    color: #fff;
-    border-color: var(--primary);
+    background: #f0f4ff;
+    color: #4f6ef7;
     transform: translateX(4px);
 }
 .dashboard-sidebar button.active {
-    background: linear-gradient(135deg, var(--primary), #6c5ce7);
-    color: #fff;
-    border-color: var(--primary);
-    box-shadow: 0 4px 16px rgba(79, 110, 247, 0.2);
+    background: linear-gradient(135deg, #4f6ef7, #6c5ce7);
+    color: #ffffff;
+    box-shadow: 0 4px 16px rgba(79, 110, 247, 0.25);
+}
+.dashboard-sidebar button .badge {
+    margin-left: auto;
+    background: #ff6b6b;
+    color: #ffffff;
+    padding: 0 10px;
+    border-radius: 50px;
+    font-size: 12px;
+}
+        /* ===== ДОПОЛНИТЕЛЬНЫЕ СТИЛИ ДЛЯ ВИДИМОСТИ ===== */
+
+/* Текст в сайдбаре */
+.dashboard-sidebar button {
+    color: #2d2d44;
+}
+
+/* Ховер эффект для сайдбара */
+.dashboard-sidebar button:hover {
+    background: #f0f4ff;
+    color: #4f6ef7;
+}
+
+/* Активная кнопка в сайдбаре */
+.dashboard-sidebar button.active {
+    background: linear-gradient(135deg, #4f6ef7, #6c5ce7);
+    color: #ffffff;
+}
+
+/* Карточки статистики */
+.stat-card .number {
+    color: #1a1a2e !important;
+}
+
+/* Заголовки в дашборде */
+.dashboard-content h3,
+.dashboard-content h4 {
+    color: #1a1a2e;
+}
+
+/* Текст в карточках */
+.section-card-modern .section-name {
+    color: #1a1a2e !important;
+}
+
+/* Кнопка "Обновить" */
+.admin-btn {
+    background: #ffffff;
+    color: #2d2d44;
+    border: 1px solid #e8ecf4;
+    padding: 8px 20px;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: var(--transition);
+    font-weight: 600;
+    font-size: 14px;
+}
+.admin-btn:hover {
+    background: #4f6ef7;
+    color: #ffffff;
+    border-color: #4f6ef7;
+}
+
+/* Ссылки в контактах */
+.contacts a {
+    color: #2d2d44;
+    background: #f0f4ff;
+}
+.contacts a:hover {
+    background: #4f6ef7;
+    color: #ffffff;
 }
     </style>
 </head>
