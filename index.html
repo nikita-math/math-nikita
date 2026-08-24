@@ -4437,10 +4437,11 @@
                 })
                 .catch(function(err) { tabsContainer1.innerHTML = '❌ Ошибка: ' + err.message; });
         };
-                // ==========================================
-        // НОВОЕ ОТОБРАЖЕНИЕ РАЗДЕЛОВ (КРАСИВЫЕ КАРТОЧКИ)
-        // ==========================================
-       window.renderVideoTabs = function() {
+             // ==========================================
+// НОВОЕ ОТОБРАЖЕНИЕ РАЗДЕЛОВ (КАРТОЧКИ)
+// ==========================================
+
+window.renderVideoTabs = function() {
     var tabsContainer1 = document.getElementById('videoTabsPart1');
     var tabsContainer2 = document.getElementById('videoTabsPart2');
     
@@ -4467,6 +4468,43 @@
     tabsContainer1.innerHTML = renderSectionCards(part1);
     tabsContainer2.innerHTML = renderSectionCards(part2);
 };
+
+// ==========================================
+// ФУНКЦИЯ ДЛЯ ОТОБРАЖЕНИЯ КАРТОЧЕК РАЗДЕЛОВ
+// ==========================================
+
+function renderSectionCards(sectionsList) {
+    if (!sectionsList || sectionsList.length === 0) {
+        return '';
+    }
+    
+    var html = '<div style="display:flex; flex-direction:column; gap:8px; margin-top:8px;">';
+    
+    sectionsList.forEach(function(section) {
+        var num = section.order_num;
+        
+        html += `
+            <div class="section-card-modern" onclick="window.openSection('${section.id}')">
+                <div class="section-left">
+                    <span class="section-number">№${num}</span>
+                    <span class="section-name">${section.name}</span>
+                </div>
+                <div class="section-right">
+                    <div class="section-stats">
+                        <span class="count empty">Нет ДЗ</span>
+                    </div>
+                    <button class="section-btn empty" onclick="event.stopPropagation(); window.openSection('${section.id}')">
+                        ☐ Перейти
+                    </button>
+                </div>
+            </div>
+        `;
+    });
+    
+    html += '</div>';
+    return html;
+}
+
                         // ==========================================
 // ФУНКЦИЯ ДЛЯ ОТОБРАЖЕНИЯ КАРТОЧЕК РАЗДЕЛОВ
 // ==========================================
