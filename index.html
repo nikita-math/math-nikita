@@ -2050,17 +2050,6 @@
                             <button class="admin-btn" onclick="window.refreshData()">🔄 Обновить данные</button>
                         </div>
                     </div>
-                                        <!-- ===== КРАСИВЫЕ КАРТОЧКИ РАЗДЕЛОВ ===== -->
-                    <div style="margin-top: 30px;">
-                        <div class="sections-header">
-                            <h2>📚 <span>Разделы подготовки</span></h2>
-                            <span class="badge-total">Всего: <span id="totalSectionsCount">0</span> | ✅ Выполнено: <span id="doneSectionsCount">0</span></span>
-                        </div>
-                        
-                        <div id="sectionsModernContainer">
-                            <p style="color:#666; text-align:center; padding:20px;">⏳ Загрузка...</p>
-                        </div>
-                    </div>
 
                     <!-- ===== ОНЛАЙН-ДОСКА ===== -->
                     <div id="page-whiteboard" class="dashboard-page" style="display:none;">
@@ -4412,7 +4401,6 @@
             if (cached) {
                 sections = cached;
                 renderVideoTabs();
-                 renderModernSections(sections, []);
                 return;
             }
             
@@ -4429,151 +4417,77 @@
                     if (sections.length === 0) {
                         tabsContainer1.innerHTML = '📭 Нет разделов. Добавьте их в базе.';
                         tabsContainer2.innerHTML = '📭 Нет разделов. Добавьте их в базе.';
-                              renderModernSections(sections, []);
                         return;
                     }
                     renderVideoTabs();
-                    renderModernSections(sections, []);
                 })
                 .catch(function(err) { tabsContainer1.innerHTML = '❌ Ошибка: ' + err.message; });
         };
                 // ==========================================
         // НОВОЕ ОТОБРАЖЕНИЕ РАЗДЕЛОВ (КРАСИВЫЕ КАРТОЧКИ)
         // ==========================================
+       window.renderVideoTabs = function() {
+    var tabsContainer1 = document.getElementById('videoTabsPart1');
+    var tabsContainer2 = document.getElementById('videoTabsPart2');
+    
+    if (!tabsContainer1 || !tabsContainer2) {
+        console.log('❌ Контейнеры для видео не найдены');
+        return;
+    }
+    
+    if (!sections || sections.length === 0) {
+        tabsContainer1.innerHTML = `
+            <div style="text-align:center; padding:30px; color:#666;">
+                📭 Нет разделов. Добавьте их в базе данных.
+            </div>
+        `;
+        tabsContainer2.innerHTML = '';
+        return;
+    }
+    
+    // Разделяем на две части (первые 12 и остальные)
+    var part1 = sections.slice(0, 12);
+    var part2 = sections.slice(12);
+    
+    // Рендерим как карточки
+    tabsContainer1.innerHTML = renderSectionCards(part1);
+    tabsContainer2.innerHTML = renderSectionCards(part2);
+};
+                        // ==========================================
+// ФУНКЦИЯ ДЛЯ ОТОБРАЖЕНИЯ КАРТОЧЕК РАЗДЕЛОВ
+// ==========================================
 
-        function renderModernSections(sections, homeworks) {
-            var container = document.getElementById('sectionsModernContainer');
-            if (!container) return;
-            
-            if (!sections || sections.length === 0) {
-                container.innerHTML = `
-                    <div class="empty-state">
-                        <span class="icon">📭</span>
-                        <div class="title">Нет разделов</div>
-                        <div class="desc">Разделы появятся здесь, когда ты их добавишь</div>
+function renderSectionCards(sectionsList) {
+    if (!sectionsList || sectionsList.length === 0) {
+        return '';
+    }
+    
+    var html = '<div style="display:flex; flex-direction:column; gap:8px; margin-top:8px;">';
+    
+    sectionsList.forEach(function(section) {
+        var num = section.order_num;
+        
+        html += `
+            <div class="section-card-modern" onclick="window.openSection('${section.id}')">
+                <div class="section-left">
+                    <span class="section-number">№${num}</span>
+                    <span class="section-name">${section.name}</span>
+                </div>
+                <div class="section-right">
+                    <div class="section-stats">
+                        <span class="count empty">Нет ДЗ</span>
                     </div>
-                `;
-                return;
-            }
-            
-            var html = '';
-            var totalSections = sections.length;
-            var totalDone = 0;
-            
-            sections.forEach(function(section, index) {
-                var sectionHomeworks = homeworks ? homeworks.filter(function(h) { 
-                    return h.section_id === section.id; 
-                }) : [];
-                
-                var total = sectionHomeworks.length;
-                var done = sectionHomeworks.filter(function(h) { 
-                    return h.status === 'done'; 
-                }).length;
-                
-                if (done === total && total > 0) totalDone++;
-                
-                var percent = total > 0 ? Math.round((done / total) * 100) : 0;
-                
-                var statusText = '';
-                var statusClass = '';
-                var btnClass = '';
-                var btnText = '';
-                var progressClass = '';
-                
-                if (total === 0) {
-                    statusText = 'Нет ДЗ';
-                    statusClass = 'empty';
-                    btnClass = 'empty';
-                    btnText = '📖 Перейти';
-                    progressClass = '';
-                } else if (done === total) {
-                    statusText = '✅ Выполнено';
-                    statusClass = 'done';
-                    btnClass = 'done';
-                    btnText = '✅ Выполнено';
-                    progressClass = 'green';
-                } else {
-                    statusText = done + '/' + total + ' выполнено';
-                    statusClass = 'pending';
-                    btnClass = '';
-                    btnText = '▶️ Продолжить';
-                    progressClass = 'yellow';
-                }
-                
-                var progressBar = '';
-                if (total > 0) {
-                    progressBar = `
-                        <div class="section-progress">
-                            <div class="fill ${progressClass}" style="width:${percent}%;"></div>
-                        </div>
-                    `;
-                }
-                
-                html += `
-                    <div class="section-card-modern" onclick="window.openSection('${section.id}')">
-                        <div class="section-left">
-                            <span class="section-number">№${section.order_num || index + 1}</span>
-                            <span class="section-name">${section.name}</span>
-                        </div>
-                        <div class="section-right">
-                            <div class="section-stats">
-                                <span class="count ${statusClass}">${statusText}</span>
-                                ${progressBar}
-                            </div>
-                            <button class="section-btn ${btnClass}" onclick="event.stopPropagation(); window.openSection('${section.id}')">
-                                ${btnText}
-                            </button>
-                        </div>
-                    </div>
-                `;
-            });
-            
-            container.innerHTML = html;
-            
-            // Обновляем общее количество
-            var totalEl = document.getElementById('totalSectionsCount');
-            if (totalEl) totalEl.textContent = totalSections;
-            
-            // Обновляем выполненные
-            var doneEl = document.getElementById('doneSectionsCount');
-            if (doneEl) doneEl.textContent = totalDone;
-        }
-
-        window.renderVideoTabs = function() {
-            var tabsContainer1 = document.getElementById('videoTabsPart1');
-            var tabsContainer2 = document.getElementById('videoTabsPart2');
-            if (!sections || sections.length === 0) {
-                tabsContainer1.innerHTML = '📭 Нет разделов';
-                tabsContainer2.innerHTML = '📭 Нет разделов';
-                return;
-            }
-            var part1 = sections.slice(0, 12);
-            var part2 = sections.slice(12);
-            
-            var fragment1 = document.createDocumentFragment();
-            var fragment2 = document.createDocumentFragment();
-            
-            part1.forEach(function(section, index) {
-                var num = index + 1;
-                var btn = document.createElement('button');
-                btn.innerHTML = '<span class="num">' + num + '</span> ' + section.name;
-                btn.onclick = function() { window.openSection(section.id); };
-                fragment1.appendChild(btn);
-            });
-            
-            part2.forEach(function(section, index) {
-                var num = index + 13;
-                var btn = document.createElement('button');
-                btn.innerHTML = '<span class="num">' + num + '</span> ' + section.name;
-                btn.onclick = function() { window.openSection(section.id); };
-                fragment2.appendChild(btn);
-            });
-            
-            tabsContainer1.innerHTML = '';
-            tabsContainer2.innerHTML = '';
-            tabsContainer1.appendChild(fragment1);
-            tabsContainer2.appendChild(fragment2);
-        };
+                    <button class="section-btn empty" onclick="event.stopPropagation(); window.openSection('${section.id}')">
+                        ☐ Перейти
+                    </button>
+                </div>
+            </div>
+        `;
+    });
+    
+    html += '</div>';
+    return html;
+}
                 // ==========================================
         // ДОМАШНИЕ ЗАДАНИЯ (СТУДЕНТ) С ПРИКРЕПЛЕНИЕМ ФАЙЛОВ
         // ==========================================
