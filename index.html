@@ -9,97 +9,96 @@
     <link rel="dns-prefetch" href="https://liqqdixrtvnrrvgkfvbn.supabase.co">
     <style>
         /* ===== CSS ПЕРЕМЕНФНЫЕ ===== */
-        :root {
-            --primary: #667eea;
-            --primary-dark: #302b63;
-            --bg-dark: #0b0e1a;
-            --bg-card: rgba(255,255,255,0.05);
-            --text-light: #b0c4de;
-            --text-white: #ffffff;
-            --accent: #f5a623;
-            --success: #27ae60;
-            --danger: #e74c3c;
-            --radius: 24px;
-            --radius-sm: 12px;
-            --transition: 0.3s ease;
-        }
+           /* ===== CSS ПЕРЕМЕННЫЕ ===== */
+:root {
+    --primary: #667eea;
+    --primary-dark: #302b63;
+    --bg-dark: #0b0e1a;
+    --bg-card: rgba(255,255,255,0.05);
+    --text-light: #b0c4de;
+    --text-white: #ffffff;
+    --accent: #f5a623;
+    --success: #27ae60;
+    --danger: #e74c3c;
+    --radius: 24px;
+    --radius-sm: 12px;
+    --transition: 0.3s ease;
+}
 
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: Arial, sans-serif; background: var(--bg-dark); color: var(--text-white); line-height: 1.6; min-height: 100vh; position: relative; overflow-x: hidden; }
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: Arial, sans-serif; background: var(--bg-dark); color: var(--text-white); line-height: 1.6; min-height: 100vh; position: relative; overflow-x: hidden; }
 
-        .stars { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; background: transparent; }
-        .star { position: absolute; background: white; border-radius: 50%; animation: twinkle var(--duration) ease-in-out infinite alternate; }
-        @keyframes twinkle { 0% { opacity: 0.2; transform: scale(1); } 100% { opacity: 1; transform: scale(1.5); } }
+.stars { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; background: transparent; }
+.star { position: absolute; background: white; border-radius: 50%; animation: twinkle var(--duration) ease-in-out infinite alternate; }
+@keyframes twinkle { 0% { opacity: 0.2; transform: scale(1); } 100% { opacity: 1; transform: scale(1.5); } }
 
-        .container { max-width: 1100px; margin: 0 auto; padding: 40px 20px; position: relative; z-index: 1; }
+.container { max-width: 1100px; margin: 0 auto; padding: 40px 20px; position: relative; z-index: 1; }
 
-        /* ===== КОМПОНЕНТЫ ===== */
-        header { background: linear-gradient(135deg, #0d1b2a, #1b2a4a, #0d1b2a); padding: 60px 20px; text-align: center; border-radius: var(--radius); margin-bottom: 40px; border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 0 60px rgba(48,43,99,0.3); }
-        header h1 { font-size: 48px; font-weight: 900; letter-spacing: 3px; }
-        header h1 span { color: var(--accent); text-shadow: 0 0 30px rgba(245,166,35,0.3); }
-        header p { font-size: 20px; opacity: 0.8; margin-top: 8px; color: var(--text-light); }
+/* ===== КОМПОНЕНТЫ ===== */
+header { background: linear-gradient(135deg, #0d1b2a, #1b2a4a, #0d1b2a); padding: 60px 20px; text-align: center; border-radius: var(--radius); margin-bottom: 40px; border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 0 60px rgba(48,43,99,0.3); }
+header h1 { font-size: 48px; font-weight: 900; letter-spacing: 3px; }
+header h1 span { color: var(--accent); text-shadow: 0 0 30px rgba(245,166,35,0.3); }
+header p { font-size: 20px; opacity: 0.8; margin-top: 8px; color: var(--text-light); }
 
-        .profile { background: var(--bg-card); backdrop-filter: blur(10px); border-radius: var(--radius); padding: 40px; border: 1px solid rgba(255,255,255,0.1); display: flex; flex-wrap: wrap; gap: 40px; align-items: center; margin-bottom: 40px; }
-        .profile-avatar { width: 150px; height: 150px; border-radius: 50%; background: linear-gradient(135deg, var(--primary), #764ba2); display: flex; align-items: center; justify-content: center; flex-shrink: 0; overflow: hidden; }
-        .profile-avatar img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
-        .profile-avatar .avatar-emoji { font-size: 70px; }
-        .profile-info h2 { font-size: 32px; color: var(--text-white); }
-        .profile-info .badge { display: inline-block; background: linear-gradient(135deg, var(--accent), #f7c948); color: var(--bg-dark); padding: 4px 16px; border-radius: 30px; font-weight: 700; font-size: 14px; margin-top: 6px; }
-        .profile-info p { margin-top: 12px; font-size: 18px; color: var(--text-light); }
-        .profile-info ul { list-style: none; margin-top: 14px; }
-        .profile-info ul li { padding: 6px 0; font-size: 16px; color: #c0d0e0; }
-        .profile-info ul li::before { content: "✅ "; }
+.profile { background: var(--bg-card); backdrop-filter: blur(10px); border-radius: var(--radius); padding: 40px; border: 1px solid rgba(255,255,255,0.1); display: flex; flex-wrap: wrap; gap: 40px; align-items: center; margin-bottom: 40px; }
+.profile-avatar { width: 150px; height: 150px; border-radius: 50%; background: linear-gradient(135deg, var(--primary), #764ba2); display: flex; align-items: center; justify-content: center; flex-shrink: 0; overflow: hidden; }
+.profile-avatar img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
+.profile-avatar .avatar-emoji { font-size: 70px; }
+.profile-info h2 { font-size: 32px; color: var(--text-white); }
+.profile-info .badge { display: inline-block; background: linear-gradient(135deg, var(--accent), #f7c948); color: var(--bg-dark); padding: 4px 16px; border-radius: 30px; font-weight: 700; font-size: 14px; margin-top: 6px; }
+.profile-info p { margin-top: 12px; font-size: 18px; color: var(--text-light); }
+.profile-info ul { list-style: none; margin-top: 14px; }
+.profile-info ul li { padding: 6px 0; font-size: 16px; color: #c0d0e0; }
+.profile-info ul li::before { content: "✅ "; }
 
-        .contacts { background: var(--bg-card); backdrop-filter: blur(10px); border-radius: var(--radius); padding: 30px 40px; border: 1px solid rgba(255,255,255,0.1); margin-bottom: 40px; }
-        .contacts h3 { font-size: 24px; margin-bottom: 16px; color: var(--text-white); }
-        .contacts a { display: inline-block; margin-right: 20px; color: var(--text-light); text-decoration: none; font-weight: 600; padding: 8px 20px; border-radius: 30px; background: rgba(255,255,255,0.08); transition: var(--transition); }
-        .contacts a:hover { background: var(--primary-dark); color: var(--text-white); }
+.contacts { background: var(--bg-card); backdrop-filter: blur(10px); border-radius: var(--radius); padding: 30px 40px; border: 1px solid rgba(255,255,255,0.1); margin-bottom: 40px; }
+.contacts h3 { font-size: 24px; margin-bottom: 16px; color: var(--text-white); }
+.contacts a { display: inline-block; margin-right: 20px; color: var(--text-light); text-decoration: none; font-weight: 600; padding: 8px 20px; border-radius: 30px; background: rgba(255,255,255,0.08); transition: var(--transition); }
+.contacts a:hover { background: var(--primary-dark); color: var(--text-white); }
 
-        .login-section { background: var(--bg-card); backdrop-filter: blur(10px); border-radius: var(--radius); padding: 30px 40px; border: 1px solid rgba(255,255,255,0.1); margin-bottom: 40px; }
-        .login-section h3 { font-size: 24px; margin-bottom: 16px; color: var(--text-white); }
-        .login-section input { width: 100%; max-width: 320px; padding: 12px 18px; border: 1px solid rgba(255,255,255,0.1); border-radius: 30px; font-size: 16px; margin-bottom: 12px; display: block; background: rgba(255,255,255,0.05); color: var(--text-white); }
-        .login-section input:focus { border-color: var(--primary); outline: none; }
-        .login-section button { background: linear-gradient(135deg, var(--primary-dark), var(--primary)); color: white; border: none; padding: 12px 40px; border-radius: 30px; font-size: 18px; font-weight: 700; cursor: pointer; transition: var(--transition); }
-        .login-section button:hover { transform: scale(1.03); box-shadow: 0 0 40px rgba(102,126,234,0.4); }
+.login-section { background: var(--bg-card); backdrop-filter: blur(10px); border-radius: var(--radius); padding: 30px 40px; border: 1px solid rgba(255,255,255,0.1); margin-bottom: 40px; }
+.login-section h3 { font-size: 24px; margin-bottom: 16px; color: var(--text-white); }
+.login-section input { width: 100%; max-width: 320px; padding: 12px 18px; border: 1px solid rgba(255,255,255,0.1); border-radius: 30px; font-size: 16px; margin-bottom: 12px; display: block; background: rgba(255,255,255,0.05); color: var(--text-white); }
+.login-section input:focus { border-color: var(--primary); outline: none; }
+.login-section button { background: linear-gradient(135deg, var(--primary-dark), var(--primary)); color: white; border: none; padding: 12px 40px; border-radius: 30px; font-size: 18px; font-weight: 700; cursor: pointer; transition: var(--transition); }
+.login-section button:hover { transform: scale(1.03); box-shadow: 0 0 40px rgba(102,126,234,0.4); }
 
-        /* ===== ДАШБОРД ===== */
-        #dashboard { background: var(--bg-card); backdrop-filter: blur(10px); border-radius: var(--radius); padding: 30px 40px; border: 1px solid rgba(255,255,255,0.1); display: none; margin-top: 40px; }
-        #dashboard .header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; margin-bottom: 20px; }
+/* ===== ДАШБОРД ===== */
+#dashboard { background: var(--bg-card); backdrop-filter: blur(10px); border-radius: var(--radius); padding: 30px 40px; border: 1px solid rgba(255,255,255,0.1); display: none; margin-top: 40px; }
+#dashboard .header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; margin-bottom: 20px; }
 
-        .dashboard-layout { display: flex; gap: 30px; margin-top: 20px; }
-        .dashboard-sidebar { width: 220px; flex-shrink: 0; display: flex; flex-direction: column; gap: 6px; }
-        .dashboard-sidebar button { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05); padding: 12px 18px; border-radius: var(--radius-sm); cursor: pointer; font-weight: 600; transition: var(--transition); color: #888; text-align: left; font-family: Arial, sans-serif; font-size: 15px; display: flex; align-items: center; gap: 12px; }
-        .dashboard-sidebar button:hover { background: rgba(255,255,255,0.05); color: var(--text-white); border-color: rgba(255,255,255,0.1); }
-        .dashboard-sidebar button.active { background: rgba(102,126,234,0.15); color: var(--text-white); border-color: rgba(102,126,234,0.2); }
-        .dashboard-sidebar button .badge { margin-left: auto; background: rgba(231,76,60,0.2); color: var(--danger); padding: 0 10px; border-radius: 50px; font-size: 12px; }
-        .dashboard-content { flex: 1; min-width: 0; }
-        .dashboard-content .section-title { font-size: 24px; font-weight: 700; margin-bottom: 20px; color: var(--text-white); }
+.dashboard-layout { display: flex; gap: 30px; margin-top: 20px; }
+.dashboard-sidebar { width: 220px; flex-shrink: 0; display: flex; flex-direction: column; gap: 6px; }
+.dashboard-sidebar button { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05); padding: 12px 18px; border-radius: var(--radius-sm); cursor: pointer; font-weight: 600; transition: var(--transition); color: #888; text-align: left; font-family: Arial, sans-serif; font-size: 15px; display: flex; align-items: center; gap: 12px; }
+.dashboard-sidebar button:hover { background: rgba(255,255,255,0.05); color: var(--text-white); border-color: rgba(255,255,255,0.1); }
+.dashboard-sidebar button.active { background: rgba(102,126,234,0.15); color: var(--text-white); border-color: rgba(102,126,234,0.2); }
+.dashboard-sidebar button .badge { margin-left: auto; background: rgba(231,76,60,0.2); color: var(--danger); padding: 0 10px; border-radius: 50px; font-size: 12px; }
+.dashboard-content { flex: 1; min-width: 0; }
+.dashboard-content .section-title { font-size: 24px; font-weight: 700; margin-bottom: 20px; color: var(--text-white); }
 
-        /* ===== ВКЛАДКИ ДЗ ===== */
-        .hw-tabs { display: flex; gap: 10px; margin-bottom: 16px; flex-wrap: wrap; }
-        .hw-tab { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); padding: 10px 24px; border-radius: 30px; cursor: pointer; font-weight: 600; color: var(--text-light); font-family: Arial, sans-serif; font-size: 14px; transition: var(--transition); }
-        .hw-tab:hover { background: rgba(255,255,255,0.1); color: var(--text-white); }
-        .hw-tab.active { background: rgba(102,126,234,0.2) !important; color: var(--text-white) !important; border-color: rgba(102,126,234,0.3) !important; }
+/* ===== ВКЛАДКИ ДЗ ===== */
+.hw-tabs { display: flex; gap: 10px; margin-bottom: 16px; flex-wrap: wrap; }
+.hw-tab { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); padding: 10px 24px; border-radius: 30px; cursor: pointer; font-weight: 600; color: var(--text-light); font-family: Arial, sans-serif; font-size: 14px; transition: var(--transition); }
+.hw-tab:hover { background: rgba(255,255,255,0.1); color: var(--text-white); }
+.hw-tab.active { background: rgba(102,126,234,0.2) !important; color: var(--text-white) !important; border-color: rgba(102,126,234,0.3) !important; }
 
-        /* ===== СТАТИСТИКА ===== */
-        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 16px; margin-bottom: 24px; }
-        .stats-grid .stat-card { background: rgba(255,255,255,0.03); padding: 20px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.05); text-align: center; }
-        .stats-grid .stat-card .number { font-size: 32px; font-weight: 900; color: var(--text-white); }
-        .stats-grid .stat-card .label { color: #888; font-size: 13px; margin-top: 4px; }
-        .stats-grid .stat-card .icon { font-size: 28px; margin-bottom: 8px; }
+/* ===== СТАТИСТИКА ===== */
+.stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 16px; margin-bottom: 24px; }
+.stats-grid .stat-card { background: rgba(255,255,255,0.03); padding: 20px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.05); text-align: center; }
+.stats-grid .stat-card .number { font-size: 32px; font-weight: 900; color: var(--text-white); }
+.stats-grid .stat-card .label { color: #888; font-size: 13px; margin-top: 4px; }
+.stats-grid .stat-card .icon { font-size: 28px; margin-bottom: 8px; }
 
-        /* ===== ТЕОРИЯ ===== */
-        .theory-item { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05); border-radius: 16px; padding: 20px; margin-bottom: 16px; transition: var(--transition); }
-        .theory-item:hover { background: rgba(255,255,255,0.06); border-color: rgba(102,126,234,0.2); }
-        .theory-item .theory-title { font-size: 20px; font-weight: 700; color: var(--accent); margin-bottom: 8px; }
-        .theory-item .theory-content { color: var(--text-light); line-height: 1.8; margin-bottom: 12px; white-space: pre-wrap; }
-        .theory-item .theory-file { display: inline-block; background: rgba(39,174,96,0.15); color: #7ddfa0; padding: 6px 16px; border-radius: 20px; text-decoration: none; font-size: 14px; }
-        .theory-item .theory-meta { color: #666; font-size: 13px; margin-top: 8px; }
-        .theory-item .theory-actions { margin-top: 12px; display: flex; gap: 8px; flex-wrap: wrap; }
+/* ===== ТЕОРИЯ ===== */
+.theory-item { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05); border-radius: 16px; padding: 20px; margin-bottom: 16px; transition: var(--transition); }
+.theory-item:hover { background: rgba(255,255,255,0.06); border-color: rgba(102,126,234,0.2); }
+.theory-item .theory-title { font-size: 20px; font-weight: 700; color: var(--accent); margin-bottom: 8px; }
+.theory-item .theory-content { color: var(--text-light); line-height: 1.8; margin-bottom: 12px; white-space: pre-wrap; }
+.theory-item .theory-file { display: inline-block; background: rgba(39,174,96,0.15); color: #7ddfa0; padding: 6px 16px; border-radius: 20px; text-decoration: none; font-size: 14px; }
+.theory-item .theory-meta { color: #666; font-size: 13px; margin-top: 8px; }
+.theory-item .theory-actions { margin-top: 12px; display: flex; gap: 8px; flex-wrap: wrap; }
 
-
-  
-/* ===== СЕТКА РАЗДЕЛОВ (ОДНА КОЛОНКА НА ВСЮ ШИРИНУ) ===== */
+/* ===== НОВЫЕ КАРТОЧКИ РАЗДЕЛОВ (ВМЕСТО video-tabs) ===== */
 .section-grid {
     display: flex;
     flex-direction: column;
@@ -108,7 +107,6 @@
     width: 100%;
 }
 
-/* ===== КАРТОЧКА РАЗДЕЛА ===== */
 .section-card {
     background: rgba(255, 255, 255, 0.05);
     backdrop-filter: blur(12px);
@@ -185,7 +183,6 @@
     font-size: 13px;
 }
 
-/* ===== РАЗДЕЛИТЕЛЬ ЧАСТЕЙ ===== */
 .part-divider {
     font-size: 20px;
     font-weight: 800;
@@ -198,798 +195,7 @@
     width: 100%;
 }
 
-/* ===== АДАПТИВ ===== */
-@media (max-width: 600px) {
-    .section-card {
-        padding: 12px 16px;
-        min-height: 46px;
-        border-radius: 10px;
-    }
-    
-    .section-card .section-number {
-        font-size: 15px;
-        min-width: 24px;
-    }
-    
-    .section-card .section-name {
-        font-size: 13px;
-    }
-    
-    .section-card .video-count {
-        font-size: 12px;
-        padding: 2px 10px;
-    }
-    
-    .section-card .video-count .count-number {
-        font-size: 13px;
-    }
-    
-    .part-divider {
-        font-size: 17px;
-        padding: 10px 16px;
-        margin: 20px 0 10px 0;
-    }
-}
-        /* ===== АДМИНКА ===== */
-        #adminPanel { background: var(--bg-card); backdrop-filter: blur(10px); border-radius: var(--radius); padding: 30px 40px; border: 1px solid rgba(255,255,255,0.1); display: none; margin-top: 40px; }
-        .admin-tabs { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 15px; }
-        .admin-tabs button { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.05); padding: 10px 20px; border-radius: 30px; cursor: pointer; font-weight: 600; transition: var(--transition); color: var(--text-light); font-family: Arial, sans-serif; font-size: 14px; }
-        .admin-tabs button:hover { background: var(--primary-dark); color: white; border-color: var(--primary); }
-        .admin-tabs button.active { background: var(--primary-dark); color: white; border-color: var(--primary); }
-        .admin-content { display: none; }
-        .admin-content.active { display: block; }
-        .admin-table { width: 100%; border-collapse: collapse; margin-top: 15px; }
-        .admin-table th, .admin-table td { padding: 10px; border-bottom: 1px solid rgba(255,255,255,0.05); text-align: left; color: #c0d0e0; }
-        .admin-table th { background: rgba(255,255,255,0.05); color: var(--text-white); }
-        .admin-btn { background: var(--primary-dark); color: white; border: none; padding: 8px 16px; border-radius: 20px; cursor: pointer; transition: var(--transition); font-family: Arial, sans-serif; font-size: 14px; }
-        .admin-btn:hover { background: var(--primary); }
-        .admin-btn.danger { background: var(--danger); }
-        .admin-btn.danger:hover { background: #c0392b; }
-        .admin-btn.success { background: var(--success); }
-        .admin-btn.success:hover { background: #1e8449; }
-
-        /* ===== МОДАЛКИ ===== */
-        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000; justify-content: center; align-items: center; }
-        .modal-overlay.active { display: flex; }
-        .modal-content { background: #1a1a2e; padding: 40px; border-radius: var(--radius); max-width: 600px; width: 90%; max-height: 90vh; overflow-y: auto; border: 1px solid rgba(255,255,255,0.1); }
-        .modal-content h3 { color: var(--accent); margin-bottom: 20px; }
-        .modal-content label { color: var(--text-light); display: block; margin-bottom: 8px; font-weight: 500; }
-        .modal-content input, .modal-content textarea {
-            width: 100%;
-            padding: 12px 16px;
-            background: rgba(255,255,255,0.08);
-            border: 1px solid rgba(255,255,255,0.15);
-            border-radius: 10px;
-            color: #ffffff !important;
-            font-size: 15px;
-            margin-bottom: 15px;
-            font-family: Arial, sans-serif;
-        }
-        .modal-content input:focus, .modal-content textarea:focus {
-            border-color: var(--primary);
-            outline: none;
-            box-shadow: 0 0 0 3px rgba(102,126,234,0.15);
-            background: rgba(255,255,255,0.12);
-        }
-
-        /* ===== ИСПРАВЛЕНИЕ ДЛЯ SELECT (белый текст на белом фоне) ===== */
-        select {
-            background: #2a2a4a !important;
-            color: #ffffff !important;
-            border: 1px solid rgba(255,255,255,0.15) !important;
-            padding: 10px 14px !important;
-            border-radius: 10px !important;
-            font-size: 15px !important;
-            width: 100% !important;
-            appearance: auto !important;
-            -webkit-appearance: auto !important;
-            cursor: pointer !important;
-            font-family: Arial, sans-serif !important;
-        }
-
-        select option {
-            background: #1a1a2e !important;
-            color: #ffffff !important;
-            padding: 10px !important;
-        }
-
-        select:focus {
-            border-color: #667eea !important;
-            outline: none !important;
-            box-shadow: 0 0 0 3px rgba(102,126,234,0.15) !important;
-        }
-
-        select:disabled {
-            opacity: 0.5 !important;
-            cursor: not-allowed !important;
-        }
-
-        .modal-content select {
-            background: #2a2a4a !important;
-            color: #ffffff !important;
-            border: 1px solid rgba(255,255,255,0.15) !important;
-            padding: 12px 16px !important;
-            border-radius: 10px !important;
-            font-size: 15px !important;
-            width: 100% !important;
-            appearance: auto !important;
-            -webkit-appearance: auto !important;
-            cursor: pointer !important;
-            font-family: Arial, sans-serif !important;
-            margin-bottom: 15px !important;
-        }
-
-        .modal-content select option {
-            background: #1a1a2e !important;
-            color: #ffffff !important;
-            padding: 10px !important;
-        }
-
-        .modal-content select:focus {
-            border-color: #667eea !important;
-            outline: none !important;
-            box-shadow: 0 0 0 3px rgba(102,126,234,0.15) !important;
-        }
-
-        .calendar-controls select {
-            background: #2a2a4a !important;
-            color: #ffffff !important;
-            border: 1px solid rgba(255,255,255,0.15) !important;
-            padding: 8px 16px !important;
-            border-radius: 10px !important;
-            font-size: 14px !important;
-            font-family: Arial, sans-serif !important;
-            min-width: 180px !important;
-            appearance: auto !important;
-            -webkit-appearance: auto !important;
-            cursor: pointer !important;
-        }
-
-        .calendar-controls select option {
-            background: #1a1a2e !important;
-            color: #ffffff !important;
-            padding: 8px !important;
-        }
-
-        .calendar-controls select:focus {
-            border-color: #667eea !important;
-            outline: none !important;
-        }
-
-        .modal-content .preview-text { margin-top: -10px; margin-bottom: 15px; font-size: 14px; color: #666; }
-        .modal-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 10px; }
-        .modal-actions button { padding: 12px 30px; border: none; border-radius: var(--radius-sm); color: #fff; font-weight: 700; cursor: pointer; transition: var(--transition); font-family: Arial, sans-serif; font-size: 14px; }
-        .modal-actions .cancel-btn { background: rgba(255,255,255,0.1); }
-        .modal-actions .cancel-btn:hover { background: rgba(255,255,255,0.2); }
-        .modal-actions .submit-btn { background: linear-gradient(135deg, var(--primary-dark), var(--primary)); }
-        .modal-actions .submit-btn:hover { transform: scale(1.02); box-shadow: 0 0 30px rgba(102,126,234,0.3); }
-
-        /* ===== МОДАЛКА ДОБАВЛЕНИЯ СЕРИИ ===== */
-        #addLessonModal .modal-content {
-            max-width: 500px;
-        }
-        #addLessonModal .form-group {
-            margin-bottom: 16px;
-        }
-        #addLessonModal .form-group label {
-            display: block;
-            color: #888;
-            font-size: 13px;
-            margin-bottom: 4px;
-        }
-        #addLessonModal .form-group select,
-        #addLessonModal .form-group input {
-            width: 100%;
-            padding: 10px 14px;
-            background: rgba(255,255,255,0.05);
-            border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 10px;
-            color: #fff;
-            font-size: 15px;
-            font-family: Arial, sans-serif;
-        }
-        #addLessonModal .form-group select:focus,
-        #addLessonModal .form-group input:focus {
-            border-color: #667eea;
-            outline: none;
-        }
-        #addLessonModal .form-group select option {
-            background: #1a1a2e;
-            color: #fff;
-        }
-        
-        #adminLessonModal .modal-content {
-            max-width: 450px;
-        }
-        #adminLessonModal .lesson-info {
-            margin: 12px 0;
-            padding: 12px 16px;
-            background: rgba(255,255,255,0.03);
-            border-radius: 10px;
-        }
-        #adminLessonModal .lesson-info p {
-            color: #b0c4de;
-            font-size: 14px;
-            margin: 4px 0;
-        }
-        #adminLessonModal .status-badge {
-            display: inline-block;
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 13px;
-            font-weight: 600;
-        }
-        #adminLessonModal .status-badge.completed {
-            background: rgba(46,204,113,0.2);
-            color: #2ecc71;
-        }
-        #adminLessonModal .status-badge.cancelled {
-            background: rgba(231,76,60,0.2);
-            color: #e74c3c;
-        }
-        #adminLessonModal .status-badge.planned {
-            background: rgba(245,166,35,0.2);
-            color: #f5a623;
-        }
-        #adminLessonModal .action-buttons {
-            display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
-            margin: 12px 0;
-        }
-        #adminLessonModal .action-buttons button {
-            flex: 1;
-            min-width: 80px;
-            padding: 8px 12px;
-            border: none;
-            border-radius: 10px;
-            cursor: pointer;
-            font-weight: 600;
-            font-size: 13px;
-            transition: 0.3s;
-            font-family: Arial, sans-serif;
-        }
-        #adminLessonModal .action-buttons .btn-completed {
-            background: rgba(46,204,113,0.2);
-            color: #2ecc71;
-        }
-        #adminLessonModal .action-buttons .btn-completed:hover {
-            background: #27ae60;
-            color: #fff;
-        }
-        #adminLessonModal .action-buttons .btn-cancelled {
-            background: rgba(231,76,60,0.2);
-            color: #e74c3c;
-        }
-        #adminLessonModal .action-buttons .btn-cancelled:hover {
-            background: #e74c3c;
-            color: #fff;
-        }
-        #adminLessonModal .action-buttons .btn-planned {
-            background: rgba(245,166,35,0.2);
-            color: #f5a623;
-        }
-        #adminLessonModal .action-buttons .btn-planned:hover {
-            background: #f5a623;
-            color: #fff;
-        }
-        #adminLessonModal .move-section {
-            margin-top: 12px;
-            padding-top: 12px;
-            border-top: 1px solid rgba(255,255,255,0.05);
-        }
-        #adminLessonModal .move-section label {
-            color: #888;
-            font-size: 13px;
-            display: block;
-            margin-bottom: 4px;
-        }
-        #adminLessonModal .move-section .move-row {
-            display: flex;
-            gap: 10px;
-            align-items: center;
-        }
-        #adminLessonModal .move-section .move-row input[type="date"] {
-            flex: 1;
-            padding: 8px 12px;
-            background: rgba(255,255,255,0.05);
-            border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 8px;
-            color: #fff;
-            font-size: 14px;
-            font-family: Arial, sans-serif;
-        }
-        #adminLessonModal .move-section .move-row button {
-            padding: 8px 20px;
-            border: none;
-            border-radius: 8px;
-            background: #667eea;
-            color: #fff;
-            cursor: pointer;
-            font-weight: 600;
-            font-family: Arial, sans-serif;
-        }
-        #adminLessonModal .move-section .move-row button:hover {
-            background: #5a6fd6;
-        }
-
-        /* ===== КАЛЕНДАРЬ ===== */
-        .calendar-controls {
-            display: flex;
-            gap: 12px;
-            align-items: center;
-            flex-wrap: wrap;
-            margin-bottom: 20px;
-        }
-        .calendar-controls select {
-            padding: 8px 16px;
-            background: rgba(255,255,255,0.05);
-            border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 10px;
-            color: #fff;
-            font-size: 14px;
-            font-family: Arial, sans-serif;
-            min-width: 180px;
-        }
-        .calendar-controls button {
-            background: rgba(255,255,255,0.05);
-            border: 1px solid rgba(255,255,255,0.1);
-            padding: 8px 16px;
-            border-radius: 10px;
-            color: #fff;
-            cursor: pointer;
-            transition: 0.3s;
-            font-family: Arial, sans-serif;
-        }
-        .calendar-controls button:hover {
-            background: rgba(255,255,255,0.15);
-        }
-        #calendarMonth {
-            font-size: 18px;
-            font-weight: 700;
-            color: #f5a623;
-            min-width: 150px;
-            text-align: center;
-        }
-        .calendar-grid {
-            background: rgba(255,255,255,0.03);
-            border-radius: 12px;
-            padding: 12px;
-            overflow: hidden;
-        }
-        .calendar-header {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            gap: 4px;
-            margin-bottom: 8px;
-        }
-        .calendar-header div {
-            text-align: center;
-            color: #888;
-            font-weight: 600;
-            font-size: 14px;
-            padding: 8px 0;
-        }
-        #calendarDays {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            gap: 4px;
-        }
-        .calendar-day {
-            aspect-ratio: 1;
-            min-height: 60px;
-            background: rgba(255,255,255,0.03);
-            border-radius: 8px;
-            padding: 4px;
-            cursor: pointer;
-            transition: 0.3s;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: flex-start;
-            position: relative;
-            border: 1px solid transparent;
-        }
-        .calendar-day:hover {
-            background: rgba(255,255,255,0.08);
-            border-color: rgba(102,126,234,0.3);
-        }
-        .calendar-day.empty {
-            background: transparent;
-            cursor: default;
-        }
-        .calendar-day.empty:hover {
-            background: transparent;
-            border-color: transparent;
-        }
-        .calendar-day .day-number {
-            font-size: 14px;
-            font-weight: 600;
-            color: #b0c4de;
-            margin-bottom: 2px;
-        }
-        .calendar-day .lesson-indicator {
-            font-size: 16px;
-        }
-        .calendar-day .lesson-topic {
-            font-size: 9px;
-            color: #666;
-            text-align: center;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-            max-width: 100%;
-            padding: 0 2px;
-        }
-        .calendar-day .series-badge {
-            display: inline-block;
-            background: rgba(102,126,234,0.2);
-            color: #88ccff;
-            padding: 0 6px;
-            border-radius: 8px;
-            font-size: 7px;
-            margin-top: 1px;
-        }
-        .calendar-day.completed {
-            border-color: rgba(46,204,113,0.3);
-            background: rgba(46,204,113,0.08);
-        }
-        .calendar-day.completed .day-number {
-            color: #2ecc71;
-        }
-        .calendar-day.planned {
-            border-color: rgba(245,166,35,0.3);
-            background: rgba(245,166,35,0.08);
-        }
-        .calendar-day.cancelled {
-            border-color: rgba(231,76,60,0.3);
-            background: rgba(231,76,60,0.08);
-            opacity: 0.6;
-        }
-        .calendar-day.cancelled .day-number {
-            color: #e74c3c;
-        }
-        .calendar-day.today {
-            border-color: #667eea;
-            box-shadow: 0 0 20px rgba(102,126,234,0.2);
-        }
-        .lesson-stats {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 16px;
-            margin-top: 20px;
-        }
-
-        /* ===== КАЛЕНДАРЬ ДЛЯ УЧЕНИКА (ИСПРАВЛЕННЫЙ - СЕТКА 7 КОЛОНОК) ===== */
-        .student-calendar-grid {
-            display: grid !important;
-            grid-template-columns: repeat(7, 1fr) !important;
-            gap: 6px !important;
-            background: rgba(255,255,255,0.03);
-            border-radius: 12px;
-            padding: 16px;
-            margin-top: 12px;
-            width: 100%;
-        }
-
-        .student-calendar-grid > .day-header {
-            text-align: center;
-            color: #888;
-            font-weight: 600;
-            font-size: 13px;
-            padding: 4px;
-        }
-
-        #studentCalendarDays {
-            display: contents !important;
-        }
-
-        .student-calendar-day {
-            aspect-ratio: 1;
-            min-height: 55px;
-            background: rgba(255,255,255,0.03);
-            border-radius: 10px;
-            padding: 4px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            border: 1px solid rgba(255,255,255,0.05);
-            font-size: 13px;
-            cursor: pointer;
-            transition: 0.3s;
-            position: relative;
-        }
-
-        .student-calendar-day:hover {
-            background: rgba(255,255,255,0.08);
-            border-color: rgba(255,255,255,0.15);
-        }
-
-        .student-calendar-day .day-number {
-            font-weight: 600;
-            color: #b0c4de;
-            font-size: 14px;
-        }
-
-        .student-calendar-day .lesson-topic-label {
-            font-size: 7px;
-            color: #88ccff;
-            margin-top: 1px;
-            text-align: center;
-            line-height: 1.1;
-            max-width: 100%;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-        }
-
-        .student-calendar-day .lesson-status-icon {
-            font-size: 10px;
-            margin-top: 1px;
-        }
-
-        .student-calendar-day .lesson-dot {
-            width: 6px;
-            height: 6px;
-            border-radius: 50%;
-            background: #667eea;
-            margin-top: 2px;
-        }
-
-        .student-calendar-day .today-dot {
-            background: #f5a623;
-        }
-
-        .student-calendar-day.has-lesson {
-            border-color: rgba(102,126,234,0.4);
-            background: rgba(102,126,234,0.12);
-        }
-
-        .student-calendar-day.has-lesson-today {
-            border-color: #f5a623;
-            background: rgba(245,166,35,0.15);
-            box-shadow: 0 0 20px rgba(245,166,35,0.1);
-        }
-
-        .student-calendar-day.empty {
-            background: transparent;
-            cursor: default;
-            border-color: transparent;
-        }
-
-        .student-calendar-day.empty:hover {
-            background: transparent;
-            border-color: transparent;
-        }
-
-        .student-calendar-day .status-completed {
-            color: #2ecc71;
-        }
-
-        .student-calendar-day .status-cancelled {
-            color: #e74c3c;
-        }
-
-        .student-calendar-day .status-planned {
-            color: #f5a623;
-        }
-
-        /* ===== ШАБЛОНЫ ===== */
-        .template-card {
-            background: rgba(255,255,255,0.03);
-            border: 1px solid rgba(255,255,255,0.05);
-            border-radius: 16px;
-            padding: 20px;
-            transition: 0.3s;
-        }
-        .template-card:hover {
-            background: rgba(255,255,255,0.06);
-            border-color: rgba(102,126,234,0.2);
-        }
-        .template-card .template-name {
-            font-size: 20px;
-            font-weight: 700;
-            color: #ffffff;
-        }
-        .template-card .template-score {
-            color: #f5a623;
-            font-size: 14px;
-            margin-top: 4px;
-        }
-        .template-card .template-meta {
-            color: #888;
-            font-size: 13px;
-            margin-top: 8px;
-        }
-        .template-card .template-actions {
-            margin-top: 12px;
-            display: flex;
-            gap: 8px;
-        }
-
-        /* ===== ПЛАН ПОДГОТОВКИ ===== */
-        .plan-settings {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 16px;
-            margin-bottom: 24px;
-            background: rgba(255,255,255,0.03);
-            padding: 20px;
-            border-radius: 12px;
-        }
-        .plan-settings label {
-            color: #888;
-            font-size: 13px;
-            display: block;
-            margin-bottom: 4px;
-        }
-        .plan-settings select,
-        .plan-settings input {
-            width: 100%;
-            padding: 8px 12px;
-            background: rgba(255,255,255,0.05);
-            border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 8px;
-            color: #fff;
-            font-size: 14px;
-            font-family: Arial, sans-serif;
-        }
-        .plan-settings select:focus,
-        .plan-settings input:focus {
-            border-color: var(--primary);
-            outline: none;
-        }
-
-        /* ===== РАСПИСАНИЕ (ДЛЯ АДМИНА) ===== */
-        .schedule-table-wrap { overflow-x: auto; }
-        .schedule-table {
-            width: 100%;
-            border-collapse: collapse;
-            background: rgba(255,255,255,0.03);
-            border-radius: var(--radius-sm);
-            overflow: hidden;
-            font-size: 14px;
-        }
-        .schedule-table th,
-        .schedule-table td {
-            border: 1px solid rgba(255,255,255,0.08);
-            padding: 10px 8px;
-            text-align: center;
-            min-width: 80px;
-        }
-        .schedule-table th {
-            background: rgba(255,255,255,0.06);
-            color: var(--accent);
-            font-weight: 700;
-            font-size: 15px;
-        }
-        .schedule-table td {
-            color: var(--text-light);
-            vertical-align: middle;
-        }
-        .schedule-table .row-num {
-            color: #666;
-            font-weight: 700;
-            min-width: 40px;
-        }
-        .schedule-table .cell-empty {
-            color: #444;
-        }
-        .schedule-table .cell-occupied {
-            color: #7ddfa0;
-            background: rgba(39,174,96,0.1);
-            border-color: rgba(39,174,96,0.15);
-        }
-        .schedule-table .cell-occupied .student-name {
-            color: var(--text-white);
-        }
-        .schedule-table .cell-occupied .topic {
-            color: #7ddfa0;
-            font-size: 12px;
-        }
-        .schedule-table td .cell-content {
-            display: flex;
-            flex-direction: column;
-            gap: 2px;
-            cursor: pointer;
-            padding: 4px;
-            border-radius: 6px;
-        }
-        .schedule-table td .cell-content:hover {
-            background: rgba(255,255,255,0.05);
-        }
-        .schedule-table td .cell-content .student-name {
-            font-weight: 600;
-            color: var(--text-white);
-            font-size: 14px;
-        }
-        .schedule-table td .cell-content .topic {
-            font-size: 12px;
-            color: #888;
-        }
-        .schedule-table td .cell-content .empty-text {
-            color: #444;
-            font-size: 12px;
-        }
-
-        .schedule-actions {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 12px;
-            margin-top: 20px;
-            align-items: center;
-        }
-        .schedule-actions button {
-            background: var(--primary-dark);
-            color: white;
-            border: none;
-            padding: 10px 24px;
-            border-radius: 30px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: var(--transition);
-        }
-        .schedule-actions button:hover {
-            background: var(--primary);
-            transform: scale(1.02);
-        }
-
-        /* ===== ОСТАЛЬНЫЕ СТИЛИ ===== */
-        .hw-card { padding: 16px; border: 1px solid rgba(255,255,255,0.05); border-radius: var(--radius-sm); margin-bottom: 12px; background: rgba(255,255,255,0.03); }
-        .hw-card .title { font-size: 18px; font-weight: 700; color: var(--text-white); }
-        .hw-card .meta { color: #888; font-size: 14px; margin: 4px 0; }
-        .hw-card .meta.comment { color: var(--accent); border-left: 3px solid var(--accent); padding-left: 10px; margin-top: 6px; }
-        .hw-card .status.done { color: #2ecc71; }
-        .hw-card .status.pending { color: #f39c12; }
-        .hw-card .hw-actions { margin-top: 10px; display: flex; gap: 8px; flex-wrap: wrap; }
-
-        .deadline-card { background: rgba(245,166,35,0.08); border: 1px solid rgba(245,166,35,0.15); border-radius: 16px; padding: 16px 20px; margin-bottom: 24px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; }
-        .deadline-card .label { color: var(--accent); font-weight: 600; }
-        .deadline-card .title { color: var(--text-white); font-weight: 600; }
-        .deadline-card .days { background: rgba(245,166,35,0.15); color: var(--accent); padding: 4px 14px; border-radius: 50px; font-size: 13px; }
-
-        .empty-state { text-align: center; padding: 40px 20px; color: #666; }
-        .empty-state .icon { font-size: 48px; display: block; margin-bottom: 12px; }
-        .empty-state .title { font-size: 18px; color: var(--text-light); font-weight: 600; }
-        .empty-state .desc { font-size: 14px; color: #666; margin-top: 4px; }
-
-        .homework-controls { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 20px; }
-        .deadline-row { display: flex; align-items: center; gap: 15px; flex-wrap: wrap; }
-        .deadline-row input[type="date"] { flex: 1; min-width: 150px; margin-bottom: 0; }
-        .deadline-row .no-deadline-label { display: flex; align-items: center; gap: 8px; cursor: pointer; color: var(--text-light); font-size: 14px; margin: 0; white-space: nowrap; }
-        .deadline-row .no-deadline-label input[type="checkbox"] { width: 18px; height: 18px; margin: 0; cursor: pointer; flex-shrink: 0; }
-
-        .settings-group { background: rgba(255,255,255,0.02); border-radius: 16px; padding: 24px; border: 1px solid rgba(255,255,255,0.05); margin-bottom: 24px; }
-        .settings-group h4 { color: var(--accent); margin-bottom: 16px; }
-        .settings-group label { color: #888; font-size: 13px; display: block; margin-bottom: 4px; }
-        .settings-group input[type="text"], .settings-group input[type="email"] { width: 100%; padding: 10px 14px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; color: #fff; font-size: 15px; }
-        .settings-group input:disabled { opacity: 0.5; cursor: not-allowed; }
-        .settings-group input:focus { border-color: var(--primary); outline: none; }
-        .settings-checkbox { display: flex; align-items: center; gap: 12px; cursor: pointer; color: var(--text-light); font-size: 15px; padding: 6px 0; }
-        .settings-checkbox input[type="checkbox"] { width: 18px; height: 18px; cursor: pointer; accent-color: var(--primary); }
-
-        .settings-avatar-container { display: flex; flex-direction: column; align-items: center; gap: 15px; }
-        .settings-avatar-container .avatar-preview { width: 150px; height: 150px; border-radius: 50%; background: linear-gradient(135deg, var(--primary), #764ba2); display: flex; align-items: center; justify-content: center; font-size: 60px; border: 3px solid rgba(255,255,255,0.1); overflow: hidden; }
-        .settings-avatar-container .avatar-preview img { width: 100%; height: 100%; object-fit: cover; }
-        .settings-avatar-container input[type="file"] { padding: 10px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: var(--radius-sm); color: #fff; cursor: pointer; font-family: Arial, sans-serif; font-size: 14px; width: 100%; }
-        .settings-avatar-container .btn-group { display: flex; gap: 10px; flex-wrap: wrap; width: 100%; }
-        .settings-avatar-container .btn-group .admin-btn { flex: 1; text-align: center; }
-        .settings-info { display: flex; flex-direction: column; gap: 12px; }
-        .settings-info label { color: var(--text-light); font-size: 14px; display: block; margin-bottom: 4px; }
-        .settings-info input, .settings-info textarea { width: 100%; padding: 10px 16px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: var(--radius-sm); color: #fff; font-size: 14px; font-family: Arial, sans-serif; }
-        .settings-info input:focus, .settings-info textarea:focus { border-color: var(--primary); outline: none; }
-
-        .my-students-table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 14px; }
-        .my-students-table th, .my-students-table td { padding: 10px 12px; border-bottom: 1px solid rgba(255,255,255,0.05); text-align: left; color: #c0d0e0; }
-        .my-students-table th { background: rgba(255,255,255,0.05); color: var(--accent); font-weight: 700; }
-        .my-students-table .status-badge { padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; }
-        .my-students-table .status-badge.active { background: rgba(46,204,113,0.2); color: #2ecc71; }
-        .my-students-table .status-badge.inactive { background: rgba(231,76,60,0.2); color: #f1948a; }
-/* ==========================================
-   СТРАНИЦА РАЗДЕЛА (при клике на карточку)
-   ========================================== */
-
+/* ===== СТРАНИЦА РАЗДЕЛА (при клике на карточку) ===== */
 #sectionPage {
     display: none;
     background: rgba(255, 255, 255, 0.04);
@@ -1119,643 +325,504 @@
 }
 
 /* Пустое состояние */
-.empty-state {
+#sectionPage .empty-state {
     text-align: center;
     padding: 60px 20px;
 }
 
-.empty-state .icon {
+#sectionPage .empty-state .icon {
     font-size: 48px;
     display: block;
     margin-bottom: 16px;
 }
 
-.empty-state .title {
+#sectionPage .empty-state .title {
     font-size: 20px;
     color: #B0B8D1;
     font-weight: 600;
 }
 
-.empty-state .desc {
+#sectionPage .empty-state .desc {
     font-size: 14px;
     color: #6B7280;
     margin-top: 8px;
 }
 
 /* Загрузка */
-.loading {
+#sectionPage .loading {
     text-align: center;
     padding: 60px 20px;
     color: #B0B8D1;
     font-size: 18px;
 }
-      
 
-        .section-progress { background: rgba(255,255,255,0.03); border-radius: var(--radius-sm); padding: 14px 18px; margin-bottom: 10px; border: 1px solid rgba(255,255,255,0.05); display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
-        .section-progress .name { min-width: 140px; color: var(--text-light); font-weight: 600; font-size: 14px; }
-        .section-progress .bar-wrap { flex: 1; min-width: 100px; height: 8px; background: rgba(255,255,255,0.05); border-radius: 10px; overflow: hidden; }
-        .section-progress .bar-wrap .fill { height: 100%; border-radius: 10px; transition: width 0.8s ease; }
-        .section-progress .bar-wrap .fill.green { background: linear-gradient(90deg, var(--success), #2ecc71); }
-        .section-progress .bar-wrap .fill.yellow { background: linear-gradient(90deg, #f39c12, #f1c40f); }
-        .section-progress .bar-wrap .fill.red { background: linear-gradient(90deg, var(--danger), #c0392b); }
-        .section-progress .percent { min-width: 50px; text-align: right; font-weight: 700; font-size: 14px; color: var(--text-light); }
-        .section-progress .status-icon { font-size: 18px; }
+/* ===== АДМИНКА ===== */
+#adminPanel { background: var(--bg-card); backdrop-filter: blur(10px); border-radius: var(--radius); padding: 30px 40px; border: 1px solid rgba(255,255,255,0.1); display: none; margin-top: 40px; }
+.admin-tabs { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 15px; }
+.admin-tabs button { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.05); padding: 10px 20px; border-radius: 30px; cursor: pointer; font-weight: 600; transition: var(--transition); color: var(--text-light); font-family: Arial, sans-serif; font-size: 14px; }
+.admin-tabs button:hover { background: var(--primary-dark); color: white; border-color: var(--primary); }
+.admin-tabs button.active { background: var(--primary-dark); color: white; border-color: var(--primary); }
+.admin-content { display: none; }
+.admin-content.active { display: block; }
+.admin-table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+.admin-table th, .admin-table td { padding: 10px; border-bottom: 1px solid rgba(255,255,255,0.05); text-align: left; color: #c0d0e0; }
+.admin-table th { background: rgba(255,255,255,0.05); color: var(--text-white); }
+.admin-btn { background: var(--primary-dark); color: white; border: none; padding: 8px 16px; border-radius: 20px; cursor: pointer; transition: var(--transition); font-family: Arial, sans-serif; font-size: 14px; }
+.admin-btn:hover { background: var(--primary); }
+.admin-btn.danger { background: var(--danger); }
+.admin-btn.danger:hover { background: #c0392b; }
+.admin-btn.success { background: var(--success); }
+.admin-btn.success:hover { background: #1e8449; }
 
-        .achievement-card { display: inline-flex; align-items: center; gap: 12px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05); border-radius: 50px; padding: 8px 20px 8px 12px; margin: 0 8px 8px 0; }
-        .achievement-card:hover { background: rgba(255,255,255,0.06); border-color: rgba(245,166,35,0.2); }
-        .achievement-card .icon { font-size: 24px; }
-        .achievement-card .info { font-size: 13px; color: var(--text-light); }
-        .achievement-card .info .name { font-weight: 600; color: var(--text-white); }
-        .achievement-card.locked { opacity: 0.3; filter: grayscale(1); }
+/* ===== МОДАЛКИ ===== */
+.modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000; justify-content: center; align-items: center; }
+.modal-overlay.active { display: flex; }
+.modal-content { background: #1a1a2e; padding: 40px; border-radius: var(--radius); max-width: 600px; width: 90%; max-height: 90vh; overflow-y: auto; border: 1px solid rgba(255,255,255,0.1); }
+.modal-content h3 { color: var(--accent); margin-bottom: 20px; }
+.modal-content label { color: var(--text-light); display: block; margin-bottom: 8px; font-weight: 500; }
+.modal-content input, .modal-content textarea { width: 100%; padding: 12px 16px; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); border-radius: 10px; color: #ffffff !important; font-size: 15px; margin-bottom: 15px; font-family: Arial, sans-serif; }
+.modal-content input:focus, .modal-content textarea:focus { border-color: var(--primary); outline: none; box-shadow: 0 0 0 3px rgba(102,126,234,0.15); background: rgba(255,255,255,0.12); }
 
-        .activity-bars { display: flex; gap: 8px; justify-content: space-around; align-items: flex-end; height: 120px; padding: 10px 0; }
-        .activity-bars .bar-item { display: flex; flex-direction: column; align-items: center; gap: 6px; flex: 1; }
-        .activity-bars .bar-item .bar { width: 24px; border-radius: 6px 6px 0 0; background: linear-gradient(180deg, var(--primary), #764ba2); transition: height 0.8s ease; min-height: 4px; }
-        .activity-bars .bar-item .label { font-size: 11px; color: #666; }
-        .activity-bars .bar-item .value { font-size: 11px; color: var(--text-light); font-weight: 600; }
+select { background: #2a2a4a !important; color: #ffffff !important; border: 1px solid rgba(255,255,255,0.15) !important; padding: 10px 14px !important; border-radius: 10px !important; font-size: 15px !important; width: 100% !important; appearance: auto !important; -webkit-appearance: auto !important; cursor: pointer !important; font-family: Arial, sans-serif !important; }
+select option { background: #1a1a2e !important; color: #ffffff !important; padding: 10px !important; }
+select:focus { border-color: #667eea !important; outline: none !important; box-shadow: 0 0 0 3px rgba(102,126,234,0.15) !important; }
+select:disabled { opacity: 0.5 !important; cursor: not-allowed !important; }
+.modal-content select { background: #2a2a4a !important; color: #ffffff !important; border: 1px solid rgba(255,255,255,0.15) !important; padding: 12px 16px !important; border-radius: 10px !important; font-size: 15px !important; width: 100% !important; appearance: auto !important; -webkit-appearance: auto !important; cursor: pointer !important; font-family: Arial, sans-serif !important; margin-bottom: 15px !important; }
+.modal-content select option { background: #1a1a2e !important; color: #ffffff !important; padding: 10px !important; }
+.modal-content select:focus { border-color: #667eea !important; outline: none !important; box-shadow: 0 0 0 3px rgba(102,126,234,0.15) !important; }
+.calendar-controls select { background: #2a2a4a !important; color: #ffffff !important; border: 1px solid rgba(255,255,255,0.15) !important; padding: 8px 16px !important; border-radius: 10px !important; font-size: 14px !important; font-family: Arial, sans-serif !important; min-width: 180px !important; appearance: auto !important; -webkit-appearance: auto !important; cursor: pointer !important; }
+.calendar-controls select option { background: #1a1a2e !important; color: #ffffff !important; padding: 8px !important; }
+.calendar-controls select:focus { border-color: #667eea !important; outline: none !important; }
+.modal-content .preview-text { margin-top: -10px; margin-bottom: 15px; font-size: 14px; color: #666; }
+.modal-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 10px; }
+.modal-actions button { padding: 12px 30px; border: none; border-radius: var(--radius-sm); color: #fff; font-weight: 700; cursor: pointer; transition: var(--transition); font-family: Arial, sans-serif; font-size: 14px; }
+.modal-actions .cancel-btn { background: rgba(255,255,255,0.1); }
+.modal-actions .cancel-btn:hover { background: rgba(255,255,255,0.2); }
+.modal-actions .submit-btn { background: linear-gradient(135deg, var(--primary-dark), var(--primary)); }
+.modal-actions .submit-btn:hover { transform: scale(1.02); box-shadow: 0 0 30px rgba(102,126,234,0.3); }
 
-        .whiteboard-section { margin-top: 30px; background: rgba(255,255,255,0.03); border-radius: 16px; padding: 20px; border: 1px solid rgba(255,255,255,0.05); }
-        .whiteboard-section h3 { color: var(--accent); margin-bottom: 12px; font-size: 20px; }
-        .whiteboard-section .whiteboard-link { display: block; padding: 12px 16px; background: rgba(102,126,234,0.1); border-radius: 10px; border: 1px solid rgba(102,126,234,0.2); color: #88ccff; text-decoration: none; font-size: 16px; transition: var(--transition); word-break: break-all; }
-        .whiteboard-section .whiteboard-link:hover { background: rgba(102,126,234,0.2); border-color: rgba(102,126,234,0.4); }
-        .whiteboard-section .whiteboard-empty { color: #666; font-size: 14px; padding: 12px; text-align: center; }
+#addLessonModal .modal-content { max-width: 500px; }
+#addLessonModal .form-group { margin-bottom: 16px; }
+#addLessonModal .form-group label { display: block; color: #888; font-size: 13px; margin-bottom: 4px; }
+#addLessonModal .form-group select,
+#addLessonModal .form-group input { width: 100%; padding: 10px 14px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; color: #fff; font-size: 15px; font-family: Arial, sans-serif; }
+#addLessonModal .form-group select:focus,
+#addLessonModal .form-group input:focus { border-color: #667eea; outline: none; }
+#addLessonModal .form-group select option { background: #1a1a2e; color: #fff; }
 
-        .whiteboard-admin-item { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.04); }
-        .whiteboard-admin-item .student-name { min-width: 120px; color: var(--text-light); font-weight: 600; }
-        .whiteboard-admin-item input { flex: 1; min-width: 200px; padding: 6px 12px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; color: #fff; font-size: 13px; }
-        .whiteboard-admin-item input:focus { border-color: var(--primary); outline: none; }
-        .whiteboard-admin-item .admin-btn { padding: 4px 14px; font-size: 12px; }
-        .whiteboard-admin-item .whiteboard-link-small { color: #88ccff; text-decoration: none; font-size: 13px; max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-        .whiteboard-admin-item .whiteboard-link-small:hover { text-decoration: underline; }
+#adminLessonModal .modal-content { max-width: 450px; }
+#adminLessonModal .lesson-info { margin: 12px 0; padding: 12px 16px; background: rgba(255,255,255,0.03); border-radius: 10px; }
+#adminLessonModal .lesson-info p { color: #b0c4de; font-size: 14px; margin: 4px 0; }
+#adminLessonModal .status-badge { display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 13px; font-weight: 600; }
+#adminLessonModal .status-badge.completed { background: rgba(46,204,113,0.2); color: #2ecc71; }
+#adminLessonModal .status-badge.cancelled { background: rgba(231,76,60,0.2); color: #e74c3c; }
+#adminLessonModal .status-badge.planned { background: rgba(245,166,35,0.2); color: #f5a623; }
+#adminLessonModal .action-buttons { display: flex; gap: 8px; flex-wrap: wrap; margin: 12px 0; }
+#adminLessonModal .action-buttons button { flex: 1; min-width: 80px; padding: 8px 12px; border: none; border-radius: 10px; cursor: pointer; font-weight: 600; font-size: 13px; transition: 0.3s; font-family: Arial, sans-serif; }
+#adminLessonModal .action-buttons .btn-completed { background: rgba(46,204,113,0.2); color: #2ecc71; }
+#adminLessonModal .action-buttons .btn-completed:hover { background: #27ae60; color: #fff; }
+#adminLessonModal .action-buttons .btn-cancelled { background: rgba(231,76,60,0.2); color: #e74c3c; }
+#adminLessonModal .action-buttons .btn-cancelled:hover { background: #e74c3c; color: #fff; }
+#adminLessonModal .action-buttons .btn-planned { background: rgba(245,166,35,0.2); color: #f5a623; }
+#adminLessonModal .action-buttons .btn-planned:hover { background: #f5a623; color: #fff; }
+#adminLessonModal .move-section { margin-top: 12px; padding-top: 12px; border-top: 1px solid rgba(255,255,255,0.05); }
+#adminLessonModal .move-section label { color: #888; font-size: 13px; display: block; margin-bottom: 4px; }
+#adminLessonModal .move-section .move-row { display: flex; gap: 10px; align-items: center; }
+#adminLessonModal .move-section .move-row input[type="date"] { flex: 1; padding: 8px 12px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; color: #fff; font-size: 14px; font-family: Arial, sans-serif; }
+#adminLessonModal .move-section .move-row button { padding: 8px 20px; border: none; border-radius: 8px; background: #667eea; color: #fff; cursor: pointer; font-weight: 600; font-family: Arial, sans-serif; }
+#adminLessonModal .move-section .move-row button:hover { background: #5a6fd6; }
 
-        .comments-section { margin-top: 14px; padding-top: 14px; border-top: 1px solid rgba(255,255,255,0.05); }
-        .comments-section .comments-title { color: #888; font-size: 14px; font-weight: 600; margin-bottom: 10px; }
-        .comment-item { background: rgba(255,255,255,0.03); border-radius: 10px; padding: 10px 14px; margin-bottom: 8px; border: 1px solid rgba(255,255,255,0.04); }
-        .comment-item .comment-header { display: flex; justify-content: space-between; align-items: center; font-size: 12px; color: #666; margin-bottom: 4px; }
-        .comment-item .comment-header .author { font-weight: 600; color: var(--text-light); }
-        .comment-item .comment-header .author.admin { color: var(--accent); }
-        .comment-item .comment-text { color: #c0d0e0; font-size: 14px; }
-        .comment-item .comment-time { font-size: 11px; color: #555; }
-        .comment-input-wrap { display: flex; gap: 10px; margin-top: 10px; }
-        .comment-input-wrap input { flex: 1; padding: 8px 14px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08); border-radius: 20px; color: #fff; font-size: 14px; outline: none; }
-        .comment-input-wrap input:focus { border-color: var(--primary); background: rgba(255,255,255,0.08); }
-        .comment-input-wrap input::placeholder { color: #555; }
-        .comment-input-wrap button { background: linear-gradient(135deg, var(--primary-dark), var(--primary)); color: white; border: none; padding: 8px 20px; border-radius: 20px; cursor: pointer; font-weight: 600; font-size: 13px; transition: var(--transition); white-space: nowrap; }
-        .comment-input-wrap button:hover { transform: scale(1.03); box-shadow: 0 4px 20px rgba(102,126,234,0.3); }
+/* ===== КАЛЕНДАРЬ ===== */
+.calendar-controls { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; margin-bottom: 20px; }
+.calendar-controls select { padding: 8px 16px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; color: #fff; font-size: 14px; font-family: Arial, sans-serif; min-width: 180px; }
+.calendar-controls button { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); padding: 8px 16px; border-radius: 10px; color: #fff; cursor: pointer; transition: 0.3s; font-family: Arial, sans-serif; }
+.calendar-controls button:hover { background: rgba(255,255,255,0.15); }
+#calendarMonth { font-size: 18px; font-weight: 700; color: #f5a623; min-width: 150px; text-align: center; }
+.calendar-grid { background: rgba(255,255,255,0.03); border-radius: 12px; padding: 12px; overflow: hidden; }
+.calendar-header { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; margin-bottom: 8px; }
+.calendar-header div { text-align: center; color: #888; font-weight: 600; font-size: 14px; padding: 8px 0; }
+#calendarDays { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
+.calendar-day { aspect-ratio: 1; min-height: 60px; background: rgba(255,255,255,0.03); border-radius: 8px; padding: 4px; cursor: pointer; transition: 0.3s; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; position: relative; border: 1px solid transparent; }
+.calendar-day:hover { background: rgba(255,255,255,0.08); border-color: rgba(102,126,234,0.3); }
+.calendar-day.empty { background: transparent; cursor: default; }
+.calendar-day.empty:hover { background: transparent; border-color: transparent; }
+.calendar-day .day-number { font-size: 14px; font-weight: 600; color: #b0c4de; margin-bottom: 2px; }
+.calendar-day .lesson-indicator { font-size: 16px; }
+.calendar-day .lesson-topic { font-size: 9px; color: #666; text-align: center; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 100%; padding: 0 2px; }
+.calendar-day .series-badge { display: inline-block; background: rgba(102,126,234,0.2); color: #88ccff; padding: 0 6px; border-radius: 8px; font-size: 7px; margin-top: 1px; }
+.calendar-day.completed { border-color: rgba(46,204,113,0.3); background: rgba(46,204,113,0.08); }
+.calendar-day.completed .day-number { color: #2ecc71; }
+.calendar-day.planned { border-color: rgba(245,166,35,0.3); background: rgba(245,166,35,0.08); }
+.calendar-day.cancelled { border-color: rgba(231,76,60,0.3); background: rgba(231,76,60,0.08); opacity: 0.6; }
+.calendar-day.cancelled .day-number { color: #e74c3c; }
+.calendar-day.today { border-color: #667eea; box-shadow: 0 0 20px rgba(102,126,234,0.2); }
+.lesson-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 16px; margin-top: 20px; }
 
-        .chat-user-item { padding: 14px 18px; background: rgba(255,255,255,0.03); border-radius: var(--radius-sm); cursor: pointer; border: 1px solid rgba(255,255,255,0.05); transition: var(--transition); display: flex; justify-content: space-between; align-items: center; }
-        .chat-user-item:hover { background: rgba(255,255,255,0.06); border-color: rgba(102,126,234,0.3); transform: translateX(4px); }
-        .chat-user-item .user-info { display: flex; align-items: center; gap: 12px; }
-        .chat-user-item .user-avatar { width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 16px; color: white; flex-shrink: 0; }
-        .chat-user-item .user-avatar.blue { background: linear-gradient(135deg, #4a7cf7, #6c5ce7); }
-        .chat-user-item .user-avatar.green { background: linear-gradient(135deg, #00b894, #00cec9); }
-        .chat-user-item .user-avatar.pink { background: linear-gradient(135deg, #fd79a8, #e17055); }
-        .chat-user-item .user-avatar.orange { background: linear-gradient(135deg, #fdcb6e, #e17055); }
-        .chat-user-item .user-avatar.purple { background: linear-gradient(135deg, #a29bfe, #6c5ce7); }
-        .chat-user-item .user-name { color: var(--text-white); font-weight: 600; }
-        .chat-user-item .unread-count { background: var(--danger); color: white; padding: 2px 10px; border-radius: 30px; font-size: 12px; font-weight: 700; }
-        .chat-user-item .last-msg { color: #666; font-size: 13px; max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.student-calendar-grid { display: grid !important; grid-template-columns: repeat(7, 1fr) !important; gap: 6px !important; background: rgba(255,255,255,0.03); border-radius: 12px; padding: 16px; margin-top: 12px; width: 100%; }
+.student-calendar-grid > .day-header { text-align: center; color: #888; font-weight: 600; font-size: 13px; padding: 4px; }
+#studentCalendarDays { display: contents !important; }
+.student-calendar-day { aspect-ratio: 1; min-height: 55px; background: rgba(255,255,255,0.03); border-radius: 10px; padding: 4px; display: flex; flex-direction: column; align-items: center; justify-content: center; border: 1px solid rgba(255,255,255,0.05); font-size: 13px; cursor: pointer; transition: 0.3s; position: relative; }
+.student-calendar-day:hover { background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.15); }
+.student-calendar-day .day-number { font-weight: 600; color: #b0c4de; font-size: 14px; }
+.student-calendar-day .lesson-topic-label { font-size: 7px; color: #88ccff; margin-top: 1px; text-align: center; line-height: 1.1; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.student-calendar-day .lesson-status-icon { font-size: 10px; margin-top: 1px; }
+.student-calendar-day .lesson-dot { width: 6px; height: 6px; border-radius: 50%; background: #667eea; margin-top: 2px; }
+.student-calendar-day .today-dot { background: #f5a623; }
+.student-calendar-day.has-lesson { border-color: rgba(102,126,234,0.4); background: rgba(102,126,234,0.12); }
+.student-calendar-day.has-lesson-today { border-color: #f5a623; background: rgba(245,166,35,0.15); box-shadow: 0 0 20px rgba(245,166,35,0.1); }
+.student-calendar-day.empty { background: transparent; cursor: default; border-color: transparent; }
+.student-calendar-day.empty:hover { background: transparent; border-color: transparent; }
+.student-calendar-day .status-completed { color: #2ecc71; }
+.student-calendar-day .status-cancelled { color: #e74c3c; }
+.student-calendar-day .status-planned { color: #f5a623; }
 
-        .chat-window { display: none; background: rgba(255,255,255,0.02); border-radius: 16px; border: 1px solid rgba(255,255,255,0.05); overflow: hidden; }
-        .chat-window .chat-header { display: flex; justify-content: space-between; align-items: center; padding: 16px 20px; background: rgba(255,255,255,0.03); border-bottom: 1px solid rgba(255,255,255,0.05); }
-        .chat-window .chat-header .chat-partner { display: flex; align-items: center; gap: 12px; }
-        .chat-window .chat-header .chat-partner .avatar { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 14px; color: white; }
-        .chat-window .chat-header .chat-partner .avatar.blue { background: linear-gradient(135deg, #4a7cf7, #6c5ce7); }
-        .chat-window .chat-header .chat-partner .avatar.green { background: linear-gradient(135deg, #00b894, #00cec9); }
-        .chat-window .chat-header .chat-partner .avatar.pink { background: linear-gradient(135deg, #fd79a8, #e17055); }
-        .chat-window .chat-header .chat-partner .avatar.orange { background: linear-gradient(135deg, #fdcb6e, #e17055); }
-        .chat-window .chat-header .chat-partner .avatar.purple { background: linear-gradient(135deg, #a29bfe, #6c5ce7); }
-        .chat-window .chat-header .chat-partner .name { color: var(--text-white); font-weight: 600; font-size: 16px; }
-        .chat-window .chat-header .close-btn { background: none; border: none; color: #888; font-size: 20px; cursor: pointer; padding: 4px 10px; border-radius: 8px; }
-        .chat-window .chat-header .close-btn:hover { color: var(--text-white); background: rgba(255,255,255,0.05); }
+/* ===== ШАБЛОНЫ ===== */
+.template-card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05); border-radius: 16px; padding: 20px; transition: 0.3s; }
+.template-card:hover { background: rgba(255,255,255,0.06); border-color: rgba(102,126,234,0.2); }
+.template-card .template-name { font-size: 20px; font-weight: 700; color: #ffffff; }
+.template-card .template-score { color: #f5a623; font-size: 14px; margin-top: 4px; }
+.template-card .template-meta { color: #888; font-size: 13px; margin-top: 8px; }
+.template-card .template-actions { margin-top: 12px; display: flex; gap: 8px; }
 
-        .chat-messages { max-height: 400px; overflow-y: auto; padding: 16px 20px; min-height: 200px; }
-        .chat-messages .empty { color: #666; text-align: center; padding: 40px 0; }
-        .chat-message { display: flex; margin-bottom: 10px; }
-        .chat-message .bubble { max-width: 75%; padding: 10px 16px; border-radius: 14px; word-wrap: break-word; }
-        .chat-message .bubble .text { font-size: 14px; color: #c0d0e0; line-height: 1.5; }
-        .chat-message .bubble .time { font-size: 10px; color: #555; text-align: right; margin-top: 4px; }
-        .chat-message.mine { justify-content: flex-end; }
-        .chat-message.mine .bubble { background: rgba(102,126,234,0.2); border: 1px solid rgba(102,126,234,0.1); }
-        .chat-message.other .bubble { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.05); }
-        .chat-input-wrap { display: flex; gap: 10px; padding: 12px 20px; border-top: 1px solid rgba(255,255,255,0.05); }
-        .chat-input-wrap input { flex: 1; padding: 10px 16px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08); border-radius: 20px; color: #fff; font-size: 14px; outline: none; }
-        .chat-input-wrap input:focus { border-color: var(--primary); background: rgba(255,255,255,0.08); }
-        .chat-input-wrap input::placeholder { color: #555; }
-        .chat-input-wrap button { background: linear-gradient(135deg, var(--primary-dark), var(--primary)); color: white; border: none; padding: 10px 24px; border-radius: 20px; cursor: pointer; font-weight: 600; font-size: 14px; transition: var(--transition); }
-        .chat-input-wrap button:hover { transform: scale(1.03); box-shadow: 0 4px 20px rgba(102,126,234,0.3); }
+/* ===== ПЛАН ПОДГОТОВКИ ===== */
+.plan-settings { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 24px; background: rgba(255,255,255,0.03); padding: 20px; border-radius: 12px; }
+.plan-settings label { color: #888; font-size: 13px; display: block; margin-bottom: 4px; }
+.plan-settings select,
+.plan-settings input { width: 100%; padding: 8px 12px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; color: #fff; font-size: 14px; font-family: Arial, sans-serif; }
+.plan-settings select:focus,
+.plan-settings input:focus { border-color: var(--primary); outline: none; }
 
-        footer { text-align: center; padding: 30px 20px; color: #666; font-size: 14px; border-top: 1px solid rgba(255,255,255,0.05); margin-top: 40px; }
+/* ===== РАСПИСАНИЕ ===== */
+.schedule-table-wrap { overflow-x: auto; }
+.schedule-table { width: 100%; border-collapse: collapse; background: rgba(255,255,255,0.03); border-radius: var(--radius-sm); overflow: hidden; font-size: 14px; }
+.schedule-table th,
+.schedule-table td { border: 1px solid rgba(255,255,255,0.08); padding: 10px 8px; text-align: center; min-width: 80px; }
+.schedule-table th { background: rgba(255,255,255,0.06); color: var(--accent); font-weight: 700; font-size: 15px; }
+.schedule-table td { color: var(--text-light); vertical-align: middle; }
+.schedule-table .row-num { color: #666; font-weight: 700; min-width: 40px; }
+.schedule-table .cell-empty { color: #444; }
+.schedule-table .cell-occupied { color: #7ddfa0; background: rgba(39,174,96,0.1); border-color: rgba(39,174,96,0.15); }
+.schedule-table .cell-occupied .student-name { color: var(--text-white); }
+.schedule-table .cell-occupied .topic { color: #7ddfa0; font-size: 12px; }
+.schedule-table td .cell-content { display: flex; flex-direction: column; gap: 2px; cursor: pointer; padding: 4px; border-radius: 6px; }
+.schedule-table td .cell-content:hover { background: rgba(255,255,255,0.05); }
+.schedule-table td .cell-content .student-name { font-weight: 600; color: var(--text-white); font-size: 14px; }
+.schedule-table td .cell-content .topic { font-size: 12px; color: #888; }
+.schedule-table td .cell-content .empty-text { color: #444; font-size: 12px; }
+.schedule-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 20px; align-items: center; }
+.schedule-actions button { background: var(--primary-dark); color: white; border: none; padding: 10px 24px; border-radius: 30px; cursor: pointer; font-weight: 600; transition: var(--transition); }
+.schedule-actions button:hover { background: var(--primary); transform: scale(1.02); }
 
-        @media (max-width: 700px) {
-            header h1 { font-size: 28px; }
-            .profile { flex-direction: column; text-align: center; }
-            .profile-avatar { width: 120px; height: 120px; }
-            .profile-avatar .avatar-emoji { font-size: 50px; }
-            .contacts a { display: block; margin: 8px 0; text-align: center; }
-            .admin-tabs { flex-direction: column; }
-            .video-tabs { grid-template-columns: 1fr; }
-            .video-tabs button { font-size: 14px; padding: 10px 14px; }
-            .modal-content { padding: 20px; }
-            .deadline-row { flex-direction: column; align-items: stretch; }
-            .deadline-row input[type="date"] { width: 100%; }
-            .settings-avatar-container .btn-group .admin-btn { flex: 1; }
-            .dashboard-layout { flex-direction: column; }
-            .dashboard-sidebar { width: 100%; flex-direction: row; flex-wrap: wrap; }
-            .dashboard-sidebar button { flex: 1; min-width: 120px; justify-content: center; font-size: 13px; padding: 10px 14px; }
-            .dashboard-sidebar button .badge { margin-left: 6px; }
-            .deadline-card { flex-direction: column; text-align: center; }
-            .stats-grid { grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); }
-            .section-progress { flex-direction: column; align-items: stretch; text-align: center; }
-            .section-progress .bar-wrap { min-width: 60px; }
-            .section-progress .percent { text-align: center; }
-            .activity-bars { height: 80px; }
-            .activity-bars .bar-item .bar { width: 18px; }
-            .achievement-card { font-size: 12px; padding: 6px 14px 6px 10px; }
-            .achievement-card .icon { font-size: 18px; }
-            .comment-input-wrap { flex-direction: column; }
-            .comment-input-wrap button { width: 100%; }
-            .chat-message .bubble { max-width: 85%; }
-            .chat-user-item .last-msg { max-width: 100px; }
-            .whiteboard-admin-item { flex-direction: column; align-items: stretch; }
-            .whiteboard-admin-item .student-name { min-width: unset; }
-            .whiteboard-admin-item input { min-width: unset; }
-            .whiteboard-admin-item .whiteboard-link-small { max-width: unset; }
-            .hw-tabs { flex-wrap: wrap; }
-            .hw-tab { flex: 1; min-width: 100px; text-align: center; }
-            .hw-card .hw-actions { flex-direction: column; }
-            .hw-card .hw-actions button { width: 100%; }
-            .calendar-day { min-height: 40px; font-size: 12px; }
-            .calendar-day .day-number { font-size: 11px; }
-            .calendar-day .lesson-indicator { font-size: 12px; }
-            .calendar-day .lesson-topic { font-size: 7px; }
-            .calendar-controls { gap: 8px; }
-            #calendarMonth { font-size: 14px; min-width: 100px; }
-            .plan-settings { grid-template-columns: 1fr; }
-            .template-card { padding: 16px; }
-            .student-calendar-day { min-height: 40px; font-size: 11px; padding: 4px; }
-            .student-calendar-day .day-number { font-size: 12px; }
-            .student-calendar-day .lesson-topic-label { font-size: 7px; }
-            .student-calendar-grid { padding: 8px; gap: 4px; }
-            .schedule-table { font-size: 12px; }
-            .schedule-table th, .schedule-table td { padding: 6px 4px; min-width: 60px; }
-            #adminLessonModal .action-buttons { flex-direction: column; }
-            #adminLessonModal .move-section .move-row { flex-direction: column; }
-            #adminLessonModal .move-section .move-row input[type="date"] { width: 100%; }
-        }
-                /* ===== СТИЛИ ДЛЯ КОНСТРУКТОРА ПЛАНА ===== */
-        .plan-row {
-            display: flex;
-            gap: 12px;
-            align-items: center;
-            padding: 8px 12px;
-            background: rgba(255, 255, 255, 0.03);
-            border-radius: 10px;
-            margin-bottom: 8px;
-            flex-wrap: wrap;
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            transition: 0.3s;
-        }
-        .plan-row:hover {
-            background: rgba(255, 255, 255, 0.06);
-            border-color: rgba(102, 126, 234, 0.2);
-        }
-        .plan-row .row-number {
-            color: #888;
-            font-weight: 700;
-            min-width: 80px;
-            font-size: 14px;
-        }
-        .plan-row select {
-            flex: 1;
-            min-width: 150px;
-            padding: 6px 12px;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 8px;
-            color: #fff;
-            font-size: 14px;
-            font-family: Arial, sans-serif;
-        }
-        .plan-row select:focus {
-            border-color: #667eea;
-            outline: none;
-        }
-        .plan-row select option {
-            background: #1a1a2e;
-            color: #fff;
-        }
-        .plan-row .delete-row-btn {
-            padding: 4px 12px;
-            font-size: 12px;
-            background: rgba(231, 76, 60, 0.2);
-            color: #e74c3c;
-            border: 1px solid rgba(231, 76, 60, 0.2);
-            border-radius: 6px;
-            cursor: pointer;
-            transition: 0.3s;
-            font-family: Arial, sans-serif;
-        }
-        .plan-row .delete-row-btn:hover {
-            background: #e74c3c;
-            color: #fff;
-        }
-        .plan-day-checkbox {
-            color: #b0c4de;
-            font-size: 14px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 4px;
-        }
-        .plan-day-checkbox input[type="checkbox"] {
-            width: 16px;
-            height: 16px;
-            cursor: pointer;
-            accent-color: #667eea;
-        }
-        .plan-constructor-section {
-            background: rgba(255, 255, 255, 0.03);
-            border-radius: 16px;
-            padding: 24px;
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            margin-bottom: 24px;
-        }
-        .plan-constructor-section h4 {
-            color: #f5a623;
-            margin-bottom: 16px;
-        }
-        .plan-constructor-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 16px;
-            margin-bottom: 20px;
-        }
-        .plan-constructor-grid label {
-            color: #888;
-            font-size: 13px;
-            display: block;
-            margin-bottom: 4px;
-        }
-        .plan-constructor-grid input,
-        .plan-constructor-grid select {
-            width: 100%;
-            padding: 8px 12px;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 8px;
-            color: #fff;
-            font-size: 14px;
-            font-family: Arial, sans-serif;
-        }
-        .plan-constructor-grid input:focus,
-        .plan-constructor-grid select:focus {
-            border-color: #667eea;
-            outline: none;
-        }
-        .plan-constructor-grid .days-checkboxes {
-            display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
-            padding-top: 4px;
-        }
-        .plan-rows-container {
-            max-height: 400px;
-            overflow-y: auto;
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            border-radius: 12px;
-            padding: 12px;
-            background: rgba(255, 255, 255, 0.02);
-        }
+/* ===== ОСТАЛЬНЫЕ СТИЛИ ===== */
+.hw-card { padding: 16px; border: 1px solid rgba(255,255,255,0.05); border-radius: var(--radius-sm); margin-bottom: 12px; background: rgba(255,255,255,0.03); }
+.hw-card .title { font-size: 18px; font-weight: 700; color: var(--text-white); }
+.hw-card .meta { color: #888; font-size: 14px; margin: 4px 0; }
+.hw-card .meta.comment { color: var(--accent); border-left: 3px solid var(--accent); padding-left: 10px; margin-top: 6px; }
+.hw-card .status.done { color: #2ecc71; }
+.hw-card .status.pending { color: #f39c12; }
+.hw-card .hw-actions { margin-top: 10px; display: flex; gap: 8px; flex-wrap: wrap; }
 
-        /* ===== ПОДСВЕТКА СЕГОДНЯШНЕЙ ДАТЫ В КАЛЕНДАРЕ УЧЕНИКА ===== */
-        .student-calendar-day.today-highlight {
-            border-color: #f5a623 !important;
-            box-shadow: 0 0 20px rgba(245, 166, 35, 0.25);
-            background: rgba(245, 166, 35, 0.08);
-        }
-        .student-calendar-day.today-highlight .day-number {
-            color: #f5a623;
-            font-weight: 900;
-            font-size: 16px;
-        }
-        .student-calendar-day.has-lesson-today {
-            border-color: #f5a623 !important;
-            box-shadow: 0 0 30px rgba(245, 166, 35, 0.35);
-            background: rgba(245, 166, 35, 0.18);
-        }
-        .student-calendar-day.has-lesson-today .day-number {
-            color: #f5a623;
-            font-weight: 900;
-        }
-                /* ===== СТИЛИ ДЛЯ ЗАНЯТИЙ В ПЛАНЕ ===== */
-        .plan-lesson-item {
-            display: flex;
-            gap: 12px;
-            align-items: center;
-            padding: 10px 14px;
-            background: rgba(255, 255, 255, 0.03);
-            border-radius: 10px;
-            margin-bottom: 6px;
-            flex-wrap: wrap;
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            transition: 0.3s;
-        }
-        .plan-lesson-item:hover {
-            background: rgba(255, 255, 255, 0.06);
-            border-color: rgba(102, 126, 234, 0.2);
-        }
-        .plan-lesson-item .lesson-date {
-            color: #b0c4de;
-            font-weight: 600;
-            min-width: 100px;
-            font-size: 14px;
-        }
-        .plan-lesson-item .lesson-time {
-            color: #888;
-            font-size: 13px;
-            min-width: 70px;
-        }
-        .plan-lesson-item .lesson-status {
-            font-size: 13px;
-            min-width: 80px;
-        }
-        .plan-lesson-item .lesson-status.completed {
-            color: #2ecc71;
-        }
-        .plan-lesson-item .lesson-status.cancelled {
-            color: #e74c3c;
-        }
-        .plan-lesson-item .lesson-status.planned {
-            color: #f5a623;
-        }
-        .plan-lesson-item select {
-            flex: 1;
-            min-width: 150px;
-            padding: 6px 12px;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 8px;
-            color: #fff;
-            font-size: 14px;
-            font-family: Arial, sans-serif;
-        }
-        .plan-lesson-item select:focus {
-            border-color: #667eea;
-            outline: none;
-        }
-        .plan-lesson-item select option {
-            background: #1a1a2e;
-            color: #fff;
-        }
-        .plan-lesson-item .lesson-topic-preview {
-            color: #88ccff;
-            font-size: 13px;
-            min-width: 80px;
-        }
-                /* ===== ДЛЯ КНОПКИ ДОБАВЛЕНИЯ ЗАНЯТИЯ В КАЛЕНДАРЕ ===== */
-        .calendar-day .add-lesson-btn {
-            font-size: 10px;
-            color: #667eea;
-            cursor: pointer;
-            margin-top: 2px;
-            opacity: 0.5;
-            transition: 0.3s;
-        }
-        .calendar-day .add-lesson-btn:hover {
-            opacity: 1;
-            transform: scale(1.2);
-        }
-                /* ===== КНОПКА РАЗДЕЛИТЬ СЕРИЮ ===== */
-        .split-series-btn {
-            background: #f39c12 !important;
-            color: #fff !important;
-            padding: 12px 20px !important;
-            border: none !important;
-            border-radius: 12px !important;
-            cursor: pointer !important;
-            font-weight: 700 !important;
-            font-family: Arial, sans-serif !important;
-            font-size: 14px !important;
-            transition: 0.3s !important;
-        }
-        .split-series-btn:hover {
-            background: #e67e22 !important;
-            transform: scale(1.02);
-        }  
-        /* ===== ПРОГРЕСС УЧЕНИКОВ ===== */
+.deadline-card { background: rgba(245,166,35,0.08); border: 1px solid rgba(245,166,35,0.15); border-radius: 16px; padding: 16px 20px; margin-bottom: 24px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; }
+.deadline-card .label { color: var(--accent); font-weight: 600; }
+.deadline-card .title { color: var(--text-white); font-weight: 600; }
+.deadline-card .days { background: rgba(245,166,35,0.15); color: var(--accent); padding: 4px 14px; border-radius: 50px; font-size: 13px; }
+
+.empty-state { text-align: center; padding: 40px 20px; color: #666; }
+.empty-state .icon { font-size: 48px; display: block; margin-bottom: 12px; }
+.empty-state .title { font-size: 18px; color: var(--text-light); font-weight: 600; }
+.empty-state .desc { font-size: 14px; color: #666; margin-top: 4px; }
+
+.homework-controls { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 20px; }
+.deadline-row { display: flex; align-items: center; gap: 15px; flex-wrap: wrap; }
+.deadline-row input[type="date"] { flex: 1; min-width: 150px; margin-bottom: 0; }
+.deadline-row .no-deadline-label { display: flex; align-items: center; gap: 8px; cursor: pointer; color: var(--text-light); font-size: 14px; margin: 0; white-space: nowrap; }
+.deadline-row .no-deadline-label input[type="checkbox"] { width: 18px; height: 18px; margin: 0; cursor: pointer; flex-shrink: 0; }
+
+.settings-group { background: rgba(255,255,255,0.02); border-radius: 16px; padding: 24px; border: 1px solid rgba(255,255,255,0.05); margin-bottom: 24px; }
+.settings-group h4 { color: var(--accent); margin-bottom: 16px; }
+.settings-group label { color: #888; font-size: 13px; display: block; margin-bottom: 4px; }
+.settings-group input[type="text"], .settings-group input[type="email"] { width: 100%; padding: 10px 14px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; color: #fff; font-size: 15px; }
+.settings-group input:disabled { opacity: 0.5; cursor: not-allowed; }
+.settings-group input:focus { border-color: var(--primary); outline: none; }
+.settings-checkbox { display: flex; align-items: center; gap: 12px; cursor: pointer; color: var(--text-light); font-size: 15px; padding: 6px 0; }
+.settings-checkbox input[type="checkbox"] { width: 18px; height: 18px; cursor: pointer; accent-color: var(--primary); }
+
+.settings-avatar-container { display: flex; flex-direction: column; align-items: center; gap: 15px; }
+.settings-avatar-container .avatar-preview { width: 150px; height: 150px; border-radius: 50%; background: linear-gradient(135deg, var(--primary), #764ba2); display: flex; align-items: center; justify-content: center; font-size: 60px; border: 3px solid rgba(255,255,255,0.1); overflow: hidden; }
+.settings-avatar-container .avatar-preview img { width: 100%; height: 100%; object-fit: cover; }
+.settings-avatar-container input[type="file"] { padding: 10px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: var(--radius-sm); color: #fff; cursor: pointer; font-family: Arial, sans-serif; font-size: 14px; width: 100%; }
+.settings-avatar-container .btn-group { display: flex; gap: 10px; flex-wrap: wrap; width: 100%; }
+.settings-avatar-container .btn-group .admin-btn { flex: 1; text-align: center; }
+.settings-info { display: flex; flex-direction: column; gap: 12px; }
+.settings-info label { color: var(--text-light); font-size: 14px; display: block; margin-bottom: 4px; }
+.settings-info input, .settings-info textarea { width: 100%; padding: 10px 16px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: var(--radius-sm); color: #fff; font-size: 14px; font-family: Arial, sans-serif; }
+.settings-info input:focus, .settings-info textarea:focus { border-color: var(--primary); outline: none; }
+
+.my-students-table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 14px; }
+.my-students-table th, .my-students-table td { padding: 10px 12px; border-bottom: 1px solid rgba(255,255,255,0.05); text-align: left; color: #c0d0e0; }
+.my-students-table th { background: rgba(255,255,255,0.05); color: var(--accent); font-weight: 700; }
+.my-students-table .status-badge { padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; }
+.my-students-table .status-badge.active { background: rgba(46,204,113,0.2); color: #2ecc71; }
+.my-students-table .status-badge.inactive { background: rgba(231,76,60,0.2); color: #f1948a; }
+
+.section-progress { background: rgba(255,255,255,0.03); border-radius: var(--radius-sm); padding: 14px 18px; margin-bottom: 10px; border: 1px solid rgba(255,255,255,0.05); display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+.section-progress .name { min-width: 140px; color: var(--text-light); font-weight: 600; font-size: 14px; }
+.section-progress .bar-wrap { flex: 1; min-width: 100px; height: 8px; background: rgba(255,255,255,0.05); border-radius: 10px; overflow: hidden; }
+.section-progress .bar-wrap .fill { height: 100%; border-radius: 10px; transition: width 0.8s ease; }
+.section-progress .bar-wrap .fill.green { background: linear-gradient(90deg, var(--success), #2ecc71); }
+.section-progress .bar-wrap .fill.yellow { background: linear-gradient(90deg, #f39c12, #f1c40f); }
+.section-progress .bar-wrap .fill.red { background: linear-gradient(90deg, var(--danger), #c0392b); }
+.section-progress .percent { min-width: 50px; text-align: right; font-weight: 700; font-size: 14px; color: var(--text-light); }
+.section-progress .status-icon { font-size: 18px; }
+
+.achievement-card { display: inline-flex; align-items: center; gap: 12px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05); border-radius: 50px; padding: 8px 20px 8px 12px; margin: 0 8px 8px 0; }
+.achievement-card:hover { background: rgba(255,255,255,0.06); border-color: rgba(245,166,35,0.2); }
+.achievement-card .icon { font-size: 24px; }
+.achievement-card .info { font-size: 13px; color: var(--text-light); }
+.achievement-card .info .name { font-weight: 600; color: var(--text-white); }
+.achievement-card.locked { opacity: 0.3; filter: grayscale(1); }
+
+.activity-bars { display: flex; gap: 8px; justify-content: space-around; align-items: flex-end; height: 120px; padding: 10px 0; }
+.activity-bars .bar-item { display: flex; flex-direction: column; align-items: center; gap: 6px; flex: 1; }
+.activity-bars .bar-item .bar { width: 24px; border-radius: 6px 6px 0 0; background: linear-gradient(180deg, var(--primary), #764ba2); transition: height 0.8s ease; min-height: 4px; }
+.activity-bars .bar-item .label { font-size: 11px; color: #666; }
+.activity-bars .bar-item .value { font-size: 11px; color: var(--text-light); font-weight: 600; }
+
+.whiteboard-section { margin-top: 30px; background: rgba(255,255,255,0.03); border-radius: 16px; padding: 20px; border: 1px solid rgba(255,255,255,0.05); }
+.whiteboard-section h3 { color: var(--accent); margin-bottom: 12px; font-size: 20px; }
+.whiteboard-section .whiteboard-link { display: block; padding: 12px 16px; background: rgba(102,126,234,0.1); border-radius: 10px; border: 1px solid rgba(102,126,234,0.2); color: #88ccff; text-decoration: none; font-size: 16px; transition: var(--transition); word-break: break-all; }
+.whiteboard-section .whiteboard-link:hover { background: rgba(102,126,234,0.2); border-color: rgba(102,126,234,0.4); }
+.whiteboard-section .whiteboard-empty { color: #666; font-size: 14px; padding: 12px; text-align: center; }
+
+.whiteboard-admin-item { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.04); }
+.whiteboard-admin-item .student-name { min-width: 120px; color: var(--text-light); font-weight: 600; }
+.whiteboard-admin-item input { flex: 1; min-width: 200px; padding: 6px 12px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; color: #fff; font-size: 13px; }
+.whiteboard-admin-item input:focus { border-color: var(--primary); outline: none; }
+.whiteboard-admin-item .admin-btn { padding: 4px 14px; font-size: 12px; }
+.whiteboard-admin-item .whiteboard-link-small { color: #88ccff; text-decoration: none; font-size: 13px; max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.whiteboard-admin-item .whiteboard-link-small:hover { text-decoration: underline; }
+
+.comments-section { margin-top: 14px; padding-top: 14px; border-top: 1px solid rgba(255,255,255,0.05); }
+.comments-section .comments-title { color: #888; font-size: 14px; font-weight: 600; margin-bottom: 10px; }
+.comment-item { background: rgba(255,255,255,0.03); border-radius: 10px; padding: 10px 14px; margin-bottom: 8px; border: 1px solid rgba(255,255,255,0.04); }
+.comment-item .comment-header { display: flex; justify-content: space-between; align-items: center; font-size: 12px; color: #666; margin-bottom: 4px; }
+.comment-item .comment-header .author { font-weight: 600; color: var(--text-light); }
+.comment-item .comment-header .author.admin { color: var(--accent); }
+.comment-item .comment-text { color: #c0d0e0; font-size: 14px; }
+.comment-item .comment-time { font-size: 11px; color: #555; }
+.comment-input-wrap { display: flex; gap: 10px; margin-top: 10px; }
+.comment-input-wrap input { flex: 1; padding: 8px 14px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08); border-radius: 20px; color: #fff; font-size: 14px; outline: none; }
+.comment-input-wrap input:focus { border-color: var(--primary); background: rgba(255,255,255,0.08); }
+.comment-input-wrap input::placeholder { color: #555; }
+.comment-input-wrap button { background: linear-gradient(135deg, var(--primary-dark), var(--primary)); color: white; border: none; padding: 8px 20px; border-radius: 20px; cursor: pointer; font-weight: 600; font-size: 13px; transition: var(--transition); white-space: nowrap; }
+.comment-input-wrap button:hover { transform: scale(1.03); box-shadow: 0 4px 20px rgba(102,126,234,0.3); }
+
+.chat-user-item { padding: 14px 18px; background: rgba(255,255,255,0.03); border-radius: var(--radius-sm); cursor: pointer; border: 1px solid rgba(255,255,255,0.05); transition: var(--transition); display: flex; justify-content: space-between; align-items: center; }
+.chat-user-item:hover { background: rgba(255,255,255,0.06); border-color: rgba(102,126,234,0.3); transform: translateX(4px); }
+.chat-user-item .user-info { display: flex; align-items: center; gap: 12px; }
+.chat-user-item .user-avatar { width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 16px; color: white; flex-shrink: 0; }
+.chat-user-item .user-avatar.blue { background: linear-gradient(135deg, #4a7cf7, #6c5ce7); }
+.chat-user-item .user-avatar.green { background: linear-gradient(135deg, #00b894, #00cec9); }
+.chat-user-item .user-avatar.pink { background: linear-gradient(135deg, #fd79a8, #e17055); }
+.chat-user-item .user-avatar.orange { background: linear-gradient(135deg, #fdcb6e, #e17055); }
+.chat-user-item .user-avatar.purple { background: linear-gradient(135deg, #a29bfe, #6c5ce7); }
+.chat-user-item .user-name { color: var(--text-white); font-weight: 600; }
+.chat-user-item .unread-count { background: var(--danger); color: white; padding: 2px 10px; border-radius: 30px; font-size: 12px; font-weight: 700; }
+.chat-user-item .last-msg { color: #666; font-size: 13px; max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+.chat-window { display: none; background: rgba(255,255,255,0.02); border-radius: 16px; border: 1px solid rgba(255,255,255,0.05); overflow: hidden; }
+.chat-window .chat-header { display: flex; justify-content: space-between; align-items: center; padding: 16px 20px; background: rgba(255,255,255,0.03); border-bottom: 1px solid rgba(255,255,255,0.05); }
+.chat-window .chat-header .chat-partner { display: flex; align-items: center; gap: 12px; }
+.chat-window .chat-header .chat-partner .avatar { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 14px; color: white; }
+.chat-window .chat-header .chat-partner .avatar.blue { background: linear-gradient(135deg, #4a7cf7, #6c5ce7); }
+.chat-window .chat-header .chat-partner .avatar.green { background: linear-gradient(135deg, #00b894, #00cec9); }
+.chat-window .chat-header .chat-partner .avatar.pink { background: linear-gradient(135deg, #fd79a8, #e17055); }
+.chat-window .chat-header .chat-partner .avatar.orange { background: linear-gradient(135deg, #fdcb6e, #e17055); }
+.chat-window .chat-header .chat-partner .avatar.purple { background: linear-gradient(135deg, #a29bfe, #6c5ce7); }
+.chat-window .chat-header .chat-partner .name { color: var(--text-white); font-weight: 600; font-size: 16px; }
+.chat-window .chat-header .close-btn { background: none; border: none; color: #888; font-size: 20px; cursor: pointer; padding: 4px 10px; border-radius: 8px; }
+.chat-window .chat-header .close-btn:hover { color: var(--text-white); background: rgba(255,255,255,0.05); }
+.chat-messages { max-height: 400px; overflow-y: auto; padding: 16px 20px; min-height: 200px; }
+.chat-messages .empty { color: #666; text-align: center; padding: 40px 0; }
+.chat-message { display: flex; margin-bottom: 10px; }
+.chat-message .bubble { max-width: 75%; padding: 10px 16px; border-radius: 14px; word-wrap: break-word; }
+.chat-message .bubble .text { font-size: 14px; color: #c0d0e0; line-height: 1.5; }
+.chat-message .bubble .time { font-size: 10px; color: #555; text-align: right; margin-top: 4px; }
+.chat-message.mine { justify-content: flex-end; }
+.chat-message.mine .bubble { background: rgba(102,126,234,0.2); border: 1px solid rgba(102,126,234,0.1); }
+.chat-message.other .bubble { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.05); }
+.chat-input-wrap { display: flex; gap: 10px; padding: 12px 20px; border-top: 1px solid rgba(255,255,255,0.05); }
+.chat-input-wrap input { flex: 1; padding: 10px 16px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08); border-radius: 20px; color: #fff; font-size: 14px; outline: none; }
+.chat-input-wrap input:focus { border-color: var(--primary); background: rgba(255,255,255,0.08); }
+.chat-input-wrap input::placeholder { color: #555; }
+.chat-input-wrap button { background: linear-gradient(135deg, var(--primary-dark), var(--primary)); color: white; border: none; padding: 10px 24px; border-radius: 20px; cursor: pointer; font-weight: 600; font-size: 14px; transition: var(--transition); }
+.chat-input-wrap button:hover { transform: scale(1.03); box-shadow: 0 4px 20px rgba(102,126,234,0.3); }
+
+.plan-row { display: flex; gap: 12px; align-items: center; padding: 8px 12px; background: rgba(255,255,255,0.03); border-radius: 10px; margin-bottom: 8px; flex-wrap: wrap; border: 1px solid rgba(255,255,255,0.05); transition: 0.3s; }
+.plan-row:hover { background: rgba(255,255,255,0.06); border-color: rgba(102,126,234,0.2); }
+.plan-row .row-number { color: #888; font-weight: 700; min-width: 80px; font-size: 14px; }
+.plan-row select { flex: 1; min-width: 150px; padding: 6px 12px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; color: #fff; font-size: 14px; font-family: Arial, sans-serif; }
+.plan-row select:focus { border-color: #667eea; outline: none; }
+.plan-row select option { background: #1a1a2e; color: #fff; }
+.plan-row .delete-row-btn { padding: 4px 12px; font-size: 12px; background: rgba(231,76,60,0.2); color: #e74c3c; border: 1px solid rgba(231,76,60,0.2); border-radius: 6px; cursor: pointer; transition: 0.3s; font-family: Arial, sans-serif; }
+.plan-row .delete-row-btn:hover { background: #e74c3c; color: #fff; }
+.plan-day-checkbox { color: #b0c4de; font-size: 14px; cursor: pointer; display: flex; align-items: center; gap: 4px; }
+.plan-day-checkbox input[type="checkbox"] { width: 16px; height: 16px; cursor: pointer; accent-color: #667eea; }
+.plan-constructor-section { background: rgba(255,255,255,0.03); border-radius: 16px; padding: 24px; border: 1px solid rgba(255,255,255,0.05); margin-bottom: 24px; }
+.plan-constructor-section h4 { color: #f5a623; margin-bottom: 16px; }
+.plan-constructor-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 20px; }
+.plan-constructor-grid label { color: #888; font-size: 13px; display: block; margin-bottom: 4px; }
+.plan-constructor-grid input,
+.plan-constructor-grid select { width: 100%; padding: 8px 12px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; color: #fff; font-size: 14px; font-family: Arial, sans-serif; }
+.plan-constructor-grid input:focus,
+.plan-constructor-grid select:focus { border-color: #667eea; outline: none; }
+.plan-constructor-grid .days-checkboxes { display: flex; gap: 8px; flex-wrap: wrap; padding-top: 4px; }
+.plan-rows-container { max-height: 400px; overflow-y: auto; border: 1px solid rgba(255,255,255,0.05); border-radius: 12px; padding: 12px; background: rgba(255,255,255,0.02); }
+
+.student-calendar-day.today-highlight { border-color: #f5a623 !important; box-shadow: 0 0 20px rgba(245,166,35,0.25); background: rgba(245,166,35,0.08); }
+.student-calendar-day.today-highlight .day-number { color: #f5a623; font-weight: 900; font-size: 16px; }
+.student-calendar-day.has-lesson-today { border-color: #f5a623 !important; box-shadow: 0 0 30px rgba(245,166,35,0.35); background: rgba(245,166,35,0.18); }
+.student-calendar-day.has-lesson-today .day-number { color: #f5a623; font-weight: 900; }
+
+.plan-lesson-item { display: flex; gap: 12px; align-items: center; padding: 10px 14px; background: rgba(255,255,255,0.03); border-radius: 10px; margin-bottom: 6px; flex-wrap: wrap; border: 1px solid rgba(255,255,255,0.05); transition: 0.3s; }
+.plan-lesson-item:hover { background: rgba(255,255,255,0.06); border-color: rgba(102,126,234,0.2); }
+.plan-lesson-item .lesson-date { color: #b0c4de; font-weight: 600; min-width: 100px; font-size: 14px; }
+.plan-lesson-item .lesson-time { color: #888; font-size: 13px; min-width: 70px; }
+.plan-lesson-item .lesson-status { font-size: 13px; min-width: 80px; }
+.plan-lesson-item .lesson-status.completed { color: #2ecc71; }
+.plan-lesson-item .lesson-status.cancelled { color: #e74c3c; }
+.plan-lesson-item .lesson-status.planned { color: #f5a623; }
+.plan-lesson-item select { flex: 1; min-width: 150px; padding: 6px 12px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; color: #fff; font-size: 14px; font-family: Arial, sans-serif; }
+.plan-lesson-item select:focus { border-color: #667eea; outline: none; }
+.plan-lesson-item select option { background: #1a1a2e; color: #fff; }
+.plan-lesson-item .lesson-topic-preview { color: #88ccff; font-size: 13px; min-width: 80px; }
+
+.calendar-day .add-lesson-btn { font-size: 10px; color: #667eea; cursor: pointer; margin-top: 2px; opacity: 0.5; transition: 0.3s; }
+.calendar-day .add-lesson-btn:hover { opacity: 1; transform: scale(1.2); }
+
+.split-series-btn { background: #f39c12 !important; color: #fff !important; padding: 12px 20px !important; border: none !important; border-radius: 12px !important; cursor: pointer !important; font-weight: 700 !important; font-family: Arial, sans-serif !important; font-size: 14px !important; transition: 0.3s !important; }
+.split-series-btn:hover { background: #e67e22 !important; transform: scale(1.02); }
+
 .progress-table-wrap { overflow-x: auto; margin-top: 16px; }
-.progress-table {
-    width: 100%;
-    border-collapse: collapse;
-    background: rgba(255,255,255,0.03);
-    border-radius: 12px;
-    overflow: hidden;
-    font-size: 14px;
-}
+.progress-table { width: 100%; border-collapse: collapse; background: rgba(255,255,255,0.03); border-radius: 12px; overflow: hidden; font-size: 14px; }
 .progress-table th,
-.progress-table td {
-    border: 1px solid rgba(255,255,255,0.08);
-    padding: 10px 12px;
-    text-align: center;
-    vertical-align: middle;
-}
-.progress-table th {
-    background: rgba(255,255,255,0.06);
-    color: var(--accent);
-    font-weight: 700;
-    font-size: 14px;
-}
-.progress-table td {
-    color: var(--text-light);
-}
-.progress-table .section-name {
-    text-align: left;
-    color: var(--text-white);
-    font-weight: 600;
-}
-.progress-table .section-num {
-    color: #888;
-    font-weight: 700;
-    min-width: 40px;
-}
-.progress-table .checkbox-cell {
-    text-align: center;
-}
-.progress-table input[type="checkbox"] {
-    width: 20px;
-    height: 20px;
-    cursor: pointer;
-    accent-color: #667eea;
-    transform: scale(1.1);
-}
-.progress-table input[type="checkbox"]:checked {
-    accent-color: #2ecc71;
-}
-.progress-table .checkbox-cell.done {
-    background: rgba(46,204,113,0.08);
-}
-.progress-table .section-row {
-    transition: 0.3s;
-}
-.progress-table .section-row:hover {
-    background: rgba(255,255,255,0.05);
-}
-.progress-stats {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-    gap: 16px;
-    margin-bottom: 20px;
-}
-.progress-stats .stat-card {
-    background: rgba(255,255,255,0.03);
-    padding: 16px;
-    border-radius: 12px;
-    text-align: center;
-    border: 1px solid rgba(255,255,255,0.05);
-}
-.progress-stats .stat-card .number {
-    font-size: 28px;
-    font-weight: 900;
-    color: var(--text-white);
-}
-.progress-stats .stat-card .label {
-    color: #888;
-    font-size: 13px;
-    margin-top: 4px;
-}
-.progress-stats .stat-card .icon {
-    font-size: 24px;
-    display: block;
-    margin-bottom: 6px;
-}
-        /* ===== ОПЛАТА ЗАНЯТИЙ ===== */
+.progress-table td { border: 1px solid rgba(255,255,255,0.08); padding: 10px 12px; text-align: center; vertical-align: middle; }
+.progress-table th { background: rgba(255,255,255,0.06); color: var(--accent); font-weight: 700; font-size: 14px; }
+.progress-table td { color: var(--text-light); }
+.progress-table .section-name { text-align: left; color: var(--text-white); font-weight: 600; }
+.progress-table .section-num { color: #888; font-weight: 700; min-width: 40px; }
+.progress-table .checkbox-cell { text-align: center; }
+.progress-table input[type="checkbox"] { width: 20px; height: 20px; cursor: pointer; accent-color: #667eea; transform: scale(1.1); }
+.progress-table input[type="checkbox"]:checked { accent-color: #2ecc71; }
+.progress-table .checkbox-cell.done { background: rgba(46,204,113,0.08); }
+.progress-table .section-row { transition: 0.3s; }
+.progress-table .section-row:hover { background: rgba(255,255,255,0.05); }
+.progress-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 16px; margin-bottom: 20px; }
+.progress-stats .stat-card { background: rgba(255,255,255,0.03); padding: 16px; border-radius: 12px; text-align: center; border: 1px solid rgba(255,255,255,0.05); }
+.progress-stats .stat-card .number { font-size: 28px; font-weight: 900; color: var(--text-white); }
+.progress-stats .stat-card .label { color: #888; font-size: 13px; margin-top: 4px; }
+.progress-stats .stat-card .icon { font-size: 24px; display: block; margin-bottom: 6px; }
+
 .payment-table-wrap { overflow-x: auto; margin-top: 16px; }
-.payment-table {
-    width: 100%;
-    border-collapse: collapse;
-    background: rgba(255,255,255,0.03);
-    border-radius: 12px;
-    overflow: hidden;
-    font-size: 14px;
-}
+.payment-table { width: 100%; border-collapse: collapse; background: rgba(255,255,255,0.03); border-radius: 12px; overflow: hidden; font-size: 14px; }
 .payment-table th,
-.payment-table td {
-    border: 1px solid rgba(255,255,255,0.08);
-    padding: 10px 12px;
-    text-align: center;
-    vertical-align: middle;
-}
-.payment-table th {
-    background: rgba(255,255,255,0.06);
-    color: var(--accent);
-    font-weight: 700;
-    font-size: 14px;
-}
-.payment-table td {
-    color: var(--text-light);
-}
-.payment-table .payment-checkbox-cell {
-    text-align: center;
-}
-.payment-table input[type="checkbox"] {
-    width: 20px;
-    height: 20px;
-    cursor: pointer;
-    accent-color: #667eea;
-    transform: scale(1.1);
-}
-.payment-table input[type="checkbox"]:checked {
-    accent-color: #2ecc71;
-}
-.payment-table .payment-checkbox-cell.paid {
-    background: rgba(46,204,113,0.08);
-}
-.payment-table .row-paid {
-    background: rgba(46,204,113,0.05);
-}
-.payment-table .row-unpaid {
-    background: rgba(231,76,60,0.03);
-}
-.payment-stats {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-    gap: 16px;
-    margin-bottom: 20px;
-}
-.payment-stats .stat-card {
-    background: rgba(255,255,255,0.03);
-    padding: 16px;
-    border-radius: 12px;
-    text-align: center;
-    border: 1px solid rgba(255,255,255,0.05);
-}
-.payment-stats .stat-card .number {
-    font-size: 28px;
-    font-weight: 900;
-    color: var(--text-white);
-}
-.payment-stats .stat-card .label {
-    color: #888;
-    font-size: 13px;
-    margin-top: 4px;
-}
-.payment-stats .stat-card .icon {
-    font-size: 24px;
-    display: block;
-    margin-bottom: 6px;
-}
-.payment-stats .stat-card .number.paid {
-    color: #2ecc71;
-}
-.payment-stats .stat-card .number.unpaid {
-    color: #e74c3c;
-}
-        /* ===== ДОХОД ===== */
+.payment-table td { border: 1px solid rgba(255,255,255,0.08); padding: 10px 12px; text-align: center; vertical-align: middle; }
+.payment-table th { background: rgba(255,255,255,0.06); color: var(--accent); font-weight: 700; font-size: 14px; }
+.payment-table td { color: var(--text-light); }
+.payment-table .payment-checkbox-cell { text-align: center; }
+.payment-table input[type="checkbox"] { width: 20px; height: 20px; cursor: pointer; accent-color: #667eea; transform: scale(1.1); }
+.payment-table input[type="checkbox"]:checked { accent-color: #2ecc71; }
+.payment-table .payment-checkbox-cell.paid { background: rgba(46,204,113,0.08); }
+.payment-table .row-paid { background: rgba(46,204,113,0.05); }
+.payment-table .row-unpaid { background: rgba(231,76,60,0.03); }
+.payment-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 16px; margin-bottom: 20px; }
+.payment-stats .stat-card { background: rgba(255,255,255,0.03); padding: 16px; border-radius: 12px; text-align: center; border: 1px solid rgba(255,255,255,0.05); }
+.payment-stats .stat-card .number { font-size: 28px; font-weight: 900; color: var(--text-white); }
+.payment-stats .stat-card .label { color: #888; font-size: 13px; margin-top: 4px; }
+.payment-stats .stat-card .icon { font-size: 24px; display: block; margin-bottom: 6px; }
+.payment-stats .stat-card .number.paid { color: #2ecc71; }
+.payment-stats .stat-card .number.unpaid { color: #e74c3c; }
+
 .income-table-wrap { overflow-x: auto; margin-top: 16px; }
-.income-table {
-    width: 100%;
-    border-collapse: collapse;
-    background: rgba(255,255,255,0.03);
-    border-radius: 12px;
-    overflow: hidden;
-    font-size: 14px;
-}
+.income-table { width: 100%; border-collapse: collapse; background: rgba(255,255,255,0.03); border-radius: 12px; overflow: hidden; font-size: 14px; }
 .income-table th,
-.income-table td {
-    border: 1px solid rgba(255,255,255,0.08);
-    padding: 10px 12px;
-    text-align: center;
-    vertical-align: middle;
-}
-.income-table th {
-    background: rgba(255,255,255,0.06);
-    color: var(--accent);
-    font-weight: 700;
-    font-size: 14px;
-}
-.income-table td {
-    color: var(--text-light);
-}
-.income-table .student-name {
-    text-align: left;
-    color: var(--text-white);
-    font-weight: 600;
-}
-.income-table .income-paid {
-    color: #2ecc71;
-    font-weight: 700;
-}
-.income-table .income-unpaid {
-    color: #e74c3c;
-    font-weight: 700;
-}
-.income-table .income-total {
-    color: var(--accent);
-    font-weight: 700;
-}
-.income-row:hover {
-    background: rgba(255,255,255,0.05);
+.income-table td { border: 1px solid rgba(255,255,255,0.08); padding: 10px 12px; text-align: center; vertical-align: middle; }
+.income-table th { background: rgba(255,255,255,0.06); color: var(--accent); font-weight: 700; font-size: 14px; }
+.income-table td { color: var(--text-light); }
+.income-table .student-name { text-align: left; color: var(--text-white); font-weight: 600; }
+.income-table .income-paid { color: #2ecc71; font-weight: 700; }
+.income-table .income-unpaid { color: #e74c3c; font-weight: 700; }
+.income-table .income-total { color: var(--accent); font-weight: 700; }
+.income-row:hover { background: rgba(255,255,255,0.05); }
+
+footer { text-align: center; padding: 30px 20px; color: #666; font-size: 14px; border-top: 1px solid rgba(255,255,255,0.05); margin-top: 40px; }
+
+/* ===== АДАПТИВ ===== */
+@media (max-width: 700px) {
+    header h1 { font-size: 28px; }
+    .profile { flex-direction: column; text-align: center; }
+    .profile-avatar { width: 120px; height: 120px; }
+    .profile-avatar .avatar-emoji { font-size: 50px; }
+    .contacts a { display: block; margin: 8px 0; text-align: center; }
+    .admin-tabs { flex-direction: column; }
+    .modal-content { padding: 20px; }
+    .deadline-row { flex-direction: column; align-items: stretch; }
+    .deadline-row input[type="date"] { width: 100%; }
+    .settings-avatar-container .btn-group .admin-btn { flex: 1; }
+    .dashboard-layout { flex-direction: column; }
+    .dashboard-sidebar { width: 100%; flex-direction: row; flex-wrap: wrap; }
+    .dashboard-sidebar button { flex: 1; min-width: 120px; justify-content: center; font-size: 13px; padding: 10px 14px; }
+    .dashboard-sidebar button .badge { margin-left: 6px; }
+    .deadline-card { flex-direction: column; text-align: center; }
+    .stats-grid { grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); }
+    .section-progress { flex-direction: column; align-items: stretch; text-align: center; }
+    .section-progress .bar-wrap { min-width: 60px; }
+    .section-progress .percent { text-align: center; }
+    .activity-bars { height: 80px; }
+    .activity-bars .bar-item .bar { width: 18px; }
+    .achievement-card { font-size: 12px; padding: 6px 14px 6px 10px; }
+    .achievement-card .icon { font-size: 18px; }
+    .comment-input-wrap { flex-direction: column; }
+    .comment-input-wrap button { width: 100%; }
+    .chat-message .bubble { max-width: 85%; }
+    .chat-user-item .last-msg { max-width: 100px; }
+    .whiteboard-admin-item { flex-direction: column; align-items: stretch; }
+    .whiteboard-admin-item .student-name { min-width: unset; }
+    .whiteboard-admin-item input { min-width: unset; }
+    .whiteboard-admin-item .whiteboard-link-small { max-width: unset; }
+    .hw-tabs { flex-wrap: wrap; }
+    .hw-tab { flex: 1; min-width: 100px; text-align: center; }
+    .hw-card .hw-actions { flex-direction: column; }
+    .hw-card .hw-actions button { width: 100%; }
+    .calendar-day { min-height: 40px; font-size: 12px; }
+    .calendar-day .day-number { font-size: 11px; }
+    .calendar-day .lesson-indicator { font-size: 12px; }
+    .calendar-day .lesson-topic { font-size: 7px; }
+    .calendar-controls { gap: 8px; }
+    #calendarMonth { font-size: 14px; min-width: 100px; }
+    .plan-settings { grid-template-columns: 1fr; }
+    .template-card { padding: 16px; }
+    .student-calendar-day { min-height: 40px; font-size: 11px; padding: 4px; }
+    .student-calendar-day .day-number { font-size: 12px; }
+    .student-calendar-day .lesson-topic-label { font-size: 7px; }
+    .student-calendar-grid { padding: 8px; gap: 4px; }
+    .schedule-table { font-size: 12px; }
+    .schedule-table th, .schedule-table td { padding: 6px 4px; min-width: 60px; }
+    #adminLessonModal .action-buttons { flex-direction: column; }
+    #adminLessonModal .move-section .move-row { flex-direction: column; }
+    #adminLessonModal .move-section .move-row input[type="date"] { width: 100%; }
+
+    /* АДАПТИВ ДЛЯ НОВЫХ КАРТОЧЕК */
+    .section-card {
+        padding: 12px 16px;
+        min-height: 46px;
+        border-radius: 10px;
+    }
+    .section-card .section-number { font-size: 15px; min-width: 24px; }
+    .section-card .section-name { font-size: 13px; }
+    .section-card .video-count { font-size: 12px; padding: 2px 10px; }
+    .section-card .video-count .count-number { font-size: 13px; }
+    .part-divider { font-size: 17px; padding: 10px 16px; margin: 20px 0 10px 0; }
 }
     </style>
 </head>
