@@ -97,112 +97,128 @@
         .theory-item .theory-meta { color: #666; font-size: 13px; margin-top: 8px; }
         .theory-item .theory-actions { margin-top: 12px; display: flex; gap: 8px; flex-wrap: wrap; }
 
- 
-  /* ===== СЕТКА РАЗДЕЛОВ (ОДНА КОЛОНКА) ===== */
+
+  
+/* ===== СЕТКА РАЗДЕЛОВ (НА ВСЮ ШИРИНУ) ===== */
 .section-grid {
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 8px;
     margin-bottom: 24px;
-    max-width: 600px;  /* Чтобы карточки не растягивались на всю ширину */
+    width: 100%;
 }
 
-    /* ===== КАРТОЧКА РАЗДЕЛА ===== */
-    .section-card {
-        background: var(--glass-bg);
-        backdrop-filter: blur(12px);
-        border: 1px solid var(--glass-border);
-        border-radius: 14px;
-        padding: 16px 20px;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        cursor: pointer;
-        min-height: 60px;
-    }
-    
-    .section-card:hover {
-        transform: translateY(-2px);
-        border-color: var(--primary);
-        box-shadow: 0 8px 30px rgba(108, 99, 255, 0.15);
-        background: rgba(255, 255, 255, 0.08);
-    }
-    
-    .section-card:active {
-        transform: scale(0.98);
-    }
-    
-    .section-card .section-left {
-        display: flex;
-        align-items: center;
-        gap: 14px;
-        flex: 1;
-        min-width: 0;
-    }
-    
-    .section-card .section-number {
-        font-size: 18px;
-        font-weight: 800;
-        color: var(--primary-light);
-        min-width: 32px;
-        text-align: center;
-        font-variant-numeric: tabular-nums;
-    }
-    
-    .section-card .section-name {
-        font-size: 15px;
-        font-weight: 600;
-        color: var(--text-primary);
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }
-    
-    .section-card .section-right {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        flex-shrink: 0;
-    }
-    
-    .section-card .video-count {
-        display: flex;
-        align-items: center;
-        gap: 6px;
-        font-size: 14px;
-        color: var(--text-secondary);
-        font-weight: 500;
-        background: rgba(255, 255, 255, 0.05);
-        padding: 4px 14px;
-        border-radius: 50px;
-        border: 1px solid rgba(255, 255, 255, 0.06);
-    }
-    
-    .section-card .video-count .count-number {
-        font-weight: 700;
-        color: var(--text-primary);
-        font-size: 16px;
-    }
-    
-    .section-card .video-count .video-icon {
-        font-size: 14px;
-    }
-   /* ===== АДАПТИВ ===== */
+/* ===== КАРТОЧКА РАЗДЕЛА (НА ВСЮ ШИРИНУ) ===== */
+.section-card {
+    background: var(--glass-bg);
+    backdrop-filter: blur(12px);
+    border: 1px solid var(--glass-border);
+    border-radius: 12px;
+    padding: 16px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
+    min-height: 56px;
+    width: 100%;
+}
+
+.section-card:hover {
+    transform: translateX(4px);
+    border-color: var(--primary);
+    box-shadow: 0 4px 20px rgba(108, 99, 255, 0.12);
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.section-card:active {
+    transform: scale(0.99);
+}
+
+/* Левая часть — номер и название */
+.section-card .section-left {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex: 1;
+    min-width: 0;
+}
+
+.section-card .section-number {
+    font-size: 18px;
+    font-weight: 800;
+    color: var(--primary-light);
+    min-width: 32px;
+    text-align: center;
+}
+
+.section-card .section-name {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text-primary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Правая часть — количество видео */
+.section-card .section-right {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+}
+
+.section-card .video-count {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 14px;
+    color: var(--text-secondary);
+    font-weight: 500;
+    background: rgba(255, 255, 255, 0.05);
+    padding: 4px 16px;
+    border-radius: 50px;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.section-card .video-count .count-number {
+    font-weight: 700;
+    color: var(--text-primary);
+    font-size: 16px;
+}
+
+.section-card .video-count .video-icon {
+    font-size: 14px;
+}
+
+/* ===== РАЗДЕЛИТЕЛЬ ЧАСТЕЙ (НА ВСЮ ШИРИНУ) ===== */
+.part-divider {
+    font-size: 22px;
+    font-weight: 900;
+    color: var(--accent-gold);
+    margin: 32px 0 16px 0;
+    padding: 14px 24px;
+    background: rgba(255, 217, 61, 0.06);
+    border-radius: 12px;
+    border-left: 5px solid var(--accent-gold);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+}
+
+/* ===== АДАПТИВ ===== */
 @media (max-width: 600px) {
-    .section-grid {
-        max-width: 100%;
-        gap: 8px;
-    }
-    
     .section-card {
-        padding: 14px 18px;
-        min-height: 54px;
+        padding: 14px 16px;
+        min-height: 48px;
+        border-radius: 10px;
     }
     
     .section-card .section-number {
         font-size: 15px;
-        min-width: 28px;
+        min-width: 26px;
     }
     
     .section-card .section-name {
@@ -216,6 +232,11 @@
     
     .section-card .video-count .count-number {
         font-size: 14px;
+    }
+    
+    .part-divider {
+        font-size: 18px;
+        padding: 12px 18px;
     }
 }
     /* ===== РАЗДЕЛИТЕЛЬ ЧАСТЕЙ ===== */
