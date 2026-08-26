@@ -2001,15 +2001,18 @@
     </div>
 </div>
 
-            <!-- ВИДЕОУРОКИ -->
-            <div class="video-section" style="margin-top:40px;">
-                <h3>🎥 Видеоуроки по темам</h3>
-                <div class="part-divider">📘 Первая часть</div>
-                <div class="video-tabs" id="videoTabsPart1"></div>
-                <div class="part-divider">📗 Вторая часть</div>
-                <div class="video-tabs" id="videoTabsPart2"></div>
-            </div>
-        </div>
+          <!-- ВИДЕОУРОКИ -->
+<div class="video-section" style="margin-top:40px;">
+    <h3>🎥 Видеоуроки по темам</h3>
+    
+    <!-- ПЕРВАЯ ЧАСТЬ (1-12) -->
+    <div class="part-divider">📘 Первая часть</div>
+    <div class="section-grid" id="sectionGridPart1"></div>
+    
+    <!-- ВТОРАЯ ЧАСТЬ (13-19) -->
+    <div class="part-divider">📗 Вторая часть</div>
+    <div class="section-grid" id="sectionGridPart2"></div>
+</div>
 
         <!-- СТРАНИЦА РАЗДЕЛА -->
         <div id="sectionPage">
@@ -4075,77 +4078,109 @@
                 })
                 .catch(function(err) { alert('❌ Ошибка: ' + err.message); });
         };
+// ==========================================
+// ===== ОТОБРАЖЕНИЕ РАЗДЕЛОВ КАРТОЧКАМИ =====
+// ==========================================
 
-        // ==========================================
-        // ВИДЕОРАЗДЕЛЫ (с кешированием)
-        // ==========================================
+window.renderSectionCards = function() {
+    if (!sections || sections.length === 0) {
+        document.getElementById('sectionGridPart1').innerHTML = 
+            '<p style="color:var(--text-muted); text-align:center; padding:30px;">📭 Нет разделов</p>';
+        document.getElementById('sectionGridPart2').innerHTML = 
+            '<p style="color:var(--text-muted); text-align:center; padding:30px;">📭 Нет разделов</p>';
+        return;
+    }
 
-        window.loadSectionsAndVideos = function() {
-            var tabsContainer1 = document.getElementById('videoTabsPart1');
-            var tabsContainer2 = document.getElementById('videoTabsPart2');
-            
-            var cached = getCache('sections');
-            if (cached) {
-                sections = cached;
-                renderVideoTabs();
-                return;
+    // Разделяем на первую и вторую часть
+    var part1 = sections.slice(0, 12);  // 1-12
+    var part2 = sections.slice(12);     // 13-19
+
+    // Загружаем видео для подсчёта
+    supabase
+        .from('videos')
+        .select('section_id')
+        .then(function(response) {
+            var videoCounts = {};
+            if (response.data) {
+                response.data.forEach(function(v) {
+                    videoCounts[v.section_id] = (videoCounts[v.section_id] || 0) + 1;
+                });
             }
             
-            tabsContainer1.innerHTML = '⏳ Загрузка...';
-            tabsContainer2.innerHTML = '⏳ Загрузка...';
-            supabase
-                .from('video_sections')
-                .select('id, name, order_num')
-                .order('order_num', { ascending: true })
-                .then(function(response) {
-                    if (response.error) { tabsContainer1.innerHTML = '❌ Ошибка: ' + response.error.message; return; }
-                    sections = response.data || [];
-                    setCache('sections', sections);
-                    if (sections.length === 0) {
-                        tabsContainer1.innerHTML = '📭 Нет разделов. Добавьте их в базе.';
-                        tabsContainer2.innerHTML = '📭 Нет разделов. Добавьте их в базе.';
-                        return;
-                    }
-                    renderVideoTabs();
-                })
-                .catch(function(err) { tabsContainer1.innerHTML = '❌ Ошибка: ' + err.message; });
-        };
+            // Рендерим первую часть
+            renderSectionGrid('sectionGridPart1', part1, videoCounts);
+            // Рендерим вторую часть
+            renderSectionGrid('sectionGridPart2', part2, videoCounts);
+        })
+        .catch(function(err) {
+            console.error('Ошибка загрузки видео:', err);
+            // Рендерим без подсчёта
+            renderSectionGrid('sectionGridPart1', part1, {});
+            renderSectionGrid('sectionGridPart2', part2, {});
+        });
+};
 
-        window.renderVideoTabs = function() {
-            var tabsContainer1 = document.getElementById('videoTabsPart1');
-            var tabsContainer2 = document.getElementById('videoTabsPart2');
-            if (!sections || sections.length === 0) {
-                tabsContainer1.innerHTML = '📭 Нет разделов';
-                tabsContainer2.innerHTML = '📭 Нет разделов';
+// Рендер одной сетки
+function renderSectionGrid(containerId, sectionsList, videoCounts) {
+    var container = document.getElementById(containerId);
+    if (!container) return;
+    
+    if (!sectionsList || sectionsList.length === 0) {
+        container.innerHTML = '<p style="color:var(--text-muted); text-align:center; padding:20px;">📭 Нет разделов</p>';
+        return;
+    }
+    
+    var html = '';
+    sectionsList.forEach(function(section) {
+        var count = videoCounts[section.id] || 0;
+        
+        html += `
+            <div class="section-card" onclick="window.openSection('${section.id}')">
+                <div class="section-left">
+                    <span class="section-number">${section.order_num}</span>
+                    <span class="section-name">${section.name}</span>
+                </div>
+                <div class="section-right">
+                    <span class="video-count">
+                        <span class="video-icon">🎬</span>
+                        <span class="count-number">${count}</span>
+                    </span>
+                </div>
+            </div>
+        `;
+    });
+    
+    container.innerHTML = html;
+}
+// ==========================================
+// ===== ЗАГРУЗКА РАЗДЕЛОВ И ВИДЕО =====
+// ==========================================
+
+window.loadSectionsAndVideos = function() {
+    var cached = getCache('sections');
+    if (cached) {
+        sections = cached;
+        window.renderSectionCards();  // <-- ВЫЗЫВАЕМ НОВУЮ ФУНКЦИЮ
+        return;
+    }
+    
+    supabase
+        .from('video_sections')
+        .select('id, name, order_num')
+        .order('order_num', { ascending: true })
+        .then(function(response) {
+            if (response.error) {
+                console.error('Ошибка загрузки разделов:', response.error);
                 return;
             }
-            var part1 = sections.slice(0, 12);
-            var part2 = sections.slice(12);
-            
-            var fragment1 = document.createDocumentFragment();
-            var fragment2 = document.createDocumentFragment();
-            
-            part1.forEach(function(section, index) {
-                var num = index + 1;
-                var btn = document.createElement('button');
-                btn.innerHTML = '<span class="num">' + num + '</span> ' + section.name;
-                btn.onclick = function() { window.openSection(section.id); };
-                fragment1.appendChild(btn);
-            });
-            
-            part2.forEach(function(section, index) {
-                var num = index + 13;
-                var btn = document.createElement('button');
-                btn.innerHTML = '<span class="num">' + num + '</span> ' + section.name;
-                btn.onclick = function() { window.openSection(section.id); };
-                fragment2.appendChild(btn);
-            });
-            
-            tabsContainer1.innerHTML = '';
-            tabsContainer2.innerHTML = '';
-            tabsContainer1.appendChild(fragment1);
-            tabsContainer2.appendChild(fragment2);
-        };
+            sections = response.data || [];
+            setCache('sections', sections);
+            window.renderSectionCards();  // <-- ВЫЗЫВАЕМ НОВУЮ ФУНКЦИЮ
+        })
+        .catch(function(err) {
+            console.error('Ошибка:', err);
+        });
+};
                 // ==========================================
         // ДОМАШНИЕ ЗАДАНИЯ (СТУДЕНТ) С ПРИКРЕПЛЕНИЕМ ФАЙЛОВ
         // ==========================================
