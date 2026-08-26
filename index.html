@@ -824,22 +824,6 @@ footer { text-align: center; padding: 30px 20px; color: #666; font-size: 14px; b
     .section-card .video-count .count-number { font-size: 13px; }
     .part-divider { font-size: 17px; padding: 10px 16px; margin: 20px 0 10px 0; }
 }
-        /* ===== ВРЕМЕННОЕ ОТЛАДОЧНОЕ ПРАВИЛО ===== */
-#sectionPage {
-    display: block !important;
-    background: red !important;
-}
-
-.video-item {
-    display: block !important;
-    border: 3px solid yellow !important;
-}
-
-.video-player-wrapper {
-    display: block !important;
-    min-height: 200px !important;
-    background: blue !important;
-}
     </style>
 </head>
 <body>
@@ -3382,31 +3366,7 @@ function renderSectionGrid(containerId, sectionsList, videoCounts) {
 // ===== ЗАГРУЗКА РАЗДЕЛОВ И ВИДЕО =====
 // ==========================================
 
-window.loadSectionsAndVideos = function() {
-    var cached = getCache('sections');
-    if (cached) {
-        sections = cached;
-        window.renderSectionCards();  // <-- ВЫЗЫВАЕМ НОВУЮ ФУНКЦИЮ
-        return;
-    }
-    
-    supabase
-        .from('video_sections')
-        .select('id, name, order_num')
-        .order('order_num', { ascending: true })
-        .then(function(response) {
-            if (response.error) {
-                console.error('Ошибка загрузки разделов:', response.error);
-                return;
-            }
-            sections = response.data || [];
-            setCache('sections', sections);
-            window.renderSectionCards();  // <-- ВЫЗЫВАЕМ НОВУЮ ФУНКЦИЮ
-        })
-        .catch(function(err) {
-            console.error('Ошибка:', err);
-        });
-};
+
                 // ==========================================
         // ДОМАШНИЕ ЗАДАНИЯ (СТУДЕНТ) С ПРИКРЕПЛЕНИЕМ ФАЙЛОВ
         // ==========================================
