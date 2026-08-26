@@ -986,12 +986,139 @@
         .my-students-table .status-badge { padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; }
         .my-students-table .status-badge.active { background: rgba(46,204,113,0.2); color: #2ecc71; }
         .my-students-table .status-badge.inactive { background: rgba(231,76,60,0.2); color: #f1948a; }
+#sectionPage {
+    display: none;
+    background: var(--bg-card);
+    backdrop-filter: blur(10px);
+    border-radius: var(--radius);
+    padding: 30px 40px;
+    border: 1px solid rgba(255,255,255,0.1);
+    margin-top: 40px;
+}
 
-        #sectionPage { display: none; background: var(--bg-card); backdrop-filter: blur(10px); border-radius: var(--radius); padding: 30px 40px; border: 1px solid rgba(255,255,255,0.1); margin-top: 40px; }
-        #sectionPage.active { display: block; }
-        #sectionPage .back-btn { background: none; border: none; color: var(--accent); font-size: 18px; cursor: pointer; font-weight: 600; padding: 10px 0; transition: var(--transition); display: block; text-align: left; }
-        #sectionPage .back-btn:hover { color: var(--text-white); }
-        #sectionPage .section-title { font-size: 32px; color: var(--accent); margin-bottom: 30px; text-align: center; text-shadow: 0 0 30px rgba(245,166,35,0.2); }
+#sectionPage.active {
+    display: block;
+}
+
+#sectionPage .back-btn {
+    background: none;
+    border: none;
+    color: var(--accent);
+    font-size: 18px;
+    cursor: pointer;
+    font-weight: 600;
+    padding: 10px 0;
+    transition: var(--transition);
+    display: block;
+    text-align: left;
+    font-family: inherit;
+}
+
+#sectionPage .back-btn:hover {
+    color: var(--text-white);
+}
+
+#sectionPage .section-title {
+    font-size: 32px;
+    color: var(--accent);
+    margin-bottom: 30px;
+    text-align: center;
+    text-shadow: 0 0 30px rgba(245,166,35,0.2);
+}
+
+/* Стили для видео внутри раздела */
+.video-item {
+    padding: 20px;
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 16px;
+    margin-bottom: 16px;
+    background: rgba(255,255,255,0.05);
+}
+
+.video-player-wrapper {
+    position: relative;
+    padding-bottom: 56.25%;
+    height: 0;
+    overflow: hidden;
+    border-radius: var(--radius-sm);
+    margin-bottom: 12px;
+    background: #000;
+}
+
+.video-player-wrapper video,
+.video-player-wrapper iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: none;
+    border-radius: var(--radius-sm);
+}
+
+.video-item .video-title {
+    color: var(--text-light);
+    font-size: 18px;
+    font-weight: 500;
+    display: block;
+    margin-bottom: 8px;
+}
+
+.video-item .video-homework {
+    margin-top: 16px;
+    padding: 16px 20px;
+    background: rgba(39,174,96,0.1);
+    border-radius: var(--radius-sm);
+    border-left: 4px solid var(--success);
+    color: #7ddfa0;
+    font-size: 16px;
+}
+
+.video-item .video-homework strong {
+    color: var(--text-white);
+}
+
+.video-item .video-fallback-link {
+    margin-top: 12px;
+    padding: 10px 14px;
+    background: rgba(245,166,35,0.08);
+    border-radius: 8px;
+    border-left: 4px solid var(--accent);
+}
+
+.video-item .video-fallback-link .label {
+    color: var(--accent);
+    font-weight: 600;
+}
+
+.video-item .video-fallback-link a {
+    color: #88ccff;
+    word-break: break-all;
+    text-decoration: none;
+}
+
+.video-item .video-fallback-link a:hover {
+    text-decoration: underline;
+}
+
+.empty-state .icon {
+    font-size: 48px;
+    display: block;
+    margin-bottom: 12px;
+}
+
+.empty-state .title {
+    font-size: 18px;
+    color: var(--text-light);
+    font-weight: 600;
+}
+
+.empty-state .desc {
+    font-size: 14px;
+    color: #666;
+    margin-top: 4px;
+}
+      
 
         .section-progress { background: rgba(255,255,255,0.03); border-radius: var(--radius-sm); padding: 14px 18px; margin-bottom: 10px; border: 1px solid rgba(255,255,255,0.05); display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
         .section-progress .name { min-width: 140px; color: var(--text-light); font-weight: 600; font-size: 14px; }
