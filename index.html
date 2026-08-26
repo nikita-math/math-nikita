@@ -4044,8 +4044,57 @@
         // ==========================================
         // ВИДЕОРАЗДЕЛЫ (с кешированием)
         // ==========================================
+        window.renderVideoTabs = function(videoMap) {
+    var container1 = document.getElementById('videoTabsPart1');
+    var container2 = document.getElementById('videoTabsPart2');
 
-      window.loadSectionsAndVideos = function() {
+    if (!container1 || !container2) {
+        console.log('❌ Контейнеры не найдены');
+        return;
+    }
+
+    if (!sections || sections.length === 0) {
+        container1.innerHTML = '<div style="color:#666; text-align:center; padding:20px;">📭 Нет разделов</div>';
+        container2.innerHTML = '';
+        return;
+    }
+
+    // 👇 ЗАЩИТА: если videoMap нет, создаём пустой объект
+    if (!videoMap) {
+        videoMap = {};
+    }
+
+    var part1 = sections.slice(0, 12);
+    var part2 = sections.slice(12);
+
+    function buildList(part) {
+        var html = '<div class="section-list">';
+        part.forEach(function(section) {
+            var num = sections.indexOf(section) + 1;
+            // 👇 БЕЗОПАСНОЕ ПОЛУЧЕНИЕ КОЛИЧЕСТВА
+            var count = (videoMap && videoMap[section.id]) ? videoMap[section.id] : 0;
+
+            html += `
+                <div class="section-list-item" onclick="window.openSection('${section.id}')">
+                    <div class="left">
+                        <span class="num">№${num}</span>
+                        <span class="name">${section.name}</span>
+                    </div>
+                    <div class="count">
+                        📹 <span>${count}</span> видео
+                    </div>
+                </div>
+            `;
+        });
+        html += '</div>';
+        return html;
+    }
+
+    container1.innerHTML = buildList(part1);
+    container2.innerHTML = buildList(part2);
+};
+
+window.loadSectionsAndVideos = function() {
     var container1 = document.getElementById('videoTabsPart1');
     var container2 = document.getElementById('videoTabsPart2');
 
@@ -4069,19 +4118,23 @@
                 .select('section_id')
                 .then(function(videoRes) {
                     var videoMap = {};
-                    if (videoRes.data) {
+                    if (videoRes.data && videoRes.data.length > 0) {
                         videoRes.data.forEach(function(v) {
                             if (!videoMap[v.section_id]) videoMap[v.section_id] = 0;
                             videoMap[v.section_id]++;
                         });
                     }
+                    // 👇 ВСЕГДА ПЕРЕДАЁМ ОБЪЕКТ (даже пустой)
                     window.renderVideoTabs(videoMap);
                 })
-                .catch(function() {
+                .catch(function(err) {
+                    console.error('Ошибка загрузки видео:', err);
+                    // 👇 ПЕРЕДАЁМ ПУСТОЙ ОБЪЕКТ ПРИ ОШИБКЕ
                     window.renderVideoTabs({});
                 });
         })
         .catch(function(err) {
+            console.error('Ошибка загрузки разделов:', err);
             if (container1) container1.innerHTML = '❌ Ошибка: ' + err.message;
         });
 };
