@@ -97,13 +97,15 @@
         .theory-item .theory-meta { color: #666; font-size: 13px; margin-top: 8px; }
         .theory-item .theory-actions { margin-top: 12px; display: flex; gap: 8px; flex-wrap: wrap; }
 
-    /* ===== СЕТКА РАЗДЕЛОВ ===== */
-    .section-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-        gap: 12px;
-        margin-bottom: 24px;
-    }
+ 
+  /* ===== СЕТКА РАЗДЕЛОВ (ОДНА КОЛОНКА) ===== */
+.section-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 24px;
+    max-width: 600px;  /* Чтобы карточки не растягивались на всю ширину */
+}
 
     /* ===== КАРТОЧКА РАЗДЕЛА ===== */
     .section-card {
@@ -186,38 +188,36 @@
     .section-card .video-count .video-icon {
         font-size: 14px;
     }
-    
-    /* ===== АДАПТИВ ===== */
-    @media (max-width: 600px) {
-        .section-grid {
-            grid-template-columns: 1fr;
-            gap: 10px;
-        }
-        
-        .section-card {
-            padding: 14px 16px;
-            min-height: 52px;
-        }
-        
-        .section-card .section-number {
-            font-size: 15px;
-            min-width: 24px;
-        }
-        
-        .section-card .section-name {
-            font-size: 13px;
-        }
-        
-        .section-card .video-count {
-            font-size: 12px;
-            padding: 3px 10px;
-        }
-        
-        .section-card .video-count .count-number {
-            font-size: 14px;
-        }
+   /* ===== АДАПТИВ ===== */
+@media (max-width: 600px) {
+    .section-grid {
+        max-width: 100%;
+        gap: 8px;
     }
     
+    .section-card {
+        padding: 14px 18px;
+        min-height: 54px;
+    }
+    
+    .section-card .section-number {
+        font-size: 15px;
+        min-width: 28px;
+    }
+    
+    .section-card .section-name {
+        font-size: 14px;
+    }
+    
+    .section-card .video-count {
+        font-size: 13px;
+        padding: 3px 12px;
+    }
+    
+    .section-card .video-count .count-number {
+        font-size: 14px;
+    }
+}
     /* ===== РАЗДЕЛИТЕЛЬ ЧАСТЕЙ ===== */
     .part-divider {
         font-size: 22px;
