@@ -3343,7 +3343,7 @@
     
     // Удаляем всё связанное
     supabase
-        .from('lesson_series')          // 👈 ДОБАВЛЯЕМ УДАЛЕНИЕ СЕРИЙ
+        .from('lesson_series')
         .delete()
         .eq('student_id', id)
         .then(function() {
@@ -3360,6 +3360,9 @@
         })
         .then(function() {
             return supabase.from('homeworks').delete().eq('student_id', id);
+        })
+        .then(function() {
+            return supabase.from('mock_test_results').delete().eq('student_id', id);  // 👈 ДОБАВЛЯЕМ
         })
         .then(function() {
             return supabase.from('messages').delete().or('sender_id.eq.' + id + ',receiver_id.eq.' + id);
@@ -3380,7 +3383,6 @@
             alert('❌ Ошибка: ' + err.message);
         });
 };
-
         // ==========================================
         // ===== ОНЛАЙН-ДОСКИ (students) =====
         // ==========================================
