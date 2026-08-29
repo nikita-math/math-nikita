@@ -3338,14 +3338,17 @@
             container.innerHTML = html;
         }
 
-  window.deleteStudent = function(id) {
+window.deleteStudent = function(id) {
     if (!confirm('Удалить ученика? Будут удалены все его занятия, оплаты и прогресс.')) return;
     
     // Удаляем всё связанное
     supabase
-        .from('lesson_series')
+        .from('admin_reminders')          // 👈 ДОБАВЛЯЕМ
         .delete()
         .eq('student_id', id)
+        .then(function() {
+            return supabase.from('lesson_series').delete().eq('student_id', id);
+        })
         .then(function() {
             return supabase.from('lesson_calendar').delete().eq('student_id', id);
         })
@@ -3362,7 +3365,7 @@
             return supabase.from('homeworks').delete().eq('student_id', id);
         })
         .then(function() {
-            return supabase.from('mock_test_results').delete().eq('student_id', id);  // 👈 ДОБАВЛЯЕМ
+            return supabase.from('mock_test_results').delete().eq('student_id', id);
         })
         .then(function() {
             return supabase.from('messages').delete().or('sender_id.eq.' + id + ',receiver_id.eq.' + id);
