@@ -7604,39 +7604,44 @@ window.switchAdminTab = function(tab) {
                 // ==========================================
         // УДАЛЕНИЕ СЕРИИ ИЗ МОДАЛКИ
         // ==========================================
-        window.deleteSeriesFromModal = function() {
-            if (!adminCurrentLessonData) {
-                alert('❌ Нет данных о занятии');
+     window.deleteSeries = function(seriesId) {
+    if (!confirm('🗑 Удалить ВСЮ серию занятий?\n\nЭто действие удалит все занятия в этой серии (включая текущее). Отменить будет нельзя!')) {
+        return;
+    }
+    
+    // Сначала удаляем ВСЕ занятия, связанные с этой серией
+    supabase
+        .from('lesson_calendar')
+        .delete()
+        .eq('series_id', seriesId)
+        .then(function(response) {
+            if (response.error) {
+                alert('❌ Ошибка удаления занятий: ' + response.error.message);
                 return;
             }
+            console.log('✅ Удалены занятия из календаря для серии:', seriesId);
             
-            var seriesId = adminCurrentLessonData.series_id;
-            if (!seriesId) {
-                alert('❌ Это занятие не принадлежит серии');
-                return;
-            }
-            
-            if (!confirm('🗑 Удалить ВСЮ серию занятий?\n\nЭто действие удалит все занятия в этой серии (включая текущее). Отменить будет нельзя!')) {
-                return;
-            }
-            
+            // Теперь удаляем саму серию
             supabase
                 .from('lesson_series')
                 .delete()
                 .eq('id', seriesId)
-                .then(function(response) {
-                    if (response.error) {
-                        alert('❌ Ошибка удаления серии: ' + response.error.message);
+                .then(function(seriesResponse) {
+                    if (seriesResponse.error) {
+                        alert('❌ Ошибка удаления серии: ' + seriesResponse.error.message);
                         return;
                     }
-                    alert('✅ Серия успешно удалена!');
-                    window.closeAdminLessonModal();
+                    alert('✅ Серия и все её занятия удалены!');
                     window.renderCalendar(currentMonth);
                 })
                 .catch(function(err) {
                     alert('❌ Ошибка: ' + err.message);
                 });
-        };
+        })
+        .catch(function(err) {
+            alert('❌ Ошибка: ' + err.message);
+        });
+};
                 // ==========================================
         // ДОБАВЛЕНИЕ ЗАНЯТИЯ НА ДАТУ
         // ==========================================
