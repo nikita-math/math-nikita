@@ -7852,8 +7852,14 @@ window.switchAdminTab = function(tab) {
             window.closeAdminLessonModal();
             window.showSplitSeriesModal(seriesId);
         };
-       
-  window.saveLessonSeries = function() {
+window.saveLessonSeries = function() {
+    // БЛОКИРУЕМ ПОВТОРНЫЙ ВЫЗОВ
+    if (window._isSavingLesson) {
+        console.log('⚠️ Уже идёт создание серии, пропускаем');
+        return;
+    }
+    window._isSavingLesson = true;
+    
     var studentId = document.getElementById('lessonStudent').value;
     var sectionId = document.getElementById('lessonSection').value || null;
     var startTime = document.getElementById('lessonStartTime').value;
@@ -7868,13 +7874,14 @@ window.switchAdminTab = function(tab) {
         selectedDays.push(parseInt(cb.value));
     });
     
-    if (!studentId) { alert('❌ Выберите ученика'); return; }
-    if (selectedDays.length === 0) { alert('❌ Выберите хотя бы один день недели'); return; }
-    if (!startTime) { alert('❌ Введите время начала'); return; }
-    if (!startDate || !endDate) { alert('❌ Введите даты'); return; }
+    if (!studentId) { alert('❌ Выберите ученика'); window._isSavingLesson = false; return; }
+    if (selectedDays.length === 0) { alert('❌ Выберите хотя бы один день недели'); window._isSavingLesson = false; return; }
+    if (!startTime) { alert('❌ Введите время начала'); window._isSavingLesson = false; return; }
+    if (!startDate || !endDate) { alert('❌ Введите даты'); window._isSavingLesson = false; return; }
     
     if (new Date(startDate) > new Date(endDate)) {
         alert('❌ Дата первого занятия не может быть позже даты последнего занятия');
+        window._isSavingLesson = false;
         return;
     }
     
@@ -7901,6 +7908,10 @@ window.switchAdminTab = function(tab) {
         notes: notes
     };
     
+    console.log('📝 Создаём серию для ученика:', studentId);
+    console.log('📅 Дни:', selectedDays);
+    console.log('📅 Период:', startDate, '-', endDate);
+    
     supabase
         .from('lesson_series')
         .insert([seriesData])
@@ -7908,16 +7919,18 @@ window.switchAdminTab = function(tab) {
         .then(function(response) {
             if (response.error) {
                 alert('❌ Ошибка создания серии: ' + response.error.message);
+                window._isSavingLesson = false;
                 return;
             }
             
             var series = response.data[0];
             var seriesId = series.id;
+            console.log('✅ Серия создана, ID:', seriesId);
             
             // Генерируем даты для занятий
             var currentDate = new Date(startDate);
             var end = new Date(endDate);
-            var lessonPromises = [];
+            var lessonsToCreate = [];
             var createdDates = [];
             
             while (currentDate <= end) {
@@ -7928,48 +7941,55 @@ window.switchAdminTab = function(tab) {
                     var dateStr = formatDateSQL(currentDate);
                     createdDates.push(dateStr);
                     
-                    lessonPromises.push(
-                        supabase
-                            .from('lesson_calendar')
-                            .insert([{
-                                student_id: studentId,
-                                section_id: sectionId || null,
-                                lesson_date: dateStr,
-                                topic: topic,
-                                start_time: startTime,
-                                end_time: endTime || null,
-                                notes: notes || null,
-                                status: 'planned',
-                                series_id: seriesId
-                            }])
-                    );
+                    lessonsToCreate.push({
+                        student_id: studentId,
+                        section_id: sectionId || null,
+                        lesson_date: dateStr,
+                        topic: topic,
+                        start_time: startTime,
+                        end_time: endTime || null,
+                        notes: notes || null,
+                        status: 'planned',
+                        series_id: seriesId
+                    });
                 }
                 currentDate.setDate(currentDate.getDate() + 1);
             }
             
-            Promise.all(lessonPromises)
-                .then(function(results) {
-                    var errors = results.filter(function(r) { return r.error; });
-                    if (errors.length > 0) {
-                        alert('⚠️ Серия создана, но часть занятий не создалась: ' + errors[0].error.message);
-                    } else {
-                        alert('✅ Серия создана! ' + createdDates.length + ' занятий добавлено');
-                    }
-                    window.closeAddLessonModal();
-                    window.renderCalendar(currentMonth);
-                })
-                .catch(function(err) {
-                    alert('❌ Ошибка создания занятий: ' + err.message);
-                });
+            console.log('📚 Создаём занятий:', lessonsToCreate.length);
+            console.log('📅 Даты:', createdDates);
+            
+            // СОЗДАЁМ ВСЕ ЗАНЯТИЯ ОДНИМ ЗАПРОСОМ!
+            if (lessonsToCreate.length > 0) {
+                supabase
+                    .from('lesson_calendar')
+                    .insert(lessonsToCreate)
+                    .then(function(insertRes) {
+                        window._isSavingLesson = false;
+                        if (insertRes.error) {
+                            alert('⚠️ Ошибка создания занятий: ' + insertRes.error.message);
+                            return;
+                        }
+                        alert('✅ Серия создана! ' + lessonsToCreate.length + ' занятий добавлено');
+                        window.closeAddLessonModal();
+                        window.renderCalendar(currentMonth);
+                    })
+                    .catch(function(err) {
+                        window._isSavingLesson = false;
+                        alert('❌ Ошибка: ' + err.message);
+                    });
+            } else {
+                window._isSavingLesson = false;
+                alert('⚠️ Нет дат для создания занятий');
+                window.closeAddLessonModal();
+                window.renderCalendar(currentMonth);
+            }
         })
         .catch(function(err) {
+            window._isSavingLesson = false;
             alert('❌ Ошибка: ' + err.message);
         });
 };
-                // ==========================================
-        // ===== ФУНКЦИИ ДЛЯ МОДАЛКИ УПРАВЛЕНИЯ ЗАНЯТИЕМ =====
-        // ==========================================
-
         // Открыть модалку управления занятием
         window.openAdminLessonModal = function(lessonId) {
             console.log('🔍 Открываем занятие:', lessonId);
