@@ -7868,6 +7868,7 @@ window.saveLessonSeries = function() {
     var endDate = document.getElementById('lessonEndDate').value;
     var notes = document.getElementById('lessonNotes').value || null;
     
+    // ПОЛУЧАЕМ ВЫБРАННЫЕ ДНИ (НО ИСПОЛЬЗУЕМ ТОЛЬКО ПЕРВЫЙ!)
     var dayCheckboxes = document.querySelectorAll('.series-day:checked');
     var selectedDays = [];
     dayCheckboxes.forEach(function(cb) {
@@ -7895,10 +7896,13 @@ window.saveLessonSeries = function() {
         topic = prompt('Введите тему занятия (или оставьте пустым):') || null;
     }
     
-    // СОЗДАЁМ СЕРИЮ
+    // 👇 БЕРЁМ ТОЛЬКО ПЕРВЫЙ ВЫБРАННЫЙ ДЕНЬ
+    var mainDay = selectedDays[0];
+    
+    // СОЗДАЁМ ОДНУ СЕРИЮ
     var seriesData = {
         student_id: studentId,
-        day_of_week: selectedDays[0],
+        day_of_week: mainDay,
         start_time: startTime,
         end_time: endTime,
         section_id: sectionId,
@@ -7909,8 +7913,9 @@ window.saveLessonSeries = function() {
     };
     
     console.log('📝 Создаём серию для ученика:', studentId);
-    console.log('📅 Дни:', selectedDays);
+    console.log('📅 День недели:', mainDay);
     console.log('📅 Период:', startDate, '-', endDate);
+    console.log('⚠️ ВНИМАНИЕ: используем ТОЛЬКО первый выбранный день!');
     
     supabase
         .from('lesson_series')
@@ -7927,7 +7932,7 @@ window.saveLessonSeries = function() {
             var seriesId = series.id;
             console.log('✅ Серия создана, ID:', seriesId);
             
-            // Генерируем даты для занятий
+            // Генерируем даты ТОЛЬКО для ОДНОГО дня недели
             var currentDate = new Date(startDate);
             var end = new Date(endDate);
             var lessonsToCreate = [];
@@ -7937,7 +7942,8 @@ window.saveLessonSeries = function() {
                 var dayOfWeekNum = currentDate.getDay();
                 var dayNum = dayOfWeekNum === 0 ? 7 : dayOfWeekNum;
                 
-                if (selectedDays.includes(dayNum)) {
+                // 👇 ПРОВЕРЯЕМ ТОЛЬКО ОДИН ДЕНЬ
+                if (dayNum === mainDay) {
                     var dateStr = formatDateSQL(currentDate);
                     createdDates.push(dateStr);
                     
@@ -7959,7 +7965,7 @@ window.saveLessonSeries = function() {
             console.log('📚 Создаём занятий:', lessonsToCreate.length);
             console.log('📅 Даты:', createdDates);
             
-            // СОЗДАЁМ ВСЕ ЗАНЯТИЯ ОДНИМ ЗАПРОСОМ!
+            // СОЗДАЁМ ВСЕ ЗАНЯТИЯ ОДНИМ ЗАПРОСОМ
             if (lessonsToCreate.length > 0) {
                 supabase
                     .from('lesson_calendar')
@@ -7990,185 +7996,6 @@ window.saveLessonSeries = function() {
             alert('❌ Ошибка: ' + err.message);
         });
 };
-        // Открыть модалку управления занятием
-        window.openAdminLessonModal = function(lessonId) {
-            console.log('🔍 Открываем занятие:', lessonId);
-            adminCurrentLessonId = lessonId;
-            
-          
-          supabase
-    .from('lesson_calendar')
-    .select('*')  // ← УБРАЛИ ВСЁ ЛИШНЕЕ!
-    .eq('id', lessonId)
-    .single()
-                .then(function(response) {
-                    if (response.error) {
-                        alert('❌ Ошибка загрузки занятия: ' + response.error.message);
-                        return;
-                    }
-                    var lesson = response.data;
-                    adminCurrentLessonData = lesson;
-                    
-                    document.getElementById('adminLessonTopic').textContent = lesson.topic || 'Занятие без темы';
-                    document.getElementById('adminLessonStudentName').textContent = lesson.students ? lesson.students.name : 'Неизвестно';
-                    document.getElementById('adminLessonTimeValue').textContent = (lesson.start_time || '') + ' - ' + (lesson.end_time || '');
-                    document.getElementById('adminLessonDateValue').textContent = lesson.lesson_date ? new Date(lesson.lesson_date).toLocaleDateString('ru-RU') : '—';
-                    document.getElementById('adminLessonSectionValue').textContent = lesson.video_sections ? lesson.video_sections.name : 'Не указан';
-                    document.getElementById('adminLessonNotesValue').textContent = lesson.notes || '—';
-                    
-                    var statusBadge = document.getElementById('adminLessonStatusBadge');
-                    var statusMap = {
-                        'planned': { text: '📌 Запланировано', class: 'planned' },
-                        'completed': { text: '✅ Проведено', class: 'completed' },
-                        'cancelled': { text: '❌ Отменено', class: 'cancelled' }
-                    };
-                    var statusInfo = statusMap[lesson.status] || statusMap['planned'];
-                    statusBadge.textContent = statusInfo.text;
-                    statusBadge.className = 'status-badge ' + statusInfo.class;
-                    
-                    // Устанавливаем дату для переноса
-                    var moveDateInput = document.getElementById('moveLessonDate');
-                    if (moveDateInput) {
-                        moveDateInput.value = formatDateSQL(new Date());
-                    }
-                    
-                    // Показываем кнопки для серии, если она есть
-                    var seriesActions = document.getElementById('seriesActions');
-                    if (seriesActions) {
-                        if (lesson.series_id) {
-                            seriesActions.style.display = 'block';
-                        } else {
-                            seriesActions.style.display = 'none';
-                        }
-                    }
-                    
-                    document.getElementById('adminLessonModal').classList.add('active');
-                })
-                .catch(function(err) {
-                    alert('❌ Ошибка: ' + err.message);
-                });
-        };
-
-        // Закрыть модалку управления занятием
-        window.closeAdminLessonModal = function() {
-            var modal = document.getElementById('adminLessonModal');
-            if (modal) {
-                modal.classList.remove('active');
-            }
-            adminCurrentLessonId = null;
-            adminCurrentLessonData = null;
-        };
-
-        // Редактировать серию из модалки
-        window.editSeriesFromModal = function() {
-            if (!adminCurrentLessonData) {
-                alert('❌ Нет данных о занятии');
-                return;
-            }
-            
-            var seriesId = adminCurrentLessonData.series_id;
-            if (!seriesId) {
-                alert('❌ Это занятие не принадлежит серии');
-                return;
-            }
-            
-            // Закрываем модалку управления
-            window.closeAdminLessonModal();
-            
-            // Открываем редактирование серии
-            window.editSeries(seriesId);
-        };
-
-        // Разделить серию из модалки
-        window.splitSeriesFromModal = function() {
-            if (!adminCurrentLessonData) {
-                alert('❌ Нет данных о занятии');
-                return;
-            }
-            
-            var seriesId = adminCurrentLessonData.series_id;
-            if (!seriesId) {
-                alert('❌ Это занятие не принадлежит серии');
-                return;
-            }
-            
-            // Закрываем модалку управления
-            window.closeAdminLessonModal();
-            
-            // Открываем разделение серии
-            window.showSplitSeriesModal(seriesId);
-        };
-
-        // Удалить серию из модалки
-       window.deleteSeries = function(seriesId) {
-    if (!confirm('🗑 Удалить серию и все её занятия?')) return;
-    
-    // Сначала удаляем занятия
-    supabase
-        .from('lesson_calendar')
-        .delete()
-        .eq('series_id', seriesId)
-        .then(function() {
-            // Потом удаляем серию
-            return supabase.from('lesson_series').delete().eq('id', seriesId);
-        })
-        .then(function(response) {
-            if (response.error) {
-                alert('❌ Ошибка удаления: ' + response.error.message);
-                return;
-            }
-            alert('✅ Серия и все занятия удалены!');
-            window.renderCalendar(currentMonth);
-        })
-        .catch(function(err) {
-            alert('❌ Ошибка: ' + err.message);
-        });
-};
-        // Перенести занятие
-        window.moveAdminLesson = function() {
-            if (!adminCurrentLessonId) {
-                alert('❌ Ошибка: занятие не выбрано');
-                return;
-            }
-            
-            var moveDateInput = document.getElementById('moveLessonDate');
-            if (!moveDateInput) {
-                alert('❌ Ошибка: поле даты не найдено');
-                return;
-            }
-            
-            var newDate = moveDateInput.value;
-            if (!newDate) {
-                alert('❌ Выберите новую дату');
-                return;
-            }
-            
-            if (adminCurrentLessonData && adminCurrentLessonData.lesson_date === newDate) {
-                alert('❌ Дата не изменилась');
-                return;
-            }
-            
-            if (!confirm('Перенести занятие на ' + new Date(newDate).toLocaleDateString('ru-RU') + '?')) {
-                return;
-            }
-            
-            supabase
-                .from('lesson_calendar')
-                .update({ lesson_date: newDate })
-                .eq('id', adminCurrentLessonId)
-                .then(function(updateRes) {
-                    if (updateRes.error) {
-                        alert('❌ Ошибка переноса: ' + updateRes.error.message);
-                        return;
-                    }
-                    alert('✅ Занятие перенесено на ' + new Date(newDate).toLocaleDateString('ru-RU'));
-                    window.closeAdminLessonModal();
-                    window.renderCalendar(currentMonth);
-                })
-                .catch(function(err) {
-                    alert('❌ Ошибка: ' + err.message);
-                });
-        };
 
         // Удалить занятие
         window.deleteAdminLesson = function() {
