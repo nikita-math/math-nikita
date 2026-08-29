@@ -3338,14 +3338,17 @@
             container.innerHTML = html;
         }
 
-     window.deleteStudent = function(id) {
+  window.deleteStudent = function(id) {
     if (!confirm('Удалить ученика? Будут удалены все его занятия, оплаты и прогресс.')) return;
     
     // Удаляем всё связанное
     supabase
-        .from('lesson_calendar')
+        .from('lesson_series')          // 👈 ДОБАВЛЯЕМ УДАЛЕНИЕ СЕРИЙ
         .delete()
         .eq('student_id', id)
+        .then(function() {
+            return supabase.from('lesson_calendar').delete().eq('student_id', id);
+        })
         .then(function() {
             return supabase.from('lesson_payments').delete().eq('student_id', id);
         })
