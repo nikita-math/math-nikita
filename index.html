@@ -3986,41 +3986,43 @@
                 .catch(function(err) { tabsContainer1.innerHTML = '❌ Ошибка: ' + err.message; });
         };
 
-        window.renderVideoTabs = function() {
-            var tabsContainer1 = document.getElementById('videoTabsPart1');
-            var tabsContainer2 = document.getElementById('videoTabsPart2');
-            if (!sections || sections.length === 0) {
-                tabsContainer1.innerHTML = '📭 Нет разделов';
-                tabsContainer2.innerHTML = '📭 Нет разделов';
-                return;
-            }
-            var part1 = sections.slice(0, 12);
-            var part2 = sections.slice(12);
-            
-            var fragment1 = document.createDocumentFragment();
-            var fragment2 = document.createDocumentFragment();
-            
-            part1.forEach(function(section, index) {
-                var num = index + 1;
-                var btn = document.createElement('button');
-                btn.innerHTML = '<span class="num">' + num + '</span> ' + section.name;
-                btn.onclick = function() { window.openSection(section.id); };
-                fragment1.appendChild(btn);
-            });
-            
-            part2.forEach(function(section, index) {
-                var num = index + 13;
-                var btn = document.createElement('button');
-                btn.innerHTML = '<span class="num">' + num + '</span> ' + section.name;
-                btn.onclick = function() { window.openSection(section.id); };
-                fragment2.appendChild(btn);
-            });
-            
-            tabsContainer1.innerHTML = '';
-            tabsContainer2.innerHTML = '';
-            tabsContainer1.appendChild(fragment1);
-            tabsContainer2.appendChild(fragment2);
-        };
+      window.renderVideoTabs = function() {
+    var tabsContainer1 = document.getElementById('videoTabsPart1');
+    var tabsContainer2 = document.getElementById('videoTabsPart2');
+    
+    if (!sections || sections.length === 0) {
+        tabsContainer1.innerHTML = '📭 Нет разделов';
+        tabsContainer2.innerHTML = '📭 Нет разделов';
+        return;
+    }
+    
+    // №1-13 в первой части
+    var part1 = sections.slice(0, 13);
+    // №14-20 во второй части
+    var part2 = sections.slice(13);
+    
+    var fragment1 = document.createDocumentFragment();
+    var fragment2 = document.createDocumentFragment();
+    
+    part1.forEach(function(section) {
+        var btn = document.createElement('button');
+        btn.innerHTML = '<span class="num">' + section.order_num + '</span> ' + section.name;
+        btn.onclick = function() { window.openSection(section.id); };
+        fragment1.appendChild(btn);
+    });
+    
+    part2.forEach(function(section) {
+        var btn = document.createElement('button');
+        btn.innerHTML = '<span class="num">' + section.order_num + '</span> ' + section.name;
+        btn.onclick = function() { window.openSection(section.id); };
+        fragment2.appendChild(btn);
+    });
+    
+    tabsContainer1.innerHTML = '';
+    tabsContainer2.innerHTML = '';
+    tabsContainer1.appendChild(fragment1);
+    tabsContainer2.appendChild(fragment2);
+};
                 // ==========================================
         // ДОМАШНИЕ ЗАДАНИЯ (СТУДЕНТ) С ПРИКРЕПЛЕНИЕМ ФАЙЛОВ
         // ==========================================
