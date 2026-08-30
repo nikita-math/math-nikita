@@ -7814,7 +7814,13 @@ window.switchAdminTab = function(tab) {
             window.closeAdminLessonModal();
             window.showSplitSeriesModal(seriesId);
         };
+// ==========================================
+// ===== СОЗДАНИЕ СЕРИИ (РАБОЧАЯ ВЕРСИЯ) =====
+// ==========================================
+
 window.saveLessonSeries = function() {
+    console.log('🔥 saveLessonSeries ВЫЗВАНА');
+    
     var studentId = document.getElementById('lessonStudent').value;
     var sectionId = document.getElementById('lessonSection').value || null;
     var startTime = document.getElementById('lessonStartTime').value;
@@ -7823,13 +7829,16 @@ window.saveLessonSeries = function() {
     var endDate = document.getElementById('lessonEndDate').value;
     var notes = document.getElementById('lessonNotes').value || null;
     
-    // Получаем ТОЛЬКО ПЕРВЫЙ выбранный день
+    // Получаем ВЫБРАННЫЙ ДЕНЬ (только один!)
     var dayCheckboxes = document.querySelectorAll('.series-day:checked');
     if (dayCheckboxes.length === 0) {
-        alert('❌ Выберите день недели');
+        alert('❌ Выберите ДЕНЬ НЕДЕЛИ');
         return;
     }
+    
+    // БЕРЁМ ТОЛЬКО ПЕРВЫЙ ВЫБРАННЫЙ ДЕНЬ
     var dayOfWeek = parseInt(dayCheckboxes[0].value);
+    console.log('📅 ВЫБРАН ДЕНЬ:', dayOfWeek);
     
     if (!studentId) { alert('❌ Выберите ученика'); return; }
     if (!startTime) { alert('❌ Введите время'); return; }
@@ -7837,35 +7846,35 @@ window.saveLessonSeries = function() {
     
     var topic = prompt('Введите тему занятия:') || 'Занятие';
     
-    console.log('📝 СОЗДАЁМ СЕРИЮ ДЛЯ:', studentId);
-    console.log('📅 ДЕНЬ НЕДЕЛИ:', dayOfWeek);
-    console.log('📅 ПЕРИОД:', startDate, '-', endDate);
+    // СОЗДАЁМ ОДНУ СЕРИЮ
+    var seriesData = {
+        student_id: studentId,
+        day_of_week: dayOfWeek,
+        start_time: startTime,
+        end_time: endTime,
+        section_id: sectionId,
+        topic: topic,
+        start_date: startDate,
+        end_date: endDate,
+        notes: notes
+    };
     
-    // 1. СОЗДАЁМ СЕРИЮ
+    console.log('📝 СОЗДАЁМ СЕРИЮ:', seriesData);
+    
     supabase
         .from('lesson_series')
-        .insert([{
-            student_id: studentId,
-            day_of_week: dayOfWeek,
-            start_time: startTime,
-            end_time: endTime,
-            section_id: sectionId,
-            topic: topic,
-            start_date: startDate,
-            end_date: endDate,
-            notes: notes
-        }])
+        .insert([seriesData])
         .select()
-        .then(function(res) {
-            if (res.error) {
-                alert('❌ Ошибка: ' + res.error.message);
+        .then(function(response) {
+            if (response.error) {
+                alert('❌ Ошибка: ' + response.error.message);
                 return;
             }
             
-            var seriesId = res.data[0].id;
+            var seriesId = response.data[0].id;
             console.log('✅ СЕРИЯ СОЗДАНА, ID:', seriesId);
             
-            // 2. ГЕНЕРИРУЕМ ДАТЫ
+            // ГЕНЕРИРУЕМ ДАТЫ
             var dates = [];
             var current = new Date(startDate);
             var end = new Date(endDate);
@@ -7878,7 +7887,7 @@ window.saveLessonSeries = function() {
                 current.setDate(current.getDate() + 1);
             }
             
-            console.log('📅 ДАТЫ ДЛЯ ЗАНЯТИЙ:', dates);
+            console.log('📅 ДАТЫ:', dates);
             
             if (dates.length === 0) {
                 alert('⚠️ Нет дат для занятий');
@@ -7886,7 +7895,7 @@ window.saveLessonSeries = function() {
                 return;
             }
             
-            // 3. СОЗДАЁМ ЗАНЯТИЯ (ОДНИМ ЗАПРОСОМ!)
+            // СОЗДАЁМ ЗАНЯТИЯ (ОДНИМ ЗАПРОСОМ)
             var lessons = dates.map(function(date) {
                 return {
                     student_id: studentId,
@@ -7901,6 +7910,8 @@ window.saveLessonSeries = function() {
                 };
             });
             
+            console.log('📚 СОЗДАЁМ ЗАНЯТИЙ:', lessons.length);
+            
             supabase
                 .from('lesson_calendar')
                 .insert(lessons)
@@ -7909,7 +7920,7 @@ window.saveLessonSeries = function() {
                         alert('❌ Ошибка создания занятий: ' + insertRes.error.message);
                         return;
                     }
-                    alert('✅ Серия создана! ' + dates.length + ' занятий');
+                    alert('✅ Серия создана! ' + lessons.length + ' занятий');
                     window.closeAddLessonModal();
                     window.renderCalendar(currentMonth);
                 });
