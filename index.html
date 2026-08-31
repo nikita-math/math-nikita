@@ -2528,7 +2528,7 @@
             
             <div class="modal-actions" id="addLessonModalActions">
                 <button class="cancel-btn" onclick="closeAddLessonModal()">Отмена</button>
-           <button class="submit-btn" id="addLessonSubmitBtn" onclick="if(this.disabled)return; this.disabled=true; this.textContent='⏳...'; window.saveLessonSeries();">✅ Создать серию</button>
+               <button class="submit-btn" id="addLessonSubmitBtn" onclick="if(this.disabled)return; this.disabled=true; this.textContent='⏳...'; window.saveLessonSeries();">✅ Создать серию</button>
             </div>
         </div>
     </div>
@@ -3986,43 +3986,41 @@
                 .catch(function(err) { tabsContainer1.innerHTML = '❌ Ошибка: ' + err.message; });
         };
 
-      window.renderVideoTabs = function() {
-    var tabsContainer1 = document.getElementById('videoTabsPart1');
-    var tabsContainer2 = document.getElementById('videoTabsPart2');
-    
-    if (!sections || sections.length === 0) {
-        tabsContainer1.innerHTML = '📭 Нет разделов';
-        tabsContainer2.innerHTML = '📭 Нет разделов';
-        return;
-    }
-    
-    // №1-13 в первой части
-    var part1 = sections.slice(0, 13);
-    // №14-20 во второй части
-    var part2 = sections.slice(13);
-    
-    var fragment1 = document.createDocumentFragment();
-    var fragment2 = document.createDocumentFragment();
-    
-    part1.forEach(function(section) {
-        var btn = document.createElement('button');
-        btn.innerHTML = '<span class="num">' + section.order_num + '</span> ' + section.name;
-        btn.onclick = function() { window.openSection(section.id); };
-        fragment1.appendChild(btn);
-    });
-    
-    part2.forEach(function(section) {
-        var btn = document.createElement('button');
-        btn.innerHTML = '<span class="num">' + section.order_num + '</span> ' + section.name;
-        btn.onclick = function() { window.openSection(section.id); };
-        fragment2.appendChild(btn);
-    });
-    
-    tabsContainer1.innerHTML = '';
-    tabsContainer2.innerHTML = '';
-    tabsContainer1.appendChild(fragment1);
-    tabsContainer2.appendChild(fragment2);
-};
+        window.renderVideoTabs = function() {
+            var tabsContainer1 = document.getElementById('videoTabsPart1');
+            var tabsContainer2 = document.getElementById('videoTabsPart2');
+            if (!sections || sections.length === 0) {
+                tabsContainer1.innerHTML = '📭 Нет разделов';
+                tabsContainer2.innerHTML = '📭 Нет разделов';
+                return;
+            }
+            var part1 = sections.slice(0, 12);
+            var part2 = sections.slice(12);
+            
+            var fragment1 = document.createDocumentFragment();
+            var fragment2 = document.createDocumentFragment();
+            
+            part1.forEach(function(section, index) {
+                var num = index + 1;
+                var btn = document.createElement('button');
+                btn.innerHTML = '<span class="num">' + num + '</span> ' + section.name;
+                btn.onclick = function() { window.openSection(section.id); };
+                fragment1.appendChild(btn);
+            });
+            
+            part2.forEach(function(section, index) {
+                var num = index + 13;
+                var btn = document.createElement('button');
+                btn.innerHTML = '<span class="num">' + num + '</span> ' + section.name;
+                btn.onclick = function() { window.openSection(section.id); };
+                fragment2.appendChild(btn);
+            });
+            
+            tabsContainer1.innerHTML = '';
+            tabsContainer2.innerHTML = '';
+            tabsContainer1.appendChild(fragment1);
+            tabsContainer2.appendChild(fragment2);
+        };
                 // ==========================================
         // ДОМАШНИЕ ЗАДАНИЯ (СТУДЕНТ) С ПРИКРЕПЛЕНИЕМ ФАЙЛОВ
         // ==========================================
@@ -4774,12 +4772,13 @@
             }
             
             container.style.display = 'block';
-
-  supabase
+            
+        supabase
     .from('lesson_calendar')
-    .select('*, lesson_series(*)')  // ← ДОБАВЛЯЕМ lesson_series
+   .select('*, lesson_series(*)')
     .eq('student_id', selectedStudentId)
     .eq('lesson_date', dateStr)
+                .then(function(response) {
                     if (response.error) {
                         list.innerHTML = '<p style="color:#666;">Ошибка загрузки</p>';
                         return;
@@ -5027,110 +5026,125 @@
                     alert('❌ Ошибка: ' + err.message);
                 });
         };
-// ==========================================
-// ===== РЕДАКТИРОВАНИЕ СЕРИИ =====
-// ==========================================
 
-window.updateLessonSeries = function(seriesId) {
-    var studentId = document.getElementById('lessonStudent').value;
-    var startTime = document.getElementById('lessonStartTime').value;
-    var endTime = document.getElementById('lessonEndTime').value || null;
-    var startDate = document.getElementById('lessonStartDate').value;
-    var endDate = document.getElementById('lessonEndDate').value;
-    var notes = document.getElementById('lessonNotes').value || null;
-    
-    // Получаем ТОЛЬКО ПЕРВЫЙ выбранный день
-    var dayCheckboxes = document.querySelectorAll('.series-day:checked');
-    if (dayCheckboxes.length === 0) {
-        alert('❌ Выберите день недели');
-        return;
-    }
-    var dayOfWeek = parseInt(dayCheckboxes[0].value);
-    
-    if (!studentId) { alert('❌ Выберите ученика'); return; }
-    if (!startTime) { alert('❌ Введите время'); return; }
-    if (!startDate || !endDate) { alert('❌ Введите даты'); return; }
-    if (new Date(startDate) > new Date(endDate)) {
-        alert('❌ Дата первого занятия не может быть позже даты последнего');
-        return;
-    }
-    
-    // 1. ОБНОВЛЯЕМ СЕРИЮ
-    supabase
-        .from('lesson_series')
-        .update({
-            student_id: studentId,
-            day_of_week: dayOfWeek,
-            start_time: startTime,
-            end_time: endTime,
-            start_date: startDate,
-            end_date: endDate,
-            notes: notes
-        })
-        .eq('id', seriesId)
-        .then(function() {
-            // 2. УДАЛЯЕМ СТАРЫЕ ЗАНЯТИЯ
-            return supabase.from('lesson_calendar').delete().eq('series_id', seriesId);
-        })
-        .then(function() {
-            // 3. СОЗДАЁМ НОВЫЕ ЗАНЯТИЯ
-            var dates = [];
-            var current = new Date(startDate);
-            var end = new Date(endDate);
+                window.updateLessonSeries = function(seriesId) {
+            var studentId = document.getElementById('lessonStudent').value;
+            var sectionId = document.getElementById('lessonSection').value || null;
+            var startTime = document.getElementById('lessonStartTime').value;
+            var endTime = document.getElementById('lessonEndTime').value || null;
+            var startDate = document.getElementById('lessonStartDate').value;
+            var endDate = document.getElementById('lessonEndDate').value;
+            var notes = document.getElementById('lessonNotes').value || null;
             
-            while (current <= end) {
-                var dayNum = current.getDay() === 0 ? 7 : current.getDay();
-                if (dayNum === dayOfWeek) {
-                    dates.push(formatDateSQL(current));
-                }
-                current.setDate(current.getDate() + 1);
+            // Получаем выбранные дни
+            var dayCheckboxes = document.querySelectorAll('.series-day:checked');
+            var selectedDays = [];
+            dayCheckboxes.forEach(function(cb) {
+                selectedDays.push(parseInt(cb.value));
+            });
+            
+            if (!studentId) { alert('❌ Выберите ученика'); return; }
+            if (selectedDays.length === 0) { alert('❌ Выберите хотя бы один день недели'); return; }
+            if (!startTime) { alert('❌ Введите время начала'); return; }
+            if (!startDate || !endDate) { alert('❌ Введите даты'); return; }
+            
+            var topic = null;
+            if (sectionId) {
+                var sectionSelect = document.getElementById('lessonSection');
+                var option = sectionSelect.querySelector('option[value="' + sectionId + '"]');
+                if (option) topic = option.textContent;
             }
             
-            if (dates.length === 0) {
-                alert('⚠️ Нет дат для занятий');
-                window.closeAddLessonModal();
-                window.renderCalendar(currentMonth);
+            if (!topic) {
+                topic = prompt('Введите тему занятия (или оставьте пустым):') || null;
+            }
+            
+            // Обновляем серию (берём первый выбранный день)
+            supabase
+                .from('lesson_series')
+                .update({
+                    student_id: studentId,
+                    day_of_week: selectedDays[0],
+                    start_time: startTime,
+                    end_time: endTime,
+                    section_id: sectionId,
+                    topic: topic,
+                    start_date: startDate,
+                    end_date: endDate
+                })
+                .eq('id', seriesId)
+                .then(function(response) {
+                    if (response.error) {
+                        alert('❌ Ошибка: ' + response.error.message);
+                        return;
+                    }
+                    alert('✅ Серия обновлена!');
+                    window.closeAddLessonModal();
+                    window.renderCalendar(currentMonth);
+                })
+                .catch(function(err) {
+                    alert('❌ Ошибка: ' + err.message);
+                });
+        };
+        window.editSeries = function(seriesId) {
+            if (!seriesId) {
+                alert('❌ Ошибка: ID серии не указан');
                 return;
             }
             
-            // Получаем данные серии
             supabase
                 .from('lesson_series')
-                .select('topic, section_id')
+                .select('*')
                 .eq('id', seriesId)
-                .single()
-                .then(function(res) {
-                    var series = res.data;
+                .then(function(response) {
+                    if (response.error) {
+                        alert('❌ Ошибка: ' + response.error.message);
+                        return;
+                    }
                     
-                    var lessons = dates.map(function(date) {
-                        return {
-                            student_id: studentId,
-                            section_id: series.section_id,
-                            lesson_date: date,
-                            topic: series.topic || 'Занятие',
-                            start_time: startTime,
-                            end_time: endTime,
-                            notes: notes,
-                            status: 'planned',
-                            series_id: seriesId
-                        };
-                    });
+                    if (!response.data || response.data.length === 0) {
+                        alert('❌ Серия не найдена');
+                        return;
+                    }
                     
-                    supabase
-                        .from('lesson_calendar')
-                        .insert(lessons)
-                        .then(function(insertRes) {
-                            if (insertRes.error) {
-                                alert('❌ Ошибка: ' + insertRes.error.message);
-                                return;
-                            }
-                            alert('✅ Серия обновлена! ' + dates.length + ' занятий');
-                            window.closeAddLessonModal();
-                            window.renderCalendar(currentMonth);
-                        });
+                    var series = response.data[0]; // берём первую запись
+                    
+                    document.getElementById('lessonStudent').value = series.student_id;
+                    document.getElementById('lessonDayOfWeek').value = series.day_of_week;
+                    document.getElementById('lessonStartTime').value = series.start_time;
+                    document.getElementById('lessonEndTime').value = series.end_time || '';
+                    document.getElementById('lessonStartDate').value = series.start_date;
+                    document.getElementById('lessonEndDate').value = series.end_date;
+                    document.getElementById('lessonNotes').value = series.notes || '';
+                    
+                    if (series.section_id) {
+                        document.getElementById('lessonSection').value = series.section_id;
+                    }
+                    
+                    document.querySelector('#addLessonModal h3').textContent = '✏️ Редактировать серию';
+                    document.querySelector('#addLessonModal .submit-btn').textContent = '💾 Сохранить';
+                    document.querySelector('#addLessonModal .submit-btn').onclick = function() {
+                        window.updateLessonSeries(seriesId);
+                    };
+                    
+                    // Добавляем кнопку "Разделить серию"
+                    var actionsDiv = document.querySelector('#addLessonModal .modal-actions');
+                    var splitBtn = document.createElement('button');
+                    splitBtn.className = 'admin-btn';
+                    splitBtn.textContent = '✂️ Разделить серию';
+                    splitBtn.style.cssText = 'background:#f39c12; color:#fff; padding:12px 20px; border:none; border-radius:12px; cursor:pointer; font-weight:700;';
+                    splitBtn.onclick = function() {
+                        window.closeAddLessonModal();
+                        window.showSplitSeriesModal(seriesId);
+                    };
+                    actionsDiv.prepend(splitBtn);
+                    
+                    document.getElementById('addLessonModal').classList.add('active');
+                })
+                .catch(function(err) {
+                    alert('❌ Ошибка: ' + err.message);
                 });
-        });
-};
+        };
 
         // ==========================================
         // РАЗДЕЛИТЬ СЕРИЮ
@@ -7582,33 +7596,39 @@ window.switchAdminTab = function(tab) {
                 // ==========================================
         // УДАЛЕНИЕ СЕРИИ ИЗ МОДАЛКИ
         // ==========================================
-       // ==========================================
-// ===== УДАЛЕНИЕ СЕРИИ =====
-// ==========================================
-
-window.deleteSeries = function(seriesId) {
-    if (!confirm('🗑 Удалить серию и ВСЕ занятия?')) return;
-    
-    console.log('🗑 УДАЛЯЕМ СЕРИЮ:', seriesId);
-    
-    // Сначала удаляем занятия
-    supabase
-        .from('lesson_calendar')
-        .delete()
-        .eq('series_id', seriesId)
-        .then(function() {
-            // Потом удаляем серию
-            return supabase.from('lesson_series').delete().eq('id', seriesId);
-        })
-        .then(function(res) {
-            if (res.error) {
-                alert('❌ Ошибка: ' + res.error.message);
+        window.deleteSeriesFromModal = function() {
+            if (!adminCurrentLessonData) {
+                alert('❌ Нет данных о занятии');
                 return;
             }
-            alert('✅ Серия и все занятия удалены!');
-            window.renderCalendar(currentMonth);
-        });
-};
+            
+            var seriesId = adminCurrentLessonData.series_id;
+            if (!seriesId) {
+                alert('❌ Это занятие не принадлежит серии');
+                return;
+            }
+            
+            if (!confirm('🗑 Удалить ВСЮ серию занятий?\n\nЭто действие удалит все занятия в этой серии (включая текущее). Отменить будет нельзя!')) {
+                return;
+            }
+            
+            supabase
+                .from('lesson_series')
+                .delete()
+                .eq('id', seriesId)
+                .then(function(response) {
+                    if (response.error) {
+                        alert('❌ Ошибка удаления серии: ' + response.error.message);
+                        return;
+                    }
+                    alert('✅ Серия успешно удалена!');
+                    window.closeAdminLessonModal();
+                    window.renderCalendar(currentMonth);
+                })
+                .catch(function(err) {
+                    alert('❌ Ошибка: ' + err.message);
+                });
+        };
                 // ==========================================
         // ДОБАВЛЕНИЕ ЗАНЯТИЯ НА ДАТУ
         // ==========================================
@@ -7783,56 +7803,22 @@ window.deleteSeries = function(seriesId) {
                 // ==========================================
         // РЕДАКТИРОВАНИЕ СЕРИИ ИЗ МОДАЛКИ
         // ==========================================
-     window.editSeries = function(seriesId) {
-    if (!seriesId) {
-        alert('❌ ID серии не указан');
-        return;
-    }
-    
-    supabase
-        .from('lesson_series')
-        .select('*')
-        .eq('id', seriesId)
-        .then(function(response) {
-            if (response.error) {
-                alert('❌ Ошибка: ' + response.error.message);
+        window.editSeriesFromModal = function() {
+            if (!adminCurrentLessonData) {
+                alert('❌ Нет данных о занятии');
                 return;
             }
             
-            if (!response.data || response.data.length === 0) {
-                alert('❌ Серия не найдена');
+            var seriesId = adminCurrentLessonData.series_id;
+            if (!seriesId) {
+                alert('❌ Это занятие не принадлежит серии');
                 return;
             }
             
-            var series = response.data[0];
-            
-            document.getElementById('lessonStudent').value = series.student_id;
-            document.getElementById('lessonStartTime').value = series.start_time || '18:00';
-            document.getElementById('lessonEndTime').value = series.end_time || '19:30';
-            document.getElementById('lessonStartDate').value = series.start_date;
-            document.getElementById('lessonEndDate').value = series.end_date;
-            document.getElementById('lessonNotes').value = series.notes || '';
-            document.getElementById('addLessonModalTitle').textContent = '✏️ Редактировать серию';
-            
-            if (series.section_id) {
-                document.getElementById('lessonSection').value = series.section_id;
-            }
-            
-            // Отмечаем выбранный день недели (только один!)
-            document.querySelectorAll('.series-day').forEach(function(cb) {
-                cb.checked = parseInt(cb.value) === series.day_of_week;
-            });
-            
-            // Меняем кнопку
-            var submitBtn = document.getElementById('addLessonSubmitBtn');
-            submitBtn.textContent = '💾 Сохранить';
-            submitBtn.onclick = function() {
-                window.updateLessonSeries(seriesId);
-            };
-            
-            document.getElementById('addLessonModal').classList.add('active');
-        });
-};
+            // Закрываем модалку управления и открываем редактирование
+            window.closeAdminLessonModal();
+            window.editSeries(seriesId);
+        };
 
         // ==========================================
         // РАЗДЕЛЕНИЕ СЕРИИ ИЗ МОДАЛКИ
@@ -7854,35 +7840,202 @@ window.deleteSeries = function(seriesId) {
             window.showSplitSeriesModal(seriesId);
         };
        
+         // ==========================================
+    // ===== СОЗДАНИЕ СЕРИИ (С ЗАЩИТОЙ ОТ ДУБЛЕЙ) =====
+    // ==========================================
 
+    var isSavingSeries = false;
 
-
-
-// ==========================================
-// ===== ФУНКЦИЯ ДЛЯ ОЧИСТКИ "МЁРТВЫХ" ЗАПИСЕЙ =====
-// ==========================================
-
-window.cleanupCancelledLessons = async function() {
-    if (!confirm('Удалить все отменённые занятия? Это действие не влияет на активные.')) {
-        return;
-    }
-    
-    try {
-        var { data, error } = await supabase
+    window.saveLessonSeries = function() {
+        // БЛОКИРОВКА ПОВТОРНЫХ НАЖАТИЙ
+        if (isSavingSeries) {
+            console.log('⚠️ Сохранение уже выполняется, подождите...');
+            return;
+        }
+        
+        console.log('🔥 saveLessonSeries ВЫЗВАНА');
+        
+        var studentId = document.getElementById('lessonStudent').value;
+        var sectionId = document.getElementById('lessonSection').value || null;
+        var startTime = document.getElementById('lessonStartTime').value;
+        var endTime = document.getElementById('lessonEndTime').value || null;
+        var startDate = document.getElementById('lessonStartDate').value;
+        var endDate = document.getElementById('lessonEndDate').value;
+        var notes = document.getElementById('lessonNotes').value || null;
+        
+        var dayCheckboxes = document.querySelectorAll('.series-day:checked');
+        if (dayCheckboxes.length === 0) {
+            alert('❌ Выберите ДЕНЬ НЕДЕЛИ');
+            return;
+        }
+        
+        var dayOfWeek = parseInt(dayCheckboxes[0].value);
+        
+        if (!studentId) { alert('❌ Выберите ученика'); return; }
+        if (!startTime) { alert('❌ Введите время'); return; }
+        if (!startDate || !endDate) { alert('❌ Введите даты'); return; }
+        if (new Date(startDate) > new Date(endDate)) {
+            alert('❌ Дата первого занятия не может быть позже даты последнего');
+            return;
+        }
+        
+        var topic = prompt('Введите тему занятия:') || 'Занятие';
+        if (!topic) {
+            alert('❌ Тема не может быть пустой');
+            return;
+        }
+        
+        // БЛОКИРУЕМ КНОПКУ
+        isSavingSeries = true;
+        var submitBtn = document.getElementById('addLessonSubmitBtn');
+        var originalText = submitBtn ? submitBtn.textContent : '✅ Создать серию';
+        if (submitBtn) {
+            submitBtn.disabled = true;
+            submitBtn.textContent = '⏳ Сохранение...';
+        }
+        
+        var dates = [];
+        var current = new Date(startDate);
+        var end = new Date(endDate);
+        
+        while (current <= end) {
+            var dayNum = current.getDay() === 0 ? 7 : current.getDay();
+            if (dayNum === dayOfWeek) {
+                dates.push(formatDateSQL(current));
+            }
+            current.setDate(current.getDate() + 1);
+        }
+        
+        if (dates.length === 0) {
+            alert('⚠️ Нет дат для занятий');
+            isSavingSeries = false;
+            if (submitBtn) {
+                submitBtn.disabled = false;
+                submitBtn.textContent = originalText;
+            }
+            return;
+        }
+        
+        console.log('📅 Даты:', dates);
+        
+        // ПРОВЕРКА НА КОНФЛИКТЫ
+        supabase
             .from('lesson_calendar')
-            .delete()
-            .eq('status', 'cancelled');
-            
-        if (error) throw error;
-        
-        alert('✅ Все отменённые занятия удалены!');
-        window.renderCalendar(currentMonth);
-        
-    } catch (err) {
-        alert('❌ Ошибка очистки: ' + err.message);
-        console.error(err);
-    }
-};
+            .select('lesson_date, status, id')
+            .eq('student_id', studentId)
+            .in('lesson_date', dates)
+            .neq('status', 'cancelled')
+            .then(function(conflictRes) {
+                var conflicts = conflictRes.data || [];
+                var activeConflicts = conflicts.filter(function(c) {
+                    return c.status !== 'cancelled';
+                });
+                
+                if (activeConflicts.length > 0) {
+                    var conflictDates = activeConflicts.map(function(c) {
+                        return new Date(c.lesson_date).toLocaleDateString('ru-RU');
+                    }).join(', ');
+                    
+                    if (!confirm('⚠️ На эти даты уже есть занятия: ' + conflictDates + '. Создать дубли?')) {
+                        isSavingSeries = false;
+                        if (submitBtn) {
+                            submitBtn.disabled = false;
+                            submitBtn.textContent = originalText;
+                        }
+                        return;
+                    }
+                }
+                
+                // ПРОВЕРКА НА СУЩЕСТВУЮЩУЮ СЕРИЮ
+                supabase
+                    .from('lesson_series')
+                    .select('id')
+                    .eq('student_id', studentId)
+                    .eq('day_of_week', dayOfWeek)
+                    .eq('start_date', startDate)
+                    .eq('end_date', endDate)
+                    .then(function(seriesCheck) {
+                        if (seriesCheck.data && seriesCheck.data.length > 0) {
+                            if (!confirm('⚠️ Такая серия уже существует. Создать дубликат?')) {
+                                isSavingSeries = false;
+                                if (submitBtn) {
+                                    submitBtn.disabled = false;
+                                    submitBtn.textContent = originalText;
+                                }
+                                return;
+                            }
+                        }
+                        
+                        var seriesData = {
+                            student_id: studentId,
+                            day_of_week: dayOfWeek,
+                            start_time: startTime,
+                            end_time: endTime,
+                            section_id: sectionId,
+                            topic: topic,
+                            start_date: startDate,
+                            end_date: endDate,
+                            notes: notes
+                        };
+                        
+                        supabase
+                            .from('lesson_series')
+                            .insert([seriesData])
+                            .select()
+                            .then(function(response) {
+                                if (response.error) {
+                                    alert('❌ Ошибка создания серии: ' + response.error.message);
+                                    isSavingSeries = false;
+                                    if (submitBtn) {
+                                        submitBtn.disabled = false;
+                                        submitBtn.textContent = originalText;
+                                    }
+                                    return;
+                                }
+                                
+                                var seriesId = response.data[0].id;
+                                console.log('✅ Серия создана, ID:', seriesId);
+                                
+                                var lessons = dates.map(function(date) {
+                                    return {
+                                        student_id: studentId,
+                                        section_id: sectionId,
+                                        lesson_date: date,
+                                        topic: topic,
+                                        start_time: startTime,
+                                        end_time: endTime,
+                                        notes: notes,
+                                        status: 'planned',
+                                        series_id: seriesId
+                                    };
+                                });
+                                
+                                supabase
+                                    .from('lesson_calendar')
+                                    .insert(lessons)
+                                    .then(function(insertRes) {
+                                        isSavingSeries = false;
+                                        if (submitBtn) {
+                                            submitBtn.disabled = false;
+                                            submitBtn.textContent = originalText;
+                                        }
+                                        
+                                        if (insertRes.error) {
+                                            alert('❌ Ошибка создания занятий: ' + insertRes.error.message);
+                                            supabase.from('lesson_series').delete().eq('id', seriesId);
+                                            return;
+                                        }
+                                        
+                                        alert('✅ Серия создана! ' + lessons.length + ' занятий');
+                                        window.closeAddLessonModal();
+                                        window.renderCalendar(currentMonth);
+                                    });
+                            });
+                    });
+            });
+    };
+
+    </script>
                 // ==========================================
         // ===== ФУНКЦИИ ДЛЯ МОДАЛКИ УПРАВЛЕНИЯ ЗАНЯТИЕМ =====
         // ==========================================
@@ -10656,200 +10809,6 @@ window.loadIncome = async function() {
     }
 };
 
-       // ==========================================
-    // ===== СОЗДАНИЕ СЕРИИ (С ЗАЩИТОЙ ОТ ДУБЛЕЙ) =====
-    // ==========================================
-
-    var isSavingSeries = false;
-
-    window.saveLessonSeries = function() {
-        // БЛОКИРОВКА ПОВТОРНЫХ НАЖАТИЙ
-        if (isSavingSeries) {
-            console.log('⚠️ Сохранение уже выполняется, подождите...');
-            return;
-        }
-        
-        console.log('🔥 saveLessonSeries ВЫЗВАНА');
-        
-        var studentId = document.getElementById('lessonStudent').value;
-        var sectionId = document.getElementById('lessonSection').value || null;
-        var startTime = document.getElementById('lessonStartTime').value;
-        var endTime = document.getElementById('lessonEndTime').value || null;
-        var startDate = document.getElementById('lessonStartDate').value;
-        var endDate = document.getElementById('lessonEndDate').value;
-        var notes = document.getElementById('lessonNotes').value || null;
-        
-        var dayCheckboxes = document.querySelectorAll('.series-day:checked');
-        if (dayCheckboxes.length === 0) {
-            alert('❌ Выберите ДЕНЬ НЕДЕЛИ');
-            return;
-        }
-        
-        var dayOfWeek = parseInt(dayCheckboxes[0].value);
-        
-        if (!studentId) { alert('❌ Выберите ученика'); return; }
-        if (!startTime) { alert('❌ Введите время'); return; }
-        if (!startDate || !endDate) { alert('❌ Введите даты'); return; }
-        if (new Date(startDate) > new Date(endDate)) {
-            alert('❌ Дата первого занятия не может быть позже даты последнего');
-            return;
-        }
-        
-        var topic = prompt('Введите тему занятия:') || 'Занятие';
-        if (!topic) {
-            alert('❌ Тема не может быть пустой');
-            return;
-        }
-        
-        // БЛОКИРУЕМ КНОПКУ
-        isSavingSeries = true;
-        var submitBtn = document.getElementById('addLessonSubmitBtn');
-        var originalText = submitBtn ? submitBtn.textContent : '✅ Создать серию';
-        if (submitBtn) {
-            submitBtn.disabled = true;
-            submitBtn.textContent = '⏳ Сохранение...';
-        }
-        
-        var dates = [];
-        var current = new Date(startDate);
-        var end = new Date(endDate);
-        
-        while (current <= end) {
-            var dayNum = current.getDay() === 0 ? 7 : current.getDay();
-            if (dayNum === dayOfWeek) {
-                dates.push(formatDateSQL(current));
-            }
-            current.setDate(current.getDate() + 1);
-        }
-        
-        if (dates.length === 0) {
-            alert('⚠️ Нет дат для занятий');
-            isSavingSeries = false;
-            if (submitBtn) {
-                submitBtn.disabled = false;
-                submitBtn.textContent = originalText;
-            }
-            return;
-        }
-        
-        console.log('📅 Даты:', dates);
-        
-        // ПРОВЕРКА НА КОНФЛИКТЫ
-        supabase
-            .from('lesson_calendar')
-            .select('lesson_date, status, id')
-            .eq('student_id', studentId)
-            .in('lesson_date', dates)
-            .neq('status', 'cancelled')
-            .then(function(conflictRes) {
-                var conflicts = conflictRes.data || [];
-                var activeConflicts = conflicts.filter(function(c) {
-                    return c.status !== 'cancelled';
-                });
-                
-                if (activeConflicts.length > 0) {
-                    var conflictDates = activeConflicts.map(function(c) {
-                        return new Date(c.lesson_date).toLocaleDateString('ru-RU');
-                    }).join(', ');
-                    
-                    if (!confirm('⚠️ На эти даты уже есть занятия: ' + conflictDates + '. Создать дубли?')) {
-                        isSavingSeries = false;
-                        if (submitBtn) {
-                            submitBtn.disabled = false;
-                            submitBtn.textContent = originalText;
-                        }
-                        return;
-                    }
-                }
-                
-                // ПРОВЕРКА НА СУЩЕСТВУЮЩУЮ СЕРИЮ
-                supabase
-                    .from('lesson_series')
-                    .select('id')
-                    .eq('student_id', studentId)
-                    .eq('day_of_week', dayOfWeek)
-                    .eq('start_date', startDate)
-                    .eq('end_date', endDate)
-                    .then(function(seriesCheck) {
-                        if (seriesCheck.data && seriesCheck.data.length > 0) {
-                            if (!confirm('⚠️ Такая серия уже существует. Создать дубликат?')) {
-                                isSavingSeries = false;
-                                if (submitBtn) {
-                                    submitBtn.disabled = false;
-                                    submitBtn.textContent = originalText;
-                                }
-                                return;
-                            }
-                        }
-                        
-                        var seriesData = {
-                            student_id: studentId,
-                            day_of_week: dayOfWeek,
-                            start_time: startTime,
-                            end_time: endTime,
-                            section_id: sectionId,
-                            topic: topic,
-                            start_date: startDate,
-                            end_date: endDate,
-                            notes: notes
-                        };
-                        
-                        supabase
-                            .from('lesson_series')
-                            .insert([seriesData])
-                            .select()
-                            .then(function(response) {
-                                if (response.error) {
-                                    alert('❌ Ошибка создания серии: ' + response.error.message);
-                                    isSavingSeries = false;
-                                    if (submitBtn) {
-                                        submitBtn.disabled = false;
-                                        submitBtn.textContent = originalText;
-                                    }
-                                    return;
-                                }
-                                
-                                var seriesId = response.data[0].id;
-                                console.log('✅ Серия создана, ID:', seriesId);
-                                
-                                var lessons = dates.map(function(date) {
-                                    return {
-                                        student_id: studentId,
-                                        section_id: sectionId,
-                                        lesson_date: date,
-                                        topic: topic,
-                                        start_time: startTime,
-                                        end_time: endTime,
-                                        notes: notes,
-                                        status: 'planned',
-                                        series_id: seriesId
-                                    };
-                                });
-                                
-                                supabase
-                                    .from('lesson_calendar')
-                                    .insert(lessons)
-                                    .then(function(insertRes) {
-                                        isSavingSeries = false;
-                                        if (submitBtn) {
-                                            submitBtn.disabled = false;
-                                            submitBtn.textContent = originalText;
-                                        }
-                                        
-                                        if (insertRes.error) {
-                                            alert('❌ Ошибка создания занятий: ' + insertRes.error.message);
-                                            supabase.from('lesson_series').delete().eq('id', seriesId);
-                                            return;
-                                        }
-                                        
-                                        alert('✅ Серия создана! ' + lessons.length + ' занятий');
-                                        window.closeAddLessonModal();
-                                        window.renderCalendar(currentMonth);
-                                    });
-                            });
-                    });
-            });
-    };
 
     </script>
     <!-- ===== МОДАЛКА УПРАВЛЕНИЯ ЗАНЯТИЕМ ===== -->
@@ -11008,6 +10967,7 @@ window.loadIncome = async function() {
         </div>
     </div>
 </div>
+
 </body>
 </html>
 
