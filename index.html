@@ -4774,13 +4774,12 @@
             }
             
             container.style.display = 'block';
-            
-        supabase
+
+  supabase
     .from('lesson_calendar')
-    .select('*')  // ← УБРАЛИ lesson_series!
+    .select('*, lesson_series(*)')  // ← ДОБАВЛЯЕМ lesson_series
     .eq('student_id', selectedStudentId)
     .eq('lesson_date', dateStr)
-                .then(function(response) {
                     if (response.error) {
                         list.innerHTML = '<p style="color:#666;">Ошибка загрузки</p>';
                         return;
